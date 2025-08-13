@@ -7,7 +7,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../../../ui/table";
+} from "../../../ui/tableMain";
 import { AngleDownIcon, AngleUpIcon } from "@/icons";
 import Image from "next/image";
 import PaginationWithIcon from "./PaginationWithIcon";

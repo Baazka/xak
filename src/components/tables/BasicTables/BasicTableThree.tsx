@@ -7,7 +7,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../../ui/table";
+} from "../../ui/tableMain";
 import Button from "../../ui/button/Button";
 import Image from "next/image";
 import TableDropdown from "@/components/common/TableDropdown";

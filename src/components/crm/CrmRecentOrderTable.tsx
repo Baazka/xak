@@ -6,7 +6,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from "../ui/tableMain";
 import { TrashBinIcon } from "../../icons";
 import AvatarText from "../ui/avatar/AvatarText";
 import Checkbox from "../form/input/Checkbox";
