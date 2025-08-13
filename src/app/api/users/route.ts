@@ -2,34 +2,44 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db"; // make sure this exports a connected pg client
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
-
-  const offset = (page - 1) * pageSize;
-
   try {
-    // Get total count for pagination metadata
-    const countResult = await db.query(
-      "SELECT COUNT(*) FROM users WHERE status is null"
-    );
-    const total = parseInt(countResult.rows[0].count, 10);
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const offset = (page - 1) * limit;
 
-    // Get paginated users
-    const result = await db.query(
-      "SELECT * FROM users WHERE status is null ORDER BY id LIMIT $1 OFFSET $2",
-      [pageSize, offset]
+    const sortBy = searchParams.get("sortBy") || "id";
+    const sortOrder = searchParams.get("sortOrder") || "asc";
+
+    const search = searchParams.get("search") || "";
+
+    const query = `
+    SELECT id, name, email
+    FROM users
+    WHERE name ILIKE $1 OR email ILIKE $1
+    AND status is null
+    ORDER BY ${sortBy} ${sortOrder.toUpperCase()}
+    LIMIT $2 OFFSET $3
+  `;
+
+    const values = [`%${search}%`, limit, offset];
+
+    const dataRes = await db.query(query, values);
+    const countRes = await db.query(
+      `
+    SELECT COUNT(*) AS total
+    FROM users
+    WHERE name ILIKE $1 OR email ILIKE $1
+    AND status is null
+  `,
+      [`%${search}%`]
     );
 
     return NextResponse.json({
-      data: result.rows,
-      pagination: {
-        page,
-        pageSize,
-        total,
-        totalPages: Math.ceil(total / pageSize),
-      },
+      data: dataRes.rows,
+      total: parseInt(countRes.rows[0].total),
+      page,
+      limit,
     });
   } catch (err) {
     console.error("DB Error:", err);

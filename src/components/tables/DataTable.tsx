@@ -11,7 +11,6 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-import { DataTablePagination } from "./DataTablePagination";
 import {
   Table,
   TableBody,
@@ -20,16 +19,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import { Skeleton } from "../ui/skeleton";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  loading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  loading = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
@@ -58,14 +59,14 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <Input
           placeholder="Хайлт..."
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="w-full max-w-sm"
         />
-      </div>
+      </div> */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -91,7 +92,18 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {loading ? (
+              // Loading skeleton
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={`loading-${i}`}>
+                  {columns.map((_, j) => (
+                    <TableCell key={`cell-${i}-${j}`}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
@@ -117,7 +129,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      {/* <DataTablePagination table={table} /> */}
     </div>
   );
 }

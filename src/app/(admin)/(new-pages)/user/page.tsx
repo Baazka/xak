@@ -5,20 +5,29 @@ import type { User } from "./userType";
 import { columns } from "./userColumn";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import AddUserModal from "./userDialog";
+import { Pagination } from "@/components/tables/DataTablePagination";
 
 export default function User() {
-  const [data, setData] = useState<User[]>([]);
-
   const [page, setPage] = useState(1);
+  const [limit] = useState(5);
+  const [search, setSearch] = useState("");
+  const [data, setData] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
-  const pageSize = 5;
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     try {
-      const res = await fetch(`/api/users?page=${page}&size=${pageSize}`);
-      const json = await res.json();
-      setData(json.data);
+      fetch(
+        `/api/users?page=${page}&limit=${limit}&search=${encodeURIComponent(
+          search
+        )}`
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          setData(res.data);
+          setTotal(res.total);
+          setLoading(false);
+        });
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {
@@ -45,7 +54,7 @@ export default function User() {
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, limit, search]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -67,9 +76,25 @@ export default function User() {
               </div>
             </div>
             <div className="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+              <input
+                placeholder="Search..."
+                className="border p-2 rounded w-64"
+                value={search}
+                onChange={(e) => {
+                  setPage(1);
+                  setSearch(e.target.value);
+                }}
+              />
               <DataTable
                 columns={columns(handleEdit, handleDelete)}
                 data={data}
+                loading={loading}
+              />
+              <Pagination
+                currentPage={page}
+                totalItems={total}
+                itemsPerPage={limit}
+                onPageChange={setPage}
               />
             </div>
           </div>
