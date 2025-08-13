@@ -1,4 +1,3 @@
-"use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/tables/DataTable";
 
@@ -34,6 +33,6 @@ const columns: ColumnDef<User>[] = [
   },
 ];
 
-export function User() {
+export default function User() {
   return <DataTable columns={columns} data={users} />;
 }
