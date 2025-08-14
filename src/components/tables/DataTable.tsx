@@ -16,15 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RowsPerPage } from "./DataTableRowsPerPage";
+import { SearchInput } from "./DataTableSearchInput";
+import { Pagination } from "./DataTablePagination";
+import { TotalRows } from "./DataTableTotalRows";
 
 type Props<TData> = {
   columns: ColumnDef<TData>[];
@@ -70,12 +65,8 @@ export function DataTable<TData>({
 
   return (
     <div className="space-y-3">
-      <Input
-        placeholder="Search..."
-        value={search}
-        onChange={(e) => onSearchChange(e.target.value)}
-        className="w-64 mb-2"
-      />
+      <SearchInput value={search} onChange={onSearchChange} />
+      <TotalRows total={total} />
 
       <div className="rounded-md border">
         <Table>
@@ -121,47 +112,18 @@ export function DataTable<TData>({
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex gap-2 items-center">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-            onClick={() => onPageChange(page - 1)}
-          >
-            Prev
-          </Button>
-          <span>
-            Page {page} of {pageCount}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page >= pageCount}
-            onClick={() => onPageChange(page + 1)}
-          >
-            Next
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span>Rows per page:</span>
-          <Select
-            value={String(limit)}
-            onValueChange={(v) => {
-              onLimitChange(Number(v));
-              onPageChange(1);
-            }}
-          >
-            <SelectTrigger className="w-20">
-              <SelectValue placeholder="Limit" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5">5</SelectItem>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Pagination
+          page={page}
+          pageCount={pageCount}
+          onPageChange={onPageChange}
+        />
+        <RowsPerPage
+          value={limit}
+          onChange={(v) => {
+            onLimitChange(v);
+            onPageChange(1);
+          }}
+        />
       </div>
     </div>
   );

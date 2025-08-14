@@ -52,7 +52,7 @@ export const columns = (
 
           {/* Delete button */}
           <Button variant="destructive" onClick={() => onDelete(user.id)}>
-            Устгах {JSON.stringify(row.original)}
+            Устгах
           </Button>
         </div>
       );
