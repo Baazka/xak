@@ -6,34 +6,37 @@ import { columns } from "./userColumn";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import AddUserModal from "./userDialog";
 import { Pagination } from "@/components/tables/DataTablePagination";
+import { SortingState } from "@tanstack/react-table";
 
 export default function User() {
-  const [page, setPage] = useState(1);
-  const [limit] = useState(5);
-  const [search, setSearch] = useState("");
   const [data, setData] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const fetchData = async () => {
-    try {
-      fetch(
-        `/api/users?page=${page}&limit=${limit}&search=${encodeURIComponent(
-          search
-        )}`
-      )
-        .then((res) => res.json())
-        .then((res) => {
-          setData(res.data);
-          setTotal(res.total);
-          setLoading(false);
-        });
-    } catch (error) {
-      console.error("Fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const fetchData = () => {
+    const sortBy = sorting[0]?.id ?? "id";
+    const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+    setLoading(true);
+    fetch(
+      `/api/users?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`
+    )
+      .then((r) => r.json())
+      .then((json) => {
+        setData(json.data);
+        setTotal(json.total);
+      })
+      .finally(() => setLoading(false));
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [page, limit, search, sorting]);
+
   const handleDelete = async (id: number) => {
     if (
       !confirm(
@@ -54,9 +57,7 @@ export default function User() {
   };
   useEffect(() => {
     fetchData();
-  }, [page, limit, search]);
-
-  if (loading) return <div>Loading...</div>;
+  }, [page, limit, search, sorting]);
 
   return (
     <div>
@@ -76,25 +77,22 @@ export default function User() {
               </div>
             </div>
             <div className="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
-              <input
-                placeholder="Search..."
-                className="border p-2 rounded w-64"
-                value={search}
-                onChange={(e) => {
-                  setPage(1);
-                  setSearch(e.target.value);
-                }}
-              />
               <DataTable
-                columns={columns(handleEdit, handleDelete)}
+                columns={columns(handleEdit, handleDelete, page, limit)}
                 data={data}
+                total={total}
+                page={page}
+                limit={limit}
+                search={search}
+                sorting={sorting}
                 loading={loading}
-              />
-              <Pagination
-                currentPage={page}
-                totalItems={total}
-                itemsPerPage={limit}
+                onSearchChange={(v) => {
+                  setSearch(v);
+                  setPage(1);
+                }}
                 onPageChange={setPage}
+                onSortingChange={setSorting}
+                onLimitChange={setLimit}
               />
             </div>
           </div>

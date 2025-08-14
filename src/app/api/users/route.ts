@@ -1,46 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db"; // make sure this exports a connected pg client
 
+const SORTABLE_COLUMNS = new Set(["name", "email"]); // Add valid sortable columns here
+
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
+    const sp = new URL(req.url).searchParams;
+
+    const page = Math.max(parseInt(sp.get("page") || "1"), 1);
+    const limit = Math.max(parseInt(sp.get("limit") || "10"), 1);
+    const search = sp.get("search") || "";
+    const sortBy = SORTABLE_COLUMNS.has(sp.get("sortBy") || "")
+      ? sp.get("sortBy")!
+      : "id";
+    const sortOrder =
+      (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
     const offset = (page - 1) * limit;
 
-    const sortBy = searchParams.get("sortBy") || "id";
-    const sortOrder = searchParams.get("sortOrder") || "asc";
+    let whereClause = "WHERE status is null";
+    const params: any[] = [];
 
-    const search = searchParams.get("search") || "";
+    if (search) {
+      params.push(`%${search}%`);
+      whereClause += ` AND (name ILIKE $${params.length} OR email ILIKE $${params.length} )`;
+    }
 
-    const query = `
+    const dataSql = `
     SELECT id, name, email
     FROM users
-    WHERE name ILIKE $1 OR email ILIKE $1
-    AND status is null
-    ORDER BY ${sortBy} ${sortOrder.toUpperCase()}
-    LIMIT $2 OFFSET $3
+    ${whereClause}
+    ORDER BY ${sortBy} ${sortOrder}
+    LIMIT $${params.length + 1} OFFSET $${params.length + 2}
   `;
+    params.push(limit, offset);
 
-    const values = [`%${search}%`, limit, offset];
+    const countSql = `SELECT COUNT(*)::int AS total FROM users ${whereClause}`;
 
-    const dataRes = await db.query(query, values);
-    const countRes = await db.query(
-      `
-    SELECT COUNT(*) AS total
-    FROM users
-    WHERE name ILIKE $1 OR email ILIKE $1
-    AND status is null
-  `,
-      [`%${search}%`]
-    );
-
-    return NextResponse.json({
-      data: dataRes.rows,
-      total: parseInt(countRes.rows[0].total),
-      page,
-      limit,
-    });
+    const client = await db.connect();
+    try {
+      const [dataRes, countRes] = await Promise.all([
+        client.query(dataSql, params),
+        client.query(countSql, params.slice(0, params.length - 2)),
+      ]);
+      return NextResponse.json({
+        data: dataRes.rows,
+        total: countRes.rows[0].total,
+        page,
+        limit,
+      });
+    } finally {
+      client.release();
+    }
   } catch (err) {
     console.error("DB Error:", err);
     return NextResponse.json(
