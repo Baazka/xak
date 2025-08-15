@@ -11,28 +11,6 @@ import React, { useState } from "react";
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [usercode, setUsercode] = useState("qweqwe");
-  const usercodeChange = (e) => {
-    setUsercode(e.target.value);
-    //console.log("usercode", usercode);
-    alert(usercode);
-    console.log("woook");
-  };
-  useEffect(() => {
-    console.log("usercode", usercode);
-  }, [usercode]);
-  useEffect(() => {
-    let value;
-    value = localStorage.getItem("xak_username");
-    //if (value) setIsChecked(true);
-  });
-  useEffect(() => {
-    if (isChecked) {
-      localStorage.setItem("xak_username", "uch");
-    } else {
-      localStorage.removeItem("xak_username");
-    }
-  }, [isChecked]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -67,14 +45,14 @@ export default function SignInForm() {
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Нэвтрэх хуудас
+              Sign In
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Хэрэглэгчийн код болон нууц үгээ оруулна уу!
+              Enter your email and password to sign in!
             </p>
           </div>
           <div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
+            {/* <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
               <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
                   width="20"
@@ -125,7 +103,7 @@ export default function SignInForm() {
                   Or
                 </span>
               </div>
-            </div>
+            </div> */}
             <form onSubmit={handleSubmit}>
               <div className="space-y-6">
                 <div>
@@ -133,10 +111,7 @@ export default function SignInForm() {
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
                   <Input
-                    type="text"
-                    defaultValue={usercode}
-                    onChange={usercodeChange}
-                    placeholder=""
+                    placeholder="info@gmail.com"
                     type="email"
                     defaultValue={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -187,7 +162,7 @@ export default function SignInForm() {
               </div>
             </form>
 
-            <div className="mt-5">
+            {/* <div className="mt-5">
               <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
                 Don&apos;t have an account? {""}
                 <Link
@@ -197,7 +172,7 @@ export default function SignInForm() {
                   Sign Up
                 </Link>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
