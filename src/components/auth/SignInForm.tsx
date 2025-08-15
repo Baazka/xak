@@ -11,6 +11,28 @@ import React, { useState } from "react";
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [usercode, setUsercode] = useState("qweqwe");
+  const usercodeChange = (e) => {
+    setUsercode(e.target.value);
+    //console.log("usercode", usercode);
+    alert(usercode);
+    console.log("woook");
+  };
+  useEffect(() => {
+    console.log("usercode", usercode);
+  }, [usercode]);
+  useEffect(() => {
+    let value;
+    value = localStorage.getItem("xak_username");
+    //if (value) setIsChecked(true);
+  });
+  useEffect(() => {
+    if (isChecked) {
+      localStorage.setItem("xak_username", "uch");
+    } else {
+      localStorage.removeItem("xak_username");
+    }
+  }, [isChecked]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -45,10 +67,10 @@ export default function SignInForm() {
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Sign In
+              Нэвтрэх хуудас
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your email and password to sign in!
+              Хэрэглэгчийн код болон нууц үгээ оруулна уу!
             </p>
           </div>
           <div>
@@ -111,7 +133,10 @@ export default function SignInForm() {
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
                   <Input
-                    placeholder="info@gmail.com"
+                    type="text"
+                    defaultValue={usercode}
+                    onChange={usercodeChange}
+                    placeholder=""
                     type="email"
                     defaultValue={email}
                     onChange={(e) => setEmail(e.target.value)}
