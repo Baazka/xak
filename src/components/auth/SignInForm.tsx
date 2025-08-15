@@ -4,12 +4,35 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
+import { ClientSegmentRoot } from "next/dist/client/components/client-segment";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [usercode, setUsercode] = useState("qweqwe");
+  const usercodeChange = (e) => {
+    setUsercode(e.target.value);
+    //console.log("usercode", usercode);
+    alert(usercode);
+    console.log("woook");
+  };
+  useEffect(() => {
+    console.log("usercode", usercode);
+  }, [usercode]);
+  useEffect(() => {
+    let value;
+    value = localStorage.getItem("xak_username");
+    //if (value) setIsChecked(true);
+  });
+  useEffect(() => {
+    if (isChecked) {
+      localStorage.setItem("xak_username", "uch");
+    } else {
+      localStorage.removeItem("xak_username");
+    }
+  }, [isChecked]);
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
       {/* <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
@@ -25,14 +48,14 @@ export default function SignInForm() {
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Sign In
+              Нэвтрэх хуудас
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Enter your email and password to sign in!
+              Хэрэглэгчийн код болон нууц үгээ оруулна уу!
             </p>
           </div>
           <div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
+            {/* <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
               <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
                   width="20"
@@ -83,14 +106,19 @@ export default function SignInForm() {
                   Or
                 </span>
               </div>
-            </div>
+            </div> */}
             <form>
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Email <span className="text-error-500">*</span>{" "}
+                    Хэрэглэгчийн код <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" />
+                  <Input
+                    type="text"
+                    defaultValue={usercode}
+                    onChange={usercodeChange}
+                    placeholder=""
+                  />
                 </div>
                 <div>
                   <Label>
