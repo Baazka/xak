@@ -5,11 +5,12 @@ import type { User } from "./userType";
 import { columns } from "./userColumn";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import AddUserModal from "./userDialog";
-import { Pagination } from "@/components/tables/DataTablePagination";
 import { SortingState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function User() {
+  const router = useRouter();
   const [data, setData] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -19,19 +20,34 @@ export default function User() {
   const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const fetchData = () => {
+  const fetchData = async () => {
     const sortBy = sorting[0]?.id ?? "id";
     const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
     setLoading(true);
-    fetch(
-      `/api/users?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`
-    )
-      .then((r) => r.json())
-      .then((json) => {
-        setData(json.data);
-        setTotal(json.total);
-      })
-      .finally(() => setLoading(false));
+
+    try {
+      const res = await fetch(
+        `/api/users?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
+        { credentials: "include" } // JWT cookie дамжуулах
+      );
+      if (res.status === 401) {
+        router.push("/signin");
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
+      }
+
+      const data = await res.json();
+      setData(data.data);
+      setTotal(data.total);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

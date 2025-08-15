@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db"; // make sure this exports a connected pg client
+import { withAuth } from "@/lib/withAuth";
 
 const SORTABLE_COLUMNS = new Set(["name", "email"]); // Add valid sortable columns here
 
-export async function GET(req: NextRequest) {
+export const GET = withAuth(async function GET(req: NextRequest) {
   try {
     const sp = new URL(req.url).searchParams;
 
@@ -58,7 +59,7 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
