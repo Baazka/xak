@@ -2,29 +2,44 @@ import { ColumnDef } from "@tanstack/react-table";
 import type { User } from "./userType";
 import UserModal from "./userDialog";
 import { Button } from "@/components/ui/button";
+import { ArrowUpDown, Edit, Trash } from "lucide-react";
+
+function SortableHeader({ column, label }: any) {
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="px-1"
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    >
+      <span>{label}</span>
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    </Button>
+  );
+}
 
 export const columns = (
   onEdit: (user: User) => void,
-  onDelete: (id: number) => void
+  onDelete: (id: number) => void,
+  page: number,
+  limit: number
 ): ColumnDef<User>[] => [
   {
     accessorKey: "id",
     header: "ID",
-    cell: (info) => info.row.index + 1,
+    cell: ({ row }) => (page - 1) * limit + row.index + 1,
+    enableSorting: false,
   },
 
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column }) => <SortableHeader column={column} label="Name" />,
   },
   {
     accessorKey: "email",
-    header: "Email",
+    header: ({ column }) => <SortableHeader column={column} label="Email" />,
   },
-  {
-    accessorKey: "emailVerified",
-    header: "Verified",
-  },
+
   {
     id: "actions",
     header: "Actions",

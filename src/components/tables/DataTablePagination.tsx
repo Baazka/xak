@@ -1,66 +1,73 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Table as ReactTableType } from "@tanstack/react-table";
+"use client";
 
+import * as React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-interface DataTablePaginationProps<TData> {
-  table: ReactTableType<TData>;
-}
+type PaginationProps = {
+  page: number;
+  pageCount: number;
+  onPageChange: (p: number) => void;
+};
 
-export function DataTablePagination<TData>({
-  table,
-}: DataTablePaginationProps<TData>) {
+export function Pagination({ page, pageCount, onPageChange }: PaginationProps) {
+  // simple page numbers array
+  const pages = Array.from({ length: pageCount }, (_, i) => i + 1);
+
+  const visiblePages = () => {
+    const delta = 1; // current-ийн өмнө ба дараа хэдийг харуулах
+    const range = [];
+    const left = Math.max(1, page - delta);
+    const right = Math.min(pageCount, page + delta);
+
+    for (let i = left; i <= right; i++) {
+      range.push(i);
+    }
+
+    if (left > 2) range.unshift("…"); // эхэнд "…"
+    if (left > 1) range.unshift(1); // 1-ийг нэмэх
+
+    if (right < pageCount - 1) range.push("…"); // төгсгөлд "…"
+    if (right < pageCount) range.push(pageCount); // хамгийн сүүлийн page
+
+    return range;
+  };
+
   return (
-    <div className="flex items-center justify-between px-2 py-4">
-      <div className="flex-1 text-sm text-muted-foreground">
-        Хуудас {table.getState().pagination.pageIndex + 1} /{" "}
-        {table.getPageCount()}
-      </div>
-      <div className="flex items-center space-x-6 lg:space-x-8">
-        <div className="flex items-center space-x-2">
-          {/* <p className="text-sm font-medium">Rows per page</p> */}
-          <Select
-            value={`${table.getState().pagination.pageSize}`}
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
-            </SelectTrigger>
-            <SelectContent side="top">
-              {[10, 20, 30, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center space-x-2">
+    <div className="flex gap-1">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={page <= 1}
+        onClick={() => onPageChange(page - 1)}
+      >
+        Prev
+      </Button>
+
+      {visiblePages().map((p, i) =>
+        typeof p === "number" ? (
           <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            key={i}
+            size="sm"
+            variant={p === page ? "default" : "outline"}
+            onClick={() => onPageChange(p)}
           >
-            <ChevronLeft className="h-4 w-4" />
+            {p}
           </Button>
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+        ) : (
+          <span key={i} className="px-2">
+            {p}
+          </span>
+        )
+      )}
+
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={page >= pageCount}
+        onClick={() => onPageChange(page + 1)}
+      >
+        Next
+      </Button>
     </div>
   );
 }

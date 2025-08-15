@@ -31,7 +31,7 @@ export default function UserModal({ user, onSaved }: UserModalProps) {
     }));
   };
 
-  const handleSubmit = async (action: any) => {
+  const handleSubmit = async () => {
     const res = await fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -79,7 +79,7 @@ export default function UserModal({ user, onSaved }: UserModalProps) {
                 type="text"
                 placeholder="Хэрэглэгчийн нэр"
                 className="pl-11"
-                value={form?.name}
+                defaultValue={form?.name}
                 onChange={(e) => handleChange("name", e.target.value)}
               />
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none left-4 top-1/2 dark:text-gray-400">
@@ -91,7 +91,7 @@ export default function UserModal({ user, onSaved }: UserModalProps) {
                 type="text"
                 placeholder="Мэйл хаяг"
                 className="pl-11"
-                value={form?.email}
+                defaultValue={form?.email}
                 onChange={(e) => handleChange("email", e.target.value)}
               />
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none left-4 top-1/2 dark:text-gray-400">

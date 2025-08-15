@@ -1,36 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db"; // make sure this exports a connected pg client
 
+const SORTABLE_COLUMNS = new Set(["name", "email"]); // Add valid sortable columns here
+
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const pageSize = parseInt(searchParams.get("pageSize") || "10", 10);
-
-  const offset = (page - 1) * pageSize;
-
   try {
-    // Get total count for pagination metadata
-    const countResult = await db.query(
-      "SELECT COUNT(*) FROM users WHERE status is null"
-    );
-    const total = parseInt(countResult.rows[0].count, 10);
+    const sp = new URL(req.url).searchParams;
 
-    // Get paginated users
-    const result = await db.query(
-      "SELECT * FROM users WHERE status is null ORDER BY id LIMIT $1 OFFSET $2",
-      [pageSize, offset]
-    );
+    const page = Math.max(parseInt(sp.get("page") || "1"), 1);
+    const limit = Math.max(parseInt(sp.get("limit") || "10"), 1);
+    const search = sp.get("search") || "";
+    const sortBy = SORTABLE_COLUMNS.has(sp.get("sortBy") || "")
+      ? sp.get("sortBy")!
+      : "id";
+    const sortOrder =
+      (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
+    const offset = (page - 1) * limit;
 
-    return NextResponse.json({
-      data: result.rows,
-      pagination: {
+    let whereClause = "WHERE status is null";
+    const params: any[] = [];
+
+    if (search) {
+      params.push(`%${search}%`);
+      whereClause += ` AND (name ILIKE $${params.length} OR email ILIKE $${params.length} )`;
+    }
+
+    const dataSql = `
+    SELECT id, name, email
+    FROM users
+    ${whereClause}
+    ORDER BY ${sortBy} ${sortOrder}
+    LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+  `;
+    params.push(limit, offset);
+
+    const countSql = `SELECT COUNT(*)::int AS total FROM users ${whereClause}`;
+
+    const client = await db.connect();
+    try {
+      const [dataRes, countRes] = await Promise.all([
+        client.query(dataSql, params),
+        client.query(countSql, params.slice(0, params.length - 2)),
+      ]);
+      return NextResponse.json({
+        data: dataRes.rows,
+        total: countRes.rows[0].total,
         page,
-        pageSize,
-        total,
-        totalPages: Math.ceil(total / pageSize),
-      },
-    });
+        limit,
+      });
+    } finally {
+      client.release();
+    }
   } catch (err) {
     console.error("DB Error:", err);
     return NextResponse.json(
