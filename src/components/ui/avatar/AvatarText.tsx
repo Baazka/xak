@@ -27,9 +27,7 @@ const AvatarText: React.FC<AvatarTextProps> = ({ name, className = "" }) => {
       "bg-error-100 text-error-600",
     ];
 
-    const index = name
-      .split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const index = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return colors[index % colors.length];
   };
 

@@ -113,9 +113,7 @@ export default function PaginationWithText({
         Page {currentPage} of {totalPages}
       </span>
 
-      <ul className="hidden items-center gap-0.5 sm:flex">
-        {renderPageNumbers()}
-      </ul>
+      <ul className="hidden items-center gap-0.5 sm:flex">{renderPageNumbers()}</ul>
 
       <button
         onClick={() => handlePageChange(currentPage + 1)}

@@ -13,12 +13,7 @@ export default function EmailWrapper() {
         <div className=" p-5  xl:p-6">
           <div className="flex items-center gap-3 mb-9">
             <div className="w-12 h-12 overflow-hidden rounded-full">
-              <Image
-                width={48}
-                height={48}
-                src="/images/user/user-18.jpg"
-                alt="user"
-              />
+              <Image width={48} height={48} src="/images/user/user-18.jpg" alt="user" />
             </div>
 
             <div>
@@ -34,39 +29,36 @@ export default function EmailWrapper() {
             <p className="mb-4">Hello Dear Alexander,</p>
 
             <p className="mb-4">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent
-              ut rutrum mi. Aenean ac leo non justo suscipit consectetur. Nam
-              vestibulum eleifend magna quis porta. ipsum dolor sit amet,
-              consectetur adipiscing elit. Praesent ut rutrum mi. Aenean ac leo
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ut rutrum mi. Aenean
+              ac leo non justo suscipit consectetur. Nam vestibulum eleifend magna quis porta. ipsum
+              dolor sit amet, consectetur adipiscing elit. Praesent ut rutrum mi. Aenean ac leo
             </p>
 
             <p className="mb-4">
-              Praesent ut rutrum mi. Aenean ac leo non justo suscipit
-              consectetur. Nam vestibulum eleifend magna quis porta.
+              Praesent ut rutrum mi. Aenean ac leo non justo suscipit consectetur. Nam vestibulum
+              eleifend magna quis porta.
             </p>
 
             <p className="mb-4">
-              Nullam tincidunt sodales diam, quis rhoncus dolor aliquet a. Nulla
-              a rhoncus lectus. In nunc neque, pellentesque non massa ornare,
-              accumsan ornare massa. odales diam, quis rhoncus dolor aliquet a.
-              Nulla a rhoncus lectus. In nunc neque
+              Nullam tincidunt sodales diam, quis rhoncus dolor aliquet a. Nulla a rhoncus lectus.
+              In nunc neque, pellentesque non massa ornare, accumsan ornare massa. odales diam, quis
+              rhoncus dolor aliquet a. Nulla a rhoncus lectus. In nunc neque
             </p>
 
             <p className="mb-4">
-              Suspendisse semper vel turpis vitae aliquam. Aenean semper dui in
-              consequat ullamcorper.
+              Suspendisse semper vel turpis vitae aliquam. Aenean semper dui in consequat
+              ullamcorper.
             </p>
 
             <p className="mb-4">
-              Nullam tincidunt sodales diam, quis rhoncus dolor aliquet a. Nulla
-              a rhoncus lectus. In nunc neque, pellentesque non massa ornare,
-              accumsan ornare massa. sodales diam, quis rhoncus dolor aliquet a.
-              Nulla a rhoncus lectus. In nunc neque
+              Nullam tincidunt sodales diam, quis rhoncus dolor aliquet a. Nulla a rhoncus lectus.
+              In nunc neque, pellentesque non massa ornare, accumsan ornare massa. sodales diam,
+              quis rhoncus dolor aliquet a. Nulla a rhoncus lectus. In nunc neque
             </p>
 
             <p>
-              Praesent ut rutrum mi. Aenean ac leo non justo suscipit
-              consectetur. Nam vestibulum eleifend magna quis porta.
+              Praesent ut rutrum mi. Aenean ac leo non justo suscipit consectetur. Nam vestibulum
+              eleifend magna quis porta.
             </p>
           </div>
 
@@ -90,9 +82,7 @@ export default function EmailWrapper() {
                 </svg>
               </span>
 
-              <span className="text-sm text-gray-700 dark:text-gray-400">
-                2 Attachments
-              </span>
+              <span className="text-sm text-gray-700 dark:text-gray-400">2 Attachments</span>
             </div>
 
             <div className="flex flex-col items-center gap-3 sm:flex-row">
@@ -111,38 +101,25 @@ export default function EmailWrapper() {
                     Guidelines.pdf
                   </p>
                   <span className="flex items-center gap-1.5">
-                    <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                      PDF
-                    </span>
+                    <span className="text-gray-500 text-theme-xs dark:text-gray-400">PDF</span>
                     <span className="inline-block w-1 h-1 bg-gray-400 rounded-full"></span>
-                    <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                      Download
-                    </span>
+                    <span className="text-gray-500 text-theme-xs dark:text-gray-400">Download</span>
                   </span>
                 </div>
               </div>
 
               <div className="relative hover:border-gray-300 dark:hover:border-white/[0.05] flex w-full cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-white py-2.5 pl-3 pr-5 dark:border-gray-800 dark:bg-white/5 sm:w-auto">
                 <div className="w-full h-10 max-w-10">
-                  <Image
-                    width={40}
-                    height={40}
-                    src="./images/task/google-drive.svg"
-                    alt="icon"
-                  />
+                  <Image width={40} height={40} src="./images/task/google-drive.svg" alt="icon" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                     Branding Assets
                   </p>
                   <span className="flex items-center gap-1.5">
-                    <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                      Media
-                    </span>
+                    <span className="text-gray-500 text-theme-xs dark:text-gray-400">Media</span>
                     <span className="inline-block w-1 h-1 bg-gray-400 rounded-full"></span>
-                    <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                      Download
-                    </span>
+                    <span className="text-gray-500 text-theme-xs dark:text-gray-400">Download</span>
                   </span>
                 </div>
               </div>

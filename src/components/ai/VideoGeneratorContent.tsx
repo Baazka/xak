@@ -61,9 +61,9 @@ export default function VideoGeneratorContent() {
               Download
             </button>
             <p className="mt-3 text-sm leading-5 text-gray-500 dark:text-gray-400">
-              Here is the tall building with a sleek glass facade, as described.
-              The structure features modern elements with reflective glass
-              panels that shimmer beautifully under the sunlight.
+              Here is the tall building with a sleek glass facade, as described. The structure
+              features modern elements with reflective glass panels that shimmer beautifully under
+              the sunlight.
             </p>
           </div>
         </div>

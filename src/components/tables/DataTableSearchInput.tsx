@@ -9,11 +9,7 @@ type SearchInputProps = {
   placeholder?: string;
 };
 
-export function SearchInput({
-  value,
-  onChange,
-  placeholder = "Search...",
-}: SearchInputProps) {
+export function SearchInput({ value, onChange, placeholder = "Search..." }: SearchInputProps) {
   return (
     <Input
       placeholder={placeholder}

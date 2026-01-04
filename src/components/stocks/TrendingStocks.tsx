@@ -28,9 +28,7 @@ export default function TrendingStocks() {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
       <div className="flex justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Trending Stocks
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Trending Stocks</h3>
 
         <div className="stocks-slider-outer relative flex items-center gap-1.5">
           <div className="swiper-button-prev ">
@@ -79,12 +77,7 @@ export default function TrendingStocks() {
               <div className="flex items-center justify-between pb-5 mb-5 border-b border-gray-200 dark:border-gray-800">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10">
-                    <Image
-                      width={40}
-                      height={40}
-                      src="/images/brand/brand-09.svg"
-                      alt="brand"
-                    />
+                    <Image width={40} height={40} src="/images/brand/brand-09.svg" alt="brand" />
                   </div>
 
                   <div>
@@ -143,12 +136,7 @@ export default function TrendingStocks() {
               <div className="flex items-center justify-between pb-5 mb-5 border-b border-gray-200 dark:border-gray-800">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10">
-                    <Image
-                      width={40}
-                      height={40}
-                      src="/images/brand/brand-07.svg"
-                      alt="brand"
-                    />
+                    <Image width={40} height={40} src="/images/brand/brand-07.svg" alt="brand" />
                   </div>
 
                   <div>
@@ -207,12 +195,7 @@ export default function TrendingStocks() {
               <div className="flex items-center justify-between pb-5 mb-5 border-b border-gray-200 dark:border-gray-800">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10">
-                    <Image
-                      width={40}
-                      height={40}
-                      src="/images/brand/brand-11.svg"
-                      alt="brand"
-                    />
+                    <Image width={40} height={40} src="/images/brand/brand-11.svg" alt="brand" />
                   </div>
 
                   <div>
@@ -271,12 +254,7 @@ export default function TrendingStocks() {
               <div className="flex items-center justify-between pb-5 mb-5 border-b border-gray-200 dark:border-gray-800">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10">
-                    <Image
-                      width={40}
-                      height={40}
-                      src="/images/brand/brand-08.svg"
-                      alt="brand"
-                    />
+                    <Image width={40} height={40} src="/images/brand/brand-08.svg" alt="brand" />
                   </div>
 
                   <div>
@@ -335,12 +313,7 @@ export default function TrendingStocks() {
               <div className="flex items-center justify-between pb-5 mb-5 border-b border-gray-200 dark:border-gray-800">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10">
-                    <Image
-                      width={40}
-                      height={40}
-                      src="/images/brand/brand-10.svg"
-                      alt="brand"
-                    />
+                    <Image width={40} height={40} src="/images/brand/brand-10.svg" alt="brand" />
                   </div>
 
                   <div>

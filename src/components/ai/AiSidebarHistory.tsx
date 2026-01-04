@@ -10,10 +10,7 @@ interface AiSidebarHistoryProps {
   onCloseSidebar: () => void;
 }
 
-export default function AiSidebarHistory({
-  isSidebarOpen,
-  onCloseSidebar,
-}: AiSidebarHistoryProps) {
+export default function AiSidebarHistory({ isSidebarOpen, onCloseSidebar }: AiSidebarHistoryProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showMore, setShowMore] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -191,9 +188,7 @@ export default function AiSidebarHistory({
 
           {/* Yesterday Section */}
           <div className="relative">
-            <p className="mb-3 pl-3 text-xs text-gray-400 uppercase">
-              Yesterday
-            </p>
+            <p className="mb-3 pl-3 text-xs text-gray-400 uppercase">Yesterday</p>
             <ul className="space-y-1">
               {yesterdayChats.map((chat) => (
                 <ChatItem
@@ -215,9 +210,7 @@ export default function AiSidebarHistory({
           {showMore && (
             <div className="pl-3">
               <div className="relative">
-                <p className="mb-3 text-xs text-gray-400 uppercase">
-                  Last Week
-                </p>
+                <p className="mb-3 text-xs text-gray-400 uppercase">Last Week</p>
                 <ul className="space-y-1">
                   {lastWeekChats.map((chat) => (
                     <ChatItem
@@ -242,9 +235,7 @@ export default function AiSidebarHistory({
             >
               <span>{showMore ? "Show less..." : "Show more..."}</span>
               <svg
-                className={`ml-2 transition-transform ${
-                  showMore ? "rotate-180" : ""
-                }`}
+                className={`ml-2 transition-transform ${showMore ? "rotate-180" : ""}`}
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
                 height="16"
@@ -276,20 +267,11 @@ interface ChatItemProps {
   onDelete: () => void;
 }
 
-function ChatItem({
-  chat,
-  isOpen,
-  onToggleDropdown,
-  onRename,
-  onDelete,
-}: ChatItemProps) {
+function ChatItem({ chat, isOpen, onToggleDropdown, onRename, onDelete }: ChatItemProps) {
   return (
     <li className="group relative rounded-full px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-950">
       <div className="flex cursor-pointer items-center justify-between">
-        <a
-          href="#"
-          className="block truncate text-sm text-gray-700 dark:text-gray-400"
-        >
+        <a href="#" className="block truncate text-sm text-gray-700 dark:text-gray-400">
           {chat.title}
         </a>
 

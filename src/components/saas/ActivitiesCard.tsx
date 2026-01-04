@@ -20,19 +20,13 @@ export default function ActivitiesCard() {
     <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="mb-6 flex justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Activities
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Activities</h3>
         </div>
         <div className="relative inline-block">
           <button className="dropdown-toggle" onClick={toggleDropdown}>
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
           </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
+          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
             <DropdownItem
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -80,9 +74,7 @@ export default function ActivitiesCard() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <p className="text-theme-xs text-success-500 font-medium">
-                New invoice
-              </p>
+              <p className="text-theme-xs text-success-500 font-medium">New invoice</p>
             </div>
             <div className="flex items-baseline">
               <h3 className="text-theme-sm font-medium text-gray-800 dark:text-white/90">
@@ -92,9 +84,7 @@ export default function ActivitiesCard() {
                 created invoice
               </span>
             </div>
-            <p className="text-theme-sm font-normal text-gray-500 dark:text-gray-400">
-              PQ-4491C
-            </p>
+            <p className="text-theme-sm font-normal text-gray-500 dark:text-gray-400">PQ-4491C</p>
             <p className="text-theme-xs mt-1 text-gray-400">Just Now</p>
           </div>
         </div>
@@ -115,13 +105,9 @@ export default function ActivitiesCard() {
               <h3 className="text-theme-sm font-semibold text-gray-800 dark:text-white/90">
                 Courtney Henry
               </h3>
-              <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                created invoice
-              </span>
+              <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">created invoice</span>
             </div>
-            <p className="text-theme-sm font-normal text-gray-500 dark:text-gray-400">
-              HK-234G
-            </p>
+            <p className="text-theme-sm font-normal text-gray-500 dark:text-gray-400">HK-234G</p>
             <p className="text-theme-xs mt-1 text-gray-400">15 minutes ago</p>
           </div>
         </div>
@@ -146,9 +132,7 @@ export default function ActivitiesCard() {
                 created invoice
               </span>
             </div>
-            <p className="text-theme-sm font-normal text-gray-500 dark:text-gray-400">
-              LH-2891C
-            </p>
+            <p className="text-theme-sm font-normal text-gray-500 dark:text-gray-400">LH-2891C</p>
             <p className="text-theme-xs mt-1 text-gray-400">5 months ago</p>
           </div>
         </div>
@@ -169,13 +153,9 @@ export default function ActivitiesCard() {
               <h3 className="text-theme-sm font-semibold text-gray-800 dark:text-white/90">
                 Theresa Web
               </h3>
-              <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                created invoice
-              </span>
+              <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">created invoice</span>
             </div>
-            <p className="text-theme-sm font-normal text-gray-500 dark:text-gray-400">
-              CK-125NH
-            </p>
+            <p className="text-theme-sm font-normal text-gray-500 dark:text-gray-400">CK-125NH</p>
             <p className="text-theme-xs mt-1 text-gray-400">2 weeks ago</p>
           </div>
         </div>

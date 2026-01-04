@@ -62,9 +62,7 @@ const TabButton: React.FC<{
 
 const TabContent: React.FC<{ tab: TabData }> = ({ tab }) => (
   <div>
-    <h3 className="mb-1 text-xl font-medium text-gray-800 dark:text-white/90">
-      {tab.label}
-    </h3>
+    <h3 className="mb-1 text-xl font-medium text-gray-800 dark:text-white/90">{tab.label}</h3>
     <p className="text-sm text-gray-500 dark:text-gray-400">{tab.content}</p>
   </div>
 );
@@ -89,10 +87,7 @@ const TabWithBadge: React.FC = () => {
 
       <div className="pt-4 dark:border-gray-800">
         {tabData.map((tab) => (
-          <div
-            key={tab.id}
-            style={{ display: activeTab === tab.id ? "block" : "none" }}
-          >
+          <div key={tab.id} style={{ display: activeTab === tab.id ? "block" : "none" }}>
             <TabContent tab={tab} />
           </div>
         ))}

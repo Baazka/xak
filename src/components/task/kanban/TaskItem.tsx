@@ -10,12 +10,7 @@ interface TaskItemProps {
   changeTaskStatus: (taskId: string, newStatus: string) => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({
-  task,
-  index,
-  moveTask,
-  changeTaskStatus,
-}) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, index, moveTask, changeTaskStatus }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   // TaskItem.tsx
@@ -40,8 +35,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
       if (dragIndex === hoverIndex) return;
 
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
       const hoverClientY = clientOffset!.y - hoverBoundingRect.top;
 
@@ -53,11 +47,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
     },
   });
 
-  const [{ isDragging }, drag] = useDrag<
-    Task,
-    DropResult,
-    { isDragging: boolean }
-  >({
+  const [{ isDragging }, drag] = useDrag<Task, DropResult, { isDragging: boolean }>({
     type: `task-${task.status}`, // Match unique type
     item: () => ({ ...task, index }),
     collect: (monitor) => ({
@@ -82,13 +72,9 @@ const TaskItem: React.FC<TaskItemProps> = ({
     >
       <div className="space-y-4">
         <div>
-          <h4 className="mb-5 mr-10 text-base text-gray-800 dark:text-white/90">
-            {task.title}
-          </h4>
+          <h4 className="mb-5 mr-10 text-base text-gray-800 dark:text-white/90">{task.title}</h4>
           {task.projectDesc && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {task.projectDesc}
-            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{task.projectDesc}</p>
           )}
           {task.projectImg && (
             <div className="my-4">

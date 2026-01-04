@@ -35,81 +35,53 @@ export default function InvoiceSidebar() {
       <div className="space-y-1">
         <div className="flex cursor-pointer items-center gap-3 rounded-lg bg-gray-100 p-2 hover:bg-gray-100 dark:bg-white/[0.03] dark:hover:bg-white/[0.03]">
           <div className="w-12 h-12 overflow-hidden rounded-full">
-            <Image
-              width={48}
-              height={48}
-              src="/images/user/user-19.jpg"
-              alt="user"
-            />
+            <Image width={48} height={48} src="/images/user/user-19.jpg" alt="user" />
           </div>
 
           <div>
             <span className="mb-0.5 block text-sm font-medium text-gray-800 dark:text-white/90">
               Zain Geidt
             </span>
-            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-              ID: #348
-            </span>
+            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">ID: #348</span>
           </div>
         </div>
 
         <div className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-white/[0.03]">
           <div className="w-12 h-12 overflow-hidden rounded-full">
-            <Image
-              width={48}
-              height={48}
-              src="/images/user/user-17.jpg"
-              alt="user"
-            />
+            <Image width={48} height={48} src="/images/user/user-17.jpg" alt="user" />
           </div>
 
           <div>
             <span className="mb-0.5 block text-sm font-medium text-gray-800 dark:text-white/90">
               Carla George
             </span>
-            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-              ID: #982
-            </span>
+            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">ID: #982</span>
           </div>
         </div>
 
         <div className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-white/[0.03]">
           <div className="w-12 h-12 overflow-hidden rounded-full">
-            <Image
-              width={48}
-              height={48}
-              src="/images/user/user-20.jpg"
-              alt="user"
-            />
+            <Image width={48} height={48} src="/images/user/user-20.jpg" alt="user" />
           </div>
 
           <div>
             <span className="mb-0.5 block text-sm font-medium text-gray-800 dark:text-white/90">
               Abram Schleifer
             </span>
-            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-              ID: #289
-            </span>
+            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">ID: #289</span>
           </div>
         </div>
 
         <div className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-white/[0.03]">
           <div className="w-12 h-12 overflow-hidden rounded-full">
-            <Image
-              width={48}
-              height={48}
-              src="/images/user/user-34.jpg"
-              alt="user"
-            />
+            <Image width={48} height={48} src="/images/user/user-34.jpg" alt="user" />
           </div>
 
           <div>
             <span className="mb-0.5 block text-sm font-medium text-gray-800 dark:text-white/90">
               Lincoln Donin
             </span>
-            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-              ID: #522
-            </span>
+            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">ID: #522</span>
           </div>
         </div>
       </div>

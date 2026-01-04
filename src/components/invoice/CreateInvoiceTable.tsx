@@ -62,16 +62,12 @@ const CreateInvoiceTable: React.FC = () => {
     setProducts((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ): void => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
       [name]:
-        name === "price" || name === "quantity" || name === "discount"
-          ? Number(value)
-          : value,
+        name === "price" || name === "quantity" || name === "discount" ? Number(value) : value,
     }));
   };
 
@@ -85,11 +81,7 @@ const CreateInvoiceTable: React.FC = () => {
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     if (form.name && form.price > 0) {
-      const total = (
-        form.price *
-        form.quantity *
-        (1 - form.discount / 100)
-      ).toFixed(2);
+      const total = (form.price * form.quantity * (1 - form.discount / 100)).toFixed(2);
       setProducts((prev) => [...prev, { ...form, total }]);
       setForm({
         name: "",
@@ -100,10 +92,7 @@ const CreateInvoiceTable: React.FC = () => {
     }
   };
 
-  const subtotal: number = products.reduce(
-    (sum, product) => sum + Number(product.total),
-    0
-  );
+  const subtotal: number = products.reduce((sum, product) => sum + Number(product.total), 0);
   const vat: number = subtotal * 0.1;
   const total: number = subtotal + vat;
 
@@ -184,9 +173,7 @@ const CreateInvoiceTable: React.FC = () => {
             </tbody>
           </table>
           {products.length === 0 && (
-            <div className="px-5 py-4 text-center text-gray-400">
-              No products added.
-            </div>
+            <div className="px-5 py-4 text-center text-gray-400">No products added.</div>
           )}
         </div>
       </div>
@@ -327,8 +314,8 @@ const CreateInvoiceTable: React.FC = () => {
             />
           </svg>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            After filling in the product details, press Enter/Return or click
-            &apos;Save Product&apos; to add it to the list.
+            After filling in the product details, press Enter/Return or click &apos;Save
+            Product&apos; to add it to the list.
           </p>
         </div>
       </div>
@@ -341,25 +328,19 @@ const CreateInvoiceTable: React.FC = () => {
           </p>
           <ul className="space-y-2">
             <li className="flex justify-between gap-5">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Sub Total
-              </span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Sub Total</span>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
                 ${subtotal.toFixed(2)}
               </span>
             </li>
             <li className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Vat (10%):
-              </span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Vat (10%):</span>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
                 ${vat.toFixed(2)}
               </span>
             </li>
             <li className="flex items-center justify-between">
-              <span className="font-medium text-gray-700 dark:text-gray-400">
-                Total
-              </span>
+              <span className="font-medium text-gray-700 dark:text-gray-400">Total</span>
               <span className="text-lg font-semibold text-gray-800 dark:text-white/90">
                 ${total.toFixed(2)}
               </span>

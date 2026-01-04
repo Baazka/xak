@@ -15,16 +15,12 @@ export default function BillingInfo() {
     <>
       <div className="rounded-2xl border border-gray-200 bg-white xl:w-2/6 dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="px-6 py-5">
-          <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
-            Billing Info
-          </h3>
+          <h3 className="text-base font-medium text-gray-800 dark:text-white/90">Billing Info</h3>
         </div>
         <div className="border-t border-gray-200 p-4 sm:p-6 dark:border-gray-800">
           <ul className="divide-y divide-gray-100 dark:divide-gray-800">
             <li className="flex items-center gap-5 py-2.5">
-              <span className="w-1/2 text-sm text-gray-500 sm:w-1/3 dark:text-gray-400">
-                Name
-              </span>
+              <span className="w-1/2 text-sm text-gray-500 sm:w-1/3 dark:text-gray-400">Name</span>
               <span className="w-1/2 text-sm font-medium text-gray-700 sm:w-2/3 dark:text-gray-400">
                 Mushafrof Chowdhury
               </span>
@@ -80,11 +76,7 @@ export default function BillingInfo() {
           </ul>
 
           <div className="mt-10 xl:mt-2 2xl:mt-12">
-            <Button
-              onClick={openModal}
-              variant="outline"
-              className="w-full h-11"
-            >
+            <Button onClick={openModal} variant="outline" className="w-full h-11">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="21"

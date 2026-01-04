@@ -67,9 +67,7 @@ const DefaultTab: React.FC = () => {
                 <h3 className="mb-1 text-xl font-medium text-gray-800 dark:text-white/90">
                   {tab.title}
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {tab.content}
-                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{tab.content}</p>
               </div>
             )
         )}

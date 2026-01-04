@@ -43,45 +43,24 @@ export default function AddIntegrationModal() {
                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                   Select App
                 </label>
-                <div
-                  x-data="{ isOptionSelected: false }"
-                  className="relative z-20 bg-transparent"
-                >
+                <div x-data="{ isOptionSelected: false }" className="relative z-20 bg-transparent">
                   <select className="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30">
-                    <option
-                      value=""
-                      className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-                    >
+                    <option value="" className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
                       Select Option
                     </option>
-                    <option
-                      value=""
-                      className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-                    >
+                    <option value="" className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
                       Google Meet
                     </option>
-                    <option
-                      value=""
-                      className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-                    >
+                    <option value="" className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
                       Mailchimp
                     </option>
-                    <option
-                      value=""
-                      className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-                    >
+                    <option value="" className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
                       Zoom
                     </option>
-                    <option
-                      value=""
-                      className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-                    >
+                    <option value="" className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
                       Loom
                     </option>
-                    <option
-                      value=""
-                      className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
-                    >
+                    <option value="" className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
                       Gmail
                     </option>
                   </select>
@@ -138,16 +117,12 @@ export default function AddIntegrationModal() {
             </div>
 
             <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              Paste the full URI, and we’ll automatically pull out and show only
-              the subdomain for quick reference.
+              Paste the full URI, and we’ll automatically pull out and show only the subdomain for
+              quick reference.
             </p>
           </form>
           <div className="mt-8 flex flex-col sm:flex-row w-full items-center justify-between gap-3">
-            <Button
-              variant="outline"
-              onClick={addIntegrationModal.closeModal}
-              className="w-full"
-            >
+            <Button variant="outline" onClick={addIntegrationModal.closeModal} className="w-full">
               Close
             </Button>
             <Button className="w-full">Add Integration</Button>

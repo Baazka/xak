@@ -3,9 +3,7 @@ import React from "react";
 export default function OrderHistory() {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3">
-      <h2 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">
-        Order History
-      </h2>
+      <h2 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">Order History</h2>
       {/* <!-- Timeline item --> */}
       <div className="relative pb-7 pl-11">
         {/* <!-- Icon --> */}
@@ -37,21 +35,13 @@ export default function OrderHistory() {
         </div>
         <div className="ml-4 flex justify-between">
           <div>
-            <h4 className="font-medium text-gray-800 dark:text-white/90">
-              Checkout Started
-            </h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              via tailadmin.com
-            </p>
+            <h4 className="font-medium text-gray-800 dark:text-white/90">Checkout Started</h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400">via tailadmin.com</p>
           </div>
 
           <div>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              12:54
-            </span>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              12th Apr 28
-            </p>
+            <span className="text-xs text-gray-500 dark:text-gray-400">12:54</span>
+            <p className="text-xs text-gray-500 dark:text-gray-400">12th Apr 28</p>
           </div>
         </div>
 
@@ -83,21 +73,13 @@ export default function OrderHistory() {
         </div>
         <div className="ml-4 flex justify-between">
           <div>
-            <h4 className="font-medium text-gray-800 dark:text-white/90">
-              Purchased
-            </h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              for US$4,235 via PayPal
-            </p>
+            <h4 className="font-medium text-gray-800 dark:text-white/90">Purchased</h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400">for US$4,235 via PayPal</p>
           </div>
 
           <div>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              12:58
-            </span>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              12th Apr 28
-            </p>
+            <span className="text-xs text-gray-500 dark:text-gray-400">12:58</span>
+            <p className="text-xs text-gray-500 dark:text-gray-400">12th Apr 28</p>
           </div>
         </div>
 
@@ -129,21 +111,13 @@ export default function OrderHistory() {
         </div>
         <div className="ml-4 flex justify-between">
           <div>
-            <h4 className="font-medium text-gray-800 dark:text-white/90">
-              Receipt Email Sent
-            </h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Receipt #1734535
-            </p>
+            <h4 className="font-medium text-gray-800 dark:text-white/90">Receipt Email Sent</h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Receipt #1734535</p>
           </div>
 
           <div>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              12:58
-            </span>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              12th Apr 28
-            </p>
+            <span className="text-xs text-gray-500 dark:text-gray-400">12:58</span>
+            <p className="text-xs text-gray-500 dark:text-gray-400">12th Apr 28</p>
           </div>
         </div>
       </div>

@@ -8,10 +8,8 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title:
-    "Next.js E-commerce  Create Invoice Page | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js E-commerce  Create Invoice Page TailAdmin Dashboard Template",
+  title: "Next.js E-commerce  Create Invoice Page | TailAdmin - Next.js Dashboard Template",
+  description: "This is Next.js E-commerce  Create Invoice Page TailAdmin Dashboard Template",
 };
 
 export default function CreateInvoicePage() {
@@ -20,9 +18,7 @@ export default function CreateInvoicePage() {
       <PageBreadcrumb pageTitle="Create Invoice" />
       <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-          <h2 className="text-xl font-medium text-gray-800 dark:text-white">
-            Create Invoice
-          </h2>
+          <h2 className="text-xl font-medium text-gray-800 dark:text-white">Create Invoice</h2>
         </div>
         <div className="border-b border-gray-200 p-4 sm:p-8 dark:border-gray-800">
           <form className="space-y-6">

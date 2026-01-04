@@ -35,9 +35,7 @@ const CookieConsent: React.FC<CookieConsentProps> = ({
       </button>
 
       {/* Message */}
-      <p className="pr-4 mb-6 text-sm text-gray-700 dark:text-gray-400">
-        {message}
-      </p>
+      <p className="pr-4 mb-6 text-sm text-gray-700 dark:text-gray-400">{message}</p>
 
       {/* Buttons */}
       <div className="flex flex-col justify-end gap-6 sm:flex-row sm:items-center sm:gap-4">

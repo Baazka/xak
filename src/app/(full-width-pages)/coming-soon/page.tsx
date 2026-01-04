@@ -42,8 +42,8 @@ export default function ComingSoon() {
           </h1>
 
           <p className="text-base text-gray-500 mb-9 dark:text-gray-400">
-            Our website is currently under construction, enter your email id to
-            get latest updates and notifications about the website.
+            Our website is currently under construction, enter your email id to get latest updates
+            and notifications about the website.
           </p>
 
           {/* <!-- ===== Countdown Timer Start ===== --> */}

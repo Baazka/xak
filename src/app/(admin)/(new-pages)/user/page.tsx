@@ -55,12 +55,7 @@ export default function User() {
   }, [page, limit, search, sorting]);
 
   const handleDelete = async (id: number) => {
-    if (
-      !confirm(
-        JSON.stringify(id) + " Are you sure you want to delete this user?"
-      )
-    )
-      return;
+    if (!confirm(JSON.stringify(id) + " Are you sure you want to delete this user?")) return;
     await fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

@@ -82,9 +82,7 @@ export default function RecentFileTable() {
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white pt-4 dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="flex items-center justify-between px-6 mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Recent Files
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Recent Files</h3>
         </div>
 
         <Link
@@ -122,10 +120,7 @@ export default function RecentFileTable() {
           {/* Table Body */}
           <tbody>
             {tableData.map((row, index) => (
-              <tr
-                key={index}
-                className="border-t border-gray-100 dark:border-gray-800"
-              >
+              <tr key={index} className="border-t border-gray-100 dark:border-gray-800">
                 <td className="px-6 py-[18px] text-sm text-gray-700 dark:text-gray-400">
                   <div className="flex items-center gap-2">
                     <Image

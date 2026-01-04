@@ -85,11 +85,7 @@ export default function EstimatedRevenue() {
           <button onClick={toggleDropdown} className="dropdown-toggle">
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
+          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
             <DropdownItem
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -108,12 +104,7 @@ export default function EstimatedRevenue() {
 
       <div className="relative">
         <div id="chartDarkStyle">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="radialBar"
-            height={360}
-          />
+          <ReactApexChart options={options} series={series} type="radialBar" height={360} />
         </div>
         <span className="absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-[60%] text-xs font-normal text-gray-500 dark:text-gray-400">
           June Goals
@@ -122,9 +113,7 @@ export default function EstimatedRevenue() {
 
       <div className="pt-6 mt-6 space-y-5 border-t border-gary-200 dark:border-gray-800">
         <div>
-          <p className="mb-2 text-gray-500 text-theme-sm dark:text-gray-400">
-            Marketing
-          </p>
+          <p className="mb-2 text-gray-500 text-theme-sm dark:text-gray-400">Marketing</p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div>
@@ -138,17 +127,13 @@ export default function EstimatedRevenue() {
               <div className="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
                 <div className="absolute left-0 top-0 flex h-full w-[85%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"></div>
               </div>
-              <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-                85%
-              </p>
+              <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">85%</p>
             </div>
           </div>
         </div>
 
         <div>
-          <p className="mb-2 text-gray-500 text-theme-sm dark:text-gray-400">
-            Sales
-          </p>
+          <p className="mb-2 text-gray-500 text-theme-sm dark:text-gray-400">Sales</p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div>
@@ -162,9 +147,7 @@ export default function EstimatedRevenue() {
               <div className="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
                 <div className="absolute left-0 top-0 flex h-full w-[55%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"></div>
               </div>
-              <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-                55%
-              </p>
+              <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">55%</p>
             </div>
           </div>
         </div>

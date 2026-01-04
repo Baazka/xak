@@ -13,11 +13,7 @@ export default function PaginationExample() {
   return (
     <div className="space-y-5 sm:space-y-6">
       <ComponentCard title="Pagination with Text">
-        <PaginationWithText
-          totalPages={10}
-          initialPage={1}
-          onPageChange={handlePageChange}
-        />
+        <PaginationWithText totalPages={10} initialPage={1} onPageChange={handlePageChange} />
       </ComponentCard>
       <ComponentCard title="Pagination with Text and Icon">
         <PaginationWithTextWithIcon
@@ -27,11 +23,7 @@ export default function PaginationExample() {
         />
       </ComponentCard>
       <ComponentCard title="Pagination with  Icon">
-        <PaginationWithIcon
-          totalPages={10}
-          initialPage={1}
-          onPageChange={handlePageChange}
-        />
+        <PaginationWithIcon totalPages={10} initialPage={1} onPageChange={handlePageChange} />
       </ComponentCard>
     </div>
   );

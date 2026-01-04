@@ -3,9 +3,7 @@ export default function TrackingProgress() {
     <div className="rounded-xl bg-white p-4 dark:bg-gray-900">
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Tracking ID
-          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Tracking ID</p>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
             #28745-72809bjk
           </h3>
@@ -41,18 +39,12 @@ export default function TrackingProgress() {
 
           <div className="ml-2 flex items-end justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                12 Apr 2028
-              </p>
-              <h4 className="font-medium text-gray-800 dark:text-white/90">
-                Picked up
-              </h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400">12 Apr 2028</p>
+              <h4 className="font-medium text-gray-800 dark:text-white/90">Picked up</h4>
             </div>
 
             <div>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                12:54
-              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">12:54</span>
             </div>
           </div>
 
@@ -83,18 +75,12 @@ export default function TrackingProgress() {
           </div>
           <div className="ml-2 flex justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                12 Apr 2028
-              </p>
-              <h4 className="font-medium text-gray-800 dark:text-white/90">
-                In Transit
-              </h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400">12 Apr 2028</p>
+              <h4 className="font-medium text-gray-800 dark:text-white/90">In Transit</h4>
             </div>
 
             <div>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                12:58
-              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">12:58</span>
             </div>
           </div>
 
@@ -125,18 +111,12 @@ export default function TrackingProgress() {
           </div>
           <div className="ml-2 flex justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                13 Apr 2028
-              </p>
-              <h4 className="font-medium text-gray-800 dark:text-white/90">
-                Delivered
-              </h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400">13 Apr 2028</p>
+              <h4 className="font-medium text-gray-800 dark:text-white/90">Delivered</h4>
             </div>
 
             <div>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                --:--
-              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">--:--</span>
             </div>
           </div>
         </div>

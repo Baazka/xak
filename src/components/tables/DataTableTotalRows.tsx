@@ -5,7 +5,5 @@ type TotalRowsProps = {
 };
 
 export function TotalRows({ total }: TotalRowsProps) {
-  return (
-    <div className="text-sm text-muted-foreground">Total: {total} rows</div>
-  );
+  return <div className="text-sm text-muted-foreground">Total: {total} rows</div>;
 }

@@ -14,13 +14,7 @@ interface TaskLaneProps {
   onDragStart: (e: React.DragEvent<HTMLDivElement>, taskId: string) => void;
 }
 
-const TaskLane: React.FC<TaskLaneProps> = ({
-  lane,
-  tasks,
-  onDragOver,
-  onDrop,
-  onDragStart,
-}) => {
+const TaskLane: React.FC<TaskLaneProps> = ({ lane, tasks, onDragOver, onDrop, onDragStart }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
@@ -42,10 +36,10 @@ const TaskLane: React.FC<TaskLaneProps> = ({
       lane === "todo"
         ? "bg-gray-100 text-gray-700 dark:bg-white/[0.03] dark:text-white/80 "
         : lane === "in-progress"
-        ? "text-warning-700 bg-warning-50 dark:bg-warning-500/15 dark:text-orange-400"
-        : lane === "completed"
-        ? "bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500"
-        : ""
+          ? "text-warning-700 bg-warning-50 dark:bg-warning-500/15 dark:text-orange-400"
+          : lane === "completed"
+            ? "bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500"
+            : ""
     }
   `}
           >
@@ -84,11 +78,7 @@ const TaskLane: React.FC<TaskLaneProps> = ({
         </div>
       </div>
       {tasks.map((task) => (
-        <TaskItem
-          key={task.id}
-          {...task}
-          onDragStart={(e) => onDragStart(e, task.id)}
-        />
+        <TaskItem key={task.id} {...task} onDragStart={(e) => onDragStart(e, task.id)} />
       ))}
     </div>
   );

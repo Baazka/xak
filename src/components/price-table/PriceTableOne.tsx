@@ -114,9 +114,7 @@ export default function PriceTableOne() {
 
           {/* <!-- Pricing item --> */}
           <div className="p-6 bg-gray-800 border border-gray-800 rounded-2xl dark:border-white/10 dark:bg-white/10">
-            <span className="block mb-3 font-semibold text-white text-theme-xl">
-              Medium
-            </span>
+            <span className="block mb-3 font-semibold text-white text-theme-xl">Medium</span>
 
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-end">
@@ -124,9 +122,7 @@ export default function PriceTableOne() {
                   ${isMonthly ? "10.99" : "100.00"}
                 </h2>
 
-                <span className="inline-block mb-1 text-sm text-white/70">
-                  /month{" "}
-                </span>
+                <span className="inline-block mb-1 text-sm text-white/70">/month </span>
               </div>
 
               <span className="font-semibold text-gray-300 line-through text-theme-xl">
@@ -134,18 +130,13 @@ export default function PriceTableOne() {
               </span>
             </div>
 
-            <p className="text-sm text-white/70">
-              For working on commercial projects
-            </p>
+            <p className="text-sm text-white/70">For working on commercial projects</p>
 
             <div className="w-full h-px my-6 bg-white/20"></div>
 
             <div className="mb-8 space-y-3">
               {mediumPack.map((item, index) => (
-                <li
-                  key={index}
-                  className="flex items-center gap-3 text-sm text-white/80"
-                >
+                <li key={index} className="flex items-center gap-3 text-sm text-white/80">
                   <CheckLineIcon className="text-success-500" />
                   {item}
                 </li>

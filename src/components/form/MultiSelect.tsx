@@ -21,8 +21,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   onChange,
   disabled = false,
 }) => {
-  const [selectedOptions, setSelectedOptions] =
-    useState<string[]>(defaultSelected);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(defaultSelected);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -69,9 +68,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                       <span className="flex-initial max-w-full">{text}</span>
                       <div className="flex flex-row-reverse flex-auto">
                         <div
-                          onClick={() =>
-                            removeOption(index, selectedOptions[index])
-                          }
+                          onClick={() => removeOption(index, selectedOptions[index])}
                           className="pl-2 text-gray-500 cursor-pointer group-hover:text-gray-400 dark:text-gray-400"
                         >
                           <svg
@@ -142,9 +139,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                     >
                       <div
                         className={`relative flex w-full items-center p-2 pl-2 ${
-                          selectedOptions.includes(option.value)
-                            ? "bg-primary/10"
-                            : ""
+                          selectedOptions.includes(option.value) ? "bg-primary/10" : ""
                         }`}
                       >
                         <div className="mx-2 leading-6 text-gray-800 dark:text-white/90">

@@ -61,11 +61,10 @@ const VerticalTabs: React.FC = () => {
                 Overview
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Overview ipsum dolor sit amet consectetur. Non vitae facilisis
-                urna tortor placerat egestas donec. Faucibus diam gravida enim
-                elit lacus a. Tincidunt fermentum condimentum quis et a et
-                tempus. Tristique urna nisi nulla elit sit libero scelerisque
-                ante.
+                Overview ipsum dolor sit amet consectetur. Non vitae facilisis urna tortor placerat
+                egestas donec. Faucibus diam gravida enim elit lacus a. Tincidunt fermentum
+                condimentum quis et a et tempus. Tristique urna nisi nulla elit sit libero
+                scelerisque ante.
               </p>
             </div>
           )}
@@ -75,10 +74,9 @@ const VerticalTabs: React.FC = () => {
                 Notification
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Notification ipsum dolor sit amet consectetur. Non vitae
-                facilisis urna tortor placerat egestas donec. Faucibus diam
-                gravida enim elit lacus a. Tincidunt fermentum condimentum quis
-                et a et tempus. Tristique urna nisi nulla elit sit libero
+                Notification ipsum dolor sit amet consectetur. Non vitae facilisis urna tortor
+                placerat egestas donec. Faucibus diam gravida enim elit lacus a. Tincidunt fermentum
+                condimentum quis et a et tempus. Tristique urna nisi nulla elit sit libero
                 scelerisque ante.
               </p>
             </div>
@@ -89,11 +87,10 @@ const VerticalTabs: React.FC = () => {
                 Analytics
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Analytics ipsum dolor sit amet consectetur. Non vitae facilisis
-                urna tortor placerat egestas donec. Faucibus diam gravida enim
-                elit lacus a. Tincidunt fermentum condimentum quis et a et
-                tempus. Tristique urna nisi nulla elit sit libero scelerisque
-                ante.
+                Analytics ipsum dolor sit amet consectetur. Non vitae facilisis urna tortor placerat
+                egestas donec. Faucibus diam gravida enim elit lacus a. Tincidunt fermentum
+                condimentum quis et a et tempus. Tristique urna nisi nulla elit sit libero
+                scelerisque ante.
               </p>
             </div>
           )}
@@ -103,11 +100,10 @@ const VerticalTabs: React.FC = () => {
                 Customers
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Customers ipsum dolor sit amet consectetur. Non vitae facilisis
-                urna tortor placerat egestas donec. Faucibus diam gravida enim
-                elit lacus a. Tincidunt fermentum condimentum quis et a et
-                tempus. Tristique urna nisi nulla elit sit libero scelerisque
-                ante.
+                Customers ipsum dolor sit amet consectetur. Non vitae facilisis urna tortor placerat
+                egestas donec. Faucibus diam gravida enim elit lacus a. Tincidunt fermentum
+                condimentum quis et a et tempus. Tristique urna nisi nulla elit sit libero
+                scelerisque ante.
               </p>
             </div>
           )}

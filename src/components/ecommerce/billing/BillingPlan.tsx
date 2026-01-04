@@ -2,9 +2,7 @@ export default function BillingPlan() {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white xl:w-4/6 dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="px-6 py-5">
-        <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
-          Plan Details
-        </h3>
+        <h3 className="text-base font-medium text-gray-800 dark:text-white/90">Plan Details</h3>
       </div>
       <div className="grid grid-cols-1 gap-6 border-t border-gray-200 p-4 sm:p-6 lg:grid-cols-1 xl:grid-cols-2 dark:border-gray-800">
         {/* <!-- List --> */}
@@ -32,9 +30,7 @@ export default function BillingPlan() {
               </span>
               <span className="block text-sm font-medium text-gray-700 dark:text-gray-400">
                 $199.00
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  /month
-                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">/month</span>
               </span>
             </li>
             <li className="py-3">
@@ -48,9 +44,7 @@ export default function BillingPlan() {
           </ul>
           <div className="rounded-b-xl border border-t-0 border-gray-200 p-5 dark:border-gray-800">
             <div className="mb-5 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
-                Orders
-              </span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-400">Orders</span>
               <span className="text-sm text-gray-700 dark:text-gray-400">
                 15,299 of 25,500 orders used
               </span>

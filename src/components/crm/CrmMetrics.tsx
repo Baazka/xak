@@ -36,15 +36,11 @@ export default function CrmMetrics() {
           key={item.id}
           className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
         >
-          <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
-            {item.value}
-          </h4>
+          <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">{item.value}</h4>
 
           <div className="flex items-end justify-between mt-4 sm:mt-5">
             <div>
-              <p className="text-gray-700 text-theme-sm dark:text-gray-400">
-                {item.title}
-              </p>
+              <p className="text-gray-700 text-theme-sm dark:text-gray-400">{item.title}</p>
             </div>
 
             <div className="flex items-center gap-1">
@@ -54,8 +50,8 @@ export default function CrmMetrics() {
                   item.direction === "up"
                     ? "success"
                     : item.direction === "down"
-                    ? "error"
-                    : "warning"
+                      ? "error"
+                      : "warning"
                 }
               >
                 {" "}

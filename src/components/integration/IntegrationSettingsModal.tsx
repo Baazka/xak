@@ -54,10 +54,7 @@ export default function IntegrationSettingsModal() {
                 <label className="mb-1.5 block text-sm font-medium text-gray-700 disabled:opacity-50 dark:text-gray-400">
                   Select App
                 </label>
-                <div
-                  x-data="{ isOptionSelected: false }"
-                  className="relative z-20 bg-transparent"
-                >
+                <div x-data="{ isOptionSelected: false }" className="relative z-20 bg-transparent">
                   <select
                     disabled
                     className="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pr-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
@@ -128,17 +125,11 @@ export default function IntegrationSettingsModal() {
               </div>
               <div>
                 <Label>Client Secret</Label>
-                <Input
-                  type="text"
-                  defaultValue="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e"
-                />
+                <Input type="text" defaultValue="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e" />
               </div>
               <div>
                 <Label>Authentication base URI</Label>
-                <Input
-                  type="text"
-                  defaultValue="https://accounts.application.com/o/oauth2/auth"
-                />
+                <Input type="text" defaultValue="https://accounts.application.com/o/oauth2/auth" />
               </div>
             </div>
 
@@ -147,11 +138,7 @@ export default function IntegrationSettingsModal() {
             </p>
           </form>
           <div className="mt-8 flex w-full flex-col sm:flex-row items-center justify-between gap-3">
-            <Button
-              onClick={settingsModal.closeModal}
-              className="w-full"
-              variant="outline"
-            >
+            <Button onClick={settingsModal.closeModal} className="w-full" variant="outline">
               Close
             </Button>
             <Button className="w-full">Save Changes</Button>

@@ -5,13 +5,9 @@ export default function InvoiceMain() {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] w-full">
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-        <h3 className="font-medium text-gray-800 text-theme-xl dark:text-white/90">
-          Invoice
-        </h3>
+        <h3 className="font-medium text-gray-800 text-theme-xl dark:text-white/90">Invoice</h3>
 
-        <h4 className="text-base font-medium text-gray-700 dark:text-gray-400">
-          ID : #348
-        </h4>
+        <h4 className="text-base font-medium text-gray-700 dark:text-gray-400">ID : #348</h4>
       </div>
 
       <div className="p-5 xl:p-8">
@@ -34,9 +30,7 @@ export default function InvoiceMain() {
               Issued On:
             </span>
 
-            <span className="block text-sm text-gray-500 dark:text-gray-400">
-              11 March, 2027
-            </span>
+            <span className="block text-sm text-gray-500 dark:text-gray-400">11 March, 2027</span>
           </div>
 
           <div className="h-px w-full bg-gray-200 dark:bg-gray-800 sm:h-[158px] sm:w-px"></div>
@@ -59,9 +53,7 @@ export default function InvoiceMain() {
               Due On:
             </span>
 
-            <span className="block text-sm text-gray-500 dark:text-gray-400">
-              16 March, 2027
-            </span>
+            <span className="block text-sm text-gray-500 dark:text-gray-400">16 March, 2027</span>
           </div>
         </div>
 
@@ -70,16 +62,10 @@ export default function InvoiceMain() {
         {/* <!-- Invoice Table End --> */}
 
         <div className="pb-6 my-6 text-right border-b border-gray-100 dark:border-gray-800">
-          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-            Sub Total amount: $3,098
-          </p>
-          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
-            Vat (10%): $312
-          </p>
+          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">Sub Total amount: $3,098</p>
+          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">Vat (10%): $312</p>
 
-          <p className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Total : $3,410
-          </p>
+          <p className="text-lg font-semibold text-gray-800 dark:text-white/90">Total : $3,410</p>
         </div>
 
         <div className="flex items-center justify-end gap-3">

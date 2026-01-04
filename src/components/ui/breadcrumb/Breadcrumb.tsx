@@ -46,10 +46,7 @@ type BreadcrumbProps = {
   variant?: "default" | "withIcon" | "dotted" | "chevron";
 };
 
-const Breadcrumb: React.FC<BreadcrumbProps> = ({
-  items,
-  variant = "default",
-}) => {
+const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, variant = "default" }) => {
   const renderSeparator = () => {
     switch (variant) {
       case "withIcon":
@@ -66,17 +63,11 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
 
   return (
     <nav>
-      <ol
-        className={`flex flex-wrap items-center ${
-          variant === "dotted" ? "gap-2" : "gap-1.5"
-        }`}
-      >
+      <ol className={`flex flex-wrap items-center ${variant === "dotted" ? "gap-2" : "gap-1.5"}`}>
         {items.map((item, index) => (
           <li key={index} className="flex items-center gap-1.5">
             {index > 0 && (
-              <span className="text-gray-500 dark:text-gray-400">
-                {renderSeparator()}
-              </span>
+              <span className="text-gray-500 dark:text-gray-400">{renderSeparator()}</span>
             )}
             {item.href ? (
               <Link

@@ -56,11 +56,7 @@ const FolderCard: React.FC<FolderCardProps> = ({ title, fileCount, size }) => {
           <button onClick={toggleDropdown} className="dropdown-toggle">
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
+          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
             <DropdownItem
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -76,16 +72,10 @@ const FolderCard: React.FC<FolderCardProps> = ({ title, fileCount, size }) => {
           </Dropdown>
         </div>
       </div>
-      <h4 className="mb-1 text-sm font-medium text-gray-800 dark:text-white/90">
-        {title}
-      </h4>
+      <h4 className="mb-1 text-sm font-medium text-gray-800 dark:text-white/90">{title}</h4>
       <div className="flex items-center justify-between">
-        <span className="block text-sm text-gray-500 dark:text-gray-400">
-          {fileCount} Files
-        </span>
-        <span className="block text-sm text-right text-gray-500 dark:text-gray-400">
-          {size}
-        </span>
+        <span className="block text-sm text-gray-500 dark:text-gray-400">{fileCount} Files</span>
+        <span className="block text-sm text-right text-gray-500 dark:text-gray-400">{size}</span>
       </div>
     </div>
   );

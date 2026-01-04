@@ -10,10 +10,7 @@ interface EmailHeaderProps {
   onSelectAll: (checked: boolean) => void;
 }
 
-export default function EmailHeader({
-  isChecked,
-  onSelectAll,
-}: EmailHeaderProps) {
+export default function EmailHeader({ isChecked, onSelectAll }: EmailHeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
@@ -148,11 +145,7 @@ export default function EmailHeader({
           >
             <MoreDotIcon className="text-gray-400 dropdown-toggle  hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
-          <Dropdown
-            isOpen={isOpenTwo}
-            onClose={closeDropdownTwo}
-            className="w-40 p-2"
-          >
+          <Dropdown isOpen={isOpenTwo} onClose={closeDropdownTwo} className="w-40 p-2">
             <DropdownItem
               onItemClick={closeDropdownTwo}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"

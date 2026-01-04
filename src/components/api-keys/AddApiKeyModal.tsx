@@ -37,8 +37,8 @@ export default function AddApiKeyModal() {
             Generate API key
           </h4>
           <p className="mb-7 text-sm leading-6 text-gray-500 dark:text-gray-400">
-            To enable secure access to the web services, your app requires an
-            API key with permissions for resources such as the S3 bucket.
+            To enable secure access to the web services, your app requires an API key with
+            permissions for resources such as the S3 bucket.
           </p>
           <form action="#">
             <div>
@@ -46,16 +46,11 @@ export default function AddApiKeyModal() {
               <Input type="text" defaultValue="Saasbold" />
             </div>
             <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              Naming your application makes it easier to recognize your API key
-              in the future.
+              Naming your application makes it easier to recognize your API key in the future.
             </p>
           </form>
           <div className="mt-8 flex w-full flex-col sm:flex-row items-center justify-between gap-3">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={addApiKeyModal.closeModal}
-            >
+            <Button variant="outline" className="w-full" onClick={addApiKeyModal.closeModal}>
               Close
             </Button>
             <Button className="w-full" onClick={addApiKeyModal.closeModal}>

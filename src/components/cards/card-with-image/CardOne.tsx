@@ -20,8 +20,8 @@ export default function CardOne() {
           {/* <h4 className="mb-1 font-medium text-gray-800 text-theme-xl dark:text-white/90"></h4> */}
           <CardTitle>Card title</CardTitle>
           <CardDescription>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi
-            architecto aspernatur cum et ipsum
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi architecto aspernatur
+            cum et ipsum
           </CardDescription>
           <Link
             href="/"

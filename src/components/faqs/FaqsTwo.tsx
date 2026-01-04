@@ -42,12 +42,8 @@ const accordionTwoData = [
 
 export default function FaqsTwo() {
   // State to manage the open accordion for both groups separately
-  const [openIndexFirstGroup, setOpenIndexFirstGroup] = useState<number | null>(
-    0
-  );
-  const [openIndexSecondGroup, setOpenIndexSecondGroup] = useState<
-    number | null
-  >(0);
+  const [openIndexFirstGroup, setOpenIndexFirstGroup] = useState<number | null>(0);
+  const [openIndexSecondGroup, setOpenIndexSecondGroup] = useState<number | null>(0);
 
   // Handle toggle for first group
   const handleToggleFirstGroup = (index: number) => {
@@ -78,11 +74,7 @@ export default function FaqsTwo() {
   return (
     <div className="grid gird-cols-1 gap-x-8 gap-y-5 xl:grid-cols-2">
       <div className="space-y-3">
-        {renderFaqItems(
-          accordionTwoData.slice(0, 3),
-          openIndexFirstGroup,
-          handleToggleFirstGroup
-        )}{" "}
+        {renderFaqItems(accordionTwoData.slice(0, 3), openIndexFirstGroup, handleToggleFirstGroup)}{" "}
         {/* First group */}
       </div>
       <div className="space-y-3">

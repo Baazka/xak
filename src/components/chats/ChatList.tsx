@@ -22,9 +22,7 @@ export default function ChatList({ isOpen, onToggle }: ChatListProps) {
   return (
     <div
       className={`flex-col overflow-auto no-scrollbar transition-all duration-300 ${
-        isOpen
-          ? "fixed top-0 left-0 z-999999 h-screen bg-white dark:bg-gray-900"
-          : "hidden xl:flex"
+        isOpen ? "fixed top-0 left-0 z-999999 h-screen bg-white dark:bg-gray-900" : "hidden xl:flex"
       }`}
     >
       <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-gray-800 xl:hidden">
@@ -38,11 +36,7 @@ export default function ChatList({ isOpen, onToggle }: ChatListProps) {
             <button className="dropdown-toggle" onClick={toggleDropdownTwo}>
               <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
             </button>
-            <Dropdown
-              isOpen={isOpenTwo}
-              onClose={closeDropdownTwo}
-              className="w-40 p-2"
-            >
+            <Dropdown isOpen={isOpenTwo} onClose={closeDropdownTwo} className="w-40 p-2">
               <DropdownItem
                 onItemClick={closeDropdownTwo}
                 className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -125,9 +119,7 @@ export default function ChatList({ isOpen, onToggle }: ChatListProps) {
                   <h5 className="text-sm font-medium text-gray-800 dark:text-white/90">
                     Lindsey Curtis
                   </h5>
-                  <p className="mt-0.5 text-theme-xs text-gray-500 dark:text-gray-400">
-                    Designer
-                  </p>
+                  <p className="mt-0.5 text-theme-xs text-gray-500 dark:text-gray-400">Designer</p>
                 </div>
                 <span className="text-gray-400 text-theme-xs"> 30 mins </span>
               </div>

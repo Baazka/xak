@@ -18,8 +18,8 @@ export default function CardTwo() {
       </div>
       <div>
         <CardDescription>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi
-          architecto aspernatur cum et ipsum
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi architecto aspernatur cum
+          et ipsum
         </CardDescription>
         <Link
           href="/"

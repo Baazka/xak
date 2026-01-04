@@ -1,18 +1,7 @@
 "use client";
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../../../ui/tableMain";
-import {
-  AngleDownIcon,
-  AngleUpIcon,
-  PencilIcon,
-  TrashBinIcon,
-} from "../../../../icons";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../../ui/tableMain";
+import { AngleDownIcon, AngleUpIcon, PencilIcon, TrashBinIcon } from "../../../../icons";
 import Checkbox from "../../../form/input/Checkbox";
 import Badge from "../../../ui/badge/Badge";
 import Pagination from "./Pagination";
@@ -158,9 +147,7 @@ export default function DataTableThree() {
   };
 
   // Rows per page handler
-  const handleRowsPerPageChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ): void => {
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     const newRowsPerPage = parseInt(e.target.value, 10); // Ensure base 10 parsing
     setRowsPerPage(newRowsPerPage);
     setCurrentPage(1); // Reset to first page when rows per page changes
@@ -177,22 +164,13 @@ export default function DataTableThree() {
               value={rowsPerPage}
               onChange={handleRowsPerPageChange}
             >
-              <option
-                value="10"
-                className="text-gray-500 dark:bg-gray-900 dark:text-gray-400"
-              >
+              <option value="10" className="text-gray-500 dark:bg-gray-900 dark:text-gray-400">
                 10
               </option>
-              <option
-                value="8"
-                className="text-gray-500 dark:bg-gray-900 dark:text-gray-400"
-              >
+              <option value="8" className="text-gray-500 dark:bg-gray-900 dark:text-gray-400">
                 8
               </option>
-              <option
-                value="5"
-                className="text-gray-500 dark:bg-gray-900 dark:text-gray-400"
-              >
+              <option value="5" className="text-gray-500 dark:bg-gray-900 dark:text-gray-400">
                 5
               </option>
             </select>
@@ -394,8 +372,8 @@ export default function DataTableThree() {
                         item.status === "Hired"
                           ? "success"
                           : item.status === "In Progress"
-                          ? "warning"
-                          : "error"
+                            ? "warning"
+                            : "error"
                       }
                     >
                       {item.status}

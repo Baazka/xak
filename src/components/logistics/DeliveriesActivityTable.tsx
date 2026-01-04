@@ -1,12 +1,6 @@
 "use client";
 import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../ui/tableMain";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/tableMain";
 
 interface Row {
   id: string;
@@ -159,9 +153,7 @@ const DeliveryActivityTable: React.FC = () => {
   };
 
   const toggleRow = (id: string): void => {
-    setSelectedRows((prev) =>
-      prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]
-    );
+    setSelectedRows((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]));
   };
 
   const sortBy = (col: string): void => {
@@ -190,10 +182,7 @@ const DeliveryActivityTable: React.FC = () => {
         const valA = a[sort.column as keyof Row];
         const valB = b[sort.column as keyof Row];
         if (sort.column === "arrival") {
-          return (
-            (Number(new Date(valA)) - Number(new Date(valB))) *
-            (sort.asc ? 1 : -1)
-          );
+          return (Number(new Date(valA)) - Number(new Date(valB))) * (sort.asc ? 1 : -1);
         }
         if (valA < valB) return sort.asc ? -1 : 1;
         if (valA > valB) return sort.asc ? 1 : -1;
@@ -218,21 +207,19 @@ const DeliveryActivityTable: React.FC = () => {
         </div>
         <div className="flex flex-col gap-4 sm:flex-row lg:items-center">
           <div className="inline-flex h-11 flex-1 w-full gap-0.5 overflow-x-auto rounded-lg bg-gray-100 p-0.5 sm:w-auto lg:min-w-fit dark:bg-gray-900">
-            {["All", "Delivered", "In-Transit", "Pending", "Processing"].map(
-              (tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setSelectedTab(tab)}
-                  className={`h-10 flex-1 rounded-md px-2 py-2 text-xs font-medium sm:px-3 sm:text-sm lg:flex-initial ${
-                    selectedTab === tab
-                      ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-                      : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                  }`}
-                >
-                  {tab}
-                </button>
-              )
-            )}
+            {["All", "Delivered", "In-Transit", "Pending", "Processing"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setSelectedTab(tab)}
+                className={`h-10 flex-1 rounded-md px-2 py-2 text-xs font-medium sm:px-3 sm:text-sm lg:flex-initial ${
+                  selectedTab === tab
+                    ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
           <div className="relative">
             <button
@@ -311,11 +298,7 @@ const DeliveryActivityTable: React.FC = () => {
                               }`}
                             >
                               <span
-                                className={
-                                  selectedRows.length === rows.length
-                                    ? ""
-                                    : "opacity-0"
-                                }
+                                className={selectedRows.length === rows.length ? "" : "opacity-0"}
                               >
                                 <svg
                                   width="12"
@@ -357,9 +340,7 @@ const DeliveryActivityTable: React.FC = () => {
                       <span className="flex flex-col gap-0.5">
                         <svg
                           className={
-                            sort.column === col && sort.asc
-                              ? "text-gray-500"
-                              : "text-gray-300"
+                            sort.column === col && sort.asc ? "text-gray-500" : "text-gray-300"
                           }
                           width="8"
                           height="5"
@@ -373,9 +354,7 @@ const DeliveryActivityTable: React.FC = () => {
                         </svg>
                         <svg
                           className={
-                            sort.column === col && !sort.asc
-                              ? "text-gray-500"
-                              : "text-gray-300"
+                            sort.column === col && !sort.asc ? "text-gray-500" : "text-gray-300"
                           }
                           width="8"
                           height="5"
@@ -435,13 +414,7 @@ const DeliveryActivityTable: React.FC = () => {
                                   : "bg-transparent border-gray-300 dark:border-gray-700"
                               }`}
                             >
-                              <span
-                                className={
-                                  selectedRows.includes(row.id)
-                                    ? ""
-                                    : "opacity-0"
-                                }
-                              >
+                              <span className={selectedRows.includes(row.id) ? "" : "opacity-0"}>
                                 <svg
                                   width="12"
                                   height="12"
@@ -493,18 +466,11 @@ const DeliveryActivityTable: React.FC = () => {
         <div className="flex items-center flex-col sm:flex-row justify-between border-t border-gray-200 px-5 py-4 dark:border-gray-800">
           <div className="pb-3 sm:pb-0">
             <span className="block text-sm font-medium text-gray-500 dark:text-gray-400">
-              Showing{" "}
-              <span className="text-gray-800 dark:text-white/90">
-                {startRow + 1}
-              </span>{" "}
-              to{" "}
+              Showing <span className="text-gray-800 dark:text-white/90">{startRow + 1}</span> to{" "}
               <span className="text-gray-800 dark:text-white/90">
                 {Math.min(endRow, rows.length)}
               </span>{" "}
-              of{" "}
-              <span className="text-gray-800 dark:text-white/90">
-                {rows.length}
-              </span>
+              of <span className="text-gray-800 dark:text-white/90">{rows.length}</span>
             </span>
           </div>
           <div className="flex items-center bg-gray-50 dark:bg-white/[0.03] p-4 sm:p-0 sm:bg-transparent rounded-lg dark:sm:bg-transparent w-full sm:w-auto justify-between gap-2 sm:justify-normal">

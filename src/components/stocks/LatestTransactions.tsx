@@ -1,12 +1,6 @@
 import Image from "next/image";
 import Badge from "../ui/badge/Badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../ui/tableMain";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../ui/tableMain";
 
 const transactionData = [
   {
@@ -136,12 +130,7 @@ export default function LatestTransactions() {
                     <TableCell className="py-4 dark:border-gray-800">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8">
-                          <Image
-                            width={32}
-                            height={32}
-                            src={item.image}
-                            alt="brand"
-                          />
+                          <Image width={32} height={32} src={item.image} alt="brand" />
                         </div>
                         <div>
                           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
@@ -166,8 +155,8 @@ export default function LatestTransactions() {
                           item.status === "Success"
                             ? "success"
                             : item.status === "Pending"
-                            ? "warning"
-                            : "error"
+                              ? "warning"
+                              : "error"
                         }
                       >
                         {item.status}

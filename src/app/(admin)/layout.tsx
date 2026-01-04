@@ -7,11 +7,7 @@ import Backdrop from "@/layout/Backdrop";
 import React from "react";
 import { usePathname } from "next/navigation";
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
   const pathname = usePathname();
 
@@ -35,8 +31,8 @@ export default function AdminLayout({
   const mainContentMargin = isMobileOpen
     ? "ml-0"
     : isExpanded || isHovered
-    ? "xl:ml-[290px]"
-    : "xl:ml-[90px]";
+      ? "xl:ml-[290px]"
+      : "xl:ml-[90px]";
 
   return (
     <div className="min-h-screen xl:flex">
@@ -44,9 +40,7 @@ export default function AdminLayout({
       <AppSidebar />
       <Backdrop />
       {/* Main Content Area */}
-      <div
-        className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
-      >
+      <div className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}>
         {/* Header */}
         <AppHeader />
         {/* Page Content */}

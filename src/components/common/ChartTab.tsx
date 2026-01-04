@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 
 const ChartTab: React.FC = () => {
-  const [selected, setSelected] = useState<
-    "optionOne" | "optionTwo" | "optionThree"
-  >("optionOne");
+  const [selected, setSelected] = useState<"optionOne" | "optionTwo" | "optionThree">("optionOne");
 
   const getButtonClass = (option: "optionOne" | "optionTwo" | "optionThree") =>
     selected === option

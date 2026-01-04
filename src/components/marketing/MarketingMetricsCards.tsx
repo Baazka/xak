@@ -10,15 +10,11 @@ export default function MarketingMetricsCards() {
           <ShootingStarIcon />
         </div>
 
-        <p className="text-gray-500 text-theme-sm dark:text-gray-400">
-          Avg. Client Rating
-        </p>
+        <p className="text-gray-500 text-theme-sm dark:text-gray-400">Avg. Client Rating</p>
 
         <div className="flex items-end justify-between mt-3">
           <div>
-            <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
-              7.8/10
-            </h4>
+            <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">7.8/10</h4>
           </div>
 
           <div className="flex items-center gap-1">
@@ -26,9 +22,7 @@ export default function MarketingMetricsCards() {
               +20%
             </span>
 
-            <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-              Vs last month
-            </span>
+            <span className="text-gray-500 text-theme-xs dark:text-gray-400">Vs last month</span>
           </div>
         </div>
       </div>
@@ -40,15 +34,11 @@ export default function MarketingMetricsCards() {
           <GroupIcon />
         </div>
 
-        <p className="text-gray-500 text-theme-sm dark:text-gray-400">
-          Instagram Followers
-        </p>
+        <p className="text-gray-500 text-theme-sm dark:text-gray-400">Instagram Followers</p>
 
         <div className="flex items-end justify-between mt-3">
           <div>
-            <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
-              5,934
-            </h4>
+            <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">5,934</h4>
           </div>
 
           <div className="flex items-center gap-1">
@@ -56,9 +46,7 @@ export default function MarketingMetricsCards() {
               -3.59%
             </span>
 
-            <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-              Vs last month
-            </span>
+            <span className="text-gray-500 text-theme-xs dark:text-gray-400">Vs last month</span>
           </div>
         </div>
       </div>
@@ -69,15 +57,11 @@ export default function MarketingMetricsCards() {
         <div className="mb-6 flex h-[52px] w-[52px] items-center justify-center rounded-xl bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-white/[0.90]">
           <DollarLineIcon />
         </div>
-        <p className="text-gray-500 text-theme-sm dark:text-gray-400">
-          Total Revenue
-        </p>
+        <p className="text-gray-500 text-theme-sm dark:text-gray-400">Total Revenue</p>
 
         <div className="flex items-end justify-between mt-3">
           <div>
-            <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
-              $9,758
-            </h4>
+            <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">$9,758</h4>
           </div>
 
           <div className="flex items-center gap-1">
@@ -85,9 +69,7 @@ export default function MarketingMetricsCards() {
               +15%
             </span>
 
-            <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-              Vs last month
-            </span>
+            <span className="text-gray-500 text-theme-xs dark:text-gray-400">Vs last month</span>
           </div>
         </div>
       </div>

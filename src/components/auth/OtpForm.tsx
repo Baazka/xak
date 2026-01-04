@@ -20,10 +20,7 @@ export default function OtpForm() {
     }
   };
 
-  const handleKeyDown = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (event.key === "Backspace") {
       const updatedOtp = [...otp];
 
@@ -104,8 +101,7 @@ export default function OtpForm() {
             Two Step Verification
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            A verification code has been sent to your mobile. Please enter it in
-            the field below.
+            A verification code has been sent to your mobile. Please enter it in the field below.
           </p>
         </div>
         <div>
@@ -150,10 +146,7 @@ export default function OtpForm() {
           <div className="mt-5">
             <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
               Didn’t get the code?{" "}
-              <Link
-                href="/"
-                className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
-              >
+              <Link href="/" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">
                 Resend
               </Link>
             </p>

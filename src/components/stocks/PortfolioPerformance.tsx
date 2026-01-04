@@ -338,16 +338,8 @@ export default function PortfolioPerformance() {
         </div>
       </div>
       <div className="max-w-full overflow-x-auto custom-scrollbar">
-        <div
-          id="chartFourteen"
-          className="-ml-4  min-w-[900px] xl:min-w-full pl-2"
-        >
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="area"
-            height={335}
-          />
+        <div id="chartFourteen" className="-ml-4  min-w-[900px] xl:min-w-full pl-2">
+          <ReactApexChart options={options} series={series} type="area" height={335} />
         </div>
       </div>
     </div>

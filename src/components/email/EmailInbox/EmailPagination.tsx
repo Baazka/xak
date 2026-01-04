@@ -3,9 +3,7 @@ import React from "react";
 export default function EmailPagination() {
   return (
     <div className="sticky bottom-0 flex items-center rounded-b-2xl justify-between border-t border-gray-200 bg-white px-4 py-3 dark:border-gray-800 dark:bg-[#171f2f]">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        Showing 1 of 159
-      </p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">Showing 1 of 159</p>
       <div className="flex items-center justify-end gap-2">
         <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400 dark:hover:bg-white/[0.03]">
           <svg

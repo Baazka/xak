@@ -97,9 +97,7 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({
           <Image width={40} height={40} src={brandImage} alt={companyName} />
         </div>
         <div>
-          <h3 className="text-base font-semibold text-gray-800 dark:text-white/90">
-            {symbol}
-          </h3>
+          <h3 className="text-base font-semibold text-gray-800 dark:text-white/90">{symbol}</h3>
           <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
             {companyName}
           </span>
@@ -137,18 +135,12 @@ export default function WatchList() {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          My Watchlist
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">My Watchlist</h3>
         <div className="relative h-fit">
           <button onClick={toggleDropdown} className="dropdown-toggle">
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
+          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
             <DropdownItem
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"

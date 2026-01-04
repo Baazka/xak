@@ -4,13 +4,7 @@ import Checkbox from "../../form/input/Checkbox";
 
 export default function ListWithCheckbox() {
   // State to manage individual checkbox values
-  const [checkedItems, setCheckedItems] = useState<boolean[]>([
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
+  const [checkedItems, setCheckedItems] = useState<boolean[]>([false, false, false, false, false]);
 
   // Handler to toggle individual checkboxes
   const handleCheckboxChange = (index: number, value: boolean) => {

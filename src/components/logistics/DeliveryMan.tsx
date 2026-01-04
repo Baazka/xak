@@ -15,9 +15,7 @@ export default function DeliveryMan() {
         </div>
         <div>
           <p className="text-xs text-gray-500 dark:text-gray-400">Courier</p>
-          <h3 className="text-sm font-medium text-gray-800 dark:text-white/90">
-            Devid walthen
-          </h3>
+          <h3 className="text-sm font-medium text-gray-800 dark:text-white/90">Devid walthen</h3>
         </div>
       </div>
       <div className="flex items-center gap-2">

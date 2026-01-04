@@ -58,15 +58,7 @@ export default function ChatBoxSendForm() {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <rect
-                x="7"
-                y="2.75"
-                width="10"
-                height="12.5"
-                rx="5"
-                stroke=""
-                strokeWidth="1.5"
-              />
+              <rect x="7" y="2.75" width="10" height="12.5" rx="5" stroke="" strokeWidth="1.5" />
               <path
                 d="M20 10.25C20 14.6683 16.4183 18.25 12 18.25C7.58172 18.25 4 14.6683 4 10.25"
                 stroke=""

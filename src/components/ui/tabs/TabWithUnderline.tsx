@@ -8,11 +8,7 @@ interface TabButtonProps {
   onClick: () => void;
 }
 
-export const TabButton: React.FC<TabButtonProps> = ({
-  label,
-  isActive,
-  onClick,
-}) => {
+export const TabButton: React.FC<TabButtonProps> = ({ label, isActive, onClick }) => {
   return (
     <button
       className={`inline-flex items-center border-b-2 px-2.5 py-2 text-sm font-medium transition-colors duration-200 ease-in-out ${
@@ -38,14 +34,11 @@ const TabContent: React.FC<TabContentProps> = ({ title, isActive }) => {
 
   return (
     <div>
-      <h3 className="mb-1 text-xl font-medium text-gray-800 dark:text-white/90">
-        {title}
-      </h3>
+      <h3 className="mb-1 text-xl font-medium text-gray-800 dark:text-white/90">{title}</h3>
       <p className="text-sm text-gray-500 dark:text-gray-400">
-        {title} ipsum dolor sit amet consectetur. Non vitae facilisis urna
-        tortor placerat egestas donec. Faucibus diam gravida enim elit lacus a.
-        Tincidunt fermentum condimentum quis et a et tempus. Tristique urna nisi
-        nulla elit sit libero scelerisque ante.
+        {title} ipsum dolor sit amet consectetur. Non vitae facilisis urna tortor placerat egestas
+        donec. Faucibus diam gravida enim elit lacus a. Tincidunt fermentum condimentum quis et a et
+        tempus. Tristique urna nisi nulla elit sit libero scelerisque ante.
       </p>
     </div>
   );
@@ -79,12 +72,7 @@ const TabWithUnderline: React.FC = () => {
 
       <div className="pt-4 dark:border-gray-800">
         {tabs.map((tab) => (
-          <TabContent
-            key={tab.id}
-            id={tab.id}
-            title={tab.label}
-            isActive={activeTab === tab.id}
-          />
+          <TabContent key={tab.id} id={tab.id} title={tab.label} isActive={activeTab === tab.id} />
         ))}
       </div>
     </div>

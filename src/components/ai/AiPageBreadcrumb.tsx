@@ -7,10 +7,7 @@ interface BreadcrumbProps {
 const AiPageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
   return (
     <div className="relative flex w-full flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-white px-3 lg:px-6 py-5 dark:border-gray-800 dark:bg-gray-900">
-      <h2
-        className="text-xl font-semibold text-gray-800 dark:text-white/90"
-        x-text="pageName"
-      >
+      <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName">
         {pageTitle}
       </h2>
       <nav>
@@ -39,9 +36,7 @@ const AiPageBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
               </svg>
             </Link>
           </li>
-          <li className="text-sm text-gray-800 dark:text-white/90">
-            {pageTitle}
-          </li>
+          <li className="text-sm text-gray-800 dark:text-white/90">{pageTitle}</li>
         </ol>
       </nav>
     </div>

@@ -22,19 +22,13 @@ export default function DeliveryVehicle() {
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
             Delivery Vehicles
           </h3>
-          <p className="dark:text-gray-40 text-sm text-gray-500">
-            Vehicles operating on the road
-          </p>
+          <p className="dark:text-gray-40 text-sm text-gray-500">Vehicles operating on the road</p>
         </div>
         <div className="relative h-fit">
           <button onClick={toggleDropdown} className="dropdown-toggle">
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
+          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
             <DropdownItem
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -52,9 +46,7 @@ export default function DeliveryVehicle() {
       </div>
       <div className="relative mt-5 flex justify-between">
         <div>
-          <h3 className="mb-1 text-3xl font-medium text-gray-800 dark:text-white/90">
-            29
-          </h3>
+          <h3 className="mb-1 text-3xl font-medium text-gray-800 dark:text-white/90">29</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <span className="text-success-600 font-medium">+3.85%</span>
             than last Week
@@ -64,9 +56,7 @@ export default function DeliveryVehicle() {
               <div className="bg-success-500 h-2.5 w-2.5 rounded-full"></div>
             </div>
             <div>
-              <span className="text-success-500 text-sm font-medium">
-                On-route
-              </span>
+              <span className="text-success-500 text-sm font-medium">On-route</span>
             </div>
           </div>
         </div>

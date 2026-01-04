@@ -32,7 +32,7 @@ export const columns = (
   },
 
   {
-    accessorKey: "name",
+    accessorKey: "username",
     header: ({ column }) => <SortableHeader column={column} label="Name" />,
   },
   {

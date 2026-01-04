@@ -1,11 +1,7 @@
 import React from "react";
 import { CheckLineIcon } from "../../icons";
 
-const personalPack = [
-  "Unlimited Projects",
-  "Share with 5 team members",
-  "Sync across devices",
-];
+const personalPack = ["Unlimited Projects", "Share with 5 team members", "Sync across devices"];
 const professionalPack = [
   "Unlimited Projects",
   "Share with 5 team members",
@@ -38,9 +34,7 @@ export default function PriceTableThree() {
             Personal
           </span>
 
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Perfect plan for Starters
-          </p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Perfect plan for Starters</p>
 
           <h2 className="mb-0.5 mt-4 text-title-sm font-bold text-gray-800 dark:text-white/90">
             Free
@@ -86,9 +80,7 @@ export default function PriceTableThree() {
             $99.00
           </h2>
 
-          <span className="inline-block mb-6 text-sm text-gray-500 dark:text-gray-400">
-            /year
-          </span>
+          <span className="inline-block mb-6 text-sm text-gray-500 dark:text-gray-400">/year</span>
 
           <button className="flex h-11 w-full items-center justify-center rounded-lg bg-brand-500 p-3.5 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600">
             Try for Free
@@ -114,23 +106,13 @@ export default function PriceTableThree() {
           <div className="absolute px-3 py-1 font-medium text-white rounded-lg right-4 top-4 -z-1 bg-white/10 text-theme-xs">
             Recommended
           </div>
-          <span className="block font-semibold text-white text-theme-xl">
-            {" "}
-            Team{" "}
-          </span>
+          <span className="block font-semibold text-white text-theme-xl"> Team </span>
 
-          <p className="mt-1 text-sm text-white/90">
-            Your entire team in one place
-          </p>
+          <p className="mt-1 text-sm text-white/90">Your entire team in one place</p>
 
-          <h2 className="mb-0.5 mt-4 text-title-sm font-bold text-white">
-            $299
-          </h2>
+          <h2 className="mb-0.5 mt-4 text-title-sm font-bold text-white">$299</h2>
 
-          <span className="inline-block mb-6 text-sm text-white/90">
-            {" "}
-            /year{" "}
-          </span>
+          <span className="inline-block mb-6 text-sm text-white/90"> /year </span>
 
           <button className="flex h-11 w-full items-center justify-center rounded-lg bg-white p-3.5 text-sm font-medium text-gray-800 shadow-theme-xs hover:bg-gray-50">
             Try for Free
@@ -138,10 +120,7 @@ export default function PriceTableThree() {
 
           <ul className="mt-6 space-y-3">
             {teamPack.map((item, index) => (
-              <li
-                key={index}
-                className="flex items-center gap-3 text-sm text-white "
-              >
+              <li key={index} className="flex items-center gap-3 text-sm text-white ">
                 <CheckLineIcon className="text-white" />
                 {item}
               </li>

@@ -5,15 +5,7 @@ type LinkProps = {
   href: string;
   children: React.ReactNode;
   variant?: "default" | "colored" | "underline" | "opacity" | "opacityHover";
-  color?:
-    | "primary"
-    | "secondary"
-    | "success"
-    | "danger"
-    | "warning"
-    | "info"
-    | "light"
-    | "dark";
+  color?: "primary" | "secondary" | "success" | "danger" | "warning" | "info" | "light" | "dark";
   opacity?: 10 | 25 | 50 | 75 | 100;
   className?: string;
 };

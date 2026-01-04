@@ -100,11 +100,7 @@ export default function UserModal({ user, onSaved }: UserModalProps) {
             </div>
           </div>
           <div className="mt-8 flex flex-col sm:flex-row w-full items-center justify-between gap-3">
-            <Button
-              variant="outline"
-              onClick={addUserModal.closeModal}
-              className="w-full"
-            >
+            <Button variant="outline" onClick={addUserModal.closeModal} className="w-full">
               Хаах
             </Button>
             <Button className="w-full" onClick={handleSubmit}>

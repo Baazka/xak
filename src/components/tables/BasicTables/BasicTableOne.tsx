@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../../ui/tableMain";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../ui/tableMain";
 
 import Badge from "../../ui/badge/Badge";
 import Image from "next/image";
@@ -36,11 +30,7 @@ const tableData: Order[] = [
     },
     projectName: "Agency Website",
     team: {
-      images: [
-        "/images/user/user-22.jpg",
-        "/images/user/user-23.jpg",
-        "/images/user/user-24.jpg",
-      ],
+      images: ["/images/user/user-22.jpg", "/images/user/user-23.jpg", "/images/user/user-24.jpg"],
     },
     budget: "3.9K",
     status: "Active",
@@ -82,11 +72,7 @@ const tableData: Order[] = [
     },
     projectName: "Social Media",
     team: {
-      images: [
-        "/images/user/user-28.jpg",
-        "/images/user/user-29.jpg",
-        "/images/user/user-30.jpg",
-      ],
+      images: ["/images/user/user-28.jpg", "/images/user/user-29.jpg", "/images/user/user-30.jpg"],
     },
     budget: "2.8K",
     status: "Cancel",
@@ -100,11 +86,7 @@ const tableData: Order[] = [
     },
     projectName: "Website",
     team: {
-      images: [
-        "/images/user/user-31.jpg",
-        "/images/user/user-32.jpg",
-        "/images/user/user-33.jpg",
-      ],
+      images: ["/images/user/user-31.jpg", "/images/user/user-32.jpg", "/images/user/user-33.jpg"],
     },
     budget: "4.5K",
     status: "Active",
@@ -159,12 +141,7 @@ export default function BasicTableOne() {
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 overflow-hidden rounded-full">
-                      <Image
-                        width={40}
-                        height={40}
-                        src={order.user.image}
-                        alt={order.user.name}
-                      />
+                      <Image width={40} height={40} src={order.user.image} alt={order.user.name} />
                     </div>
                     <div>
                       <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
@@ -204,8 +181,8 @@ export default function BasicTableOne() {
                       order.status === "Active"
                         ? "success"
                         : order.status === "Pending"
-                        ? "warning"
-                        : "error"
+                          ? "warning"
+                          : "error"
                     }
                   >
                     {order.status}

@@ -39,8 +39,7 @@ export default function Maintenance() {
           </h1>
 
           <p className="mt-6 mb-6 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
-            Our Site is Currently under maintenance We will be back Shortly
-            Thank You For Patience
+            Our Site is Currently under maintenance We will be back Shortly Thank You For Patience
           </p>
 
           <Link

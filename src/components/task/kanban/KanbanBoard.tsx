@@ -54,8 +54,7 @@ const initialTasks: Task[] = [
   {
     id: "6",
     title: "Product Update - Q4 (2024)",
-    projectDesc:
-      "Dedicated from a category of users that will perform actions.",
+    projectDesc: "Dedicated from a category of users that will perform actions.",
     projectImg: "/images/task/task.png",
     dueDate: "Today",
     comments: 1,
@@ -128,9 +127,7 @@ const KanbanBoard: React.FC = () => {
 
   const changeTaskStatus = useCallback((taskId: string, newStatus: string) => {
     setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, status: newStatus } : task
-      )
+      prevTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task))
     );
   }, []);
 

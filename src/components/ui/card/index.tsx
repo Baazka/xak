@@ -25,9 +25,7 @@ const Card: React.FC<CardProps> = ({ children }) => {
 // CardTitle Component
 const CardTitle: React.FC<CardTitleProps> = ({ children }) => {
   return (
-    <h4 className="mb-1 font-medium text-gray-800 text-theme-xl dark:text-white/90">
-      {children}
-    </h4>
+    <h4 className="mb-1 font-medium text-gray-800 text-theme-xl dark:text-white/90">{children}</h4>
   );
 };
 

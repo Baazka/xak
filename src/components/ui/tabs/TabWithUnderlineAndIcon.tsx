@@ -14,13 +14,7 @@ interface TabButtonProps extends TabData {
 }
 // Example SVG Icons
 const OverviewIcon: React.FC = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -31,13 +25,7 @@ const OverviewIcon: React.FC = () => (
 );
 
 const NotificationIcon: React.FC = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -48,13 +36,7 @@ const NotificationIcon: React.FC = () => (
 );
 
 const AnalyticsIcon: React.FC = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -65,13 +47,7 @@ const AnalyticsIcon: React.FC = () => (
 );
 
 const CustomersIcon: React.FC = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       fillRule="evenodd"
       clipRule="evenodd"
@@ -112,12 +88,7 @@ const tabData: TabData[] = [
   },
 ];
 
-const TabButton: React.FC<TabButtonProps> = ({
-  label,
-  icon,
-  isActive,
-  onClick,
-}) => {
+const TabButton: React.FC<TabButtonProps> = ({ label, icon, isActive, onClick }) => {
   return (
     <button
       className={`inline-flex items-center gap-2 border-b-2 px-2.5 py-2 text-sm font-medium transition-colors duration-200 ${
@@ -168,11 +139,7 @@ export default function TabWithUnderlineAndIcon() {
 
       <div className="pt-4">
         {tabData.map((tab) => (
-          <TabContent
-            key={tab.id}
-            content={tab.content}
-            isActive={activeTab === tab.id}
-          />
+          <TabContent key={tab.id} content={tab.content} isActive={activeTab === tab.id} />
         ))}
       </div>
     </div>

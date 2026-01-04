@@ -12,9 +12,7 @@ export default function TransactionHeader() {
             Completed
           </span>
         </div>
-        <p className="text-sm text-gray-500 sm:pl-3 dark:text-gray-400">
-          Due date: 25 August 2025
-        </p>
+        <p className="text-sm text-gray-500 sm:pl-3 dark:text-gray-400">Due date: 25 August 2025</p>
       </div>
       <div className="flex gap-3">
         <button className="bg-brand-500 shadow-theme-xs hover:bg-brand-600 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition">

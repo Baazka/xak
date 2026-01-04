@@ -108,9 +108,8 @@ export default function AnalyticsBarChart() {
     {
       name: "Sales",
       data: [
-        168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112, 123, 212,
-        270, 190, 310, 115, 90, 380, 112, 223, 292, 170, 290, 110, 115, 290,
-        380, 312,
+        168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112, 123, 212, 270, 190, 310, 115,
+        90, 380, 112, 223, 292, 170, 290, 110, 115, 290, 380, 312,
       ],
     },
   ];
@@ -118,9 +117,7 @@ export default function AnalyticsBarChart() {
     <div className="rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div>
-          <h3 className="mb-1 text-lg font-semibold text-gray-800 dark:text-white/90">
-            Analytics
-          </h3>
+          <h3 className="mb-1 text-lg font-semibold text-gray-800 dark:text-white/90">Analytics</h3>
           <span className="block text-gray-500 text-theme-sm dark:text-gray-400">
             Visitor analytics of last 30 days
           </span>
@@ -129,12 +126,7 @@ export default function AnalyticsBarChart() {
       </div>
       <div className="max-w-full overflow-x-auto custom-scrollbar">
         <div className="-ml-5 min-w-[1300px] xl:min-w-full pl-2">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="bar"
-            height={350}
-          />
+          <ReactApexChart options={options} series={series} type="bar" height={350} />
         </div>
       </div>
     </div>

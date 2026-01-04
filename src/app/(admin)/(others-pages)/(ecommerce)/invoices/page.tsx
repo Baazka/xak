@@ -5,10 +5,8 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title:
-    "Next.js E-commerce  Invoices | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js E-commerce  Invoices TailAdmin Dashboard Template",
+  title: "Next.js E-commerce  Invoices | TailAdmin - Next.js Dashboard Template",
+  description: "This is Next.js E-commerce  Invoices TailAdmin Dashboard Template",
 };
 
 export default function InvoicesPage() {

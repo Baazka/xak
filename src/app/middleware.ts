@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
+import { jwtDecode } from "jwt-decode";
 import { publicRoutes, authCookieName } from "./config/auth";
+
+interface JWTPayload {
+  exp: number;
+  sub: string;
+  role?: string;
+}
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -20,32 +26,32 @@ export function middleware(req: NextRequest) {
   if (pathname.startsWith("/api/")) return NextResponse.next();
 
   // 3. Public route бол алгасах
-  if (
-    publicRoutes.some(
-      (route) => pathname === route || pathname.startsWith(route + "/")
-    )
-  ) {
+  if (publicRoutes.some((route) => pathname === route || pathname.startsWith(route + "/"))) {
     return NextResponse.next();
   }
 
   // 4. Token байхгүй бол login руу redirect
   if (!token) {
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = "/signin";
-    return NextResponse.redirect(loginUrl);
+    return redirectToSignin(req);
   }
 
   // 5. Token буруу бол login руу redirect
   try {
-    jwt.verify(token, process.env.JWT_SECRET!);
-  } catch {
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = "/signin";
-    return NextResponse.redirect(loginUrl);
-  }
+    const decoded = jwtDecode<JWTPayload>(token);
 
-  // 6. Token зөв бол үргэлжлүүлэх
-  return NextResponse.next();
+    if (!decoded.exp || decoded.exp * 1000 < Date.now()) {
+      return redirectToSignin(req);
+    }
+
+    return NextResponse.next();
+  } catch {
+    return redirectToSignin(req);
+  }
+}
+function redirectToSignin(req: NextRequest) {
+  const url = req.nextUrl.clone();
+  url.pathname = "/signin";
+  return NextResponse.redirect(url);
 }
 
 export const config = {

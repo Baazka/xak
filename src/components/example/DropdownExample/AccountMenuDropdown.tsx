@@ -22,9 +22,7 @@ const AccountMenuDropdown: React.FC = () => {
       >
         Account Menu
         <svg
-          className={`duration-200 ease-in-out stroke-current ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`duration-200 ease-in-out stroke-current ${isOpen ? "rotate-180" : ""}`}
           width="20"
           height="20"
           viewBox="0 0 20 20"

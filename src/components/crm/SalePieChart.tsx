@@ -121,18 +121,12 @@ export default function SalePieChart() {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
       <div className="flex items-center justify-between mb-5">
-        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Sales Category
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Sales Category</h3>
         <div className="relative h-fit">
           <button onClick={toggleDropdown} className="dropdown-toggle">
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
           </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
+          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
             <DropdownItem
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -150,12 +144,7 @@ export default function SalePieChart() {
       </div>
       <div className="flex flex-col items-center gap-8 xl:flex-row">
         <div id="chartDarkStyle">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="donut"
-            height={280}
-          />
+          <ReactApexChart options={options} series={series} type="donut" height={280} />
         </div>
         <div className="flex flex-col items-start gap-6 sm:flex-row xl:flex-col">
           <div className="flex items-start gap-2.5">
@@ -165,13 +154,9 @@ export default function SalePieChart() {
                 Affiliate Program
               </h5>
               <div className="flex items-center gap-2">
-                <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-                  48%
-                </p>
+                <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">48%</p>
                 <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                <p className="text-gray-500 text-theme-sm dark:text-gray-400">
-                  2,040 Products
-                </p>
+                <p className="text-gray-500 text-theme-sm dark:text-gray-400">2,040 Products</p>
               </div>
             </div>
           </div>
@@ -183,13 +168,9 @@ export default function SalePieChart() {
                 Direct Buy
               </h5>
               <div className="flex items-center gap-2">
-                <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-                  33%
-                </p>
+                <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">33%</p>
                 <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                <p className="text-gray-400 text-theme-sm dark:text-gray-400">
-                  1,402 Products
-                </p>
+                <p className="text-gray-400 text-theme-sm dark:text-gray-400">1,402 Products</p>
               </div>
             </div>
           </div>
@@ -201,13 +182,9 @@ export default function SalePieChart() {
                 Adsense
               </h5>
               <div className="flex items-center gap-2">
-                <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-                  19%
-                </p>
+                <p className="font-medium text-gray-700 text-theme-sm dark:text-gray-400">19%</p>
                 <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                <p className="text-gray-500 text-theme-sm dark:text-gray-400">
-                  510 Products
-                </p>
+                <p className="text-gray-500 text-theme-sm dark:text-gray-400">510 Products</p>
               </div>
             </div>
           </div>

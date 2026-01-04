@@ -84,13 +84,7 @@ export default function DailySaleChart() {
   ];
   return (
     <div>
-      <ReactApexChart
-        className="-ml-3"
-        options={options}
-        series={series}
-        type="bar"
-        height={200}
-      />
+      <ReactApexChart className="-ml-3" options={options} series={series} type="bar" height={200} />
     </div>
   );
 }

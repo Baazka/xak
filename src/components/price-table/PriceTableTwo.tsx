@@ -56,9 +56,7 @@ export default function PriceTableTwo() {
         </div>
 
         <div className="flex items-end">
-          <h2 className="font-bold text-gray-800 text-title-md dark:text-white/90">
-            $59.00
-          </h2>
+          <h2 className="font-bold text-gray-800 text-title-md dark:text-white/90">$59.00</h2>
 
           <span className="inline-block mb-1 text-sm text-gray-500 dark:text-gray-400">
             / Lifetime
@@ -76,9 +74,7 @@ export default function PriceTableTwo() {
             <li
               key={index}
               className={`flex items-center gap-3 text-sm  ${
-                item.included
-                  ? "text-gray-700 dark:text-gray-400"
-                  : "text-gray-400"
+                item.included ? "text-gray-700 dark:text-gray-400" : "text-gray-400"
               }`}
             >
               {item.included ? (
@@ -123,9 +119,7 @@ export default function PriceTableTwo() {
         </div>
 
         <div className="flex items-end">
-          <h2 className="font-bold text-gray-800 text-title-md dark:text-white/90">
-            $199.00
-          </h2>
+          <h2 className="font-bold text-gray-800 text-title-md dark:text-white/90">$199.00</h2>
 
           <span className="inline-block mb-1 text-sm text-gray-500 dark:text-gray-400">
             / Lifetime
@@ -143,9 +137,7 @@ export default function PriceTableTwo() {
             <li
               key={index}
               className={`flex items-center gap-3 text-sm  ${
-                item.included
-                  ? "text-gray-700 dark:text-gray-400"
-                  : "text-gray-400"
+                item.included ? "text-gray-700 dark:text-gray-400" : "text-gray-400"
               }`}
             >
               {item.included ? (
@@ -190,9 +182,7 @@ export default function PriceTableTwo() {
         </div>
 
         <div className="flex items-end">
-          <h2 className="font-bold text-gray-800 text-title-md dark:text-white/90">
-            $599.00
-          </h2>
+          <h2 className="font-bold text-gray-800 text-title-md dark:text-white/90">$599.00</h2>
 
           <span className="inline-block mb-1 text-sm text-gray-500 dark:text-gray-400">
             / Lifetime
@@ -211,9 +201,7 @@ export default function PriceTableTwo() {
               <li
                 key={index}
                 className={`flex items-center gap-3 text-sm  ${
-                  item.included
-                    ? "text-gray-700 dark:text-gray-400"
-                    : "text-gray-400"
+                  item.included ? "text-gray-700 dark:text-gray-400" : "text-gray-400"
                 }`}
               >
                 {item.included ? (

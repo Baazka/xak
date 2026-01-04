@@ -25,9 +25,7 @@ export default function SupportMetrics() {
           <h3 className="text-title-xs mb-1 font-semibold text-gray-800 dark:text-white/90">
             5,347
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Total tickets
-          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Total tickets</p>
         </div>
       </article>
       <article className="flex gap-5 rounded-xl border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-800 dark:bg-white/[0.03]">
@@ -52,9 +50,7 @@ export default function SupportMetrics() {
           <h3 className="text-title-xs mb-1 font-semibold text-gray-800 dark:text-white/90">
             1,230
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Pending tickets
-          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Pending tickets</p>
         </div>
       </article>
       <article className="flex gap-5 rounded-xl border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-800 dark:bg-white/[0.03]">
@@ -79,9 +75,7 @@ export default function SupportMetrics() {
           <h3 className="text-title-xs mb-1 font-semibold text-gray-800 dark:text-white/90">
             4,117
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Solved tickets
-          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Solved tickets</p>
         </div>
       </article>
     </div>

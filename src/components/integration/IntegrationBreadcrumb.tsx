@@ -8,10 +8,7 @@ interface BreadcrumbProps {
 const IntegrationBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
   return (
     <div className="flex flex-col lg:flex-row sm:items-center justify-between gap-3 mb-6">
-      <h2
-        className="text-xl font-semibold text-gray-800 dark:text-white/90"
-        x-text="pageName"
-      >
+      <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90" x-text="pageName">
         {pageTitle}
       </h2>
       <nav className="flex flex-col gap-6 sm:flex-row sm:items-center">
@@ -40,9 +37,7 @@ const IntegrationBreadcrumb: React.FC<BreadcrumbProps> = ({ pageTitle }) => {
               </svg>
             </Link>
           </li>
-          <li className="text-sm text-gray-800 dark:text-white/90">
-            {pageTitle}
-          </li>
+          <li className="text-sm text-gray-800 dark:text-white/90">{pageTitle}</li>
         </ol>
         <AddIntegrationModal />
       </nav>

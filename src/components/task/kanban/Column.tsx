@@ -14,13 +14,7 @@ interface ColumnProps {
   changeTaskStatus: (taskId: string, newStatus: string) => void;
 }
 
-const Column: React.FC<ColumnProps> = ({
-  title,
-  tasks,
-  status,
-  moveTask,
-  changeTaskStatus,
-}) => {
+const Column: React.FC<ColumnProps> = ({ title, tasks, status, moveTask, changeTaskStatus }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
@@ -42,10 +36,10 @@ const Column: React.FC<ColumnProps> = ({
       status === "todo"
         ? "bg-gray-100 text-gray-700 dark:bg-white/[0.03] dark:text-white/80 "
         : status === "inProgress"
-        ? "text-warning-700 bg-warning-50 dark:bg-warning-500/15 dark:text-orange-400"
-        : status === "completed"
-        ? "bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500"
-        : ""
+          ? "text-warning-700 bg-warning-50 dark:bg-warning-500/15 dark:text-orange-400"
+          : status === "completed"
+            ? "bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500"
+            : ""
     }
   `}
           >

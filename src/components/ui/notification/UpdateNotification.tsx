@@ -25,12 +25,8 @@ const UpdateNotification: React.FC<UpdateNotificationProps> = ({
         {/* Content */}
         <div className="flex flex-col items-center gap-5 sm:flex-row">
           <div>
-            <h5 className="mb-1 text-base font-medium text-gray-800 dark:text-white/90">
-              {title}
-            </h5>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {message}
-            </p>
+            <h5 className="mb-1 text-base font-medium text-gray-800 dark:text-white/90">{title}</h5>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{message}</p>
           </div>
 
           {/* Buttons */}

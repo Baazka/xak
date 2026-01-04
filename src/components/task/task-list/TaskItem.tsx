@@ -43,10 +43,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
             </svg>
           </span>
 
-          <label
-            htmlFor={`taskCheckbox${id}`}
-            className="w-full cursor-pointer"
-          >
+          <label htmlFor={`taskCheckbox${id}`} className="w-full cursor-pointer">
             <div className="relative flex items-start">
               <input
                 type="checkbox"
@@ -74,9 +71,7 @@ const TaskItem: React.FC<TaskItemProps> = ({
                   </svg>
                 </span>
               </div>
-              <p className="-mt-0.5 text-base text-gray-800 dark:text-white/90">
-                {title}
-              </p>
+              <p className="-mt-0.5 text-base text-gray-800 dark:text-white/90">{title}</p>
             </div>
           </label>
         </div>

@@ -26,8 +26,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Issue with Dashboard Login Access",
       date: "12 Feb, 2027",
       status: "Solved",
-      statusClass:
-        "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
+      statusClass: "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
     },
     {
       id: "#323535",
@@ -36,8 +35,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Billing Information Not Updating Properly",
       date: "13 Mar, 2027",
       status: "Pending",
-      statusClass:
-        "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
+      statusClass: "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
     },
     {
       id: "#323536",
@@ -46,8 +44,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Bug Found in Dark Mode Layout",
       date: "19 Mar, 2027",
       status: "Pending",
-      statusClass:
-        "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
+      statusClass: "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
     },
     {
       id: "#323537",
@@ -56,8 +53,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Request to Add New Integration Feature",
       date: "25 Apr, 2027",
       status: "Solved",
-      statusClass:
-        "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
+      statusClass: "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
     },
     {
       id: "#323538",
@@ -66,8 +62,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Unable to Reset Password",
       date: "28 Apr, 2027",
       status: "Pending",
-      statusClass:
-        "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
+      statusClass: "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
     },
     {
       id: "#323539",
@@ -76,8 +71,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Feature Request: Dark Mode",
       date: "30 Apr, 2027",
       status: "Solved",
-      statusClass:
-        "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
+      statusClass: "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
     },
     {
       id: "#323540",
@@ -86,8 +80,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Error 500 on Dashboard",
       date: "01 May, 2027",
       status: "Pending",
-      statusClass:
-        "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
+      statusClass: "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
     },
     {
       id: "#323541",
@@ -96,8 +89,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Cannot Download Invoice",
       date: "02 May, 2027",
       status: "Solved",
-      statusClass:
-        "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
+      statusClass: "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
     },
     {
       id: "#323542",
@@ -106,8 +98,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "UI Bug in Mobile View",
       date: "03 May, 2027",
       status: "Pending",
-      statusClass:
-        "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
+      statusClass: "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
     },
     {
       id: "#323543",
@@ -116,8 +107,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Account Locked",
       date: "04 May, 2027",
       status: "Solved",
-      statusClass:
-        "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
+      statusClass: "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
     },
     {
       id: "#323544",
@@ -126,8 +116,7 @@ const SupportTicketsList: React.FC = () => {
       subject: "Integration Not Working",
       date: "05 May, 2027",
       status: "Pending",
-      statusClass:
-        "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
+      statusClass: "bg-warning-50 dark:bg-warning-500/15 text-warning-600 dark:text-warning-500",
     },
     {
       id: "#323545",
@@ -136,14 +125,11 @@ const SupportTicketsList: React.FC = () => {
       subject: "Request for API Access",
       date: "06 May, 2027",
       status: "Solved",
-      statusClass:
-        "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
+      statusClass: "bg-success-50 dark:bg-success-500/15 text-success-700 dark:text-success-500",
     },
   ]);
 
-  const [selectedStatus, setSelectedStatus] = useState<
-    "All" | "Solved" | "Pending"
-  >("All");
+  const [selectedStatus, setSelectedStatus] = useState<"All" | "Solved" | "Pending">("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filterData, setFilterData] = useState<FilterData>({
     category: "",
@@ -159,9 +145,7 @@ const SupportTicketsList: React.FC = () => {
 
   const filteredTickets = useMemo(() => {
     return tickets
-      .filter(
-        (ticket) => selectedStatus === "All" || ticket.status === selectedStatus
-      )
+      .filter((ticket) => selectedStatus === "All" || ticket.status === selectedStatus)
       .filter(
         (ticket) =>
           ticket.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -170,9 +154,7 @@ const SupportTicketsList: React.FC = () => {
       )
       .filter(
         (ticket) =>
-          ticket.subject
-            .toLowerCase()
-            .includes(filterData.category.toLowerCase()) &&
+          ticket.subject.toLowerCase().includes(filterData.category.toLowerCase()) &&
           ticket.email.toLowerCase().includes(filterData.company.toLowerCase())
       );
   }, [tickets, selectedStatus, searchQuery, filterData]);
@@ -184,8 +166,7 @@ const SupportTicketsList: React.FC = () => {
         let valA: string | number | Date = a[sortBy as keyof Ticket];
         let valB: string | number | Date = b[sortBy as keyof Ticket];
         if (sortBy === "date") {
-          const parse = (v: string) =>
-            new Date(v.replace(/(\d{2}) (\w+), (\d{4})/, "$2 $1, $3"));
+          const parse = (v: string) => new Date(v.replace(/(\d{2}) (\w+), (\d{4})/, "$2 $1, $3"));
           valA = parse(valA as string);
           valB = parse(valB as string);
         } else {
@@ -201,10 +182,7 @@ const SupportTicketsList: React.FC = () => {
   }, [filteredTickets, sortBy, sortAsc]);
 
   const totalPages = Math.ceil(sortedTickets.length / perPage);
-  const paginatedTickets = sortedTickets.slice(
-    (currentPage - 1) * perPage,
-    currentPage * perPage
-  );
+  const paginatedTickets = sortedTickets.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   const handleSort = (field: string) => {
     if (sortBy === field) {
@@ -280,9 +258,7 @@ const SupportTicketsList: React.FC = () => {
             {["All", "Solved", "Pending"].map((status) => (
               <button
                 key={status}
-                onClick={() =>
-                  setSelectedStatus(status as "All" | "Solved" | "Pending")
-                }
+                onClick={() => setSelectedStatus(status as "All" | "Solved" | "Pending")}
                 className={`text-theme-sm h-10 rounded-md px-3 py-2 font-medium hover:text-gray-900 dark:hover:text-white ${
                   selectedStatus === status
                     ? "shadow-theme-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800"
@@ -533,10 +509,7 @@ const SupportTicketsList: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
             {paginatedTickets.map((ticket) => (
-              <tr
-                key={ticket.id}
-                className="transition hover:bg-gray-50 dark:hover:bg-gray-900"
-              >
+              <tr key={ticket.id} className="transition hover:bg-gray-50 dark:hover:bg-gray-900">
                 <td className="px-4 py-3 whitespace-nowrap">
                   <div className="flex items-center gap-3">
                     <label className="flex cursor-pointer items-center text-sm font-medium text-gray-700 select-none dark:text-gray-400">
@@ -555,11 +528,7 @@ const SupportTicketsList: React.FC = () => {
                               : "bg-transparent border-gray-300 dark:border-gray-700"
                           }`}
                         >
-                          <span
-                            className={
-                              selected.includes(ticket.id) ? "" : "opacity-0"
-                            }
-                          >
+                          <span className={selected.includes(ticket.id) ? "" : "opacity-0"}>
                             <svg
                               width="12"
                               height="12"
@@ -589,20 +558,14 @@ const SupportTicketsList: React.FC = () => {
                     <span className="text-sm font-medium text-gray-800 dark:text-white/90">
                       {ticket.name}
                     </span>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {ticket.email}
-                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{ticket.email}</p>
                   </div>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <p className="text-sm text-gray-700 dark:text-gray-400">
-                    {ticket.subject}
-                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">{ticket.subject}</p>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <p className="text-sm text-gray-700 dark:text-gray-400">
-                    {ticket.date}
-                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">{ticket.date}</p>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <span
@@ -662,10 +625,7 @@ const SupportTicketsList: React.FC = () => {
             <span className="text-gray-800 dark:text-white/90">
               {Math.min(currentPage * perPage, sortedTickets.length)}
             </span>{" "}
-            of{" "}
-            <span className="text-gray-800 dark:text-white/90">
-              {sortedTickets.length}
-            </span>
+            of <span className="text-gray-800 dark:text-white/90">{sortedTickets.length}</span>
           </span>
         </div>
         <div className="flex items-center justify-between gap-2 sm:justify-normal bg-gray-50 sm:w-auto dark:sm:bg-transparent p-4 w-full rounded-lg dark:bg-white/[0.03] sm:bg-transparent">

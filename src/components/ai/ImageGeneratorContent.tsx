@@ -45,9 +45,9 @@ export default function ImageGeneratorContent() {
               Download
             </button>
             <p className="mt-3 text-sm leading-5 text-gray-500 dark:text-gray-400">
-              Here is the tall building with a sleek glass facade, as described.
-              The structure features modern elements with reflective glass
-              panels that shimmer beautifully under the sunlight.
+              Here is the tall building with a sleek glass facade, as described. The structure
+              features modern elements with reflective glass panels that shimmer beautifully under
+              the sunlight.
             </p>
           </div>
         </div>
@@ -123,9 +123,9 @@ export default function ImageGeneratorContent() {
           </div>
           <div className="mt-3">
             <p className="mt-3 text-sm leading-5 text-gray-500 dark:text-gray-400">
-              Here are two tall buildings with sleek glass facades, just as
-              described. Both structures showcase modern design elements, glass
-              panels that shimmer beautifully in the sunlight.
+              Here are two tall buildings with sleek glass facades, just as described. Both
+              structures showcase modern design elements, glass panels that shimmer beautifully in
+              the sunlight.
             </p>
           </div>
         </div>

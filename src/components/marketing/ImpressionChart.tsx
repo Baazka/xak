@@ -118,28 +118,19 @@ export default function ImpressionChart() {
 
         <div className="flex flex-row-reverse items-center justify-end gap-0.5 sm:flex-col sm:items-start">
           <div className="flex flex-row-reverse items-center gap-3 sm:flex-row sm:gap-2">
-            <h4 className="text-2xl font-bold text-gray-800 dark:text-white/90">
-              $9,758.00
-            </h4>
+            <h4 className="text-2xl font-bold text-gray-800 dark:text-white/90">$9,758.00</h4>
 
             <span className="flex items-center gap-1 rounded-full bg-success-50 px-2 py-0.5 text-theme-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
               +7.96%
             </span>
           </div>
 
-          <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-            Total Revenue
-          </span>
+          <span className="text-gray-500 text-theme-xs dark:text-gray-400">Total Revenue</span>
         </div>
       </div>
       <div className="max-w-full overflow-x-auto custom-scrollbar">
         <div className="min-w-[1000px] xl:min-w-full -ml-4 pl-2">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="area"
-            height={310}
-          />
+          <ReactApexChart options={options} series={series} type="area" height={310} />
         </div>
       </div>
     </div>

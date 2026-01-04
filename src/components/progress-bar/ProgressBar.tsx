@@ -20,8 +20,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
     xl: "h-5",
   };
 
-  const baseClasses =
-    "relative w-full bg-gray-200 rounded-full dark:bg-gray-800";
+  const baseClasses = "relative w-full bg-gray-200 rounded-full dark:bg-gray-800";
   const progressClasses = "absolute left-0 h-full bg-brand-500 rounded-full";
 
   const renderLabel = () => {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db"; // make sure this exports a connected pg client
 import { withAuth } from "@/lib/withAuth";
 
-const SORTABLE_COLUMNS = new Set(["name", "email"]); // Add valid sortable columns here
+const SORTABLE_COLUMNS = new Set(["username", "email"]); // Add valid sortable columns here
 
 export const GET = withAuth(async function GET(req: NextRequest) {
   try {
@@ -11,11 +11,8 @@ export const GET = withAuth(async function GET(req: NextRequest) {
     const page = Math.max(parseInt(sp.get("page") || "1"), 1);
     const limit = Math.max(parseInt(sp.get("limit") || "10"), 1);
     const search = sp.get("search") || "";
-    const sortBy = SORTABLE_COLUMNS.has(sp.get("sortBy") || "")
-      ? sp.get("sortBy")!
-      : "id";
-    const sortOrder =
-      (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
+    const sortBy = SORTABLE_COLUMNS.has(sp.get("sortBy") || "") ? sp.get("sortBy")! : "id";
+    const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
     const offset = (page - 1) * limit;
 
     let whereClause = "WHERE status is null";
@@ -23,19 +20,19 @@ export const GET = withAuth(async function GET(req: NextRequest) {
 
     if (search) {
       params.push(`%${search}%`);
-      whereClause += ` AND (name ILIKE $${params.length} OR email ILIKE $${params.length} )`;
+      whereClause += ` AND (username ILIKE $${params.length} OR email ILIKE $${params.length} )`;
     }
 
     const dataSql = `
-    SELECT id, name, email
-    FROM users
+    SELECT id, username, email
+    FROM reg_users
     ${whereClause}
     ORDER BY ${sortBy} ${sortOrder}
     LIMIT $${params.length + 1} OFFSET $${params.length + 2}
   `;
     params.push(limit, offset);
 
-    const countSql = `SELECT COUNT(*)::int AS total FROM users ${whereClause}`;
+    const countSql = `SELECT COUNT(*)::int AS total FROM reg_users ${whereClause}`;
 
     const client = await db.connect();
     try {
@@ -54,10 +51,7 @@ export const GET = withAuth(async function GET(req: NextRequest) {
     }
   } catch (err) {
     console.error("DB Error:", err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 });
 export async function POST(req: NextRequest) {
@@ -86,31 +80,20 @@ export async function POST(req: NextRequest) {
 async function createUser({ name, email }: { name: string; email: string }) {
   try {
     const result = await db.query(
-      "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
+      "INSERT INTO reg_users (username, email) VALUES ($1, $2) RETURNING *",
       [name, email]
     );
 
     return NextResponse.json(result.rows[0], { status: 201 });
   } catch (err) {
     console.error("DB Error:", err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
-async function updateUser({
-  id,
-  name,
-  email,
-}: {
-  id: number;
-  name: string;
-  email: string;
-}) {
+async function updateUser({ id, name, email }: { id: number; name: string; email: string }) {
   try {
     const result = await db.query(
-      "UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *",
+      "UPDATE reg_users SET username = $1, email = $2 WHERE id = $3 RETURNING *",
       [name, email, id]
     );
 
@@ -121,18 +104,14 @@ async function updateUser({
     return NextResponse.json(result.rows[0]);
   } catch (err) {
     console.error("DB Error:", err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 async function removeUser(id: number) {
   try {
-    const result = await db.query(
-      "UPDATE users SET status = 1 WHERE id = $1 RETURNING *",
-      [id]
-    );
+    const result = await db.query("UPDATE reg_users SET status = 1 WHERE id = $1 RETURNING *", [
+      id,
+    ]);
 
     if (result.rowCount === 0) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -141,9 +120,6 @@ async function removeUser(id: number) {
     return NextResponse.json({ message: "User deleted successfully" });
   } catch (err) {
     console.error("DB Error:", err);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

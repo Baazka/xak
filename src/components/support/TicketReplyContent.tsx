@@ -19,9 +19,7 @@ export default function TicketReplyContent() {
           <h3 className="text-lg font-medium text-gray-800 dark:text-white/90">
             Ticket #346520 - Sidebar not responsive on mobile
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Mon, 3:20 PM (2 days ago)
-          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Mon, 3:20 PM (2 days ago)</p>
         </div>
         <div className="flex items-center gap-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">4 of 120</p>
@@ -79,32 +77,23 @@ export default function TicketReplyContent() {
                   alt=""
                 />
                 <div>
-                  <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                    John Doe
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    jhondelin@gmail.com
-                  </p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-white/90">John Doe</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">jhondelin@gmail.com</p>
                 </div>
               </div>
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Mon, 3:20 PM (2 hrs ago)
-                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Mon, 3:20 PM (2 hrs ago)</p>
               </div>
             </div>
             <div className="pb-6">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Hi TailAdmin Team,
-              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Hi TailAdmin Team,</p>
               <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
                 I hope you&apos;re doing well.
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                I’m currently working on customizing the TailAdmin dashboard and
-                would like to add a new section labeled “Reports.” Before I
-                proceed, I wanted to check if there’s any official guide or best
-                practice you recommend for adding custom pages within the
+                I’m currently working on customizing the TailAdmin dashboard and would like to add a
+                new section labeled “Reports.” Before I proceed, I wanted to check if there’s any
+                official guide or best practice you recommend for adding custom pages within the
                 TailAdmin structure.
               </p>
             </div>
@@ -129,34 +118,26 @@ export default function TicketReplyContent() {
                 </div>
               </div>
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Mon, 3:20 PM (2 hrs ago)
-                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Mon, 3:20 PM (2 hrs ago)</p>
               </div>
             </div>
             <div className="pb-6">
+              <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">Hi John D,</p>
               <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
-                Hi John D,
-              </p>
-              <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
-                Thanks for reaching out—and great to hear you&apos;re
-                customizing TailAdmin to fit your needs! Yes, you can definitely
-                add custom pages like a &quot;Reports&quot; section, and
-                it&apos;s quite straightforward. Here&apos;s a quick guide to
-                help you get started:
+                Thanks for reaching out—and great to hear you&apos;re customizing TailAdmin to fit
+                your needs! Yes, you can definitely add custom pages like a &quot;Reports&quot;
+                section, and it&apos;s quite straightforward. Here&apos;s a quick guide to help you
+                get started:
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 To include your new page in the sidebar:
               </p>
               <ul className="list-inside list-disc pl-2 text-sm text-gray-500 dark:text-gray-400">
                 <li>
-                  To include your new page in the sidebar: Go to the sidebar
-                  configuration file (sidebarData.ts or similar)
+                  To include your new page in the sidebar: Go to the sidebar configuration file
+                  (sidebarData.ts or similar)
                 </li>
-                <li>
-                  Add a new entry with the label &quot;Reports&quot; and route
-                  /reports
-                </li>
+                <li>Add a new entry with the label &quot;Reports&quot; and route /reports</li>
               </ul>
             </div>
           </article>
@@ -171,32 +152,23 @@ export default function TicketReplyContent() {
                   alt=""
                 />
                 <div>
-                  <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                    John Doe
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    jhondelin@gmail.com
-                  </p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-white/90">John Doe</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">jhondelin@gmail.com</p>
                 </div>
               </div>
               <div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Mon, 3:20 PM (2 hrs ago)
-                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Mon, 3:20 PM (2 hrs ago)</p>
               </div>
             </div>
             <div className="pb-6">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Hi TailAdmin Team,
-              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Hi TailAdmin Team,</p>
               <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">
                 I hope you&apos;re doing well.
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                I’m currently working on customizing the TailAdmin dashboard and
-                would like to add a new section labeled “Reports.” Before I
-                proceed, I wanted to check if there’s any official guide or best
-                practice you recommend for adding custom pages within the
+                I’m currently working on customizing the TailAdmin dashboard and would like to add a
+                new section labeled “Reports.” Before I proceed, I wanted to check if there’s any
+                official guide or best practice you recommend for adding custom pages within the
                 TailAdmin structure.
               </p>
             </div>
@@ -217,12 +189,7 @@ export default function TicketReplyContent() {
             <div className="flex items-center justify-between p-3">
               <button className="flex h-9 items-center gap-1.5 rounded-lg bg-transparent px-2 py-3 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-gray-300">
                 {/* <!-- Attach Icon --> */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="none"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none">
                   <path
                     d="M14.4194 11.7679L15.4506 10.7367C17.1591 9.02811 17.1591 6.25802 15.4506 4.54947C13.742 2.84093 10.9719 2.84093 9.2634 4.54947L8.2322 5.58067M11.77 14.4172L10.7365 15.4507C9.02799 17.1592 6.2579 17.1592 4.54935 15.4507C2.84081 13.7422 2.84081 10.9721 4.54935 9.26352L5.58285 8.23002M11.7677 8.23232L8.2322 11.7679"
                     stroke="currentColor"
@@ -270,9 +237,7 @@ export default function TicketReplyContent() {
                   >
                     <span
                       className={`h-1.5 w-1.5 rounded-full ${
-                        selected === option.value
-                          ? "bg-white"
-                          : "bg-white dark:bg-[#171f2e]"
+                        selected === option.value ? "bg-white" : "bg-white dark:bg-[#171f2e]"
                       }`}
                     ></span>
                   </div>

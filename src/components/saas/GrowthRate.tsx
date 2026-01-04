@@ -77,9 +77,7 @@ export default function GrowthChart() {
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="mb-6 flex justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            User Growth
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">User Growth</h3>
           <p className="text-theme-sm mt-1 text-gray-500 dark:text-gray-400">
             New signups website + mobile
           </p>
@@ -88,11 +86,7 @@ export default function GrowthChart() {
           <button className="dropdown-toggle" onClick={toggleDropdown}>
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
           </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
+          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
             <DropdownItem
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -110,9 +104,7 @@ export default function GrowthChart() {
       </div>
       <div className="flex justify-between">
         <div>
-          <h3 className="text-title-xs font-semibold text-gray-800 dark:text-white/90">
-            3,768
-          </h3>
+          <h3 className="text-title-xs font-semibold text-gray-800 dark:text-white/90">3,768</h3>
           <p className="text-theme-xs mt-1 text-gray-500 dark:text-gray-400">
             <span className="text-success-600 mr-1 inline-block">+3.85%</span>
             than last Week

@@ -111,21 +111,12 @@ const StorageDetailsChart: React.FC = () => {
     <div className="px-4 pt-6 pb-6 bg-white border border-gray-200 rounded-2xl dark:border-gray-800 dark:bg-gray-900 sm:px-6">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Storage Details
-          </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            585 GB Free space left
-          </p>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Storage Details</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">585 GB Free space left</p>
         </div>
       </div>
       <div className="flex justify-center mx-auto " id="chartDarkStyle">
-        <ReactApexChart
-          options={options}
-          series={series}
-          type="donut"
-          width="400"
-        />
+        <ReactApexChart options={options} series={series} type="donut" width="400" />
       </div>
     </div>
   );

@@ -335,17 +335,13 @@ const ProductListTable: React.FC = () => {
   };
 
   const toggleSelect = (id: number) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    setSelected((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
   };
 
   const toggleAll = () => {
     const ids = paginatedProducts().map((p) => p.id);
     setSelected((prev) =>
-      isAllSelected()
-        ? prev.filter((id) => !ids.includes(id))
-        : [...new Set([...prev, ...ids])]
+      isAllSelected() ? prev.filter((id) => !ids.includes(id)) : [...new Set([...prev, ...ids])]
     );
   };
 
@@ -373,9 +369,7 @@ const ProductListTable: React.FC = () => {
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Products List
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Products List</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Track your store&apos;s progress to boost your sales.
           </p>
@@ -449,10 +443,7 @@ const ProductListTable: React.FC = () => {
               className="shadow-sm focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-4 pl-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-none sm:w-[300px] sm:min-w-[300px] dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
             />
           </div>
-          <FilterDropdown
-            showFilter={showFilter}
-            setShowFilter={setShowFilter}
-          />
+          <FilterDropdown showFilter={showFilter} setShowFilter={setShowFilter} />
         </div>
       </div>
       <div className="overflow-x-auto custom-scrollbar">
@@ -499,9 +490,7 @@ const ProductListTable: React.FC = () => {
                 className="cursor-pointer px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400"
               >
                 <div className="flex items-center gap-3">
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                    Products
-                  </p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Products</p>
                   <span className="flex flex-col gap-0.5">
                     <svg
                       className={
@@ -545,9 +534,7 @@ const ProductListTable: React.FC = () => {
                 className="cursor-pointer px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400"
               >
                 <div className="flex items-center gap-3">
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                    Category
-                  </p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Category</p>
                   <span className="flex flex-col gap-0.5">
                     <svg
                       className={
@@ -591,9 +578,7 @@ const ProductListTable: React.FC = () => {
                 className="cursor-pointer px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400"
               >
                 <div className="flex items-center gap-3">
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                    Brand
-                  </p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Brand</p>
                   <span className="flex flex-col gap-0.5">
                     <svg
                       className={
@@ -637,9 +622,7 @@ const ProductListTable: React.FC = () => {
                 className="cursor-pointer px-5 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-400"
               >
                 <div className="flex items-center gap-3">
-                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                    Price
-                  </p>
+                  <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Price</p>
                   <span className="flex flex-col gap-0.5">
                     <svg
                       className={
@@ -693,10 +676,7 @@ const ProductListTable: React.FC = () => {
           </thead>
           <tbody className="divide-x divide-y divide-gray-200 dark:divide-gray-800">
             {paginatedProducts().map((product) => (
-              <tr
-                key={product.id}
-                className="transition hover:bg-gray-50 dark:hover:bg-gray-900"
-              >
+              <tr key={product.id} className="transition hover:bg-gray-50 dark:hover:bg-gray-900">
                 <td className="w-14 px-5 py-4 whitespace-nowrap">
                   <label className="cursor-pointer text-sm font-medium text-gray-700 select-none dark:text-gray-400">
                     <input
@@ -712,11 +692,7 @@ const ProductListTable: React.FC = () => {
                           : "bg-transparent border-gray-300 dark:border-gray-700"
                       }`}
                     >
-                      <span
-                        className={
-                          selected.includes(product.id) ? "" : "opacity-0"
-                        }
-                      >
+                      <span className={selected.includes(product.id) ? "" : "opacity-0"}>
                         <svg
                           width="12"
                           height="12"
@@ -753,19 +729,13 @@ const ProductListTable: React.FC = () => {
                   </div>
                 </td>
                 <td className="px-5 py-4 whitespace-nowrap">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {product.category}
-                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{product.category}</p>
                 </td>
                 <td className="px-5 py-4 whitespace-nowrap">
-                  <p className="text-sm text-gray-700 dark:text-gray-400">
-                    {product.brand}
-                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">{product.brand}</p>
                 </td>
                 <td className="px-5 py-4 whitespace-nowrap">
-                  <p className="text-sm text-gray-700 dark:text-gray-400">
-                    {product.price}
-                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">{product.price}</p>
                 </td>
                 <td className="px-5 py-4 whitespace-nowrap">
                   <span
@@ -779,9 +749,7 @@ const ProductListTable: React.FC = () => {
                   </span>
                 </td>
                 <td className="px-5 py-4 whitespace-nowrap">
-                  <p className="text-sm text-gray-700 dark:text-gray-400">
-                    {product.createdAt}
-                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">{product.createdAt}</p>
                 </td>
                 <td className="px-5 py-4 whitespace-nowrap"></td>
               </tr>
@@ -792,18 +760,9 @@ const ProductListTable: React.FC = () => {
       <div className="flex items-center flex-col sm:flex-row justify-between border-t border-gray-200 px-5 py-4 dark:border-gray-800">
         <div className="pb-3 sm:pb-0">
           <span className="block text-sm font-medium text-gray-500 dark:text-gray-400">
-            Showing{" "}
-            <span className="text-gray-800 dark:text-white/90">
-              {startItem()}
-            </span>{" "}
-            to{" "}
-            <span className="text-gray-800 dark:text-white/90">
-              {endItem()}
-            </span>{" "}
-            of{" "}
-            <span className="text-gray-800 dark:text-white/90">
-              {products.length}
-            </span>
+            Showing <span className="text-gray-800 dark:text-white/90">{startItem()}</span> to{" "}
+            <span className="text-gray-800 dark:text-white/90">{endItem()}</span> of{" "}
+            <span className="text-gray-800 dark:text-white/90">{products.length}</span>
           </span>
         </div>
         <div className="flex w-full items-center justify-between gap-2 rounded-lg bg-gray-50 p-4 sm:w-auto sm:justify-normal sm:rounded-none sm:bg-transparent sm:p-0 dark:bg-gray-900 dark:sm:bg-transparent">

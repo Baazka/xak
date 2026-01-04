@@ -1,11 +1,4 @@
-import {
-  AudioIcon,
-  DownloadIcon,
-  FileIcon,
-  FolderIcon,
-  GridIcon,
-  VideoIcon,
-} from "../../icons";
+import { AudioIcon, DownloadIcon, FileIcon, FolderIcon, GridIcon, VideoIcon } from "../../icons";
 import FileCard from "./FileCard";
 
 const fileData = [
@@ -64,9 +57,7 @@ export default function AllMediaCard() {
     <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="px-4 py-4 sm:pl-6 sm:pr-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            All Media
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">All Media</h3>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative">

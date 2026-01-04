@@ -235,8 +235,7 @@ const TransactionList: React.FC = () => {
   const perPage: number = 10;
 
   const totalPages: number = Math.ceil(transactions.length / perPage) || 1;
-  const startEntry: number =
-    transactions.length === 0 ? 0 : (page - 1) * perPage + 1;
+  const startEntry: number = transactions.length === 0 ? 0 : (page - 1) * perPage + 1;
   const endEntry: number = Math.min(page * perPage, transactions.length);
 
   const sortedRows: Transaction[] = React.useMemo(() => {
@@ -260,10 +259,7 @@ const TransactionList: React.FC = () => {
     );
   }, [sortedRows, search]);
 
-  const paginatedRows: Transaction[] = filteredRows.slice(
-    (page - 1) * perPage,
-    page * perPage
-  );
+  const paginatedRows: Transaction[] = filteredRows.slice((page - 1) * perPage, page * perPage);
 
   const toggleSelectAll = (): void => {
     if (selected.length === paginatedRows.length) {
@@ -281,9 +277,7 @@ const TransactionList: React.FC = () => {
   };
 
   const toggleRow = (id: number): void => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+    setSelected((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
     updateSelectAll();
   };
 
@@ -311,9 +305,7 @@ const TransactionList: React.FC = () => {
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Transactions
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Transactions</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Your most recent transactions list
           </p>
@@ -343,9 +335,7 @@ const TransactionList: React.FC = () => {
                 placeholder="Search..."
                 className="shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-4 pl-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[300px] dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
                 value={search}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setSearch(e.target.value)
-                }
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
               />
             </div>
             <div className="hidden lg:block">
@@ -407,11 +397,7 @@ const TransactionList: React.FC = () => {
                         }`}
                       >
                         <span
-                          className={
-                            selected.length === paginatedRows.length
-                              ? ""
-                              : "opacity-0"
-                          }
+                          className={selected.length === paginatedRows.length ? "" : "opacity-0"}
                         >
                           <svg
                             width="12"
@@ -590,10 +576,7 @@ const TransactionList: React.FC = () => {
           </thead>
           <tbody className="divide-x divide-y divide-gray-200 dark:divide-gray-800">
             {paginatedRows.map((row: Transaction) => (
-              <tr
-                key={row.id}
-                className="transition hover:bg-gray-50 dark:hover:bg-gray-900"
-              >
+              <tr key={row.id} className="transition hover:bg-gray-50 dark:hover:bg-gray-900">
                 <td className="p-4 whitespace-nowrap">
                   <div className="group flex items-center gap-3">
                     <label className="flex cursor-pointer items-center text-sm font-medium text-gray-700 select-none dark:text-gray-400">
@@ -611,11 +594,7 @@ const TransactionList: React.FC = () => {
                               : "bg-transparent border-gray-300 dark:border-gray-700"
                           }`}
                         >
-                          <span
-                            className={
-                              selected.includes(row.id) ? "" : "opacity-0"
-                            }
-                          >
+                          <span className={selected.includes(row.id) ? "" : "opacity-0"}>
                             <svg
                               width="12"
                               height="12"
@@ -649,19 +628,13 @@ const TransactionList: React.FC = () => {
                   </span>
                 </td>
                 <td className="p-4 whitespace-nowrap">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {row.email}
-                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{row.email}</p>
                 </td>
                 <td className="p-4 whitespace-nowrap">
-                  <p className="text-sm text-gray-700 dark:text-gray-400">
-                    {row.amountDisplay}
-                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">{row.amountDisplay}</p>
                 </td>
                 <td className="p-4 whitespace-nowrap">
-                  <p className="text-sm text-gray-700 dark:text-gray-400">
-                    {row.dueDate}
-                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-400">{row.dueDate}</p>
                 </td>
                 <td className="p-4 whitespace-nowrap">
                   <span
@@ -669,8 +642,8 @@ const TransactionList: React.FC = () => {
                       row.status === "Completed"
                         ? "bg-success-50 text-success-700 dark:bg-success-500/15 dark:text-success-500"
                         : row.status === "Pending"
-                        ? "bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-500"
-                        : "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500"
+                          ? "bg-warning-50 text-warning-700 dark:bg-warning-500/15 dark:text-warning-500"
+                          : "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-500"
                     }`}
                   >
                     {row.status}
@@ -725,33 +698,17 @@ const TransactionList: React.FC = () => {
       <div className="border-t border-gray-200 px-5 py-4 dark:border-gray-800">
         <div className="flex justify-center pb-4 sm:hidden">
           <span className="block text-sm font-medium text-gray-500 dark:text-gray-400">
-            Showing{" "}
-            <span className="text-gray-800 dark:text-white/90">
-              {startEntry}
-            </span>{" "}
-            to{" "}
-            <span className="text-gray-800 dark:text-white/90">{endEntry}</span>{" "}
-            of{" "}
-            <span className="text-gray-800 dark:text-white/90">
-              {filteredRows.length}
-            </span>
+            Showing <span className="text-gray-800 dark:text-white/90">{startEntry}</span> to{" "}
+            <span className="text-gray-800 dark:text-white/90">{endEntry}</span> of{" "}
+            <span className="text-gray-800 dark:text-white/90">{filteredRows.length}</span>
           </span>
         </div>
         <div className="flex items-center justify-between">
           <div className="hidden sm:block">
             <span className="block text-sm font-medium text-gray-500 dark:text-gray-400">
-              Showing{" "}
-              <span className="text-gray-800 dark:text-white/90">
-                {startEntry}
-              </span>{" "}
-              to{" "}
-              <span className="text-gray-800 dark:text-white/90">
-                {endEntry}
-              </span>{" "}
-              of{" "}
-              <span className="text-gray-800 dark:text-white/90">
-                {filteredRows.length}
-              </span>
+              Showing <span className="text-gray-800 dark:text-white/90">{startEntry}</span> to{" "}
+              <span className="text-gray-800 dark:text-white/90">{endEntry}</span> of{" "}
+              <span className="text-gray-800 dark:text-white/90">{filteredRows.length}</span>
             </span>
           </div>
           <div className="flex w-full items-center justify-between gap-2 rounded-lg bg-gray-50 p-4 sm:w-auto sm:justify-normal sm:rounded-none sm:bg-transparent sm:p-0 dark:bg-gray-900 dark:sm:bg-transparent">

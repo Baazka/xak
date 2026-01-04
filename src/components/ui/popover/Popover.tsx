@@ -44,10 +44,8 @@ export default function Popover({ position, trigger, children }: PopoverProps) {
 
   const arrowClasses = {
     top: "bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45",
-    right:
-      "left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 rotate-45",
-    bottom:
-      "top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45",
+    right: "left-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 rotate-45",
+    bottom: "top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45",
     left: "right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 rotate-45",
   };
 

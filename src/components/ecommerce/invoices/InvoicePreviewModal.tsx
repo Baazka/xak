@@ -39,9 +39,7 @@ export default function InvoicePreviewModal() {
         className="relative max-w-[720px] m-5 rounded-3xl bg-white dark:bg-gray-900"
       >
         <div className="flex items-center justify-between px-6 py-4">
-          <h3 className="text-lg text-gray-700 dark:text-gray-500">
-            Invoice: #34834
-          </h3>
+          <h3 className="text-lg text-gray-700 dark:text-gray-500">Invoice: #34834</h3>
         </div>
         <div className="max-h-[598px] overflow-y-auto p-4 sm:p-6">
           <div className="mb-9 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
@@ -63,9 +61,7 @@ export default function InvoicePreviewModal() {
                 Issued On:
               </span>
 
-              <span className="block text-sm text-gray-500 dark:text-gray-400">
-                11 March, 2027
-              </span>
+              <span className="block text-sm text-gray-500 dark:text-gray-400">11 March, 2027</span>
             </div>
 
             <div className="h-px w-full bg-gray-200 sm:h-[158px] sm:w-px dark:bg-gray-800"></div>
@@ -88,9 +84,7 @@ export default function InvoicePreviewModal() {
                 Due On:
               </span>
 
-              <span className="block text-sm text-gray-500 dark:text-gray-400">
-                16 March, 2027
-              </span>
+              <span className="block text-sm text-gray-500 dark:text-gray-400">16 March, 2027</span>
             </div>
           </div>
 
@@ -212,25 +206,17 @@ export default function InvoicePreviewModal() {
               </p>
               <ul className="space-y-2">
                 <li className="flex justify-between gap-5">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    Sub Total
-                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Sub Total</span>
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
                     $3,850
                   </span>
                 </li>
                 <li className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    Vat (10%):
-                  </span>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
-                    $385
-                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Vat (10%):</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-400">$385</span>
                 </li>
                 <li className="flex items-center justify-between">
-                  <span className="font-medium text-gray-700 dark:text-gray-400">
-                    Total
-                  </span>
+                  <span className="font-medium text-gray-700 dark:text-gray-400">Total</span>
                   <span className="text-lg font-semibold text-gray-800 dark:text-white/90">
                     $4,235
                   </span>

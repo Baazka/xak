@@ -79,9 +79,7 @@ export default function PaymentMethod() {
                 <p className="text-sm font-normal text-gray-400 dark:text-gray-400">
                   **** **** **** 9029
                 </p>
-                <p className="text-sm font-normal text-gray-400 dark:text-gray-400">
-                  Expiry 01/24
-                </p>
+                <p className="text-sm font-normal text-gray-400 dark:text-gray-400">Expiry 01/24</p>
               </div>
               <div className="mt-4 flex flex-wrap gap-3">
                 <button className="shadow-theme-xs inline-flex h-6 items-center justify-center rounded-md border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
@@ -128,9 +126,7 @@ export default function PaymentMethod() {
                 <p className="text-sm font-normal text-gray-400 dark:text-gray-400">
                   **** **** **** 4328
                 </p>
-                <p className="text-sm font-normal text-gray-400 dark:text-gray-400">
-                  Expiry 01/25
-                </p>
+                <p className="text-sm font-normal text-gray-400 dark:text-gray-400">Expiry 01/25</p>
               </div>
               <div className="mt-4 flex flex-wrap gap-3">
                 <button className="shadow-theme-xs inline-flex h-6 items-center justify-center rounded-md border border-gray-300 px-3 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">

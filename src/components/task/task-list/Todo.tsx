@@ -60,11 +60,7 @@ export default function Todo() {
 
             <label htmlFor="taskCheckbox1" className="w-full cursor-pointer">
               <div className="relative flex items-start">
-                <input
-                  type="checkbox"
-                  id="taskCheckbox1"
-                  className="sr-only taskCheckbox"
-                />
+                <input type="checkbox" id="taskCheckbox1" className="sr-only taskCheckbox" />
                 <div className="flex items-center justify-center w-full h-5 mr-3 border border-gray-300 rounded-md box max-w-5 dark:border-gray-700">
                   <span className="opacity-0">
                     <svg
@@ -138,12 +134,7 @@ export default function Todo() {
               </div>
 
               <div className="h-6 w-full max-w-6 overflow-hidden rounded-full border-[0.5px] border-gray-200 dark:border-gray-800">
-                <Image
-                  width={24}
-                  height={24}
-                  src="/images/user/user-01.jpg"
-                  alt="user"
-                />
+                <Image width={24} height={24} src="/images/user/user-01.jpg" alt="user" />
               </div>
             </div>
           </div>
@@ -271,12 +262,7 @@ export default function Todo() {
               </div>
 
               <div className="h-6 w-full max-w-6 overflow-hidden rounded-full border-[0.5px] border-gray-200 dark:border-gray-800">
-                <Image
-                  width={24}
-                  height={24}
-                  src="/images/user/user-13.jpg"
-                  alt="user"
-                />
+                <Image width={24} height={24} src="/images/user/user-13.jpg" alt="user" />
               </div>
             </div>
           </div>
@@ -388,12 +374,7 @@ export default function Todo() {
                 </span>
               </div>
               <div className="h-6 w-full max-w-6 overflow-hidden rounded-full border-[0.5px] border-gray-200 dark:border-gray-800">
-                <Image
-                  width={24}
-                  height={24}
-                  src="/images/user/user-15.jpg"
-                  alt="user"
-                />
+                <Image width={24} height={24} src="/images/user/user-15.jpg" alt="user" />
               </div>
             </div>
           </div>

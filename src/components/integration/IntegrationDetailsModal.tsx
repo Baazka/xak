@@ -26,25 +26,19 @@ export default function IntegrationDetailsModal() {
           </p>
           <ul>
             <li className="flex justify-between border-b border-gray-100 py-2.5 dark:border-gray-800">
-              <span className="w-1/2 text-sm text-gray-500 dark:text-gray-400">
-                App Name
-              </span>
+              <span className="w-1/2 text-sm text-gray-500 dark:text-gray-400">App Name</span>
               <span className="w-1/2 break-words text-gray-700 dark:text-gray-400">
                 Example App
               </span>
             </li>
             <li className="flex justify-between border-b border-gray-100 py-2.5 dark:border-gray-800">
-              <span className="w-1/2 text-sm text-gray-500 dark:text-gray-400">
-                Client ID
-              </span>
+              <span className="w-1/2 text-sm text-gray-500 dark:text-gray-400">Client ID</span>
               <span className="w-1/2 break-words text-gray-700 dark:text-gray-400">
                 872364219810-abc123xyz456.apps.usercontent.com
               </span>
             </li>
             <li className="flex justify-between border-b border-gray-100 py-2.5 dark:border-gray-800">
-              <span className="w-1/2 text-sm text-gray-500 dark:text-gray-400">
-                Client Secret
-              </span>
+              <span className="w-1/2 text-sm text-gray-500 dark:text-gray-400">Client Secret</span>
               <span className="w-1/2 break-words text-gray-700 dark:text-gray-400">
                 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e
               </span>

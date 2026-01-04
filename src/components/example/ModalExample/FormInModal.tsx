@@ -19,11 +19,7 @@ export default function FormInModal() {
       <Button size="sm" onClick={openModal}>
         Open Modal
       </Button>
-      <Modal
-        isOpen={isOpen}
-        onClose={closeModal}
-        className="max-w-[584px] p-5 lg:p-10"
-      >
+      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[584px] p-5 lg:p-10">
         <form className="">
           <h4 className="mb-6 text-lg font-medium text-gray-800 dark:text-white/90">
             Personal Information

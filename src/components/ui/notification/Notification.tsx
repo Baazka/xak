@@ -1,12 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  AlertIcon,
-  CheckCircleIcon,
-  CloseIcon,
-  ErrorIcon,
-  InfoIcon,
-} from "../../../icons";
+import { AlertIcon, CheckCircleIcon, CloseIcon, ErrorIcon, InfoIcon } from "../../../icons";
 
 interface NotificationProps {
   variant: "success" | "info" | "warning" | "error"; // Notification type
@@ -67,17 +61,13 @@ const Notification: React.FC<NotificationProps> = ({
     >
       <div className="flex items-center gap-4">
         {/* Icon */}
-        <div
-          className={`flex items-center justify-center w-10 h-10 rounded-lg ${iconBg}`}
-        >
+        <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${iconBg}`}>
           {icon}
         </div>
 
         {/* Title and Description */}
         <div>
-          <h4 className="text-sm text-gray-800 sm:text-base dark:text-white/90">
-            {title}
-          </h4>
+          <h4 className="text-sm text-gray-800 sm:text-base dark:text-white/90">{title}</h4>
           {description && (
             <p className="mt-1 text-xs text-gray-600 sm:text-sm dark:text-white/70">
               {description}

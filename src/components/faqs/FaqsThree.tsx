@@ -31,8 +31,8 @@ export default function FaqsThree() {
               </h4>
 
               <p className="text-base text-gray-500 dark:text-gray-400">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Praesent et nunc ut risus imperdiet lacinia.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent et nunc ut risus
+                imperdiet lacinia.
                 <br />
                 <br />
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -107,8 +107,8 @@ export default function FaqsThree() {
               </h4>
 
               <p className="text-base text-gray-500 dark:text-gray-400">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Praesent et nunc ut risus imperdiet lacinia.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent et nunc ut risus
+                imperdiet lacinia.
               </p>
             </div>
           </div>
@@ -143,8 +143,8 @@ export default function FaqsThree() {
               </h4>
 
               <p className="text-base text-gray-500 dark:text-gray-400">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Praesent et nunc ut risus imperdiet lacinia.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent et nunc ut risus
+                imperdiet lacinia.
                 <br />
                 <br />
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -183,10 +183,9 @@ export default function FaqsThree() {
               </h4>
 
               <p className="text-base text-gray-500 dark:text-gray-400">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-                quis magna ac nibh malesuada consectetur at vitae ipsum. Lorem
-                ipsum dolor sit amet, consectetur adipiscing elit. Nam
-                fermentum, leo et lacinia accumsan, ligula ante hendrerit nisi,
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec quis magna ac nibh
+                malesuada consectetur at vitae ipsum. Lorem ipsum dolor sit amet, consectetur
+                adipiscing elit. Nam fermentum, leo et lacinia accumsan, ligula ante hendrerit nisi,
                 eget vulputate ante justo et justo.
               </p>
             </div>

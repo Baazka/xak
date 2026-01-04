@@ -44,9 +44,7 @@ export default function CodeBlock({
     });
   };
 
-  const preClasses = ` ${
-    showLineNumbers ? "line-numbers" : ""
-  } ${className}`.trim();
+  const preClasses = ` ${showLineNumbers ? "line-numbers" : ""} ${className}`.trim();
 
   return (
     <div className="dark:bg-dark-primary shadow-theme-xs relative w-full rounded-[20px] border border-gray-200 bg-white  dark:border-gray-800 dark:bg-white/[0.03]">
@@ -67,9 +65,7 @@ export default function CodeBlock({
               strokeLinejoin="round"
             />
           </svg>
-          <p className="text-gray-500 text-sm dark:text-gray-400">
-            {language.toUpperCase()}
-          </p>
+          <p className="text-gray-500 text-sm dark:text-gray-400">{language.toUpperCase()}</p>
         </div>
         <div>
           <button

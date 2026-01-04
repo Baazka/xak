@@ -207,8 +207,7 @@ export default function CodeGeneratorContent() {
       <div className="flex justify-end">
         <div className="shadow-theme-xs bg-brand-100 dark:bg-brand-500/20 max-w-[480px] rounded-xl rounded-tr-xs px-4 py-3">
           <p className="text-left text-sm font-normal text-gray-800 dark:text-white/90">
-            Give me a React login form component with Google & GitHub
-            authentication
+            Give me a React login form component with Google & GitHub authentication
           </p>
         </div>
       </div>
@@ -216,16 +215,11 @@ export default function CodeGeneratorContent() {
       {/* AI Response 1 - React Component */}
       <div className="flex lg:justify-start mb-6">
         <div className="w-full flex-1">
-          <CodeBlock
-            code={reactComponentCode}
-            language="html"
-            showLineNumbers
-          />
+          <CodeBlock code={reactComponentCode} language="html" showLineNumbers />
 
           <div className="mt-4">
             <p className="text-sm leading-5 text-gray-500 dark:text-gray-400">
-              Here is the code for login form with google and github
-              authentication as described.
+              Here is the code for login form with google and github authentication as described.
             </p>
           </div>
         </div>

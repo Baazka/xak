@@ -1,12 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../../ui/tableMain";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "../../ui/tableMain";
 import { TrashBinIcon } from "../../../icons";
 import AvatarText from "../../ui/avatar/AvatarText";
 
@@ -163,9 +157,7 @@ export default function BasicTableTwo() {
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white pt-4 dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex flex-col gap-4 px-6 mb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Recent Orders
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Recent Orders</h3>
         </div>
         <div className="flex items-center gap-3">
           <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-theme-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
@@ -302,8 +294,8 @@ export default function BasicTableTwo() {
                       row.status.type === "Complete"
                         ? "success"
                         : row.status.type === "Pending"
-                        ? "warning"
-                        : "error"
+                          ? "warning"
+                          : "error"
                     }
                     size="sm"
                   >

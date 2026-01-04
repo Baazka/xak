@@ -157,9 +157,7 @@ const InvoiceTable: React.FC = () => {
       <div className="px-6">
         <div className="flex flex-col justify-between gap-5 py-4 sm:flex-row sm:items-center">
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Invoices
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">Invoices</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Access all your previous invoices.
             </p>
@@ -235,10 +233,7 @@ const InvoiceTable: React.FC = () => {
                           d="M16.1875 6.3125H20.4531L14.7656 0.625V4.89062C14.7656 5.67266 15.4055 6.3125 16.1875 6.3125Z"
                           fill="#B0B7BD"
                         />
-                        <path
-                          d="M20.4531 10.5781L16.1875 6.3125H20.4531V10.5781Z"
-                          fill="#CAD1D8"
-                        />
+                        <path d="M20.4531 10.5781L16.1875 6.3125H20.4531V10.5781Z" fill="#CAD1D8" />
                         <path
                           d="M17.6094 19.1094C17.6094 19.5004 17.2895 19.8203 16.8984 19.8203H1.25781C0.866797 19.8203 0.546875 19.5004 0.546875 19.1094V12C0.546875 11.609 0.866797 11.2891 1.25781 11.2891H16.8984C17.2895 11.2891 17.6094 11.609 17.6094 12V19.1094Z"
                           fill="#F15642"
@@ -352,13 +347,7 @@ const InvoiceTable: React.FC = () => {
                   : "hover:bg-gray-50 hover:text-gray-800 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
               }`}
             >
-              <svg
-                className="fill-current"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-              >
+              <svg className="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
@@ -396,13 +385,7 @@ const InvoiceTable: React.FC = () => {
               }`}
             >
               <span className="hidden sm:inline">Next</span>
-              <svg
-                className="fill-current"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-              >
+              <svg className="fill-current" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"

@@ -9,10 +9,7 @@ interface DropdownProps {
   dropdownContent: React.ReactNode;
 }
 
-const TableDropdown: React.FC<DropdownProps> = ({
-  dropdownButton,
-  dropdownContent,
-}) => {
+const TableDropdown: React.FC<DropdownProps> = ({ dropdownButton, dropdownContent }) => {
   const [isOpen, setIsOpen] = useState(false);
   const buttonRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -39,21 +36,17 @@ const TableDropdown: React.FC<DropdownProps> = ({
     document.addEventListener("click", close);
 
     if (buttonRef.current && contentRef.current) {
-      popperInstanceRef.current = createPopper(
-        buttonRef.current,
-        contentRef.current,
-        {
-          placement: "bottom-end",
-          modifiers: [
-            {
-              name: "offset",
-              options: {
-                offset: [0, 4],
-              },
+      popperInstanceRef.current = createPopper(buttonRef.current, contentRef.current, {
+        placement: "bottom-end",
+        modifiers: [
+          {
+            name: "offset",
+            options: {
+              offset: [0, 4],
             },
-          ],
-        }
-      );
+          },
+        ],
+      });
     }
 
     return () => {

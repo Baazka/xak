@@ -3,9 +3,7 @@ import React from "react";
 export default function OrderDetailsTable() {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3">
-      <h2 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">
-        Order Details
-      </h2>
+      <h2 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90">Order Details</h2>
       <div className="overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800">
         <div className="custom-scrollbar overflow-x-auto">
           <table className="min-w-full text-left text-sm text-gray-700 dark:border-gray-800">
@@ -123,28 +121,16 @@ export default function OrderDetailsTable() {
           </p>
           <ul className="space-y-2">
             <li className="flex justify-between gap-5">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Sub Total
-              </span>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
-                $3,850
-              </span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Sub Total</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-400">$3,850</span>
             </li>
             <li className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Vat (10%):
-              </span>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
-                $385
-              </span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Vat (10%):</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-400">$385</span>
             </li>
             <li className="flex items-center justify-between">
-              <span className="font-medium text-gray-700 dark:text-gray-400">
-                Total
-              </span>
-              <span className="text-lg font-semibold text-gray-800 dark:text-white/90">
-                $4,235
-              </span>
+              <span className="font-medium text-gray-700 dark:text-gray-400">Total</span>
+              <span className="text-lg font-semibold text-gray-800 dark:text-white/90">$4,235</span>
             </li>
           </ul>
         </div>

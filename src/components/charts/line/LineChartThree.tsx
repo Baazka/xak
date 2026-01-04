@@ -322,12 +322,7 @@ export default function LineChartThree() {
   return (
     <div className="max-w-full overflow-x-auto custom-scrollbar">
       <div id="chartEight" className="min-w-[1000px] xl:min-w-full">
-        <ReactApexChart
-          options={options}
-          series={series}
-          type="area"
-          height={335}
-        />
+        <ReactApexChart options={options} series={series} type="area" height={335} />
       </div>
     </div>
   );

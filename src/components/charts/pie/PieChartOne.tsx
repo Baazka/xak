@@ -92,12 +92,7 @@ export default function PieChartOne() {
   return (
     <div className="flex justify-center">
       <div id="chartDarkStyle">
-        <ReactApexChart
-          options={options}
-          series={series}
-          type="donut"
-          height={290}
-        />
+        <ReactApexChart options={options} series={series} type="donut" height={290} />
       </div>
     </div>
   );

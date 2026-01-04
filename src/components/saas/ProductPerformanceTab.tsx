@@ -31,11 +31,7 @@ export default function ProductPerformanceTab() {
           <button className="dropdown-toggle" onClick={toggleDropdown}>
             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
           </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
+          <Dropdown isOpen={isOpen} onClose={closeDropdown} className="w-40 p-2">
             <DropdownItem
               onItemClick={closeDropdown}
               className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
@@ -112,9 +108,7 @@ export default function ProductPerformanceTab() {
                         />
                       </svg>
                     </span>
-                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-                      790
-                    </h4>
+                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white/90">790</h4>
                   </div>
                 </div>
                 <div className="px-5">
@@ -138,9 +132,7 @@ export default function ProductPerformanceTab() {
                         />
                       </svg>
                     </span>
-                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-                      572
-                    </h4>
+                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white/90">572</h4>
                   </div>
                 </div>
               </div>
@@ -233,9 +225,7 @@ export default function ProductPerformanceTab() {
                         />
                       </svg>
                     </span>
-                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white/90">
-                      950
-                    </h4>
+                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white/90">950</h4>
                   </div>
                 </div>
               </div>

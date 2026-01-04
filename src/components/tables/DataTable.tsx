@@ -75,9 +75,7 @@ export function DataTable<TData>({
               <TableRow key={hg.id}>
                 {hg.headers.map((h) => (
                   <TableHead key={h.id}>
-                    {h.isPlaceholder
-                      ? null
-                      : flexRender(h.column.columnDef.header, h.getContext())}
+                    {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -89,20 +87,14 @@ export function DataTable<TData>({
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   Өгөгдөл байхгүй.
                 </TableCell>
               </TableRow>
@@ -112,11 +104,7 @@ export function DataTable<TData>({
       </div>
 
       <div className="flex items-center justify-between">
-        <Pagination
-          page={page}
-          pageCount={pageCount}
-          onPageChange={onPageChange}
-        />
+        <Pagination page={page} pageCount={pageCount} onPageChange={onPageChange} />
         <RowsPerPage
           value={limit}
           onChange={(v) => {

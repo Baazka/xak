@@ -26,84 +26,48 @@ export default function InvoiceTable() {
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
           <tr>
-            <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-              1
-            </td>
+            <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">1</td>
             <td className="px-5 py-3 text-sm font-medium text-gray-800 dark:text-white/90">
               Macbook pro 13”
             </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              1
-            </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              $48
-            </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              0%
-            </td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">1</td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">$48</td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">0%</td>
             <td className="px-5 py-3 text-right text-sm text-gray-500 dark:text-gray-400">
               $1,200
             </td>
           </tr>
           <tr>
-            <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-              2
-            </td>
+            <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">2</td>
             <td className="px-5 py-3 text-sm font-medium text-gray-800 dark:text-white/90">
               Apple Watch Ultra
             </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              1
-            </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              $300
-            </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              50%
-            </td>
-            <td className="px-5 py-3 text-right text-sm text-gray-500 dark:text-gray-400">
-              $150
-            </td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">1</td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">$300</td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">50%</td>
+            <td className="px-5 py-3 text-right text-sm text-gray-500 dark:text-gray-400">$150</td>
           </tr>
           <tr>
-            <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-              3
-            </td>
+            <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">3</td>
             <td className="px-5 py-3 text-sm font-medium text-gray-800 dark:text-white/90">
               iPhone 15 Pro Max
             </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              3
-            </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              $800
-            </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              0%
-            </td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">3</td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">$800</td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">0%</td>
             <td className="px-5 py-3 text-right text-sm text-gray-500 dark:text-gray-400">
               $1,600
             </td>
           </tr>
           <tr>
-            <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">
-              4
-            </td>
+            <td className="px-5 py-3 text-sm text-gray-500 dark:text-gray-400">4</td>
             <td className="px-5 py-3 text-sm font-medium text-gray-800 dark:text-white/90">
               iPad Pro 3rd Gen
             </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              1
-            </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              $900
-            </td>
-            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
-              0%
-            </td>
-            <td className="px-5 py-3 text-right text-sm text-gray-500 dark:text-gray-400">
-              $900
-            </td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">1</td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">$900</td>
+            <td className="px-5 py-3 text-center text-sm text-gray-500 dark:text-gray-400">0%</td>
+            <td className="px-5 py-3 text-right text-sm text-gray-500 dark:text-gray-400">$900</td>
           </tr>
         </tbody>
       </table>

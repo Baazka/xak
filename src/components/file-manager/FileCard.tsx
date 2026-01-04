@@ -26,12 +26,8 @@ const FileCard: React.FC<FileCardProps> = ({
           {icon}
         </div>
         <div>
-          <h4 className="mb-1 text-sm font-medium text-gray-800 dark:text-white/90">
-            {title}
-          </h4>
-          <span className="block text-sm text-gray-500 dark:text-gray-400">
-            {usage}
-          </span>
+          <h4 className="mb-1 text-sm font-medium text-gray-800 dark:text-white/90">{title}</h4>
+          <span className="block text-sm text-gray-500 dark:text-gray-400">{usage}</span>
         </div>
       </div>
 

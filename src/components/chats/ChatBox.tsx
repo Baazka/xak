@@ -88,9 +88,7 @@ export default function ChatBox() {
         {chatList.map((chat) => (
           <div
             key={chat.id}
-            className={`flex ${
-              chat.isSender ? "justify-end" : "items-start gap-4"
-            }`}
+            className={`flex ${chat.isSender ? "justify-end" : "items-start gap-4"}`}
           >
             {!chat.isSender && (
               <div className="w-10 h-10 overflow-hidden rounded-full">
@@ -127,9 +125,7 @@ export default function ChatBox() {
                 <p className="text-sm ">{chat.message}</p>
               </div>
               <p className="mt-2 text-gray-500 text-theme-xs dark:text-gray-400">
-                {chat.isSender
-                  ? chat.lastActive
-                  : `${chat.name}, ${chat.lastActive}`}
+                {chat.isSender ? chat.lastActive : `${chat.name}, ${chat.lastActive}`}
               </p>
             </div>
           </div>

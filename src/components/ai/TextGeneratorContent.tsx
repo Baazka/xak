@@ -77,10 +77,9 @@ export default function TextGeneratorContent() {
       <div className="flex justify-end">
         <div className="shadow-theme-xs bg-brand-100 dark:bg-brand-500/20 max-w-[480px] rounded-xl rounded-tr-xs px-4 py-3">
           <p className="text-left text-sm font-normal text-gray-800 dark:text-white/90">
-            Can you generate some random, creative, and engaging placeholder
-            text for me? It doesn&apos;t need to follow any specific
-            structure—just something fun or interesting to fill space
-            temporarily.
+            Can you generate some random, creative, and engaging placeholder text for me? It
+            doesn&apos;t need to follow any specific structure—just something fun or interesting to
+            fill space temporarily.
           </p>
         </div>
       </div>
@@ -90,14 +89,12 @@ export default function TextGeneratorContent() {
         <div>
           <div className="shadow-theme-xs max-w-[480px] rounded-xl rounded-tl-xs bg-gray-100 px-4 py-3 dark:bg-white/5">
             <p className="mb-5 text-sm leading-5 text-gray-800 dark:text-white/90">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
-              et varius tortor. Aenean dui magna, vehicula in lacinia non,
-              euismod sed odio. Aliquam erat volutpat.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus et varius tortor.
+              Aenean dui magna, vehicula in lacinia non, euismod sed odio. Aliquam erat volutpat.
             </p>
             <p className="mb-5 text-sm leading-5 text-gray-800 dark:text-white/90">
-              Integer iaculis eu tellus vel tincidunt. Sed sed dictum orci, in
-              pretium erat. Proin ut mi a arcu mollis hendrerit. Ut id est
-              finibus, egestas tellus ac, pharetra ante.
+              Integer iaculis eu tellus vel tincidunt. Sed sed dictum orci, in pretium erat. Proin
+              ut mi a arcu mollis hendrerit. Ut id est finibus, egestas tellus ac, pharetra ante.
             </p>
           </div>
           <div className="mt-3">
@@ -110,8 +107,8 @@ export default function TextGeneratorContent() {
       <div className="flex justify-end">
         <div className="shadow-theme-xs bg-brand-100 dark:bg-brand-500/20 max-w-[480px] rounded-xl rounded-tr-xs px-4 py-3">
           <p className="text-left text-sm font-normal text-gray-800 dark:text-white/90">
-            I&apos;m looking for a block of random, imaginative text—something
-            quirky or unexpected to use as placeholder content.
+            I&apos;m looking for a block of random, imaginative text—something quirky or unexpected
+            to use as placeholder content.
           </p>
         </div>
       </div>
@@ -121,14 +118,12 @@ export default function TextGeneratorContent() {
         <div>
           <div className="shadow-theme-xs max-w-[480px] rounded-xl rounded-tl-xs bg-gray-100 px-4 py-3 dark:bg-white/5">
             <p className="mb-5 text-sm leading-5 text-gray-800 dark:text-white/90">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
-              et varius tortor. Aenean dui magna, vehicula in lacinia non,
-              euismod sed odio. Aliquam erat volutpat. Integer iaculis eu tellus
-              vel tincidunt. Sed sed dictum orci, in pretium erat.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus et varius tortor.
+              Aenean dui magna, vehicula in lacinia non, euismod sed odio. Aliquam erat volutpat.
+              Integer iaculis eu tellus vel tincidunt. Sed sed dictum orci, in pretium erat.
             </p>
             <p className="mb-5 text-sm leading-5 text-gray-800 dark:text-white/90">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus
-              et varius tortor.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus et varius tortor.
             </p>
           </div>
           <div className="mt-3">

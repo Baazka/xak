@@ -8,10 +8,9 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { rows } = await db.query(
-    "SELECT id, email, name FROM users WHERE id=$1",
-    [payload.id]
-  );
+  const { rows } = await db.query("SELECT id, email, username FROM reg_users WHERE id=$1", [
+    payload.id,
+  ]);
 
   return NextResponse.json(rows[0]);
 }
