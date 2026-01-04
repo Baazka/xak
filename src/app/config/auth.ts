@@ -1,4 +1,4 @@
 // config/auth.ts
-export const publicRoutes = ["/signin", "/signup", "/reset-password"];
+export const publicRoutes = ["/signin", "/reset-password"];
 
 export const authCookieName = "token";

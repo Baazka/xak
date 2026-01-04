@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
-import { publicRoutes, authCookieName } from "./config/auth";
+import { publicRoutes, authCookieName } from "@/app/config/auth";
 
 interface JWTPayload {
   exp: number;
@@ -12,8 +12,15 @@ interface JWTPayload {
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get(authCookieName)?.value;
+  console.log("MIDDLEWARE HIT:", pathname);
+  // ⭐ 1. ROOT "/" – хамгийн эхэнд
+  if (pathname === "/") {
+    const url = req.nextUrl.clone();
+    url.pathname = token ? "/ecommerce" : "/signin";
+    return NextResponse.redirect(url);
+  }
 
-  // 1. Static болон asset файлуудыг алгасах
+  // 2. Static / assets
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon.ico") ||
@@ -22,20 +29,20 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. API route бол алгасах
+  // 3. API
   if (pathname.startsWith("/api/")) return NextResponse.next();
 
-  // 3. Public route бол алгасах
+  // 4. Public routes (⚠️ "/" энд байх ёсгүй)
   if (publicRoutes.some((route) => pathname === route || pathname.startsWith(route + "/"))) {
     return NextResponse.next();
   }
 
-  // 4. Token байхгүй бол login руу redirect
+  // 5. No token
   if (!token) {
     return redirectToSignin(req);
   }
 
-  // 5. Token буруу бол login руу redirect
+  // 6. Decode + exp
   try {
     const decoded = jwtDecode<JWTPayload>(token);
 
@@ -48,6 +55,7 @@ export function middleware(req: NextRequest) {
     return redirectToSignin(req);
   }
 }
+
 function redirectToSignin(req: NextRequest) {
   const url = req.nextUrl.clone();
   url.pathname = "/signin";
@@ -55,5 +63,5 @@ function redirectToSignin(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/:path*"],
+  matcher: ["/", "/(.*)"],
 };
