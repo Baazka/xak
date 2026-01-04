@@ -12,7 +12,7 @@ interface JWTPayload {
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get(authCookieName)?.value;
-  console.log("MIDDLEWARE HIT:", pathname);
+
   // ⭐ 1. ROOT "/" – хамгийн эхэнд
   if (pathname === "/") {
     const url = req.nextUrl.clone();
