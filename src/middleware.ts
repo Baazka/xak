@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtDecode } from "jwt-decode";
+import { jwtVerify } from "jose";
 import { publicRoutes, authCookieName } from "@/app/config/auth";
 
 interface JWTPayload {
@@ -9,18 +9,18 @@ interface JWTPayload {
   role?: string;
 }
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get(authCookieName)?.value;
 
-  // ⭐ 1. ROOT "/" – хамгийн эхэнд
+  // 1. Root
   if (pathname === "/") {
     const url = req.nextUrl.clone();
     url.pathname = token ? "/ecommerce" : "/signin";
     return NextResponse.redirect(url);
   }
 
-  // 2. Static / assets
+  // 2. Static
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon.ico") ||
@@ -32,24 +32,17 @@ export function middleware(req: NextRequest) {
   // 3. API
   if (pathname.startsWith("/api/")) return NextResponse.next();
 
-  // 4. Public routes (⚠️ "/" энд байх ёсгүй)
-  if (publicRoutes.some((route) => pathname === route || pathname.startsWith(route + "/"))) {
+  // 4. Public routes
+  if (publicRoutes.some((r) => pathname === r || pathname.startsWith(r + "/"))) {
     return NextResponse.next();
   }
 
   // 5. No token
-  if (!token) {
-    return redirectToSignin(req);
-  }
+  if (!token) return redirectToSignin(req);
 
-  // 6. Decode + exp
+  // 6. Verify JWT 
   try {
-    const decoded = jwtDecode<JWTPayload>(token);
-
-    if (!decoded.exp || decoded.exp * 1000 < Date.now()) {
-      return redirectToSignin(req);
-    }
-
+    await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
     return NextResponse.next();
   } catch {
     return redirectToSignin(req);

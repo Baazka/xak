@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
-import { getTokenFromCookies } from "@/lib/auth";
-import db from "@/lib/db";
+import { jwtVerify } from "jose";
 
-export async function GET() {
-  const payload = await getTokenFromCookies();
-  if (!payload) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: Request) {
+  const token = req.headers.get("cookie")?.match(/token=([^;]+)/)?.[1];
+
+  if (!token) {
+    return NextResponse.json({ user: null });
   }
 
-  const { rows } = await db.query("SELECT id, email, username FROM reg_users WHERE id=$1", [
-    payload.id,
-  ]);
-
-  return NextResponse.json(rows[0]);
+  try {
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
+    return NextResponse.json({ user: payload });
+  } catch {
+    return NextResponse.json({ user: null });
+  }
 }
