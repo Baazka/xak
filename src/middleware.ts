@@ -1,22 +1,17 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
-import { publicRoutes, authCookieName } from "@/app/config/auth";
-
-interface JWTPayload {
-  exp: number;
-  sub: string;
-  role?: string;
-}
+import { publicRoutes } from "@/app/config/auth";
+import { cookies } from "next/headers";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const token = req.cookies.get(authCookieName)?.value;
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get("refresh_token")?.value;
 
   // 1. Root
   if (pathname === "/") {
     const url = req.nextUrl.clone();
-    url.pathname = token ? "/ecommerce" : "/signin";
+    url.pathname = refreshToken ? "/ecommerce" : "/signin";
     return NextResponse.redirect(url);
   }
 
@@ -37,24 +32,17 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // 5. No token
-  if (!token) return redirectToSignin(req);
-
-  // 6. Verify JWT 
-  try {
-    await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
-    return NextResponse.next();
-  } catch {
-    return redirectToSignin(req);
+  // 5. Token байхгүй бол л redirect
+  if (!refreshToken) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/signin";
+    return NextResponse.redirect(url);
   }
-}
 
-function redirectToSignin(req: NextRequest) {
-  const url = req.nextUrl.clone();
-  url.pathname = "/signin";
-  return NextResponse.redirect(url);
+  // ✅ token байвал expire эсэхийг шалгахгүй
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/(.*)"],
+  matcher: ["/", "/((?!_next|favicon.ico).*)"],
 };

@@ -8,6 +8,7 @@ import AddUserModal from "./userDialog";
 import { SortingState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export default function User() {
   const router = useRouter();
@@ -27,14 +28,9 @@ export default function User() {
     setLoading(true);
 
     try {
-      const res = await fetch(
-        `/api/users?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
-        { credentials: "include" } // JWT cookie дамжуулах
+      const res = await fetchWithAuth(
+        `/api/users?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`
       );
-      if (res.status === 401) {
-        router.push("/signin");
-        return;
-      }
 
       if (!res.ok) {
         throw new Error(`API error: ${res.status}`);
@@ -50,13 +46,9 @@ export default function User() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [page, limit, search, sorting]);
-
   const handleDelete = async (id: number) => {
     if (!confirm(JSON.stringify(id) + " Are you sure you want to delete this user?")) return;
-    await fetch("/api/users", {
+    await fetchWithAuth("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "remove", data: id }),

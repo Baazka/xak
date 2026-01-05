@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db"; // make sure this exports a connected pg client
 import { withAuth } from "@/lib/withAuth";
 
-const SORTABLE_COLUMNS = new Set(["username", "email"]); // Add valid sortable columns here
+const SORTABLE_COLUMNS = new Set(["id", "username", "email"]); // Add valid sortable columns here
 
 export const GET = withAuth(async function GET(req: NextRequest) {
   try {
@@ -54,7 +54,7 @@ export const GET = withAuth(async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 });
-export async function POST(req: NextRequest) {
+export const POST = withAuth(async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const action = body.action || "create";
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     console.error("POST Error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
-}
+});
 async function createUser({ name, email }: { name: string; email: string }) {
   try {
     const result = await db.query(
