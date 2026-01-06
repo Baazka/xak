@@ -6,7 +6,7 @@ import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import { useRouter } from "next/navigation";
 
-export default function ResetPasswordForm() {
+export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function ResetPasswordForm() {
     e.preventDefault();
     setLoading(true);
 
-    const res = await fetch("/api/auth/reset-password", {
+    const res = await fetch("/api/auth/forget-password", {
       method: "POST",
       body: JSON.stringify({ email }),
       headers: { "Content-Type": "application/json" },
@@ -96,7 +96,7 @@ export default function ResetPasswordForm() {
           </form>
           <div className="mt-5">
             <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-              <Link href="/" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">
+              <Link href="/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">
                 Буцах
               </Link>
             </p>

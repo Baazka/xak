@@ -1,48 +1,33 @@
+// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { publicRoutes } from "@/app/config/auth";
-import { cookies } from "next/headers";
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get("refresh_token")?.value;
+  const token = req.cookies.get("access_token")?.value;
 
-  // 1. Root
-  if (pathname === "/") {
-    const url = req.nextUrl.clone();
-    url.pathname = refreshToken ? "/ecommerce" : "/signin";
-    return NextResponse.redirect(url);
-  }
-
-  // 2. Static
   if (
+    pathname === "/" ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon.ico") ||
-    pathname.match(/\.(png|jpg|jpeg|gif|svg|css|js)$/)
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/images") ||
+    /\.(png|jpg|jpeg|gif|svg|webp|ico)$/.test(pathname)
   ) {
     return NextResponse.next();
   }
 
-  // 3. API
-  if (pathname.startsWith("/api/")) return NextResponse.next();
+  const isPublic = publicRoutes.some((r) => pathname === r || pathname.startsWith(r + "/"));
 
-  // 4. Public routes
-  if (publicRoutes.some((r) => pathname === r || pathname.startsWith(r + "/"))) {
-    return NextResponse.next();
+  if (isPublic) return NextResponse.next();
+
+  if (!token) {
+    return NextResponse.redirect(new URL("/signin", req.url));
   }
 
-  // 5. Token байхгүй бол л redirect
-  if (!refreshToken) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/signin";
-    return NextResponse.redirect(url);
-  }
-
-  // ✅ token байвал expire эсэхийг шалгахгүй
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/((?!_next|favicon.ico).*)"],
+  matcher: ["/((?!^/$|api|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };
