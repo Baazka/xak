@@ -4,7 +4,7 @@ import db from "@/lib/db";
 import crypto from "crypto";
 
 const bcrypt = require("bcryptjs");
-const ACCESS_TOKEN_TTL = 60 * 1; // 15 минут
+const ACCESS_TOKEN_TTL = 60 * 15; // 15 минут
 
 export async function POST(req: Request) {
   const { email, password, remember } = await req.json();
@@ -15,13 +15,13 @@ export async function POST(req: Request) {
   const user = rows[0];
 
   if (!user) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    return NextResponse.json({ error: "Хэрэглэгч олдсонгүй." }, { status: 401 });
   }
 
   // 2. Password шалгах
   const isMatch = await bcrypt.compare(String(password).trim(), String(user.password).trim());
   if (!isMatch) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
   }
 
   // 3. Access token

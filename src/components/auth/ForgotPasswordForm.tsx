@@ -1,35 +1,88 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Label from "../form/Label";
 import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import { useRouter } from "next/navigation";
+import Alert from "../ui/alert/Alert";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    variant: "error" | "success" | "warning";
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    variant: "error",
+    title: "",
+    message: "",
+  });
+
   async function handleSubmit(e: any) {
     e.preventDefault();
     setLoading(true);
+    setAlert({ show: false, variant: "error", title: "", message: "" });
 
-    const res = await fetch("/api/auth/forgot-password", {
-      method: "POST",
-      body: JSON.stringify({ email }),
-      headers: { "Content-Type": "application/json" },
-    });
+    if (!email) {
+      setAlert({
+        show: true,
+        variant: "error",
+        title: "Алдаа",
+        message: "Мэйл хаягаа оруулна уу",
+      });
+      return;
+    }
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+      });
 
-    setLoading(false);
+      setLoading(false);
 
-    if (res.ok) {
-      // Security best practice: амжилттай гэж л үзүүлнэ
-      router.push("/");
-    } else {
-      alert("Something went wrong. Try again.");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAlert({
+          show: true,
+          variant: "error",
+          title: "Амжилтгүй",
+          message: data.error || "Ийм мэйл олдсонгүй",
+        });
+        return;
+      }
+
+      // Амжилттай
+      setAlert({
+        show: true,
+        variant: "success",
+        title: "Амжилттай",
+        message: "Нууц үг сэргээх холбоос таны мэйл рүү илгээгдлээ",
+      });
+    } catch (err) {
+      setAlert({
+        show: true,
+        variant: "error",
+        title: "Серверийн алдаа",
+        message: "Дараа дахин оролдоно уу",
+      });
     }
   }
+  useEffect(() => {
+    if (alert.show) {
+      const t = setTimeout(() => {
+        setAlert((a) => ({ ...a, show: false }));
+      }, 5000);
+      return () => clearTimeout(t);
+    }
+  }, [alert.show]);
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full">
       {/* <div className="w-full max-w-md pt-10 mx-auto">
@@ -68,6 +121,14 @@ export default function ForgotPasswordForm() {
         </div>
         <div>
           <form onSubmit={handleSubmit}>
+            {alert.show && (
+              <Alert
+                variant={alert.variant}
+                title={alert.title}
+                message={alert.message}
+                showLink={false}
+              />
+            )}
             <div className="space-y-5">
               {/* <!-- Email --> */}
               <div>

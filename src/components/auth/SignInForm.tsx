@@ -7,6 +7,7 @@ import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import Alert from "../ui/alert/Alert";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,18 +17,65 @@ export default function SignInForm() {
   const [remember, setRemember] = useState(false);
   const router = useRouter();
 
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    variant: "error" | "success" | "warning";
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    variant: "error",
+    title: "",
+    message: "",
+  });
   async function handleSubmit(e: any) {
     e.preventDefault();
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password, remember: remember }),
-      headers: { "Content-Type": "application/json" },
-    });
+    setAlert({ show: false, variant: "error", title: "", message: "" });
 
-    if (res.ok) {
-      router.push("/");
-    } else {
-      alert("Login failed");
+    if (!email || !password) {
+      setAlert({
+        show: true,
+        variant: "error",
+        title: "Алдаа",
+        message: "Мэйл болон нууц үгээ бүрэн оруулна уу",
+      });
+      return;
+    }
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password, remember: remember }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAlert({
+          show: true,
+          variant: "error",
+          title: "Нэвтрэх боломжгүй",
+          message: data.error || "Мэдээлэл буруу байна",
+        });
+        return;
+      }
+
+      // Амжилттай
+      setAlert({
+        show: true,
+        variant: "success",
+        title: "Амжилттай",
+        message: "Амжилттай нэвтэрлээ",
+      });
+
+      router.replace("/ecommerce");
+    } catch (error) {
+      setAlert({
+        show: true,
+        variant: "error",
+        title: "Серверийн алдаа",
+        message: "Түр хүлээгээд дахин оролдоно уу",
+      });
     }
   }
 
@@ -107,6 +155,14 @@ export default function SignInForm() {
             </div> */}
             <form onSubmit={handleSubmit}>
               <div className="space-y-6">
+                {alert.show && (
+                  <Alert
+                    variant={alert.variant}
+                    title={alert.title}
+                    message={alert.message}
+                    showLink={false}
+                  />
+                )}
                 <div>
                   <Label>
                     Мэйл хаяг <span className="text-error-500">*</span>{" "}

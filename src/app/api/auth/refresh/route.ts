@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import db from "@/lib/db";
 const bcrypt = require("bcryptjs");
-const ACCESS_TOKEN_TTL = 60 * 1; // 15 минут
+const ACCESS_TOKEN_TTL = 60 * 15; // 15 минут
 
 export async function POST(req: Request) {
   const cookieStore = await cookies();
