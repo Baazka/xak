@@ -6,10 +6,9 @@ import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import { useRouter } from "next/navigation";
 
-export default function ResetPasswordForm() {
-  const [email, setEmail] = useState("");
+export default function ResetPasswordForm({ token }: { token: string }) {
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleSubmit(e: any) {
     e.preventDefault();
@@ -17,17 +16,17 @@ export default function ResetPasswordForm() {
 
     const res = await fetch("/api/auth/reset-password", {
       method: "POST",
-      body: JSON.stringify({ email }),
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, password }),
     });
 
     setLoading(false);
 
     if (res.ok) {
-      // Security best practice: амжилттай гэж л үзүүлнэ
-      router.push("/");
+      alert("Password updated");
+      window.location.href = "/signin";
     } else {
-      alert("Something went wrong. Try again.");
+      alert("Reset link invalid or expired");
     }
   }
   return (
@@ -59,7 +58,7 @@ export default function ResetPasswordForm() {
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
         <div className="mb-5 sm:mb-8">
           <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-            Нууц үг мартсан уу?
+            Нууц үг шинэчлэх
           </h1>
           {/* <p className="text-sm text-gray-500 dark:text-gray-400">
             Enter the email address linked to your account, and we’ll send you a link to reset your
@@ -76,9 +75,9 @@ export default function ResetPasswordForm() {
                 </Label>
                 <Input
                   placeholder="info@gmail.com"
-                  type="email"
-                  defaultValue={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="password"
+                  defaultValue={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 
@@ -88,8 +87,9 @@ export default function ResetPasswordForm() {
                   className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
                   size="sm"
                   type="submit"
+                  disabled={loading}
                 >
-                  Илгээх
+                  Шинэчлэх
                 </Button>
               </div>
             </div>

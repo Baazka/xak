@@ -15,7 +15,7 @@ export default function ForgotPasswordForm() {
     e.preventDefault();
     setLoading(true);
 
-    const res = await fetch("/api/auth/forget-password", {
+    const res = await fetch("/api/auth/forgot-password", {
       method: "POST",
       body: JSON.stringify({ email }),
       headers: { "Content-Type": "application/json" },
@@ -96,7 +96,10 @@ export default function ForgotPasswordForm() {
           </form>
           <div className="mt-5">
             <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-              <Link href="/signin" className="text-brand-500 hover:text-brand-600 dark:text-brand-400">
+              <Link
+                href="/signin"
+                className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
+              >
                 Буцах
               </Link>
             </p>

@@ -1,14 +1,15 @@
 import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
-import { Metadata } from "next";
 
-import React from "react";
+interface Props {
+  searchParams: Promise<{ token?: string }>;
+}
 
-export const metadata: Metadata = {
-  title: "Next.js Reset Password | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js Password Reset page for TailAdmin Dashboard Template",
-  // other metadata
-};
+export default async function ResetPasswordPage({ searchParams }: Props) {
+  const { token } = await searchParams;
 
-export default function ResetPasswordPage() {
-  return <ResetPasswordForm />;
+  if (!token) {
+    return <div>Invalid reset link</div>;
+  }
+
+  return <ResetPasswordForm token={token} />;
 }
