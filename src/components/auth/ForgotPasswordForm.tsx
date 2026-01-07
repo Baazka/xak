@@ -6,6 +6,7 @@ import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import { useRouter } from "next/navigation";
 import Alert from "../ui/alert/Alert";
+import LoadingScreen from "../ui/LoadingScreen";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -26,8 +27,10 @@ export default function ForgotPasswordForm() {
 
   async function handleSubmit(e: any) {
     e.preventDefault();
-    setLoading(true);
     setAlert({ show: false, variant: "error", title: "", message: "" });
+
+    if (loading) return;
+    setLoading(true);
 
     if (!email) {
       setAlert({
@@ -44,8 +47,6 @@ export default function ForgotPasswordForm() {
         body: JSON.stringify({ email }),
         headers: { "Content-Type": "application/json" },
       });
-
-      setLoading(false);
 
       const data = await res.json();
 
@@ -73,6 +74,8 @@ export default function ForgotPasswordForm() {
         title: "Серверийн алдаа",
         message: "Дараа дахин оролдоно уу",
       });
+    } finally {
+      setLoading(false);
     }
   }
   useEffect(() => {
@@ -167,6 +170,7 @@ export default function ForgotPasswordForm() {
           </div>
         </div>
       </div>
+      <LoadingScreen show={loading} />
     </div>
   );
 }

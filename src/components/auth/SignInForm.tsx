@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Alert from "../ui/alert/Alert";
+import LoadingScreen from "../ui/LoadingScreen";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +16,7 @@ export default function SignInForm() {
   const [email, setEmail] = useState("bat@gmail.com");
   const [password, setPassword] = useState("123");
   const [remember, setRemember] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const [alert, setAlert] = useState<{
@@ -31,6 +33,8 @@ export default function SignInForm() {
   async function handleSubmit(e: any) {
     e.preventDefault();
     setAlert({ show: false, variant: "error", title: "", message: "" });
+    if (loading) return;
+    setLoading(true);
 
     if (!email || !password) {
       setAlert({
@@ -76,6 +80,8 @@ export default function SignInForm() {
         title: "Серверийн алдаа",
         message: "Түр хүлээгээд дахин оролдоно уу",
       });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -246,6 +252,7 @@ export default function SignInForm() {
           </div>
         </div>
       </div>
+      <LoadingScreen show={loading} />
     </div>
   );
 }

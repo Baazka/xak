@@ -6,6 +6,7 @@ import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import { useRouter } from "next/navigation";
 import Alert from "../ui/alert/Alert";
+import LoadingScreen from "../ui/LoadingScreen";
 
 export default function ResetPasswordForm({ token }: { token: string }) {
   const [password, setPassword] = useState("");
@@ -27,8 +28,10 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
   async function handleSubmit(e: any) {
     e.preventDefault();
-    setLoading(true);
     setAlert({ show: false, variant: "error", title: "", message: "" });
+
+    if (loading) return;
+    setLoading(true);
 
     if (!token) {
       setAlert({
@@ -66,8 +69,6 @@ export default function ResetPasswordForm({ token }: { token: string }) {
         body: JSON.stringify({ token, password }),
       });
 
-      setLoading(false);
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -98,6 +99,8 @@ export default function ResetPasswordForm({ token }: { token: string }) {
         title: "Серверийн алдаа",
         message: "Дараа дахин оролдоно уу",
       });
+    } finally {
+      setLoading(false);
     }
   }
   useEffect(() => {
@@ -201,6 +204,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
           </div>
         </div>
       </div>
+      <LoadingScreen show={loading} />
     </div>
   );
 }
