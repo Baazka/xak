@@ -43,6 +43,7 @@ export default function SignInForm() {
         title: "Алдаа",
         message: "Мэйл болон нууц үгээ бүрэн оруулна уу",
       });
+      setLoading(false);
       return;
     }
     try {
@@ -61,6 +62,7 @@ export default function SignInForm() {
           title: "Нэвтрэх боломжгүй",
           message: data.error || "Мэдээлэл буруу байна",
         });
+        setLoading(false);
         return;
       }
 

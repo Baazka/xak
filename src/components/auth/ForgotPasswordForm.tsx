@@ -39,6 +39,7 @@ export default function ForgotPasswordForm() {
         title: "Алдаа",
         message: "Мэйл хаягаа оруулна уу",
       });
+      setLoading(false);
       return;
     }
     try {
@@ -48,24 +49,13 @@ export default function ForgotPasswordForm() {
         headers: { "Content-Type": "application/json" },
       });
 
-      const data = await res.json();
+      //const data = await res.json();
 
-      if (!res.ok) {
-        setAlert({
-          show: true,
-          variant: "error",
-          title: "Амжилтгүй",
-          message: data.error || "Ийм мэйл олдсонгүй",
-        });
-        return;
-      }
-
-      // Амжилттай
       setAlert({
         show: true,
         variant: "success",
-        title: "Амжилттай",
-        message: "Нууц үг сэргээх холбоос таны мэйл рүү илгээгдлээ",
+        title: "Хүсэлт илгээгдлээ",
+        message: "Хэрвээ энэ мэйл манай системд бүртгэлтэй бол нууц үг сэргээх холбоос илгээгдэнэ",
       });
     } catch (err) {
       setAlert({

@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
     const user = await db.query("SELECT id FROM reg_users WHERE email=$1", [email]);
 
-    if (!user.rowCount) {
+    if (!user.rows || user.rows.length === 0) {
       return NextResponse.json({ ok: true });
     }
 

@@ -24,10 +24,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
   }
 
+  const { rows: perms } = await db.query(
+    `
+    SELECT DISTINCT p.code
+    FROM reg_user_roles ur
+    JOIN reg_user_role_permissions rp ON rp.role_id = ur.role_id
+    JOIN ref_user_permissions p ON p.id = rp.permission_id
+    WHERE ur.user_id = $1
+  `,
+    [user.id]
+  );
+
+  const permissions = perms.map((p) => p.code);
+
   // 3. Access token
-  const accessToken = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET!, {
-    expiresIn: ACCESS_TOKEN_TTL,
-  });
+  const accessToken = jwt.sign(
+    { id: user.id, email: user.email, permissions },
+    process.env.JWT_SECRET!,
+    {
+      expiresIn: ACCESS_TOKEN_TTL,
+    }
+  );
 
   // 🔁 Refresh token (random string)
   const refreshToken = crypto.randomBytes(32).toString("hex");
