@@ -2,12 +2,18 @@
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import NotificationDropdown from "@/components/header/NotificationDropdown";
 import UserDropdown from "@/components/header/UserDropdown";
+import { useAuth } from "@/context/AuthContext";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 import { useSidebar } from "@/context/SidebarContext";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 
 const AppHeader: React.FC = () => {
+  const { user } = useAuth();
+
+  if (!user || user.roles.length <= 1) return null;
+
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
@@ -170,6 +176,7 @@ const AppHeader: React.FC = () => {
             <NotificationDropdown />
             {/* <!-- Notification Menu Area --> */}
           </div>
+          <RoleSwitcher roles={user.roles} activeRole={user.activeRole} />
           {/* <!-- User Area --> */}
           <UserDropdown />
         </div>

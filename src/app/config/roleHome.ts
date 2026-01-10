@@ -2,7 +2,7 @@
 export type RoleCode = "ADMIN" | "XAKADMIN" | "USER";
 
 export const ROLE_HOME_MAP: Record<RoleCode, string> = {
-  ADMIN: "/users",
+  ADMIN: "/user",
   XAKADMIN: "/ecommerce",
-  USER: "/users",
+  USER: "/",
 };

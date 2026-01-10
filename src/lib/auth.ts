@@ -1,27 +1,32 @@
-import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import { RoleCode } from "@/app/config/roleHome";
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  roles: RoleCode[];
+  activeRole: RoleCode;
+}
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export interface JwtPayload {
-  id: number;
-  email: string;
-}
+export async function getCurrentUser(): Promise<AuthUser | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
 
-export function signToken(payload: JwtPayload) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "1d" });
-}
+  if (!token) return null;
 
-export function verifyToken(token: string) {
   try {
-    return jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const payload = jwt.verify(token, JWT_SECRET) as any;
+
+    return {
+      id: payload.sub,
+      email: payload.email,
+      roles: payload.roles as RoleCode[],
+      activeRole: payload.activeRole as RoleCode,
+    };
   } catch {
     return null;
   }
-}
-
-export async function getTokenFromCookies() {
-  const token = (await cookies()).get("token")?.value;
-  if (!token) return null;
-  return verifyToken(token);
 }
