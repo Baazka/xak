@@ -24,6 +24,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
   }
 
+  const { rows: roles } = await db.query(
+    `
+  SELECT r.id, r.code, r.name
+  FROM reg_user_roles ur
+  JOIN ref_user_roles r ON r.id = ur.role_id
+  WHERE ur.user_id = $1
+  `,
+    [user.id]
+  );
+
+  if (roles.length === 0) {
+    return NextResponse.json({ error: "Role олдсонгүй" }, { status: 403 });
+  }
+  const activeRole = roles[0];
+
   const { rows: perms } = await db.query(
     `
     SELECT DISTINCT p.code
@@ -35,11 +50,17 @@ export async function POST(req: Request) {
     [user.id]
   );
 
-  const permissions = perms.map((p) => p.code);
+  const permissions = perms?.map((p) => p.code) ?? [];
 
   // 3. Access token
   const accessToken = jwt.sign(
-    { id: user.id, email: user.email, permissions },
+    {
+      id: user.id,
+      email: user.email,
+      activeRole: activeRole.code,
+      roles: roles.map((r) => r.code),
+      permissions,
+    },
     process.env.JWT_SECRET!,
     {
       expiresIn: ACCESS_TOKEN_TTL,
@@ -59,7 +80,7 @@ export async function POST(req: Request) {
     [user.id, refreshHash, expiresAt]
   );
 
-  const res = NextResponse.json({ success: true });
+  const res = NextResponse.json({ success: true, roles: roles.map((r) => r.code) });
 
   res.cookies.set("access_token", accessToken, {
     httpOnly: true,
@@ -77,5 +98,13 @@ export async function POST(req: Request) {
     maxAge: remember ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7,
   });
 
+  console.log(
+    user.id,
+    user.email,
+    activeRole.code,
+    roles.map((r) => r.code),
+    permissions,
+    "all data for login"
+  );
   return res;
 }
