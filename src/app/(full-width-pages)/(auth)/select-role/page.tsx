@@ -1,6 +1,6 @@
 // app/select-role/page.tsx
 import { redirect } from "next/navigation";
-import { RoleSwitcher } from "@/components/RoleSwitcher";
+import { RoleSwitcherBox } from "@/components/role/RoleSwitcherBox";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
@@ -16,5 +16,5 @@ export default async function Page() {
     redirect("/ecommerce");
   }
 
-  return <RoleSwitcher roles={payload.roles} activeRole={payload.activeRole} />;
+  return <RoleSwitcherBox roles={payload.roles} />;
 }

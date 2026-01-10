@@ -3,7 +3,7 @@ import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import NotificationDropdown from "@/components/header/NotificationDropdown";
 import UserDropdown from "@/components/header/UserDropdown";
 import { useAuth } from "@/context/AuthContext";
-import { RoleSwitcher } from "@/components/RoleSwitcher";
+import { RoleSwitcherHeader } from "@/components/role/RoleSwitcherHeader";
 import { useSidebar } from "@/context/SidebarContext";
 import Image from "next/image";
 import Link from "next/link";
@@ -176,7 +176,7 @@ const AppHeader: React.FC = () => {
             <NotificationDropdown />
             {/* <!-- Notification Menu Area --> */}
           </div>
-          <RoleSwitcher roles={user.roles} activeRole={user.activeRole} />
+          <RoleSwitcherHeader roles={user.roles} activeRole={user.activeRole} />
           {/* <!-- User Area --> */}
           <UserDropdown />
         </div>
