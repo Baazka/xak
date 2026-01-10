@@ -49,7 +49,7 @@ export default function SignInForm() {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email, password, remember: remember }),
+        body: JSON.stringify({ email, password, remember }),
         headers: { "Content-Type": "application/json" },
       });
 
@@ -73,8 +73,13 @@ export default function SignInForm() {
         title: "Амжилттай",
         message: "Амжилттай нэвтэрлээ",
       });
-
-      router.replace("/ecommerce");
+      console.log("login response:", data);
+      //router.replace("/ecommerce");
+      if (Array.isArray(data.roles) && data.roles.length > 1) {
+        router.replace("/select-role");
+      } else {
+        router.replace("/ecommerce");
+      }
     } catch (error) {
       setAlert({
         show: true,
