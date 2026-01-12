@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("15m")
     .sign(secret);
-  console.log(toRole, "toRole");
+
   // 8️⃣ Cookie шинэчлэх
   const res = NextResponse.json({ success: true });
 
