@@ -5,8 +5,10 @@ import { RoleCode } from "@/app/config/roleHome";
 
 export interface AuthUser {
   id: string;
+  email: string;
   roles: RoleCode[];
   activeRole: RoleCode;
+  permissions: string[];
 }
 
 interface AuthContextValue {

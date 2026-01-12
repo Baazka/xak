@@ -2,6 +2,8 @@
 
 import { RoleCode } from "@/app/config/roleHome";
 import { useRoleSwitch } from "./useRoleSwitch";
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
 
 const ROLE_LABELS: Record<RoleCode, string> = {
   ADMIN: "Админ",
@@ -9,31 +11,40 @@ const ROLE_LABELS: Record<RoleCode, string> = {
   USER: "Хэрэглэгч",
 };
 
-export function RoleSwitcherHeader({
-  roles,
-  activeRole,
-}: {
-  roles: RoleCode[];
-  activeRole: RoleCode;
-}) {
+export function RoleSwitcherHeader() {
+  const { user } = useAuth(); 
   const { switchRole } = useRoleSwitch();
+  const [loading, setLoading] = useState(false);
 
-  if (roles.length <= 1) return null;
+  if (!user || user.roles.length <= 1) return null;
+
+  const onChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextRole = e.target.value as RoleCode;
+    if (nextRole === user.activeRole) return;
+
+    setLoading(true);
+    try {
+      await switchRole(nextRole);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <select
-      value={activeRole}
-      onChange={(e) => switchRole(e.target.value as RoleCode)}
-      className="
-        h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm
-        dark:border-gray-700 dark:bg-gray-900
-      "
-    >
-      {roles.map((r) => (
-        <option key={r} value={r}>
-          {ROLE_LABELS[r]}
-        </option>
-      ))}
-    </select>
+    <>
+      <pre className="text-xs">activeRole: {user?.activeRole}</pre>
+      <select
+        value={user.activeRole}
+        onChange={onChange}
+        disabled={loading}
+        className="h-11 appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 pr-11 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 text-gray-400 dark:text-gray-400 bg-gray-50 dark:bg-gray-800"
+      >
+        {user.roles.map((r) => (
+          <option key={r} value={r} className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
+            {ROLE_LABELS[r]}
+          </option>
+        ))}
+      </select>
+    </>
   );
 }

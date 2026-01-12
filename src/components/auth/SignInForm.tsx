@@ -73,9 +73,8 @@ export default function SignInForm() {
         title: "Амжилттай",
         message: "Амжилттай нэвтэрлээ",
       });
-      console.log("login response:", data);
-      //router.replace("/ecommerce");
-      if (Array.isArray(data.roles) && data.roles.length > 1) {
+
+      if (Array.isArray(data.user.roles) && data.user.roles.length > 1) {
         router.replace("/select-role");
       } else {
         router.replace("/ecommerce");

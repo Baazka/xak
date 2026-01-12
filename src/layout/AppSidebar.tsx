@@ -29,14 +29,13 @@ import SidebarWidget from "./SidebarWidget";
 import { hasPermission } from "@/lib/permission";
 import { MENU_CONFIG, MenuItem } from "@/app/config/menu";
 import { useAuth } from "@/context/AuthContext";
-import { ROLE_PERMISSIONS } from "@/lib/rolePermissions";
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
   const { user } = useAuth();
-  const userPermissions = user?.activeRole ? (ROLE_PERMISSIONS[user.activeRole] ?? []) : [];
+  const userPermissions = user?.permissions ?? [];
 
   const filterByPermission = (items: MenuItem[]) =>
     items

@@ -1,8 +1,11 @@
+// src/app/api/auth/me/route.ts
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-export async function GET(req: Request) {
+const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+
+export async function GET() {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
 
@@ -11,12 +14,15 @@ export async function GET(req: Request) {
   }
 
   try {
-    const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET!));
+    const { payload } = await jwtVerify(token, secret);
 
     return NextResponse.json({
       user: {
         id: payload.sub,
         email: payload.email,
+        activeRole: payload.activeRole,
+        roles: payload.roles ?? [],
+        permissions: payload.permissions ?? [],
       },
     });
   } catch {

@@ -47,7 +47,7 @@ export const MENU_CONFIG: MenuItem[] = [
         key: "user",
         name: "User",
         path: "/user",
-        permissions: ["user.view"],
+        permissions: ["users.read"],
       },
     ],
   },
@@ -64,7 +64,7 @@ export const MENU_CONFIG: MenuItem[] = [
       { key: "stocks", name: "Stocks", path: "/stocks" },
       { key: "saas", name: "SaaS", path: "/saas" },
       { key: "logistics", name: "Logistics", path: "/logistics" },
-      { key: "user", name: "User", path: "/user" },
+      //{ key: "user", name: "User", path: "/user" },
     ],
   },
   {

@@ -17,7 +17,18 @@ export function useRoleSwitch() {
 
     if (!res.ok) return;
 
-    setUser((prev) => (prev ? { ...prev, activeRole: roleCode } : prev));
+    const refreshRes = await fetch("/api/auth/refresh", {
+      method: "POST",
+    });
+
+    if (!refreshRes.ok) return;
+
+    const meRes = await fetch("/api/auth/me");
+    if (!meRes.ok) return;
+
+    const { user } = await meRes.json();
+
+    setUser(user);
 
     router.replace(ROLE_HOME_MAP[roleCode] ?? "/");
   };

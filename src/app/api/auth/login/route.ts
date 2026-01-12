@@ -1,3 +1,4 @@
+// src/app/api/auth/login/route.ts
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import db from "@/lib/db";
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
   // 3. Access token
   const accessToken = jwt.sign(
     {
-      id: user.id,
+      sub: user.id,
       email: user.email,
       activeRole: activeRole.code,
       roles: roles.map((r) => r.code),
@@ -75,12 +76,21 @@ export async function POST(req: Request) {
   expiresAt.setDate(expiresAt.getDate() + (remember ? 30 : 7));
 
   await db.query(
-    `INSERT INTO reg_user_sessions (user_id, refresh_token_hash, expires_at)
-     VALUES ($1, $2, $3)`,
-    [user.id, refreshHash, expiresAt]
+    `INSERT INTO reg_user_sessions (user_id, refresh_token_hash, expires_at, active_role)
+     VALUES ($1, $2, $3, $4)`,
+    [user.id, refreshHash, expiresAt, activeRole.code]
   );
 
-  const res = NextResponse.json({ success: true, roles: roles.map((r) => r.code) });
+  const res = NextResponse.json({
+    success: true,
+    user: {
+      sub: user.id,
+      email: user.email,
+      activeRole: activeRole.code,
+      roles: roles.map((r) => r.code),
+      permissions,
+    },
+  });
 
   res.cookies.set("access_token", accessToken, {
     httpOnly: true,
@@ -98,13 +108,5 @@ export async function POST(req: Request) {
     maxAge: remember ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7,
   });
 
-  console.log(
-    user.id,
-    user.email,
-    activeRole.code,
-    roles.map((r) => r.code),
-    permissions,
-    "all data for login"
-  );
   return res;
 }
