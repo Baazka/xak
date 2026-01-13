@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { JwtPayload } from "@/lib/jwtPayload";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
@@ -14,16 +15,9 @@ export async function GET() {
   }
 
   try {
-    const { payload } = await jwtVerify(token, secret);
-
+    const { payload } = await jwtVerify<JwtPayload>(token, secret);
     return NextResponse.json({
-      user: {
-        id: payload.sub,
-        email: payload.email,
-        activeRole: payload.activeRole,
-        roles: payload.roles ?? [],
-        permissions: payload.permissions ?? [],
-      },
+      user: payload,
     });
   } catch {
     return NextResponse.json({ user: null }, { status: 401 });

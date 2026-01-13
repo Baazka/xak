@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import db from "@/lib/db";
 import crypto from "crypto";
+import { buildJwtPayload } from "@/lib/buildJwtPayload";
 
 const bcrypt = require("bcryptjs");
 const ACCESS_TOKEN_TTL = 60 * 15; // 15 минут
@@ -54,19 +55,21 @@ export async function POST(req: Request) {
   const permissions = perms?.map((p) => p.code) ?? [];
 
   // 3. Access token
-  const accessToken = jwt.sign(
-    {
-      sub: user.id,
+  const payload = buildJwtPayload({
+    user: {
+      id: user.id,
       email: user.email,
-      activeRole: activeRole.code,
-      roles: roles.map((r) => r.code),
-      permissions,
+      name: user.name,
+      avatar: user.avatar_url,
     },
-    process.env.JWT_SECRET!,
-    {
-      expiresIn: ACCESS_TOKEN_TTL,
-    }
-  );
+    activeRole: activeRole.code,
+    roles: roles.map((r) => r.code),
+    permissions,
+  });
+
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET!, {
+    expiresIn: ACCESS_TOKEN_TTL,
+  });
 
   // 🔁 Refresh token (random string)
   const refreshToken = crypto.randomBytes(32).toString("hex");

@@ -1,19 +1,12 @@
+// src/context/AuthContext.tsx
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { RoleCode } from "@/app/config/roleHome";
-
-export interface AuthUser {
-  id: string;
-  email: string;
-  roles: RoleCode[];
-  activeRole: RoleCode;
-  permissions: string[];
-}
+import { JwtPayload } from "@/lib/jwtPayload";
 
 interface AuthContextValue {
-  user: AuthUser | null;
-  setUser: (u: AuthUser) => void;
+  user: JwtPayload | null;
+  setUser: (u: JwtPayload | null) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -28,10 +21,10 @@ export function AuthProvider({
   initialUser,
   children,
 }: {
-  initialUser: AuthUser | null;
+  initialUser: JwtPayload | null;
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<AuthUser | null>(initialUser);
+  const [user, setUser] = useState<JwtPayload | null>(initialUser);
 
   return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
 }

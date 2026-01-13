@@ -5,8 +5,15 @@ import React, { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import LogoutButton from "./LogoutButton";
+import { useAuth } from "@/context/AuthContext";
 
 export default function UserDropdown() {
+  const { user } = useAuth();
+
+  if (!user) return null;
+  const displayName = user.name || user.email.split("@")[0];
+  const displayEmail = user.email;
+
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
@@ -26,7 +33,7 @@ export default function UserDropdown() {
           <Image width={44} height={44} src="/images/user/owner.png" alt="User" />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+        <span className="block mr-1 font-medium text-theme-sm">{displayName}</span>
 
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
@@ -55,10 +62,10 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Musharof Chowdhury
+            {displayName}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+            {displayEmail}
           </span>
         </div>
 
