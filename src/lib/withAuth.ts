@@ -1,22 +1,23 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { JwtPayload } from "@/lib/jwtPayload";
 
-export function withAuth(handler: Function) {
+const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+
+type Handler = (req: NextRequest, user: JwtPayload) => Promise<NextResponse>;
+
+export function withAuth(handler: Handler) {
   return async function (req: NextRequest) {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value;
-    if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.cookies.get("access_token")?.value;
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     try {
-      const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
-
-      // req-д user info attach
-      (req as any).user = payload;
-
-      return handler(req);
+      const { payload } = await jwtVerify<JwtPayload>(token, secret);
+      return handler(req, payload);
     } catch {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
   };
 }

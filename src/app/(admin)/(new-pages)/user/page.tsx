@@ -9,8 +9,17 @@ import { SortingState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { useAuth } from "@/context/AuthContext";
+import { hasPermission } from "@/lib/permission";
 
 export default function User() {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.permissions?.includes("*") ?? false;
+
+  const canCreate = hasPermission(user?.permissions, ["user.create"]);
+  const canUpdate = hasPermission(user?.permissions, ["user.update"]);
+  const canDelete = hasPermission(user?.permissions, ["user.delete"]);
+
   const router = useRouter();
   const [data, setData] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
@@ -76,7 +85,7 @@ export default function User() {
                 </h3>
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <AddUserModal onSaved={fetchData} />
+                  {canCreate && <AddUserModal onSaved={fetchData} />}
                 </div>
               </div>
             </div>
@@ -130,8 +139,12 @@ export default function User() {
                 </div>
               </div>
               <div className="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
+                {isSuperAdmin && <span className="text-xs text-red-500">SUPERADMIN</span>}
                 <DataTable
-                  columns={columns(handleEdit, handleDelete, page, limit)}
+                  columns={columns(handleEdit, handleDelete, page, limit, {
+                    canUpdate,
+                    canDelete,
+                  })}
                   data={data}
                   total={total}
                   page={page}

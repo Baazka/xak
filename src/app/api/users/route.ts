@@ -1,11 +1,15 @@
+//src/app/api/users/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db"; // make sure this exports a connected pg client
 import { withAuth } from "@/lib/withAuth";
+import { requirePermission } from "@/lib/requirePermission";
 
 const SORTABLE_COLUMNS = new Set(["id", "username", "email"]); // Add valid sortable columns here
 
-export const GET = withAuth(async function GET(req: NextRequest) {
+export const GET = withAuth(async function GET(req: NextRequest, user) {
   try {
+    requirePermission(user.permissions, ["user.read"]);
+
     const sp = new URL(req.url).searchParams;
 
     const page = Math.max(parseInt(sp.get("page") || "1"), 1);
@@ -54,19 +58,22 @@ export const GET = withAuth(async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 });
-export const POST = withAuth(async function POST(req: NextRequest) {
+export const POST = withAuth(async function POST(req: NextRequest, user) {
   try {
     const body = await req.json();
     const action = body.action || "create";
 
     switch (action) {
       case "create":
+        requirePermission(user.permissions, ["user.create"]);
         return await createUser(body.data);
 
       case "update":
+        requirePermission(user.permissions, ["user.update"]);
         return await updateUser(body.data);
 
       case "remove":
+        requirePermission(user.permissions, ["user.delete"]);
         return await removeUser(body.data);
 
       default:

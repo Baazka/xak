@@ -11,7 +11,7 @@ export default function UserDropdown() {
   const { user } = useAuth();
 
   if (!user) return null;
-  const displayName = user.name || user.email.split("@")[0];
+  const displayName = user.username || user.email.split("@")[0];
   const displayEmail = user.email;
 
   const [isOpen, setIsOpen] = useState(false);

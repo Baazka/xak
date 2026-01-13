@@ -77,7 +77,7 @@ export const MENU_CONFIG: MenuItem[] = [
         key: "user",
         name: "User",
         path: "/user",
-        permissions: ["users.read"],
+        permissions: ["user.read"],
       },
     ],
   },

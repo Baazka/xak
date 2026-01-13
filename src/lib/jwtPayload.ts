@@ -4,7 +4,7 @@ import { RoleCode } from "@/app/config/roleHome";
 export interface JwtPayload {
   sub: string; // user.id
   email: string;
-  name?: string;
+  username?: string;
   avatar?: string;
 
   activeRole: RoleCode;

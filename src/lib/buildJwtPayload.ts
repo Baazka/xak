@@ -7,7 +7,7 @@ export function buildJwtPayload({
   roles,
   permissions,
 }: {
-  user: { id: string; email: string; name?: string; avatar?: string };
+  user: { id: string; email: string; username?: string; avatar?: string };
   activeRole: RoleCode;
   roles: RoleCode[];
   permissions: string[];
@@ -15,7 +15,7 @@ export function buildJwtPayload({
   return {
     sub: user.id,
     email: user.email,
-    name: user.name,
+    username: user.username,
     avatar: user.avatar,
     activeRole,
     roles,

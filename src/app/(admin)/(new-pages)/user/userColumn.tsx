@@ -22,7 +22,11 @@ export const columns = (
   onEdit: (user: User) => void,
   onDelete: (id: number) => void,
   page: number,
-  limit: number
+  limit: number,
+  perms: {
+    canUpdate: boolean;
+    canDelete: boolean;
+  }
 ): ColumnDef<User>[] => [
   {
     accessorKey: "id",
@@ -47,13 +51,12 @@ export const columns = (
       const user = row.original;
       return (
         <div className="flex gap-2">
-          {/* Edit button */}
-          <UserModal user={user} onSaved={() => onEdit(user)} />
-
-          {/* Delete button */}
-          <Button variant="destructive" onClick={() => onDelete(user.id)}>
-            Устгах
-          </Button>
+          {perms.canUpdate && <UserModal user={user} onSaved={() => onEdit(user)} />}
+          {perms.canDelete && (
+            <Button variant="destructive" onClick={() => onDelete(user.id)}>
+              Устгах
+            </Button>
+          )}
         </div>
       );
     },
