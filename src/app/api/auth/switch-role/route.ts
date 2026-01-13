@@ -20,7 +20,17 @@ export async function POST(req: Request) {
   const fromRole = payload.activeRole as string;
 
   // 1️⃣ User-д байгаа role эсэх
-  if (!payload.roles || !payload.roles.includes(roleCode)) {
+  const { rows } = await db.query(
+    `
+  SELECT 1
+  FROM reg_user_roles ur
+  JOIN ref_user_roles r ON r.id = ur.role_id
+  WHERE ur.user_id = $1 AND r.code = $2
+  `,
+    [userId, roleCode]
+  );
+
+  if (rows.length === 0) {
     return NextResponse.json({ error: "Role зөвшөөрөгдөөгүй" }, { status: 403 });
   }
 

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Alert from "../ui/alert/Alert";
 import LoadingScreen from "../ui/LoadingScreen";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +19,7 @@ export default function SignInForm() {
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { setUser } = useAuth();
 
   const [alert, setAlert] = useState<{
     show: boolean;
@@ -73,6 +75,10 @@ export default function SignInForm() {
         title: "Амжилттай",
         message: "Амжилттай нэвтэрлээ",
       });
+
+      const meRes = await fetch("/api/auth/me");
+      const { user } = await meRes.json();
+      setUser(user);
 
       if (Array.isArray(data.user.roles) && data.user.roles.length > 1) {
         router.replace("/select-role");

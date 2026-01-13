@@ -12,10 +12,7 @@ import React, { useEffect, useRef, useState } from "react";
 const AppHeader: React.FC = () => {
   const { user } = useAuth();
 
-  if (!user || user.roles.length <= 1) return null;
-
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
-
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
 
   const handleToggle = () => {
@@ -176,7 +173,9 @@ const AppHeader: React.FC = () => {
             <NotificationDropdown />
             {/* <!-- Notification Menu Area --> */}
           </div>
-          <RoleSwitcherHeader roles={user.roles} activeRole={user.activeRole} />
+          {user && user.roles.length > 1 && (
+            <RoleSwitcherHeader roles={user.roles} activeRole={user.activeRole} />
+          )}
           {/* <!-- User Area --> */}
           <UserDropdown />
         </div>
