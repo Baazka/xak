@@ -9,7 +9,10 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 const ROUTE_ROLE_MAP: Record<string, RoleCode[]> = {
   "/users": ["ADMIN", "USER"],
-  "/ecommerce": ["ADMIN", "XAKADMIN"], // ⭐ ЭНЭ ЧУХАЛ
+  "/dashboard1": ["SUPERADMIN"],
+  "/dashboard2": ["ADMIN"],
+  "/dashboard3": ["XAKADMIN"],
+  "/dashboard4": ["XAKUSER"],
 };
 
 export async function middleware(req: NextRequest) {

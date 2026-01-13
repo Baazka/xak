@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import Alert from "../ui/alert/Alert";
 import LoadingScreen from "../ui/LoadingScreen";
 import { useAuth } from "@/context/AuthContext";
+import { ROLE_HOME_MAP, RoleCode } from "@/app/config/roleHome";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +33,12 @@ export default function SignInForm() {
     title: "",
     message: "",
   });
+  function getRoleHome(role: unknown) {
+    if (typeof role === "string" && role in ROLE_HOME_MAP) {
+      return ROLE_HOME_MAP[role as RoleCode];
+    }
+    return "/";
+  }
   async function handleSubmit(e: any) {
     e.preventDefault();
     setAlert({ show: false, variant: "error", title: "", message: "" });
@@ -80,10 +87,10 @@ export default function SignInForm() {
       const { user } = await meRes.json();
       setUser(user);
 
-      if (Array.isArray(data.user.roles) && data.user.roles.length > 1) {
+      if (user.roles.length > 1) {
         router.replace("/select-role");
       } else {
-        router.replace("/ecommerce");
+        router.replace(getRoleHome(user.activeRole));
       }
     } catch (error) {
       setAlert({

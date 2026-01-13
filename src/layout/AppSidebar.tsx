@@ -36,13 +36,16 @@ const AppSidebar: React.FC = () => {
 
   const { user } = useAuth();
   const userPermissions = user?.permissions ?? [];
+  const userRole = user?.activeRole;
 
   const filterByPermission = (items: MenuItem[]) =>
     items
       .map((item) => {
-        const filteredSubItems = item.subItems?.filter((sub) =>
-          hasPermission(userPermissions, sub.permissions)
-        );
+        const filteredSubItems = item.subItems?.filter((sub) => {
+          const permissionOk = hasPermission(userPermissions, sub.permissions);
+          const roleOk = !sub.roles || sub.roles.includes(userRole!);
+          return permissionOk && roleOk;
+        });
 
         const canSeeItem =
           hasPermission(userPermissions, item.permissions) ||

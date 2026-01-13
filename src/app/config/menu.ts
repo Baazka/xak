@@ -16,6 +16,7 @@ import {
   PlugInIcon,
   BoxCubeIcon,
 } from "../../icons";
+import { RoleCode } from "./roleHome";
 
 export type MenuItem = {
   key: string;
@@ -33,6 +34,7 @@ export type SubMenuItem = {
   path: string;
   new?: boolean | undefined;
   permissions?: string[];
+  roles?: RoleCode[];
 };
 
 export const MENU_CONFIG: MenuItem[] = [
@@ -43,6 +45,34 @@ export const MENU_CONFIG: MenuItem[] = [
     section: "main",
     subItems: [
       { key: "ecommerce", name: "Ecommerce", path: "/ecommerce" },
+      {
+        key: "dashboard1",
+        name: "New Dashboard1",
+        path: "/dashboard1",
+        permissions: ["dashboard.read"],
+        roles: ["SUPERADMIN"],
+      },
+      {
+        key: "dashboard2",
+        name: "New Dashboard2",
+        path: "/dashboard2",
+        permissions: ["dashboard.read"],
+        roles: ["ADMIN"],
+      },
+      {
+        key: "dashboard3",
+        name: "New Dashboard3",
+        path: "/dashboard3",
+        permissions: ["dashboard.read"],
+        roles: ["XAKADMIN"],
+      },
+      {
+        key: "dashboard4",
+        name: "New Dashboard4",
+        path: "/dashboard4",
+        permissions: ["dashboard.read"],
+        roles: ["XAKUSER"],
+      },
       {
         key: "user",
         name: "User",
