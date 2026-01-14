@@ -33,40 +33,44 @@ export function Pagination({ page, pageCount, onPageChange }: PaginationProps) {
   };
 
   return (
-    <div className="flex gap-1">
+    <div className="flex items-center justify-center">
       <Button
         variant="outline"
         size="sm"
         disabled={page <= 1}
         onClick={() => onPageChange(page - 1)}
+        className="mr-2.5 flex items-center h-10 justify-center rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] text-sm"
       >
-        Prev
+        {"<<"}
       </Button>
-
-      {visiblePages().map((p, i) =>
-        typeof p === "number" ? (
-          <Button
-            key={i}
-            size="sm"
-            variant={p === page ? "default" : "outline"}
-            onClick={() => onPageChange(p)}
-          >
-            {p}
-          </Button>
-        ) : (
-          <span key={i} className="px-2">
-            {p}
-          </span>
-        )
-      )}
-
+      <div className="flex items-center gap-2">
+        {visiblePages().map((p, i) =>
+          typeof p === "number" ? (
+            <Button
+              key={i}
+              size="sm"
+              onClick={() => onPageChange(p)}
+              className={`px-4 py-2 rounded ${
+                p === page ? "bg-brand-500 text-white" : "text-gray-700 dark:text-gray-400"
+              } flex w-10 items-center justify-center h-10 rounded-lg text-sm font-medium hover:bg-blue-500/[0.08] hover:text-brand-500 dark:hover:text-brand-500`}
+            >
+              {p}
+            </Button>
+          ) : (
+            <span key={i} className="px-2">
+              {p}
+            </span>
+          )
+        )}
+      </div>
       <Button
         variant="outline"
         size="sm"
         disabled={page >= pageCount}
         onClick={() => onPageChange(page + 1)}
+        className="ml-2.5 flex items-center justify-center rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-gray-700 shadow-theme-xs text-sm hover:bg-gray-50 h-10 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]"
       >
-        Next
+        {">>"}
       </Button>
     </div>
   );

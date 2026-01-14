@@ -64,17 +64,30 @@ export function DataTable<TData>({
   const pageCount = Math.ceil(total / limit);
 
   return (
-    <div className="space-y-3">
-      <SearchInput value={search} onChange={onSearchChange} />
-      <TotalRows total={total} />
+    <div>
+      <div className="border-b border-gray-200 px-5 py-4 dark:border-gray-800">
+        <div className="flex gap-3 sm:justify-between">
+          <RowsPerPage
+            value={limit}
+            onChange={(v) => {
+              onLimitChange(v);
+              onPageChange(1);
+            }}
+          />
+          <SearchInput value={search} onChange={onSearchChange} />
+        </div>
+      </div>
 
-      <div className="rounded-md border">
+      <div className="overflow-x-auto custom-scrollbar">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id}>
                 {hg.headers.map((h) => (
-                  <TableHead key={h.id}>
+                  <TableHead
+                    key={h.id}
+                    className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
+                  >
                     {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
                   </TableHead>
                 ))}
@@ -86,7 +99,10 @@ export function DataTable<TData>({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap"
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -102,16 +118,13 @@ export function DataTable<TData>({
           </TableBody>
         </Table>
       </div>
-
-      <div className="flex items-center justify-between">
-        <Pagination page={page} pageCount={pageCount} onPageChange={onPageChange} />
-        <RowsPerPage
-          value={limit}
-          onChange={(v) => {
-            onLimitChange(v);
-            onPageChange(1);
-          }}
-        />
+      <div className="flex items-center flex-col sm:flex-row justify-between border-t border-gray-200 px-5 py-4 dark:border-gray-800">
+        <div className="pb-3 sm:pb-0">
+          <TotalRows total={total} />
+        </div>
+        <div className="flex w-full items-center justify-between gap-2 rounded-lg bg-gray-50 p-4 sm:w-auto sm:justify-normal sm:rounded-none sm:bg-transparent sm:p-0 dark:bg-gray-900 dark:sm:bg-transparent">
+          <Pagination page={page} pageCount={pageCount} onPageChange={onPageChange} />
+        </div>
       </div>
     </div>
   );

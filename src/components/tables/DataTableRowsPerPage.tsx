@@ -17,8 +17,7 @@ type RowsPerPageProps = {
 
 export function RowsPerPage({ value, onChange }: RowsPerPageProps) {
   return (
-    <div className="flex items-center gap-2">
-      <span>Rows per page:</span>
+    <div className="relative z-20 bg-transparent">
       <Select value={String(value)} onValueChange={(v) => onChange(Number(v))}>
         <SelectTrigger className="w-20">
           <SelectValue placeholder="Limit" />
