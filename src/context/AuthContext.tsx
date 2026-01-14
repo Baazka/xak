@@ -1,12 +1,14 @@
 // src/context/AuthContext.tsx
 "use client";
 
-import { createContext, useContext, useState } from "react";
-import { JwtPayload } from "@/lib/jwtPayload";
+import { createContext, useContext, useEffect, useState } from "react";
+import { AuthUser } from "@/types/auth";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface AuthContextValue {
-  user: JwtPayload | null;
-  setUser: (u: JwtPayload | null) => void;
+  user: AuthUser | null;
+  setUser: (u: AuthUser | null) => void;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -21,10 +23,31 @@ export function AuthProvider({
   initialUser,
   children,
 }: {
-  initialUser: JwtPayload | null;
+  initialUser: AuthUser | null;
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<JwtPayload | null>(initialUser);
+  const [user, setUser] = useState<AuthUser | null>(initialUser);
+  const [loading, setLoading] = useState(true);
 
-  return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
+  useEffect(() => {
+    if (initialUser) {
+      setLoading(false);
+      return;
+    }
+
+    const hydrate = async () => {
+      try {
+        const res = await fetchWithAuth("/api/auth/me");
+        if (res.ok) {
+          setUser(await res.json());
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    hydrate();
+  }, [initialUser]);
+
+  return <AuthContext.Provider value={{ user, setUser, loading }}>{children}</AuthContext.Provider>;
 }

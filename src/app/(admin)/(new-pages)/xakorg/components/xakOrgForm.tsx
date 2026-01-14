@@ -38,13 +38,13 @@ export default function XakOrgForm({ id, initialData, onSubmit }: Props) {
   const handleSave = async () => {
     setLoading(true);
     try {
-      // 🟢 CREATE
+      // CREATE
       if (onSubmit) {
         await onSubmit(form);
         return;
       }
 
-      // 🟡 EDIT
+      // EDIT
       const res = await fetchWithAuth(`/api/xakorg/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

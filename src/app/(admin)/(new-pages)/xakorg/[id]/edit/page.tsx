@@ -5,7 +5,7 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-export default async function EditXakorgPage({ params }: Props) {
+export default async function EditXakOrgPage({ params }: Props) {
   const { id } = await params;
 
   const cookieStore = cookies();

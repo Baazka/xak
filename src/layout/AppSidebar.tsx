@@ -34,7 +34,8 @@ const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
   const userPermissions = user?.permissions ?? [];
   const userRole = user?.activeRole;
 
@@ -245,7 +246,15 @@ const AppSidebar: React.FC = () => {
       return { type: menuType, index };
     });
   };
+  if (loading) {
+    return (
+      <aside className="w-[290px] bg-white dark:bg-gray-900">{/* Skeleton эсвэл null */}</aside>
+    );
+  }
 
+  if (!user) {
+    return null;
+  }
   return (
     <aside
       className={`fixed  flex flex-col xl:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-full transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
