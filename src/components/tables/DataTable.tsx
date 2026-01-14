@@ -1,13 +1,19 @@
 "use client";
 
-import * as React from "react";
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
   SortingState,
   ColumnDef,
+  ColumnMeta,
 } from "@tanstack/react-table";
+
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData, TValue> {
+    className?: string;
+  }
+}
 import {
   Table,
   TableBody,
@@ -86,7 +92,8 @@ export function DataTable<TData>({
                 {hg.headers.map((h) => (
                   <TableHead
                     key={h.id}
-                    className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
+                    className={`px-4 py-3 border border-gray-100 dark:border-white/[0.05]
+    ${h.column.columnDef.meta?.className ?? ""}`}
                   >
                     {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
                   </TableHead>
@@ -101,7 +108,9 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap"
+                      className={`px-4 py-4 font-normal text-gray-800 border border-gray-100
+    dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap
+    ${cell.column.columnDef.meta?.className ?? ""}`}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>

@@ -11,11 +11,15 @@ export const GET = withAuth<{ id: string }>(async (req: NextRequest, user: JwtPa
   const { id } = await context.params;
 
   const result = await db.query(
-    "SELECT id, name, reg_no FROM reg_xakorg WHERE id = $1 AND status IS NULL",
+    `
+      SELECT id, name, reg_no, email, phone, address
+      FROM reg_xakorg
+      WHERE id = $1 AND status IS NULL
+      `,
     [id]
   );
 
-  if (result.rowCount === 0) {
+  if (result.rows.length === 0) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

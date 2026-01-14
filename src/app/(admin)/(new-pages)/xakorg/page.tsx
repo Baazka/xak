@@ -11,34 +11,44 @@ import { useAuth } from "@/context/AuthContext";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import React from "react";
 import { SortingState } from "@tanstack/react-table";
+import { hasPermission } from "@/lib/permission";
 
 export default function XakorgListPage() {
   const router = useRouter();
   const { user } = useAuth();
 
+  const canCreate = hasPermission(user?.permissions, ["xakorg.create"]);
+  const canUpdate = hasPermission(user?.permissions, ["xakorg.update"]);
+  const canDelete = hasPermission(user?.permissions, ["xakorg.delete"]);
+
   const [data, setData] = useState<XakOrg[]>([]);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = React.useState("");
+
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const fetchData = async () => {
+    const sortBy = sorting[0]?.id ?? "id";
+    const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
     setLoading(true);
     try {
-      const res = await fetchWithAuth(`/api/xakorg?page=${page}&limit=${limit}`);
+      const res = await fetchWithAuth(
+        `/api/xakorg?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`
+      );
 
       if (!res.ok) {
-        throw new Error("Fetch failed");
+        throw new Error(`API error: ${res.status}`);
       }
 
-      const json = await res.json();
-      setData(json.data);
-      setTotal(json.total);
+      const data = await res.json();
+      setData(data.data);
+      setTotal(data.total);
     } catch (err) {
       console.error("Fetch error:", err);
-      alert("Мэдээлэл татах үед алдаа гарлаа");
     } finally {
       setLoading(false);
     }
@@ -65,7 +75,7 @@ export default function XakorgListPage() {
 
   useEffect(() => {
     fetchData();
-  }, [page, limit]);
+  }, [page, limit, search, sorting]);
 
   return (
     <>
@@ -102,27 +112,29 @@ export default function XakorgListPage() {
                 />
               </svg>
             </Button>
-            <Button
-              onClick={() => router.push("/xakorg/create")}
-              className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
+            {canCreate && (
+              <Button
+                onClick={() => router.push("/xakorg/create")}
+                className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
               >
-                <path
-                  d="M5 10.0002H15.0006M10.0002 5V15.0006"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Шинэ бүртгэл
-            </Button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                >
+                  <path
+                    d="M5 10.0002H15.0006M10.0002 5V15.0006"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Шинэ бүртгэл
+              </Button>
+            )}
           </div>
         </div>
 
@@ -130,6 +142,10 @@ export default function XakorgListPage() {
           columns={columns({
             onEdit: handleEdit,
             onRemove: handleRemove,
+            canUpdate,
+            canDelete,
+            page,
+            limit,
           })}
           data={data}
           total={total}
