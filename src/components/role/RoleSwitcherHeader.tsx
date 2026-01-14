@@ -5,14 +5,19 @@ import { useRoleSwitch } from "./useRoleSwitch";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 
+type Props = {
+  roles: RoleCode[];
+  activeRole: RoleCode;
+};
+
 const ROLE_LABELS: Record<RoleCode, string> = {
   ADMIN: "Админ",
   XAKADMIN: "ХАК Админ",
   USER: "Хэрэглэгч",
 };
 
-export function RoleSwitcherHeader() {
-  const { user } = useAuth(); 
+export default function RoleSwitcherHeader({ roles, activeRole }: Props) {
+  const { user } = useAuth();
   const { switchRole } = useRoleSwitch();
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +46,7 @@ export function RoleSwitcherHeader() {
       >
         {user.roles.map((r) => (
           <option key={r} value={r} className="text-gray-700 dark:bg-gray-900 dark:text-gray-400">
-            {ROLE_LABELS[r]}
+            {ROLE_LABELS[r] ?? r}
           </option>
         ))}
       </select>

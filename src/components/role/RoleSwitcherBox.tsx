@@ -29,7 +29,7 @@ export function RoleSwitcherBox({ roles }: { roles: RoleCode[] }) {
                 transition
               "
             >
-              {ROLE_LABELS[role]}
+              {ROLE_LABELS[role] ?? role}
             </button>
           ))}
         </div>

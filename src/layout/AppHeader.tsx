@@ -3,7 +3,7 @@ import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import NotificationDropdown from "@/components/header/NotificationDropdown";
 import UserDropdown from "@/components/header/UserDropdown";
 import { useAuth } from "@/context/AuthContext";
-import { RoleSwitcherHeader } from "@/components/role/RoleSwitcherHeader";
+import RoleSwitcherHeader from "@/components/role/RoleSwitcherHeader";
 import { useSidebar } from "@/context/SidebarContext";
 import Image from "next/image";
 import Link from "next/link";
