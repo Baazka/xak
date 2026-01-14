@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import type { User } from "./userType";
+import type { User } from "../types/userType";
 import UserModal from "./userDialog";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Edit, Trash } from "lucide-react";

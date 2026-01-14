@@ -4,10 +4,16 @@ import { JwtPayload } from "@/lib/jwtPayload";
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-type Handler = (req: NextRequest, user: JwtPayload) => Promise<NextResponse>;
+type Handler<TParams = undefined> = TParams extends undefined
+  ? (req: NextRequest, user: JwtPayload) => Promise<NextResponse>
+  : (
+      req: NextRequest,
+      user: JwtPayload,
+      context: { params: Promise<TParams> }
+    ) => Promise<NextResponse>;
 
-export function withAuth(handler: Handler) {
-  return async function (req: NextRequest) {
+export function withAuth<TParams = undefined>(handler: Handler<TParams>) {
+  return async function (req: NextRequest, context?: { params: Promise<TParams> }) {
     const token = req.cookies.get("access_token")?.value;
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,7 +21,12 @@ export function withAuth(handler: Handler) {
 
     try {
       const { payload } = await jwtVerify<JwtPayload>(token, secret);
-      return handler(req, payload);
+
+      if (context) {
+        return (handler as any)(req, payload, context);
+      }
+
+      return (handler as any)(req, payload);
     } catch {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }

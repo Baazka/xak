@@ -6,7 +6,7 @@ import { ArrowRightIcon, UserIcon } from "lucide-react";
 import { EnvelopeIcon } from "@/icons";
 import Form from "@/components/form/Form";
 import Input from "@/components/form/input/InputField";
-import { User } from "./userType";
+import { User } from "../types/userType";
 import { useEffect, useState } from "react";
 
 interface UserModalProps {
@@ -42,6 +42,7 @@ export default function UserModal({ user, onSaved }: UserModalProps) {
         onSaved(form);
       }
     }
+    addUserModal.closeModal();
   };
 
   return (
@@ -79,8 +80,8 @@ export default function UserModal({ user, onSaved }: UserModalProps) {
                 type="text"
                 placeholder="Хэрэглэгчийн нэр"
                 className="pl-11"
-                defaultValue={form?.name}
-                onChange={(e) => handleChange("name", e.target.value)}
+                defaultValue={form?.username}
+                onChange={(e) => handleChange("username", e.target.value)}
               />
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none left-4 top-1/2 dark:text-gray-400">
                 <UserIcon />

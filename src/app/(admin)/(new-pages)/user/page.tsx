@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/tables/DataTable";
-import type { User } from "./userType";
-import { columns } from "./userColumn";
+import type { User } from "./types/userType";
+import { columns } from "./components/userColumn";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import AddUserModal from "./userDialog";
+import AddUserModal from "./components/userDialog";
 import { SortingState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";

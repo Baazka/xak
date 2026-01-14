@@ -74,6 +74,12 @@ export const MENU_CONFIG: MenuItem[] = [
         roles: ["XAKUSER"],
       },
       {
+        key: "xakorg",
+        name: "Байгууллага",
+        path: "/xakorg",
+        permissions: ["xakorg.read"],
+      },
+      {
         key: "user",
         name: "User",
         path: "/user",
