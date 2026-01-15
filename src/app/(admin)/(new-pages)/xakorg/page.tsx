@@ -12,6 +12,8 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import React from "react";
 import { SortingState } from "@tanstack/react-table";
 import { hasPermission } from "@/lib/permission";
+import Alert from "@/components/ui/alert/Alert";
+import SkeletonTable from "@/components/tables/SkeletonTable";
 
 export default function XakorgListPage() {
   const router = useRouter();
@@ -24,6 +26,8 @@ export default function XakorgListPage() {
   const [data, setData] = useState<XakOrg[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [alert, setAlert] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -31,10 +35,14 @@ export default function XakorgListPage() {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const fetchData = async () => {
+    if (loading) return;
+
+    setAlert(null);
+    setLoading(true);
+
     const sortBy = sorting[0]?.id ?? "id";
     const sortOrder = sorting[0]?.desc ? "desc" : "asc";
 
-    setLoading(true);
     try {
       const res = await fetchWithAuth(
         `/api/xakorg?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`
@@ -47,10 +55,13 @@ export default function XakorgListPage() {
       const data = await res.json();
       setData(data.data);
       setTotal(data.total);
-    } catch (err) {
-      console.error("Fetch error:", err);
+    } catch (err: any) {
+      setAlert(err.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
     } finally {
       setLoading(false);
+      if (initialLoading) {
+        setInitialLoading(false);
+      }
     }
   };
 
@@ -61,16 +72,30 @@ export default function XakorgListPage() {
   const handleRemove = async (id: number) => {
     if (!confirm("Устгахдаа итгэлтэй байна уу?")) return;
 
-    const res = await fetchWithAuth(`/api/xakorg/${id}`, {
-      method: "DELETE",
-    });
+    if (loading) return;
 
-    if (!res.ok) {
-      alert("Устгах үед алдаа гарлаа");
-      return;
+    setLoading(true);
+    setAlert(null);
+
+    try {
+      const res = await fetchWithAuth(`/api/xakorg/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        throw new Error("Устгах үед алдаа гарлаа");
+      }
+
+      if (data.length === 1 && page > 1) {
+        setPage(page - 1);
+      } else {
+        fetchData();
+      }
+    } catch (err: any) {
+      setAlert(err.message || "Устгах үед алдаа гарлаа");
+    } finally {
+      setLoading(false);
     }
-
-    fetchData();
   };
 
   useEffect(() => {
@@ -137,31 +162,35 @@ export default function XakorgListPage() {
             )}
           </div>
         </div>
-
-        <DataTable
-          columns={columns({
-            onEdit: handleEdit,
-            onRemove: handleRemove,
-            canUpdate,
-            canDelete,
-            page,
-            limit,
-          })}
-          data={data}
-          total={total}
-          page={page}
-          limit={limit}
-          search={search}
-          sorting={sorting}
-          loading={loading}
-          onSearchChange={(v) => {
-            setSearch(v);
-            setPage(1);
-          }}
-          onPageChange={setPage}
-          onSortingChange={setSorting}
-          onLimitChange={setLimit}
-        />
+        {alert && <Alert variant="error" title="Алдаа" message={alert} showLink={false} />}
+        {initialLoading ? (
+          <SkeletonTable />
+        ) : (
+          <DataTable
+            columns={columns({
+              onEdit: handleEdit,
+              onRemove: handleRemove,
+              canUpdate,
+              canDelete,
+              page,
+              limit,
+            })}
+            data={data}
+            total={total}
+            page={page}
+            limit={limit}
+            search={search}
+            sorting={sorting}
+            loading={loading}
+            onSearchChange={(v) => {
+              setSearch(v);
+              setPage(1);
+            }}
+            onPageChange={setPage}
+            onSortingChange={setSorting}
+            onLimitChange={setLimit}
+          />
+        )}
       </div>
     </>
   );

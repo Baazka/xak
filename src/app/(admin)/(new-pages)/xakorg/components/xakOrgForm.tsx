@@ -17,9 +17,10 @@ type Props = {
   id?: string;
   initialData?: XakOrgFormData;
   onSubmit?: (data: XakOrgFormData) => Promise<void>;
+  loading?: boolean;
 };
 
-export default function XakOrgForm({ id, initialData, onSubmit }: Props) {
+export default function XakOrgForm({ id, initialData, onSubmit, loading = false }: Props) {
   const router = useRouter();
 
   const [form, setForm] = useState<XakOrgFormData>({
@@ -30,30 +31,9 @@ export default function XakOrgForm({ id, initialData, onSubmit }: Props) {
     address: initialData?.address ?? "",
   });
 
-  const [loading, setLoading] = useState(false);
-
-  const handleSave = async () => {
-    setLoading(true);
-    try {
-      if (onSubmit) {
-        await onSubmit(form);
-      } else {
-        const res = await fetchWithAuth(`/api/xakorg/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-
-        if (!res.ok) throw new Error("Update failed");
-      }
-
-      router.push("/xakorg");
-    } catch (err) {
-      console.error(err);
-      alert("Хадгалах үед алдаа гарлаа");
-    } finally {
-      setLoading(false);
-    }
+  const handleSave = () => {
+    if (loading) return;
+    onSubmit?.(form);
   };
 
   const inputClass =
@@ -62,8 +42,14 @@ export default function XakOrgForm({ id, initialData, onSubmit }: Props) {
     "dark:border-gray-700 dark:bg-gray-900 dark:text-white";
 
   return (
-    <div className="space-y-6">
-      {/* FORM */}
+    <form
+      className="space-y-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (loading) return;
+        onSubmit?.(form);
+      }}
+    >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium">Нэр</label>
@@ -116,9 +102,7 @@ export default function XakOrgForm({ id, initialData, onSubmit }: Props) {
         <Button onClick={handleSave} disabled={loading}>
           {loading ? "Хадгалж байна..." : "Хадгалах"}
         </Button>
-
-       
       </div>
-    </div>
+    </form>
   );
 }

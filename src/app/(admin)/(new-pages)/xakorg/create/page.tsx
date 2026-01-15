@@ -5,18 +5,36 @@ import XakOrgForm from "../components/xakOrgForm";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import Alert from "@/components/ui/alert/Alert";
 
 export default function CreateXakOrgPage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState<string | null>(null);
 
   const handleCreate = async (data: any) => {
-    await fetchWithAuth("/api/xakorg", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    if (loading) return;
 
-    router.push("/xakorg");
+    setAlert(null);
+    setLoading(true);
+    try {
+      const res = await fetchWithAuth("/api/xakorg", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Бүртгэх үед алдаа гарлаа");
+      }
+
+      router.push("/xakorg");
+    } catch (err: any) {
+      setAlert(err.message || "Бүртгэх үед алдаа гарлаа");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,6 +54,8 @@ export default function CreateXakOrgPage() {
         </div>
 
         <div className="p-5">
+          {alert && <Alert variant="error" title="Алдаа" message={alert} showLink={false} />}
+
           <XakOrgForm onSubmit={handleCreate} />
         </div>
       </div>
