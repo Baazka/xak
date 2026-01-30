@@ -6,6 +6,7 @@ import { hasPermission } from "@/lib/permission";
 import { SortingState } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import InvoiceStatusBadge from "./components/invoice/InvoiceStatusBadge";
 
 type Invoice = {
   id: string;
@@ -87,6 +88,21 @@ export default function InvoicesPage() {
 
   return (
     <>
+      {/* Header + Create */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-xl font-semibold">Invoices</h1>
+
+        {
+          // canCreate &&
+          <button
+            onClick={() => router.push("/invoices/create")}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            + Create Order
+          </button>
+        }
+      </div>
+
       {alert && <div className="text-red-600 mb-2">{alert}</div>}
 
       {metrics && (
@@ -122,7 +138,9 @@ export default function InvoicesPage() {
               <td>
                 {inv.total_amount.toLocaleString()} {inv.currency}
               </td>
-              <td>{inv.status}</td>
+              <td>
+                <InvoiceStatusBadge status={inv.status} dueDate={inv.due_date} />
+              </td>
             </tr>
           ))}
         </tbody>

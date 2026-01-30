@@ -82,60 +82,85 @@ export async function GET(req: Request, { params }: Params) {
 /* ======================================================
    POST /api/invoices/{id}/payments
    ====================================================== */
-export async function POST(req: Request, { params }: Params) {
-  const { id } = params;
-  const body = await req.json();
-
-  const { amount, method_id, payment_ref } = body;
-
-  if (!amount || !method_id) {
-    return NextResponse.json({ message: "Invalid payload" }, { status: 400 });
-  }
-
+// POST /api/invoices/[id]/payments
+export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id: invoiceId } = await context.params;
   const client = await db.connect();
+
   try {
-    await client.query("BEGIN");
+    const body = await req.json();
+    const { amount, method_id, reference_no } = body;
 
-    // 🔒 Validate invoice + balance
-    const { status, balance } = await getInvoiceInfo(id);
-
-    if (status === "PAID") {
-      throw new Error("INVOICE_ALREADY_PAID");
+    if (!amount || !method_id) {
+      return NextResponse.json({ message: "Invalid payload" }, { status: 400 });
     }
 
-    if (Number(amount) <= 0 || Number(amount) > balance) {
+    await client.query("BEGIN");
+
+    // 1️⃣ Invoice total + paid
+    const invRes = await client.query(
+      `
+      SELECT
+        i.total_amount,
+        COALESCE(SUM(p.amount), 0) AS paid_amount
+      FROM invoices i
+      LEFT JOIN payments p
+        ON p.invoice_id = i.id
+       AND p.status_id = (
+         SELECT id FROM ref_payment_status WHERE code = 'PAID'
+       )
+      WHERE i.id = $1
+      GROUP BY i.total_amount
+      `,
+      [invoiceId]
+    );
+
+    if (invRes.rowCount === 0) {
+      throw new Error("INVOICE_NOT_FOUND");
+    }
+
+    const { total_amount, paid_amount } = invRes.rows[0];
+    const balance = Number(total_amount) - Number(paid_amount);
+
+    if (amount <= 0 || amount > balance) {
       throw new Error("INVALID_AMOUNT");
     }
 
-    // 1️⃣ Insert payment
+    // 2️⃣ Insert payment (DB schema-д таарсан)
     await client.query(
       `
       INSERT INTO payments (
         invoice_id,
         amount,
-        method_id,
-        payment_ref,
-        payment_status,
-        paid_at
+        payment_date,
+        reference_no,
+        status_id,
+        method_id
       )
-      VALUES ($1, $2, $3, $4, 'PAID', NOW())
+      VALUES (
+        $1,
+        $2,
+        NOW(),
+        $3,
+        (SELECT id FROM ref_payment_status WHERE code = 'PAID'),
+        $4
+      )
       `,
-      [id, amount, method_id, payment_ref ?? null]
+      [invoiceId, amount, reference_no ?? null, method_id]
     );
 
-    // 2️⃣ Update invoice status
-    const newStatus = Number(amount) === balance ? "PAID" : "PARTIAL";
+    // 3️⃣ Update invoice status
+    const newStatus = amount === balance ? "PAID" : "PARTIAL";
 
     await client.query(
       `
       UPDATE invoices
       SET status_id = (
         SELECT id FROM ref_invoice_status WHERE code = $1
-      ),
-      updated_at = NOW()
+      )
       WHERE id = $2
       `,
-      [newStatus, id]
+      [newStatus, invoiceId]
     );
 
     await client.query("COMMIT");
@@ -147,20 +172,9 @@ export async function POST(req: Request, { params }: Params) {
   } catch (err: any) {
     await client.query("ROLLBACK");
 
-    if (err.message === "INVOICE_NOT_FOUND") {
-      return NextResponse.json({ message: "Invoice not found" }, { status: 404 });
-    }
-
-    if (err.message === "INVOICE_ALREADY_PAID") {
-      return NextResponse.json({ message: "Invoice already PAID" }, { status: 400 });
-    }
-
-    if (err.message === "INVALID_AMOUNT") {
-      return NextResponse.json({ message: "Invalid payment amount" }, { status: 400 });
-    }
-
     console.error("❌ POST payment error:", err);
-    return NextResponse.json({ message: "Payment failed", detail: err.message }, { status: 500 });
+
+    return NextResponse.json({ message: err.message }, { status: 500 });
   } finally {
     client.release();
   }
