@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Button } from "@/components/ui/button";
 
 type XakOrgFormData = {
@@ -20,9 +18,7 @@ type Props = {
   loading?: boolean;
 };
 
-export default function XakOrgForm({ id, initialData, onSubmit, loading = false }: Props) {
-  const router = useRouter();
-
+export default function XakOrgForm({ initialData, onSubmit, loading = false }: Props) {
   const [form, setForm] = useState<XakOrgFormData>({
     name: initialData?.name ?? "",
     reg_no: initialData?.reg_no ?? "",
@@ -30,11 +26,6 @@ export default function XakOrgForm({ id, initialData, onSubmit, loading = false 
     phone: initialData?.phone ?? "",
     address: initialData?.address ?? "",
   });
-
-  const handleSave = () => {
-    if (loading) return;
-    onSubmit?.(form);
-  };
 
   const inputClass =
     "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm " +
@@ -44,10 +35,10 @@ export default function XakOrgForm({ id, initialData, onSubmit, loading = false 
   return (
     <form
       className="space-y-6"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         if (loading) return;
-        onSubmit?.(form);
+        await onSubmit?.(form);
       }}
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -73,7 +64,7 @@ export default function XakOrgForm({ id, initialData, onSubmit, loading = false 
           <label className="mb-1 block text-sm font-medium">И-мэйл</label>
           <input
             className={inputClass}
-            value={form.email}
+            value={form.email ?? ""}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
         </div>
@@ -82,7 +73,7 @@ export default function XakOrgForm({ id, initialData, onSubmit, loading = false 
           <label className="mb-1 block text-sm font-medium">Утас</label>
           <input
             className={inputClass}
-            value={form.phone}
+            value={form.phone ?? ""}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
         </div>
@@ -91,15 +82,14 @@ export default function XakOrgForm({ id, initialData, onSubmit, loading = false 
           <label className="mb-1 block text-sm font-medium">Хаяг</label>
           <input
             className={inputClass}
-            value={form.address}
+            value={form.address ?? ""}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
           />
         </div>
       </div>
 
-      {/* ACTIONS */}
       <div className="flex gap-3">
-        <Button onClick={handleSave} disabled={loading}>
+        <Button type="submit" disabled={loading}>
           {loading ? "Хадгалж байна..." : "Хадгалах"}
         </Button>
       </div>

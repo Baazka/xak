@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/tables/DataTable";
 import { columns } from "./columns";
@@ -9,15 +9,16 @@ import { Button } from "@/components/ui/button";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useAuth } from "@/context/AuthContext";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import React from "react";
 import { SortingState } from "@tanstack/react-table";
 import { hasPermission } from "@/lib/permission";
-import Alert from "@/components/ui/alert/Alert";
 import SkeletonTable from "@/components/tables/SkeletonTable";
+import { downloadExcel } from "@/lib/downloadExcel";
+import { useToast } from "@/context/ToastContext";
 
 export default function XakorgListPage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const canCreate = hasPermission(user?.permissions, ["xakorg.create"]);
   const canUpdate = hasPermission(user?.permissions, ["xakorg.update"]);
@@ -25,172 +26,176 @@ export default function XakorgListPage() {
 
   const [data, setData] = useState<XakOrg[]>([]);
   const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
+
+  const [listLoading, setListLoading] = useState(false);
+  const [deleteLoadingId, setDeleteLoadingId] = useState<number | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
-  const [alert, setAlert] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
+
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [reloadKey, setReloadKey] = useState(0);
 
-  const fetchData = async () => {
-    if (loading) return;
+  const sortBy = useMemo(() => sorting[0]?.id ?? "id", [sorting]);
+  const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
 
-    setAlert(null);
-    setLoading(true);
+  // Debounce search input -> real search
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSearch(searchInput);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
-    const sortBy = sorting[0]?.id ?? "id";
-    const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+  useEffect(() => {
+    const controller = new AbortController();
 
-    try {
-      const res = await fetchWithAuth(
-        `/api/xakorg?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&sortOrder=${sortOrder}`
-      );
+    const run = async () => {
+      setListLoading(true);
 
-      if (!res.ok) {
-        throw new Error(`API error: ${res.status}`);
-      }
+      try {
+        const res = await fetchWithAuth(
+          `/api/xakorg?page=${page}&limit=${limit}&search=${encodeURIComponent(
+            search
+          )}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
+          { signal: controller.signal }
+        );
 
-      const data = await res.json();
-      setData(data.data);
-      setTotal(data.total);
-    } catch (err: any) {
-      setAlert(err.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
-    } finally {
-      setLoading(false);
-      if (initialLoading) {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.message || `API error: ${res.status}`);
+        }
+
+        const json = await res.json();
+        setData(json.data);
+        setTotal(json.total);
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+        toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
+      } finally {
+        setListLoading(false);
         setInitialLoading(false);
       }
-    }
-  };
+    };
 
-  const handleEdit = (id: number) => {
-    router.push(`/xakorg/${id}/edit`);
-  };
+    run();
+    return () => controller.abort();
+  }, [page, limit, search, sortBy, sortOrder, reloadKey, toast]);
+
+  const handleEdit = (id: number) => router.push(`/xakorg/${id}/edit`);
 
   const handleRemove = async (id: number) => {
-    if (!confirm("Устгахдаа итгэлтэй байна уу?")) return;
+    if (deleteLoadingId !== null) return;
 
-    if (loading) return;
-
-    setLoading(true);
-    setAlert(null);
+    setDeleteLoadingId(id);
 
     try {
-      const res = await fetchWithAuth(`/api/xakorg/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetchWithAuth(`/api/xakorg/${id}`, { method: "DELETE" });
 
       if (!res.ok) {
-        throw new Error("Устгах үед алдаа гарлаа");
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Устгах үед алдаа гарлаа");
       }
+
+      toast("success", "Байгууллага амжилттай устгагдлаа");
 
       if (data.length === 1 && page > 1) {
         setPage(page - 1);
       } else {
-        fetchData();
+        setReloadKey((k) => k + 1);
       }
     } catch (err: any) {
-      setAlert(err.message || "Устгах үед алдаа гарлаа");
+      toast("error", err?.message || "Устгах үед алдаа гарлаа");
     } finally {
-      setLoading(false);
+      setDeleteLoadingId(null);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [page, limit, search, sorting]);
+  const handleDownload = async () => {
+    try {
+      const sortBy = sorting[0]?.id ?? "id";
+      const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+
+      await downloadExcel({
+        endpoint: "/api/xakorg/export",
+        filenamePrefix: "xakorg",
+        params: { search, sortBy, sortOrder },
+      });
+
+      toast("success", "Excel файл амжилттай татлагдлаа");
+    } catch (e: any) {
+      toast("error", e?.message || "Excel татах үед алдаа гарлаа");
+    }
+  };
 
   return (
     <>
       <div>
         <PageBreadcrumb pageTitle="Байгууллага" />
       </div>
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+
+      <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
               Байгууллагын жагсаалт
             </h3>
-            {/* <p className="text-sm text-gray-500 dark:text-gray-400">
-              Track your store&apos;s progress to boost your sales.
-            </p> */}
           </div>
 
           <div className="flex gap-3">
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleDownload}>
               Татах
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-              >
-                <path
-                  d="M16.667 13.3333V15.4166C16.667 16.1069 16.1074 16.6666 15.417 16.6666H4.58295C3.89259 16.6666 3.33295 16.1069 3.33295 15.4166V13.3333M10.0013 13.3333L10.0013 3.33325M6.14547 9.47942L9.99951 13.331L13.8538 9.47942"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              {/* icon... */}
             </Button>
+
             {canCreate && (
               <Button
                 onClick={() => router.push("/xakorg/create")}
                 className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <path
-                    d="M5 10.0002H15.0006M10.0002 5V15.0006"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
                 Шинэ бүртгэл
               </Button>
             )}
           </div>
         </div>
-        {alert && <Alert variant="error" title="Алдаа" message={alert} showLink={false} />}
-        {initialLoading ? (
-          <SkeletonTable />
-        ) : (
-          <DataTable
-            columns={columns({
-              onEdit: handleEdit,
-              onRemove: handleRemove,
-              canUpdate,
-              canDelete,
-              page,
-              limit,
-            })}
-            data={data}
-            total={total}
-            page={page}
-            limit={limit}
-            search={search}
-            sorting={sorting}
-            loading={loading}
-            onSearchChange={(v) => {
-              setSearch(v);
-              setPage(1);
-            }}
-            onPageChange={setPage}
-            onSortingChange={setSorting}
-            onLimitChange={setLimit}
-          />
-        )}
+
+        <div className="rounded-b-xl overflow-visible">
+          {initialLoading ? (
+            <SkeletonTable />
+          ) : (
+            <DataTable
+              columns={columns({
+                onEdit: handleEdit,
+                onRemove: handleRemove,
+                canUpdate,
+                canDelete,
+                page,
+                limit,
+                deleteLoadingId,
+                openMenuId,
+                setOpenMenuId,
+              })}
+              data={data}
+              total={total}
+              page={page}
+              limit={limit}
+              search={searchInput}
+              onSearchChange={setSearchInput}
+              sorting={sorting}
+              loading={listLoading}
+              onPageChange={setPage}
+              onSortingChange={setSorting}
+              onLimitChange={setLimit}
+            />
+          )}
+        </div>
       </div>
     </>
   );

@@ -7,11 +7,13 @@ import XakOrgForm from "../../components/xakOrgForm";
 import { Button } from "@/components/ui/button";
 import Alert from "@/components/ui/alert/Alert";
 import Link from "next/link";
+import { useToast } from "@/context/ToastContext";
 
 export default function EditXakOrgClient({ id, initialData }: any) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleUpdate = async (data: any) => {
     if (loading) return;
@@ -31,9 +33,11 @@ export default function EditXakOrgClient({ id, initialData }: any) {
         throw new Error(err.message || "Засах үед алдаа гарлаа");
       }
 
+      toast("success", "Амжилттай засагдлаа");
       router.push("/xakorg");
     } catch (err: any) {
-      setAlert(err.message);
+      setAlert(err?.message || "Засах үед алдаа гарлаа");
+      toast("error", err?.message || "Алдаа гарлаа"); // optional
     } finally {
       setLoading(false);
     }

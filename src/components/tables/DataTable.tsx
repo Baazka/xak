@@ -26,6 +26,7 @@ import { RowsPerPage } from "./DataTableRowsPerPage";
 import { SearchInput } from "./DataTableSearchInput";
 import { Pagination } from "./DataTablePagination";
 import { TotalRows } from "./DataTableTotalRows";
+import { AngleDownIcon, AngleUpIcon } from "@/icons";
 
 type Props<TData> = {
   columns: ColumnDef<TData>[];
@@ -84,7 +85,7 @@ export function DataTable<TData>({
         </div>
       </div>
 
-      <div className="overflow-x-auto custom-scrollbar">
+      <div className="max-h-[520px] overflow-auto custom-scrollbar">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
@@ -92,10 +93,39 @@ export function DataTable<TData>({
                 {hg.headers.map((h) => (
                   <TableHead
                     key={h.id}
-                    className={`px-4 py-3 border border-gray-100 dark:border-white/[0.05]
+                    onClick={h.column.getCanSort() ? h.column.getToggleSortingHandler() : undefined}
+                    className={`sticky top-0 z-10 bg-white dark:bg-[#0b1220]
+    px-4 py-3 border border-gray-100 dark:border-white/[0.05]
+    ${h.column.getCanSort() ? "cursor-pointer select-none" : ""}
     ${h.column.columnDef.meta?.className ?? ""}`}
                   >
-                    {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
+                    {h.isPlaceholder ? null : (
+                      <div
+                        className={`flex items-center justify-between ${
+                          h.column.getCanSort() ? "cursor-pointer select-none" : ""
+                        }`}
+                      >
+                        <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
+                          {flexRender(h.column.columnDef.header, h.getContext())}
+                        </p>
+
+                        {/* Sorting icons */}
+                        {h.column.getCanSort() && (
+                          <div className="flex flex-col gap-0.5 ml-2">
+                            <AngleUpIcon
+                              className={`text-gray-300 dark:text-gray-700 ${
+                                h.column.getIsSorted() === "asc" ? "text-brand-500" : ""
+                              }`}
+                            />
+                            <AngleDownIcon
+                              className={`text-gray-300 dark:text-gray-700 ${
+                                h.column.getIsSorted() === "desc" ? "text-brand-500" : ""
+                              }`}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -108,7 +138,7 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={`px-4 py-4 font-normal text-gray-800 border border-gray-100
+                      className={`px-4 font-normal text-gray-800 border border-gray-100
     dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap
     ${cell.column.columnDef.meta?.className ?? ""}`}
                     >

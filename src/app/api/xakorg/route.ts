@@ -1,8 +1,9 @@
 //src/app/api/xakorg/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db"; // make sure this exports a connected pg client
+import db from "@/lib/db";
 import { withAuth } from "@/lib/withAuth";
 import { requirePermission } from "@/lib/requirePermission";
+import { buildWhereClause, safeParseFilters } from "./_where";
 
 const SORTABLE_COLUMNS = new Set(["id", "name", "reg_no", "email"]);
 
@@ -15,27 +16,18 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
     const page = Math.max(parseInt(sp.get("page") || "1"), 1);
     const limit = Math.max(parseInt(sp.get("limit") || "10"), 1);
     const search = sp.get("search") || "";
+    const filters = safeParseFilters(sp.get("filters"));
 
-    const sortBy = SORTABLE_COLUMNS.has(sp.get("sortBy") || "") ? sp.get("sortBy") : "id";
+    // whereClause + params бэлэн болсон (search/filter бүгд эндээс гарна)
+    const { whereClause, params } = buildWhereClause(search, filters);
 
+    const sortByRaw = sp.get("sortBy") || "id";
+    const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "id";
     const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
 
     const offset = (page - 1) * limit;
 
-    let whereClause = "WHERE status IS NULL";
-    const params: any[] = [];
-
-    if (search) {
-      params.push(`%${search}%`);
-      whereClause += `
-        AND (
-          name ILIKE $${params.length}
-          OR reg_no ILIKE $${params.length}
-          OR email ILIKE $${params.length}
-        )
-      `;
-    }
-
+    // where params бүрэн болсны дараа
     const dataParams = [...params, limit, offset];
 
     const dataSql = `
@@ -43,8 +35,8 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
       FROM reg_xakorg
       ${whereClause}
       ORDER BY ${sortBy} ${sortOrder}
-      LIMIT $${dataParams.length - 1}
-      OFFSET $${dataParams.length}
+      LIMIT $${params.length + 1}
+      OFFSET $${params.length + 2}
     `;
 
     const countSql = `
