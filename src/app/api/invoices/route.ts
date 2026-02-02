@@ -92,3 +92,88 @@ export async function GET(req: Request) {
     );
   }
 }
+export async function POST(req: Request) {
+  const client = await db.connect();
+
+  try {
+    const body = await req.json();
+
+    const { xakorg_id, issue_date, due_date, currency = "MNT", items = [] } = body;
+
+    if (!xakorg_id || !issue_date || !due_date || items.length === 0) {
+      return NextResponse.json({ message: "Invalid payload" }, { status: 400 });
+    }
+
+    await client.query("BEGIN");
+
+    // 1️⃣ totals
+    const subtotal = items.reduce((s: number, it: any) => s + it.qty * it.unit_price, 0);
+
+    const tax_amount = 0;
+    const total_amount = subtotal + tax_amount;
+
+    // 2️⃣ create invoice (ISSUED = status_id)
+    const invRes = await client.query(
+      `
+      INSERT INTO invoices (
+        id,
+        invoice_no,
+        xakorg_id,
+        issue_date,
+        due_date,
+        subtotal,
+        tax_amount,
+        total_amount,
+        currency,
+        status_id
+      )
+      VALUES (
+        gen_random_uuid(),
+        'INV-' || EXTRACT(EPOCH FROM NOW())::bigint,
+        $1, $2, $3,
+        $4, $5, $6,
+        $7,
+        (SELECT id FROM ref_invoice_status WHERE code = 'ISSUED')
+      )
+      RETURNING id
+      `,
+      [xakorg_id, issue_date, due_date, subtotal, tax_amount, total_amount, currency]
+    );
+
+    const invoiceId = invRes.rows[0].id;
+
+    // 3️⃣ items
+    for (const it of items) {
+      await client.query(
+        `
+        INSERT INTO invoice_items (
+          invoice_id,
+          description,
+          quantity,
+          unit_price,
+          line_total
+        )
+        VALUES ($1, $2, $3, $4, $5)
+        `,
+        [invoiceId, it.description, it.qty, it.unit_price, it.qty * it.unit_price]
+      );
+    }
+
+    await client.query("COMMIT");
+
+    return NextResponse.json({
+      id: invoiceId,
+      message: "Invoice created",
+    });
+  } catch (err: any) {
+    await client.query("ROLLBACK");
+
+    console.error("❌ POST /api/invoices error:", err);
+    return NextResponse.json(
+      { message: "Create invoice failed", detail: err.message },
+      { status: 500 }
+    );
+  } finally {
+    client.release();
+  }
+}
