@@ -4,57 +4,58 @@ import jwt from "jsonwebtoken";
 import db from "@/lib/db";
 import crypto from "crypto";
 import { buildJwtPayload } from "@/lib/buildJwtPayload";
+import { getJwtSecretString } from "@/lib/jwt";
 
 const bcrypt = require("bcryptjs");
-const ACCESS_TOKEN_TTL = 60 * 15; // 15 минут
+const ACCESS_TOKEN_TTL = 60 * 15;
 
 export async function POST(req: Request) {
-  const { email, password, remember } = await req.json();
-  // 1. User шалгах
-  const { rows } = await db.query(`SELECT id, email, password FROM reg_users WHERE email = $1`, [
-    email,
-  ]);
+  const body = await req.json().catch(() => null);
+  const email = body?.email;
+  const password = body?.password;
+  const remember = Boolean(body?.remember);
+
+  if (typeof email !== "string" || typeof password !== "string") {
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+  }
+
+  const { rows } = await db.query(
+    `SELECT id, email, username, avatar, password FROM reg_users WHERE email = $1`,
+    [email]
+  );
   const user = rows[0];
 
-  if (!user) {
-    return NextResponse.json({ error: "Хэрэглэгч олдсонгүй." }, { status: 401 });
-  }
+  if (!user) return NextResponse.json({ error: "Хэрэглэгч олдсонгүй." }, { status: 401 });
 
-  // 2. Password шалгах
   const isMatch = await bcrypt.compare(String(password).trim(), String(user.password).trim());
-  if (!isMatch) {
-    return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
-  }
+  if (!isMatch) return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
 
   const { rows: roles } = await db.query(
     `
-  SELECT r.id, r.code, r.name
-  FROM reg_user_roles ur
-  JOIN ref_user_roles r ON r.id = ur.role_id
-  WHERE ur.user_id = $1
-  `,
+    SELECT r.id, r.code, r.name
+    FROM reg_user_roles ur
+    JOIN ref_user_roles r ON r.id = ur.role_id
+    WHERE ur.user_id = $1
+    `,
     [user.id]
   );
 
-  if (roles.length === 0) {
-    return NextResponse.json({ error: "Role олдсонгүй" }, { status: 403 });
-  }
+  if (roles.length === 0) return NextResponse.json({ error: "Role олдсонгүй" }, { status: 403 });
+
   const activeRole = roles[0];
 
+  //  зөвхөн ACTIVE ROLE permission
   const { rows: perms } = await db.query(
     `
     SELECT DISTINCT p.code
-    FROM reg_user_roles ur
-    JOIN reg_user_role_permissions rp ON rp.role_id = ur.role_id
+    FROM reg_user_role_permissions rp
     JOIN ref_user_permissions p ON p.id = rp.permission_id
-    WHERE ur.user_id = $1
-  `,
-    [user.id]
+    WHERE rp.role_id = $1
+    `,
+    [activeRole.id]
   );
+  const permissions = perms.map((p: any) => p.code);
 
-  const permissions = perms?.map((p) => p.code) ?? [];
-
-  // 3. Access token
   const payload = buildJwtPayload({
     user: {
       id: user.id,
@@ -63,15 +64,14 @@ export async function POST(req: Request) {
       avatar: user.avatar,
     },
     activeRole: activeRole.code,
-    roles: roles.map((r) => r.code),
+    roles: roles.map((r: any) => r.code),
     permissions,
   });
 
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET!, {
+  const accessToken = jwt.sign(payload, getJwtSecretString(), {
     expiresIn: ACCESS_TOKEN_TTL,
   });
 
-  // 🔁 Refresh token (random string)
   const refreshToken = crypto.randomBytes(32).toString("hex");
   const refreshHash = bcrypt.hashSync(refreshToken, 10);
 
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
       sub: user.id,
       email: user.email,
       activeRole: activeRole.code,
-      roles: roles.map((r) => r.code),
+      roles: roles.map((r: any) => r.code),
       permissions,
     },
   });

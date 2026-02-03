@@ -4,8 +4,10 @@ import { RoleCode } from "@/app/config/roleHome";
 import { useRoleSwitch } from "./useRoleSwitch";
 
 const ROLE_LABELS: Record<RoleCode, string> = {
+  SUPERADMIN: "Супер админ",
   ADMIN: "Админ",
   XAKADMIN: "ХАК Админ",
+  XAKUSER: "ХАК хэрэглэгч",
   USER: "Хэрэглэгч",
 };
 

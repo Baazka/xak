@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import db from "@/lib/db";
 import { buildJwtPayload } from "@/lib/buildJwtPayload";
+import { getJwtSecretString } from "@/lib/jwt";
 const bcrypt = require("bcryptjs");
 
 const ACCESS_TOKEN_TTL = 60 * 15;
@@ -18,7 +19,6 @@ export async function POST() {
     return NextResponse.json({ error: "No refresh token" }, { status: 401 });
   }
 
-  // 🔐 1. Refresh session шалгах
   const { rows: sessions } = await db.query(
     "SELECT * FROM reg_user_sessions WHERE expires_at > now()"
   );
@@ -35,13 +35,12 @@ export async function POST() {
     return NextResponse.json({ error: "Invalid refresh token" }, { status: 401 });
   }
 
-  // 👤 2. User
-  const { rows: users } = await db.query("SELECT id, email FROM reg_users WHERE id=$1", [
-    session.user_id,
-  ]);
+  const { rows: users } = await db.query(
+    "SELECT id, email, username, avatar FROM reg_users WHERE id=$1",
+    [session.user_id]
+  );
   const user = users[0];
 
-  // 🎭 3. Roles
   const { rows: roles } = await db.query(
     `
     SELECT r.id, r.code
@@ -57,14 +56,12 @@ export async function POST() {
   }
 
   const activeRoleCode = session.active_role;
-
-  // roles
   const activeRole = roles.find((r) => r.code === activeRoleCode);
 
   if (!activeRole) {
     return NextResponse.json({ error: "Active role not found" }, { status: 403 });
   }
-  // 🔑 4. Permissions (ACTIVE ROLE)
+
   const { rows: perms } = await db.query(
     `
     SELECT DISTINCT p.code
@@ -89,8 +86,7 @@ export async function POST() {
     permissions,
   });
 
-  // 🪙 5. NEW ACCESS TOKEN (LOGIN-ТАЙ ИЖИЛ)
-  const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET!, {
+  const newAccessToken = jwt.sign(payload, getJwtSecretString(), {
     expiresIn: ACCESS_TOKEN_TTL,
   });
 

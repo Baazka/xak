@@ -2,10 +2,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { publicRoutes } from "@/app/config/auth";
+import { getJwtSecret } from "@/lib/jwt";
 import { jwtVerify } from "jose";
 import { RoleCode } from "@/app/config/roleHome";
-
-const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
 
 const ROUTE_ROLE_MAP: Record<string, RoleCode[]> = {
   "/users": ["ADMIN", "USER"],
@@ -40,7 +39,7 @@ export async function middleware(req: NextRequest) {
 
   let payload: any;
   try {
-    const result = await jwtVerify(token, secret);
+    const result = await jwtVerify(token, getJwtSecret());
     payload = result.payload;
   } catch {
     return NextResponse.redirect(new URL("/signin", req.url));
@@ -53,12 +52,26 @@ export async function middleware(req: NextRequest) {
   }
 
   // Active role шалгах
-  const matched = Object.entries(ROUTE_ROLE_MAP).find(([route]) => pathname.startsWith(route));
+  const matched = Object.entries(ROUTE_ROLE_MAP).find(
+    ([route]) => pathname === route || pathname.startsWith(route + "/")
+  );
 
   if (matched) {
     const [, allowedRoles] = matched;
+
+    // activeRole байхгүй бол сонгуул
+    if (!payload?.activeRole) {
+      return NextResponse.redirect(new URL("/select-role", req.url));
+    }
+
+    // зөвшөөрөгдөөгүй бол
     if (!allowedRoles.includes(payload.activeRole as RoleCode)) {
-      return NextResponse.redirect(new URL("/403", req.url));
+      // хэрвээ өөр зөв role-той бол (403 биш)
+      const hasAnyAllowed = Array.isArray(payload.roles)
+        ? payload.roles.some((r: string) => allowedRoles.includes(r as RoleCode))
+        : false;
+
+      return NextResponse.redirect(new URL(hasAnyAllowed ? "/select-role" : "/403", req.url));
     }
   }
 

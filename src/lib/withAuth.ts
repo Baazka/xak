@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-import { JwtPayload } from "@/lib/jwtPayload";
-
-const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+import type { JwtPayload } from "@/lib/jwtPayload";
+import { getJwtSecret } from "@/lib/jwt";
 
 type Handler<TParams = undefined> = TParams extends undefined
   ? (req: NextRequest, user: JwtPayload) => Promise<NextResponse>
@@ -20,7 +19,7 @@ export function withAuth<TParams = undefined>(handler: Handler<TParams>) {
     }
 
     try {
-      const { payload } = await jwtVerify<JwtPayload>(token, secret);
+      const { payload } = await jwtVerify<JwtPayload>(token, getJwtSecret());
 
       if (context) {
         return (handler as any)(req, payload, context);

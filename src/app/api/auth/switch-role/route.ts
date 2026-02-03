@@ -3,30 +3,43 @@ import { NextResponse } from "next/server";
 import { cookies, headers } from "next/headers";
 import { jwtVerify } from "jose";
 import db from "@/lib/db";
-
-const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+import { getJwtSecret } from "@/lib/jwt";
 
 export async function POST(req: Request) {
-  const { roleCode } = await req.json();
+  const body = await req.json().catch(() => null);
+  const roleCode = body?.roleCode;
+
+  if (typeof roleCode !== "string" || roleCode.length === 0) {
+    return NextResponse.json({ error: "roleCode буруу" }, { status: 400 });
+  }
 
   const token = (await cookies()).get("access_token")?.value;
   if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { payload } = await jwtVerify(token, secret);
+  let payload: any;
+  try {
+    ({ payload } = await jwtVerify(token, getJwtSecret()));
+  } catch {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
 
-  const userId = payload.sub as string;
-  const fromRole = payload.activeRole as string;
+  const userId = Number(payload.sub);
+  if (!Number.isFinite(userId)) {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+  }
 
-  // 1️⃣ User-д байгаа role эсэх
+  const fromRole = String(payload.activeRole ?? "");
+
+  // User-д байгаа role эсэх
   const { rows } = await db.query(
     `
-  SELECT 1
-  FROM reg_user_roles ur
-  JOIN ref_user_roles r ON r.id = ur.role_id
-  WHERE ur.user_id = $1 AND r.code = $2
-  `,
+    SELECT 1
+    FROM reg_user_roles ur
+    JOIN ref_user_roles r ON r.id = ur.role_id
+    WHERE ur.user_id = $1 AND r.code = $2
+    `,
     [userId, roleCode]
   );
 
@@ -38,13 +51,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true });
   }
 
-  // 2️⃣ IP + UA
+  // IP + UA
   const headerList = await headers();
-  const ip = headerList.get("x-forwarded-for")?.split(",")[0] ?? headerList.get("x-real-ip");
+  const ip =
+    headerList.get("x-forwarded-for")?.split(",")[0]?.trim() ?? headerList.get("x-real-ip");
 
   const userAgent = headerList.get("user-agent");
 
-  // 3️⃣ ROLE LOG
+  // ROLE LOG
   await db.query(
     `
     INSERT INTO reg_user_role_logs
@@ -54,10 +68,13 @@ export async function POST(req: Request) {
     [userId, fromRole, roleCode, ip, userAgent]
   );
 
+  // Active role update (all active sessions for this user)
   await db.query(
-    `UPDATE reg_user_sessions
-   SET active_role = $1
-   WHERE user_id = $2 AND expires_at > now()`,
+    `
+    UPDATE reg_user_sessions
+    SET active_role = $1
+    WHERE user_id = $2 AND expires_at > now()
+    `,
     [roleCode, userId]
   );
 

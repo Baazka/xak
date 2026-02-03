@@ -2,24 +2,21 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { JwtPayload } from "@/lib/jwtPayload";
-
-const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+import type { JwtPayload } from "@/lib/jwtPayload";
+import { getJwtSecret } from "@/lib/jwt";
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
+  const token = (await cookies()).get("access_token")?.value;
 
   if (!token) {
     return NextResponse.json({ user: null }, { status: 200 });
   }
 
   try {
-    const { payload } = await jwtVerify<JwtPayload>(token, secret);
-    return NextResponse.json({
-      user: payload,
-    });
+    const { payload } = await jwtVerify<JwtPayload>(token, getJwtSecret());
+    return NextResponse.json({ user: payload }, { status: 200 });
   } catch {
-    return NextResponse.json({ user: null }, { status: 401 });
+    // token эвдэрсэн ч UI талдаа logged out гэж л үзье
+    return NextResponse.json({ user: null }, { status: 200 });
   }
 }
