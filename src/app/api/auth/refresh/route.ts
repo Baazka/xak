@@ -14,24 +14,35 @@ const ACCESS_TOKEN_TTL = 60 * 15;
 export async function POST() {
   const cookieStore = await cookies();
   const refresh = cookieStore.get("refresh_token")?.value;
-
   if (!refresh) {
     return NextResponse.json({ error: "No refresh token" }, { status: 401 });
   }
 
-  const { rows: sessions } = await db.query(
-    "SELECT * FROM reg_user_sessions WHERE expires_at > now()"
-  );
-
-  let session = null;
-  for (const s of sessions) {
-    if (bcrypt.compareSync(refresh, s.refresh_token_hash)) {
-      session = s;
-      break;
-    }
+  const [selector, verifier] = refresh.split(".");
+  if (!selector || !verifier) {
+    return NextResponse.json({ error: "Invalid refresh token" }, { status: 401 });
   }
 
+  // ✅ 1 мөр л татна
+  const { rows: sessions } = await db.query(
+    `
+    SELECT *
+    FROM reg_user_sessions
+    WHERE refresh_selector = $1
+      AND expires_at > now()
+    LIMIT 1
+    `,
+    [selector]
+  );
+
+  const session = sessions[0];
   if (!session) {
+    return NextResponse.json({ error: "Invalid refresh token" }, { status: 401 });
+  }
+
+  // bcrypt compare
+  const ok = bcrypt.compareSync(verifier, session.refresh_token_hash);
+  if (!ok) {
     return NextResponse.json({ error: "Invalid refresh token" }, { status: 401 });
   }
 
@@ -72,7 +83,7 @@ export async function POST() {
     [activeRole.id]
   );
 
-  const permissions = perms.map((p) => p.code);
+  const permissions = perms.map((p: any) => p.code);
 
   const payload = buildJwtPayload({
     user: {
@@ -82,7 +93,7 @@ export async function POST() {
       avatar: user.avatar,
     },
     activeRole: activeRole.code,
-    roles: roles.map((r) => r.code),
+    roles: roles.map((r: any) => r.code),
     permissions,
   });
 
@@ -91,7 +102,6 @@ export async function POST() {
   });
 
   const res = NextResponse.json({ success: true });
-
   res.cookies.set("access_token", newAccessToken, {
     httpOnly: true,
     path: "/",
