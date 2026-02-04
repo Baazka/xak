@@ -72,16 +72,19 @@ export async function POST(req: Request) {
     expiresIn: ACCESS_TOKEN_TTL,
   });
 
-  const refreshToken = crypto.randomBytes(32).toString("hex");
-  const refreshHash = bcrypt.hashSync(refreshToken, 10);
+  const selector = crypto.randomBytes(16).toString("hex");
+  const verifier = crypto.randomBytes(32).toString("hex");
+
+  const refreshToken = `${selector}.${verifier}`;
+  const refreshHash = bcrypt.hashSync(verifier, 10);
 
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + (remember ? 30 : 7));
 
   await db.query(
-    `INSERT INTO reg_user_sessions (user_id, refresh_token_hash, expires_at, active_role)
-     VALUES ($1, $2, $3, $4)`,
-    [user.id, refreshHash, expiresAt, activeRole.code]
+    `INSERT INTO reg_user_sessions (user_id, refresh_selector, refresh_token_hash, expires_at, active_role)
+   VALUES ($1, $2, $3, $4, $5)`,
+    [user.id, selector, refreshHash, expiresAt, activeRole.code]
   );
 
   const res = NextResponse.json({
