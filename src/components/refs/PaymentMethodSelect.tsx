@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fetchWithAuth } from "@/lib/fetchWithAuth"; // ✅ өөрийн замаар тааруул
+import { fetchWithAuth } from "@/lib/fetchWithAuth"; 
 
 type PaymentMethod = { id: number; name: string };
 
@@ -48,7 +48,7 @@ export default function PaymentMethodSelect({
         }
 
         const json = await res.json();
-        console.log("payment-method json =>", json); // ✅ яг юу ирж байгааг харна
+        
         setMethods(json?.data ?? []);
       } catch (e: any) {
         if (e?.name !== "AbortError") {
