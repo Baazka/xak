@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    const { email } = body;
+    const { email } = body.trim().toLowerCase();
 
     const user = await db.query("SELECT id FROM reg_users WHERE email=$1", [email]);
 

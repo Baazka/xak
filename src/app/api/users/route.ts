@@ -20,7 +20,7 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
     const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
     const offset = (page - 1) * limit;
 
-    let whereClause = "WHERE status is null";
+    let whereClause = "WHERE status != 2"; 
     const params: any[] = [];
 
     if (search) {
@@ -134,7 +134,7 @@ async function updateUser({ id, name, email }: { id: number; name: string; email
 }
 async function removeUser(id: number) {
   try {
-    const result = await db.query("UPDATE reg_users SET status = 1 WHERE id = $1 RETURNING *", [
+    const result = await db.query("UPDATE reg_users SET status = 2 WHERE id = $1 RETURNING *", [
       id,
     ]);
 

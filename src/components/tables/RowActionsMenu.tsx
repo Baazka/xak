@@ -13,11 +13,10 @@ import { MoreHorizontal } from "lucide-react";
 export type RowActionItem = {
   key: string;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   icon?: React.ReactNode;
   variant?: "default" | "danger";
   disabled?: boolean;
-
   custom?: React.ReactNode;
 };
 

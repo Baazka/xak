@@ -2,12 +2,14 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { XakOrg } from "./types";
 import RowActionsMenu from "@/components/tables/RowActionsMenu";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Mail } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 
 type ColumnActions = {
   onEdit: (id: number) => void;
   onRemove: (id: number) => void;
+  onInvite: (org: XakOrg) => void;
+
   canUpdate: boolean;
   canDelete: boolean;
   page: number;
@@ -35,7 +37,10 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrg>[] => [
     enableSorting: false,
     meta: { className: "w-[60px] text-center" },
     cell: ({ row }) => {
-      const id = row.original.id;
+      const org = row.original;
+      const id = org.id;
+      const email = org.email?.trim();
+      const name = org.name;
       const deleting = actions.deleteLoadingId === id;
 
       const menuActions = [
@@ -49,7 +54,14 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrg>[] => [
               },
             ]
           : []),
-
+        // EMAIL ACTION
+        {
+          key: "invite",
+          label: org.email ? "Invite / OTP явуулах" : "E-mail байхгүй",
+          icon: <Mail className="h-4 w-4" />,
+          disabled: !org.email,
+          onClick: () => actions.onInvite(org),
+        },
         ...(actions.canDelete
           ? [
               {

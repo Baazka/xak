@@ -14,6 +14,7 @@ import { hasPermission } from "@/lib/permission";
 import SkeletonTable from "@/components/tables/SkeletonTable";
 import { downloadExcel } from "@/lib/downloadExcel";
 import { useToast } from "@/context/ToastContext";
+import InviteOtpModal from "./components/InviteOtpModal";
 
 export default function XakorgListPage() {
   const router = useRouter();
@@ -35,6 +36,8 @@ export default function XakorgListPage() {
   const [limit, setLimit] = useState(10);
 
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+
+  const [inviteOrg, setInviteOrg] = useState<XakOrg | null>(null);
 
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -134,6 +137,15 @@ export default function XakorgListPage() {
       toast("error", e?.message || "Excel татах үед алдаа гарлаа");
     }
   };
+  
+  const onInvite = (org: XakOrg) => {
+    if (!org.email) {
+      toast("error", "E-mail байхгүй байна");
+      return;
+    }
+    setOpenMenuId(null);
+    setInviteOrg(org);
+  };
 
   return (
     <>
@@ -174,6 +186,7 @@ export default function XakorgListPage() {
               columns={columns({
                 onEdit: handleEdit,
                 onRemove: handleRemove,
+                onInvite: onInvite,
                 canUpdate,
                 canDelete,
                 page,
@@ -197,6 +210,16 @@ export default function XakorgListPage() {
           )}
         </div>
       </div>
+      {inviteOrg && (
+        <InviteOtpModal
+          org={inviteOrg}
+          onClose={() => setInviteOrg(null)}
+          onSuccess={() => {
+            toast("success", "Invite/OTP амжилттай илгээгдлээ");
+            setInviteOrg(null);
+          }}
+        />
+      )}
     </>
   );
 }

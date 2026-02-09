@@ -25,3 +25,32 @@ export async function sendResetEmail(email: string, link: string) {
     throw new Error(err instanceof Error ? err.message : "Failed to send reset email");
   }
 }
+export async function sendOtpEmail(email: string, otp: string, minutes = 10) {
+  try {
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      subject: "Таны баталгаажуулах код (OTP)",
+      html: `
+        <div style="font-family: Arial, sans-serif">
+          <h3>Нэвтрэх баталгаажуулалт</h3>
+          <p>Таны нэг удаагийн код:</p>
+          <div style="
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            margin: 12px 0;
+          ">
+            ${otp}
+          </div>
+          <p>Энэ код <b>${minutes} минут</b> хүчинтэй.</p>
+          <p style="color:#666;font-size:12px">
+            Хэрэв та энэ хүсэлтийг гаргаагүй бол энэ имэйлийг үл тооно уу.
+          </p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    throw new Error(err instanceof Error ? err.message : "Failed to send OTP email");
+  }
+}

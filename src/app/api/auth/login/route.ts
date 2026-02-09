@@ -11,7 +11,9 @@ const ACCESS_TOKEN_TTL = 60 * 15;
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
-  const email = body?.email;
+  const email = String(body?.email ?? "")
+    .trim()
+    .toLowerCase();
   const password = body?.password;
   const remember = Boolean(body?.remember);
 
