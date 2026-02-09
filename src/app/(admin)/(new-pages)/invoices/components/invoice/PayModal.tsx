@@ -1,13 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-
-type PaymentMethod = {
-  id: number;
-  code: string;
-  name: string;
-};
+import PaymentMethodSelect from "@/components/refs/PaymentMethodSelect";
 
 type Props = {
   invoiceId: string;
@@ -20,19 +15,9 @@ type Props = {
 export default function PayModal({ invoiceId, balance, currency, onSuccess, onClose }: Props) {
   const [amount, setAmount] = useState(balance);
   const [methodId, setMethodId] = useState<number | null>(null);
-  const [methods, setMethods] = useState<PaymentMethod[]>([]);
   const [reference, setReference] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadMethods = async () => {
-      const res = await fetchWithAuth("/api/refs/payment-method");
-      const json = await res.json();
-      setMethods(json.data);
-    };
-    loadMethods();
-  }, []);
 
   const submit = async () => {
     setError(null);
@@ -60,21 +45,21 @@ export default function PayModal({ invoiceId, balance, currency, onSuccess, onCl
       });
 
       if (!res.ok) {
-        const e = await res.json();
+        const e = await res.json().catch(() => ({}));
         throw new Error(e.message || "Payment failed");
       }
 
       onSuccess();
       onClose();
     } catch (e: any) {
-      setError(e.message);
+      setError(e?.message || "Payment failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-1000">
       <div className="bg-white w-full max-w-md rounded shadow p-6">
         <h2 className="text-lg font-semibold mb-4">Pay Invoice</h2>
 
@@ -95,21 +80,7 @@ export default function PayModal({ invoiceId, balance, currency, onSuccess, onCl
         </div>
 
         {/* Method */}
-        <div className="mb-3">
-          <label className="text-sm">Payment method</label>
-          <select
-            className="border p-2 w-full"
-            value={methodId ?? ""}
-            onChange={(e) => setMethodId(Number(e.target.value))}
-          >
-            <option value="">-- select --</option>
-            {methods.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <PaymentMethodSelect value={methodId} onChange={setMethodId} />
 
         {/* Reference */}
         <div className="mb-4">
