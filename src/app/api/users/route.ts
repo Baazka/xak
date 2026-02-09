@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db"; // make sure this exports a connected pg client
 import { withAuth } from "@/lib/withAuth";
 import { requirePermission } from "@/lib/requirePermission";
+import bcrypt from "bcryptjs";
 
 const SORTABLE_COLUMNS = new Set(["id", "username", "email"]); // Add valid sortable columns here
 
@@ -84,11 +85,28 @@ export const POST = withAuth(async function POST(req: NextRequest, user) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 });
-async function createUser({ name, email }: { name: string; email: string }) {
+async function createUser({
+  username,
+  email,
+  password,
+}: {
+  username: string;
+  email: string;
+  password: string;
+}) {
   try {
+    const seq_id = await db.query("select nextval('reg_users_id_seq'::regclass)");
+    const seq_res = seq_id.rows[0].nextval;
+    const salt = bcrypt.genSaltSync(10);
+    const hashpw = bcrypt.hashSync(password, salt);
     const result = await db.query(
-      "INSERT INTO reg_users (username, email) VALUES ($1, $2) RETURNING *",
-      [name, email]
+      "INSERT INTO reg_users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
+      [seq_res, username, email, hashpw]
+    );
+
+    const result_role = await db.query(
+      "INSERT INTO REG_USER_ROLES(user_id, role_id) VALUES ($1, $2) RETURNING *",
+      [seq_res, 3]
     );
 
     return NextResponse.json(result.rows[0], { status: 201 });

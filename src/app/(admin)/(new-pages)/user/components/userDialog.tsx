@@ -3,7 +3,7 @@ import { useModal } from "@/hooks/useModal";
 import Button from "@/components/ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import { ArrowRightIcon, UserIcon } from "lucide-react";
-import { EnvelopeIcon } from "@/icons";
+import { EnvelopeIcon, LockIcon } from "@/icons";
 import Form from "@/components/form/Form";
 import Input from "@/components/form/input/InputField";
 import { User } from "../types/userType";
@@ -97,6 +97,18 @@ export default function UserModal({ user, onSaved }: UserModalProps) {
               />
               <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none left-4 top-1/2 dark:text-gray-400">
                 <EnvelopeIcon />
+              </span>
+            </div>
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Нууц үг"
+                className="pl-11"
+                defaultValue={form?.password}
+                onChange={(e) => handleChange("password", e.target.value)}
+              />
+              <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none left-4 top-1/2 dark:text-gray-400">
+                <LockIcon />
               </span>
             </div>
           </div>

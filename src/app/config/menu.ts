@@ -85,6 +85,7 @@ export const MENU_CONFIG: MenuItem[] = [
         name: "User",
         path: "/user",
         permissions: ["user.read"],
+        roles: ["XAKADMIN"],
       },
     ],
   },

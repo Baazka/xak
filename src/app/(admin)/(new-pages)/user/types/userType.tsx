@@ -3,4 +3,5 @@ export type User = {
   username: string;
   email: string;
   emailVerified: string;
+  password: string;
 };
