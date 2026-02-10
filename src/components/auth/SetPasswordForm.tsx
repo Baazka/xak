@@ -41,23 +41,9 @@ export default function SetPasswordForm({ token, email }: Props) {
         return;
       }
 
-      // 2) login (шинэ нууц үгээр)
-      const loginRes = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, remember: true }),
-      });
-      const loginData = await loginRes.json().catch(() => ({}));
+      alert("Нууц үг амжилттай шинэчлэгдлээ. Одоо нэвтэрч орно уу.");
 
-      if (!loginRes.ok) {
-        // set-password амжилттай ч login унаж болно (cookie/token асуудал гэх мэт)
-        alert(loginData?.error || "Нууц үг шинэчлэгдсэн. Одоо нэвтэрч орно уу.");
-        router.replace(`/signin?email=${encodeURIComponent(email)}`);
-        return;
-      }
-
-      // 3) амжилттай бол home/role select
-      router.replace("/dashboard1");
+      router.replace(`/signin?email=${encodeURIComponent(email)}`);
     } finally {
       setLoading(false);
     }
