@@ -64,6 +64,11 @@ export default function SignInForm() {
 
       const data = await res.json();
 
+      if (data.code === "OTP_REQUIRED") {
+        router.replace(`/verify-otp?email=${encodeURIComponent(email)}`);
+        return; 
+      }
+
       if (!res.ok) {
         setAlert({
           show: true,

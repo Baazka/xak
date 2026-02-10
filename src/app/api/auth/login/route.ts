@@ -22,12 +22,27 @@ export async function POST(req: Request) {
   }
 
   const { rows } = await db.query(
-    `SELECT id, email, username, avatar, password FROM reg_users WHERE email = $1`,
+    `SELECT id, email, username, avatar, password, status FROM reg_users WHERE email = $1`,
     [email]
   );
   const user = rows[0];
 
   if (!user) return NextResponse.json({ error: "Хэрэглэгч олдсонгүй." }, { status: 401 });
+
+  if (user.status === 0) {
+    return NextResponse.json(
+      { error: "OTP баталгаажуулаагүй байна.", code: "OTP_REQUIRED" },
+      { status: 403 }
+    );
+  }
+
+  if (user.status === 2) {
+    return NextResponse.json({ error: "Хэрэглэгч идэвхгүй байна." }, { status: 403 });
+  }
+
+  if (!user.password) {
+    return NextResponse.json({ error: "Нууц үг тохируулаагүй байна." }, { status: 403 });
+  }
 
   const isMatch = await bcrypt.compare(String(password).trim(), String(user.password).trim());
   if (!isMatch) return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
