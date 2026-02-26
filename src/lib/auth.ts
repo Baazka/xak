@@ -17,6 +17,9 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       email: payload.email,
       username: payload.username,
       avatar: payload.avatar,
+      firstname: payload.firstname,
+      lastname: payload.lastname,
+      phone: payload.phone,
 
       activeRole: payload.activeRole,
       roles: payload.roles,

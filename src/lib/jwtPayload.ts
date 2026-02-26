@@ -6,6 +6,9 @@ export interface JwtPayload {
   email: string;
   username?: string;
   avatar?: string;
+  firstname?: string;
+  lastname?: string;
+  phone?: string;
 
   activeRole: RoleCode;
   roles: RoleCode[];
