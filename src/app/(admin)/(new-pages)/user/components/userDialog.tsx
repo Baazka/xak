@@ -1,127 +1,185 @@
 "use client";
-import { useModal } from "@/hooks/useModal";
-import Button from "@/components/ui/button/Button";
-import { Modal } from "@/components/ui/modal";
-import { ArrowRightIcon, UserIcon } from "lucide-react";
-import { EnvelopeIcon, LockIcon } from "@/icons";
-import Form from "@/components/form/Form";
-import Input from "@/components/form/input/InputField";
-import { User } from "../types/userType";
-import { useEffect, useState } from "react";
 
-interface UserModalProps {
-  user?: User;
-  onSaved: (user: User) => void;
-}
+import * as React from "react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import type { User } from "../types";
 
-export default function UserModal({ user, onSaved }: UserModalProps) {
-  const addUserModal = useModal();
+type Props = {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
 
-  const [form, setForm] = useState<User>();
+  mode: "create" | "edit";
+  initialUser?: Pick<User, "id" | "username" | "email"> | null;
 
-  useEffect(() => {
-    if (user) setForm(user);
-    else setForm({} as User);
-  }, [user]);
+  onSaved?: () => void;
+};
 
-  const handleChange = (field: keyof User, value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+export default function UserDialog({ open, onOpenChange, mode, initialUser, onSaved }: Props) {
+  const isEdit = mode === "edit";
 
-  const handleSubmit = async () => {
-    const res = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: user ? "update" : "create", data: form }),
-    });
-    if (res.ok) {
-      if (form) {
-        onSaved(form);
-      }
+  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    if (isEdit && initialUser) {
+      setUsername(initialUser.username ?? "");
+      setEmail(initialUser.email ?? "");
+      setPassword("");
+    } else {
+      setUsername("");
+      setEmail("");
+      setPassword("");
     }
-    addUserModal.closeModal();
-  };
+    setError(null);
+    setLoading(false);
+  }, [open, isEdit, initialUser]);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (loading) return;
+
+    setError(null);
+
+    const u = username.trim();
+    const em = email.trim().toLowerCase();
+
+    if (!u || !em) {
+      setError("Нэр, имэйлээ бөглөнө үү.");
+      return;
+    }
+    if (!isEdit && !password) {
+      setError("Нууц үгээ бөглөнө үү.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      let res: Response;
+
+      if (isEdit) {
+        const id = initialUser?.id;
+        if (!id) {
+          setError("Засах хэрэглэгч сонгогдоогүй байна.");
+          return;
+        }
+
+        // ✅ EDIT → PUT /api/users/:id
+        res = await fetchWithAuth(`/api/users/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u, email: em }),
+        });
+      } else {
+        // ✅ CREATE → POST /api/users
+        res = await fetchWithAuth("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u, email: em, password }),
+        });
+      }
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data?.error || data?.message || "Хадгалахад алдаа гарлаа");
+        return;
+      }
+
+      onOpenChange(false);
+      onSaved?.();
+    } catch (err: any) {
+      setError(err?.message || "Сүлжээний алдаа");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (!open) return null;
 
   return (
-    <>
-      <Button onClick={addUserModal.openModal}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-        >
-          <path
-            d="M5 10.0002H15.0006M10.0002 5V15.0006"
-            stroke="white"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        {user ? "Засах" : "Нэмэх"}
-      </Button>
-      <Modal
-        isOpen={addUserModal.isOpen}
-        onClose={addUserModal.closeModal}
-        className="relative w-full max-w-[558px] m-5 sm:m-0 rounded-3xl bg-white p-6 lg:p-10 dark:bg-gray-900"
+    <div
+      className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40"
+      onMouseDown={() => onOpenChange(false)}
+    >
+      <div
+        className="w-full max-w-lg rounded-xl bg-white p-5 shadow-lg"
+        onMouseDown={(e) => e.stopPropagation()}
       >
-        <div>
-          <h4 className="text-title-xs mb-1 font-semibold text-gray-800 dark:text-white/90">
-            {user ? "Хэрэглэгч засах" : "Хэрэглэгч нэмэх"}
-          </h4>
-          <div className="grid grid-cols-1 gap-6">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Хэрэглэгчийн нэр"
-                className="pl-11"
-                defaultValue={form?.username}
-                onChange={(e) => handleChange("username", e.target.value)}
-              />
-              <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none left-4 top-1/2 dark:text-gray-400">
-                <UserIcon />
-              </span>
-            </div>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Мэйл хаяг"
-                className="pl-11"
-                defaultValue={form?.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-              />
-              <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none left-4 top-1/2 dark:text-gray-400">
-                <EnvelopeIcon />
-              </span>
-            </div>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Нууц үг"
-                className="pl-11"
-                defaultValue={form?.password}
-                onChange={(e) => handleChange("password", e.target.value)}
-              />
-              <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none left-4 top-1/2 dark:text-gray-400">
-                <LockIcon />
-              </span>
-            </div>
-          </div>
-          <div className="mt-8 flex flex-col sm:flex-row w-full items-center justify-between gap-3">
-            <Button variant="outline" onClick={addUserModal.closeModal} className="w-full">
-              Хаах
-            </Button>
-            <Button className="w-full" onClick={handleSubmit}>
-              Хадгалах
-            </Button>
-          </div>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{isEdit ? "Хэрэглэгч засах" : "Шинэ хэрэглэгч"}</h2>
+
+          <button
+            className="rounded px-2 py-1 hover:bg-gray-100"
+            onClick={() => onOpenChange(false)}
+            type="button"
+          >
+            ✕
+          </button>
         </div>
-      </Modal>
-    </>
+
+        <form onSubmit={onSubmit} className="space-y-3">
+          <div>
+            <label className="mb-1 block text-sm">Нэр</label>
+            <input
+              className="w-full rounded border px-3 py-2"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="username"
+              autoFocus
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm">Имэйл</label>
+            <input
+              className="w-full rounded border px-3 py-2"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="email@example.com"
+            />
+          </div>
+
+          {!isEdit && (
+            <div>
+              <label className="mb-1 block text-sm">Нууц үг</label>
+              <input
+                className="w-full rounded border px-3 py-2"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="********"
+                type="password"
+              />
+            </div>
+          )}
+
+          {error ? (
+            <div className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
+          ) : null}
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              className="rounded border px-4 py-2"
+              onClick={() => onOpenChange(false)}
+              disabled={loading}
+            >
+              Болих
+            </button>
+            <button
+              type="submit"
+              className="rounded bg-black px-4 py-2 text-white disabled:opacity-60"
+              disabled={loading}
+            >
+              {loading ? "Хадгалж байна..." : "Хадгалах"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

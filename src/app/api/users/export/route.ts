@@ -22,8 +22,8 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
   const { whereClause, params } = buildWhereClause(search, filters);
 
   const sql = `
-    SELECT id, name, reg_no, email, phone, address
-    FROM reg_xakorg
+    SELECT id, username, email
+    FROM reg_users
     ${whereClause}
     ORDER BY ${sortBy} ${sortOrder}
   `;
@@ -33,16 +33,13 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
     const res = await client.query(sql, params);
 
     const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet("XakOrg");
+    const ws = wb.addWorksheet("Users");
 
     ws.columns = [
       { header: "№", key: "no", width: 8 },
-      { header: "ID", key: "id", width: 10 },
-      { header: "Нэр", key: "name", width: 30 },
-      { header: "Регистр", key: "reg_no", width: 18 },
+      // { header: "ID", key: "id", width: 10 },
+      { header: "Нэр", key: "username", width: 30 },
       { header: "И-мэйл", key: "email", width: 25 },
-      { header: "Утас", key: "phone", width: 15 },
-      { header: "Хаяг", key: "address", width: 35 },
     ];
     ws.getRow(1).font = { bold: true };
 
@@ -57,7 +54,7 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
 
     const buffer = await wb.xlsx.writeBuffer();
 
-    const filename = `xakorg_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const filename = `users_${new Date().toISOString().slice(0, 10)}.xlsx`;
 
     return new NextResponse(buffer, {
       headers: {

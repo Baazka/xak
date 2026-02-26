@@ -1,26 +1,31 @@
 //src/app/api/users/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db"; // make sure this exports a connected pg client
+import db from "@/lib/db";
 import { withAuth } from "@/lib/withAuth";
 import { requirePermission } from "@/lib/requirePermission";
+import { JwtPayload } from "@/lib/jwtPayload";
 import bcrypt from "bcryptjs";
+import { buildWhereClause, safeParseFilters } from "./_where";
 
-const SORTABLE_COLUMNS = new Set(["id", "username", "email"]); // Add valid sortable columns here
+const SORTABLE_COLUMNS = new Set(["id", "username", "email"]);
 
-export const GET = withAuth(async function GET(req: NextRequest, user) {
-  try {
-    requirePermission(user.permissions, ["user.read"]);
+export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
+  requirePermission(user.permissions, ["user.read"]);
 
-    const sp = new URL(req.url).searchParams;
+  const sp = new URL(req.url).searchParams;
 
-    const page = Math.max(parseInt(sp.get("page") || "1"), 1);
-    const limit = Math.max(parseInt(sp.get("limit") || "10"), 1);
-    const search = sp.get("search") || "";
-    const sortBy = SORTABLE_COLUMNS.has(sp.get("sortBy") || "") ? sp.get("sortBy")! : "id";
-    const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
-    const offset = (page - 1) * limit;
+  const page = Math.max(parseInt(sp.get("page") || "1"), 1);
+  const limit = Math.max(parseInt(sp.get("limit") || "10"), 1);
+  const search = sp.get("search") || "";
+  const filters = safeParseFilters(sp.get("filters"));
 
-    let whereClause = "WHERE (status is null or status != 2)";
+  const sortByRaw = sp.get("sortBy") || "id";
+  const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "id";
+  const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
+
+  const offset = (page - 1) * limit;
+
+    let whereClause = "WHERE status != 2"; 
     const params: any[] = [];
 
     if (search) {
@@ -28,41 +33,38 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
       whereClause += ` AND (username ILIKE $${params.length} OR email ILIKE $${params.length} )`;
     }
 
-    const dataSql = `
+  const dataSql = `
     SELECT id, username, email
     FROM reg_users
     ${whereClause}
     ORDER BY ${sortBy} ${sortOrder}
-    LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    LIMIT $${params.length + 1}
+    OFFSET $${params.length + 2}
   `;
-    params.push(limit, offset);
 
-    const countSql = `SELECT COUNT(*)::int AS total FROM reg_users ${whereClause}`;
+  const countSql = `
+    SELECT COUNT(*)::int AS total
+    FROM reg_users
+    ${whereClause}
+  `;
 
-    const client = await db.connect();
-    try {
-      const [dataRes, countRes] = await Promise.all([
-        client.query(dataSql, params),
-        client.query(countSql, params.slice(0, params.length - 2)),
-      ]);
-      return NextResponse.json({
-        data: dataRes.rows,
-        total: countRes.rows[0].total,
-        page,
-        limit,
-      });
-    } finally {
-      client.release();
-    }
-  } catch (err) {
-    console.error("DB Error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  const client = await db.connect();
+  try {
+    const [dataRes, countRes] = await Promise.all([
+      client.query(dataSql, [...params, limit, offset]),
+      client.query(countSql, params),
+    ]);
+
+    return NextResponse.json({
+      data: dataRes.rows,
+      total: countRes.rows[0].total,
+      page,
+      limit,
+    });
+  } finally {
+    client.release();
   }
 });
-export const POST = withAuth(async function POST(req: NextRequest, user) {
-  try {
-    const body = await req.json();
-    const action = body.action || "create";
 
     switch (action) {
       case "create":
@@ -97,54 +99,30 @@ async function createUser({
   try {
     const seq_id = await db.query("select nextval('reg_users_id_seq'::regclass)");
     const seq_res = seq_id.rows[0].nextval;
-    const salt = bcrypt.genSaltSync(12);
+    const salt = bcrypt.genSaltSync(10);
     const hashpw = bcrypt.hashSync(password, salt);
     const result = await db.query(
       "INSERT INTO reg_users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
       [seq_res, username, email, hashpw]
     );
 
-    const result_role = await db.query(
-      "INSERT INTO REG_USER_ROLES(user_id, role_id) VALUES ($1, $2) RETURNING *",
-      [seq_res, 3]
-    );
+    const userId = userRes.rows[0].id;
 
-    return NextResponse.json(result.rows[0], { status: 201 });
-  } catch (err) {
-    console.error("DB Error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
-async function updateUser({ id, name, email }: { id: number; name: string; email: string }) {
-  try {
-    const result = await db.query(
-      "UPDATE reg_users SET username = $1, email = $2 WHERE id = $3 RETURNING *",
-      [name, email, id]
-    );
-
-    if (result.rowCount === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(result.rows[0]);
-  } catch (err) {
-    console.error("DB Error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
-async function removeUser(id: number) {
-  try {
-    const result = await db.query("UPDATE reg_users SET status = 2 WHERE id = $1 RETURNING *", [
-      id,
+    await client.query(`INSERT INTO reg_user_roles (user_id, role_id) VALUES ($1, $2)`, [
+      userId,
+      3,
     ]);
 
-    if (result.rowCount === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    await client.query("COMMIT");
+    return NextResponse.json(userRes.rows[0], { status: 201 });
+  } catch (err: any) {
+    await client.query("ROLLBACK").catch(() => {});
+    if (err?.code === "23505") {
+      return NextResponse.json({ error: "Email already exists" }, { status: 409 });
     }
-
-    return NextResponse.json({ message: "User deleted successfully" });
-  } catch (err) {
-    console.error("DB Error:", err);
+    console.error("Create user error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } finally {
+    client.release();
   }
-}
+});
