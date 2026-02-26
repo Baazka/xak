@@ -20,7 +20,7 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
     const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
     const offset = (page - 1) * limit;
 
-    let whereClause = "WHERE status != 2"; 
+    let whereClause = "WHERE (status is null or status != 2)";
     const params: any[] = [];
 
     if (search) {
@@ -97,7 +97,7 @@ async function createUser({
   try {
     const seq_id = await db.query("select nextval('reg_users_id_seq'::regclass)");
     const seq_res = seq_id.rows[0].nextval;
-    const salt = bcrypt.genSaltSync(10);
+    const salt = bcrypt.genSaltSync(12);
     const hashpw = bcrypt.hashSync(password, salt);
     const result = await db.query(
       "INSERT INTO reg_users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
