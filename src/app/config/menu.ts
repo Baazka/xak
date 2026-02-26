@@ -27,6 +27,7 @@ export type MenuItem = {
   section: "main" | "support" | "others";
   new?: boolean | undefined;
   subItems?: SubMenuItem[];
+  roles?: RoleCode[];
 };
 export type SubMenuItem = {
   key: string;
@@ -94,6 +95,7 @@ export const MENU_CONFIG: MenuItem[] = [
     icon: React.createElement(GridIcon),
     name: "Dashboard",
     section: "main",
+    roles: ["ADMIN"],
     subItems: [
       { key: "ecommerce", name: "Ecommerce", path: "/" },
       { key: "analytics", name: "Analytics", path: "/analytics" },
@@ -110,6 +112,7 @@ export const MENU_CONFIG: MenuItem[] = [
     name: "E-commerce",
     icon: React.createElement(CartIcon),
     section: "main",
+    roles: ["ADMIN"],
     new: true,
     subItems: [
       { key: "products", name: "Products", path: "/products", new: true },
@@ -127,6 +130,7 @@ export const MENU_CONFIG: MenuItem[] = [
     icon: React.createElement(CalenderIcon),
     name: "Calendar",
     section: "main",
+    roles: ["ADMIN"],
     path: "/calendar",
   },
   {
@@ -134,6 +138,7 @@ export const MENU_CONFIG: MenuItem[] = [
     icon: React.createElement(UserCircleIcon),
     name: "User Profile",
     section: "main",
+    roles: ["ADMIN"],
     path: "/profile",
   },
   {
@@ -141,6 +146,7 @@ export const MENU_CONFIG: MenuItem[] = [
     name: "Task",
     icon: React.createElement(TaskIcon),
     section: "main",
+    roles: ["ADMIN"],
     subItems: [
       { key: "list", name: "List", path: "/task-list" },
       { key: "kanban", name: "Kanban", path: "/task-kanban" },
@@ -151,6 +157,7 @@ export const MENU_CONFIG: MenuItem[] = [
     name: "Forms",
     icon: React.createElement(ListIcon),
     section: "main",
+    roles: ["ADMIN"],
     subItems: [
       { key: "form-elements", name: "Form Elements", path: "/form-elements" },
       { key: "form-layout", name: "Form Layout", path: "/form-layout" },
@@ -161,6 +168,7 @@ export const MENU_CONFIG: MenuItem[] = [
     name: "Tables",
     icon: React.createElement(TableIcon),
     section: "main",
+    roles: ["ADMIN"],
     subItems: [
       { key: "basic-tables", name: "Basic Tables", path: "/basic-tables" },
       { key: "data-tables", name: "Data Tables", path: "/data-tables" },
@@ -171,6 +179,7 @@ export const MENU_CONFIG: MenuItem[] = [
     name: "Pages",
     icon: React.createElement(PageIcon),
     section: "main",
+    roles: ["ADMIN"],
     subItems: [
       { key: "file-manager", name: "File Manager", path: "/file-manager" },
       { key: "pricing-tables", name: "Pricing Tables", path: "/pricing-tables" },
@@ -192,12 +201,14 @@ export const MENU_CONFIG: MenuItem[] = [
     name: "Chat",
     path: "/chat",
     section: "support",
+    roles: ["ADMIN"],
   },
   {
     key: "support",
     icon: React.createElement(CallIcon),
     name: "Support",
     section: "support",
+    roles: ["ADMIN"],
     subItems: [
       { key: "support-list", name: "Support List", path: "/support-list" },
       { key: "support-reply", name: "Support Reply", path: "/support-reply" },
@@ -208,6 +219,7 @@ export const MENU_CONFIG: MenuItem[] = [
     icon: React.createElement(MailIcon),
     name: "Email",
     section: "support",
+    roles: ["ADMIN"],
     subItems: [
       { key: "inbox", name: "Inbox", path: "/inbox" },
       { key: "inbox-details", name: "Details", path: "/inbox-details" },
@@ -218,6 +230,7 @@ export const MENU_CONFIG: MenuItem[] = [
     icon: React.createElement(PieChartIcon),
     name: "Charts",
     section: "others",
+    roles: ["ADMIN"],
     subItems: [
       { key: "line-chart", name: "Line Chart", path: "/line-chart" },
       { key: "bar-chart", name: "Bar Chart", path: "/bar-chart" },
@@ -229,6 +242,7 @@ export const MENU_CONFIG: MenuItem[] = [
     icon: React.createElement(BoxCubeIcon),
     name: "UI Elements",
     section: "others",
+    roles: ["ADMIN"],
     subItems: [
       { key: "alerts", name: "Alerts", path: "/alerts" },
       { key: "avatars", name: "Avatar", path: "/avatars" },
@@ -259,6 +273,7 @@ export const MENU_CONFIG: MenuItem[] = [
     icon: React.createElement(PlugInIcon),
     name: "Authentication",
     section: "others",
+    roles: ["ADMIN"],
     subItems: [
       { key: "signin", name: "Sign In", path: "/signin" },
       { key: "signup", name: "Sign Up", path: "/signup" },

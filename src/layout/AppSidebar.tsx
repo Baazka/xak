@@ -39,25 +39,34 @@ const AppSidebar: React.FC = () => {
   const userPermissions = user?.permissions ?? [];
   const userRole = user?.activeRole;
 
+  const roleOk = (roles?: string[]) => {
+    if (!roles || roles.length === 0) return true;
+    if (!userRole) return false;
+    return roles.includes(userRole);
+  };
+
+  const permissionOk = (perms?: string[]) => hasPermission(userPermissions, perms);
+
   const filterByPermission = (items: MenuItem[]) =>
     items
       .map((item) => {
+        // 1) Section/item нийт эрх шалгана
+        const itemRoleOk = roleOk(item.roles);
+        const itemPermOk = permissionOk(item.permissions);
+
+        if (!itemRoleOk) return null; //  section нийтээр хаагдана
+
+        // 2) subItems шүүх
         const filteredSubItems = item.subItems?.filter((sub) => {
-          const permissionOk = hasPermission(userPermissions, sub.permissions);
-          const roleOk = !sub.roles || sub.roles.includes(userRole!);
-          return permissionOk && roleOk;
+          return permissionOk(sub.permissions) && roleOk(sub.roles);
         });
 
-        const canSeeItem =
-          hasPermission(userPermissions, item.permissions) ||
-          (filteredSubItems && filteredSubItems.length > 0);
+        //  3) item харагдах нөхцөл
+        const canSeeItem = itemPermOk || (filteredSubItems && filteredSubItems.length > 0);
 
         if (!canSeeItem) return null;
 
-        return {
-          ...item,
-          subItems: filteredSubItems,
-        };
+        return { ...item, subItems: filteredSubItems };
       })
       .filter(Boolean) as MenuItem[];
 
@@ -295,36 +304,42 @@ const AppSidebar: React.FC = () => {
       <div className="flex flex-col overflow-y-auto  duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
-                  !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? "Menu" : <HorizontaLDots />}
-              </h2>
-              {renderMenuItems(mainMenus, "main")}
-            </div>
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
-                  !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? "Support" : <HorizontaLDots />}
-              </h2>
-              {renderMenuItems(supportMenus, "support")}
-            </div>
-            <div>
-              <h2
-                className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
-                  !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
-                }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? "Others" : <HorizontaLDots />}
-              </h2>
-              {renderMenuItems(othersMenus, "others")}
-            </div>
+            {mainMenus.length > 0 && (
+              <div>
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
+                    !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
+                  }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? "Menu" : <HorizontaLDots />}
+                </h2>
+                {renderMenuItems(mainMenus, "main")}
+              </div>
+            )}
+            {supportMenus.length > 0 && (
+              <div>
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
+                    !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
+                  }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? "Support" : <HorizontaLDots />}
+                </h2>
+                {renderMenuItems(supportMenus, "support")}
+              </div>
+            )}
+            {othersMenus.length > 0 && (
+              <div>
+                <h2
+                  className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
+                    !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
+                  }`}
+                >
+                  {isExpanded || isHovered || isMobileOpen ? "Others" : <HorizontaLDots />}
+                </h2>
+                {renderMenuItems(othersMenus, "others")}
+              </div>
+            )}
           </div>
         </nav>
         {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
