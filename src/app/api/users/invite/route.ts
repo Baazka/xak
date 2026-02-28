@@ -14,6 +14,8 @@ export async function POST(req: Request) {
     .trim()
     .toLowerCase();
   const username = body?.username ? String(body.username).trim() : null;
+  const user_phone = body?.user_phone ? String(body.user_phone).trim() : null;
+  const org_id = Number(body?.org_id);
 
   if (!Number.isFinite(roleId)) {
     return NextResponse.json({ message: "Role сонгоно уу" }, { status: 400 });
@@ -47,6 +49,44 @@ export async function POST(req: Request) {
     // reg_user_roles – 1:1 (code-level)
     await client.query(`DELETE FROM reg_user_roles WHERE user_id = $1`, [user.id]);
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //check tuhain org-iin xak_admin user active bga eseh
+    const userXakAdmin = await client.query(
+      `SELECT COUNT(USER_ID)::int AS total
+      FROM REG_USERS_NEW
+      WHERE USER_STATUS_ID = 1 AND USER_LEVEL_ID = 3 AND USER_ORG_ID = $1`,
+      [org_id]
+    );
+
+    const xakCount = userXakAdmin.rows[0].total;
+
+    if (xakCount !== 0) {
+      await client.query("ROLLBACK");
+      return NextResponse.json({ message: "Идэвхтэй хэрэглэгч байна." }, { status: 400 });
+    }
+
+    // //OTP gen
+    const otp = genOtp6();
+    const otpHash = hashOtp(otp);
+    const expiresMinutes = 30;
+    // // reg_users_new insert
+    const userResNew = await client.query(
+      `INSERT INTO reg_users_new (user_org_id, user_level_id, user_regdate, user_email, user_phone, user_firstname, user_otp, pending_token_hash, pending_token_expire, user_password, user_status_id, created_by, created_date)
+       VALUES ($1, 3, current_timestamp, $2, $3, $4, $5, $6, current_timestamp + ($7 || ' minutes')::interval, 'pending', 0, 999, current_timestamp)
+       RETURNING user_id`,
+      [org_id, email, user_phone, username, otp, otpHash, String(expiresMinutes)]
+    );
+    const userNew = userResNew.rows[0];
+
+    // // reg_user_roles_new insert
+    await client.query(
+      `INSERT INTO reg_user_roles_new (user_id, role_id, is_active, created_by, created_date)
+        VALUES ($1, 3, 1, 999, current_timestamp)`,
+      [userNew.user_id]
+    );
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     await client.query(
       `INSERT INTO reg_user_roles (user_id, role_id)
         VALUES ($1, $2)`,
@@ -62,15 +102,17 @@ export async function POST(req: Request) {
     );
 
     //  OTP insert
-    const otp = genOtp6();
-    const otpHash = hashOtp(otp);
-    const expiresMinutes = 10;
+    // const otp = genOtp6();
+    // const otpHash = hashOtp(otp);
+    // const expiresMinutes = 10;
 
     await client.query(
       `INSERT INTO reg_user_otps (user_id, otp_hash, purpose, expires_at)
        VALUES ($1, $2, 'invite', now() + ($3 || ' minutes')::interval)`,
       [user.id, otpHash, String(expiresMinutes)]
     );
+
+    ///////////////////////////////////////////////////////////////////////////////////////
 
     await client.query("COMMIT");
 

@@ -1,6 +1,6 @@
 // columns.tsx
 import { ColumnDef } from "@tanstack/react-table";
-import { XakOrg } from "./types";
+import { XakOrg, XakOrgNew } from "./types";
 import RowActionsMenu from "@/components/tables/RowActionsMenu";
 import { Pencil, Mail } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
@@ -8,7 +8,7 @@ import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 type ColumnActions = {
   onEdit: (id: number) => void;
   onRemove: (id: number) => void;
-  onInvite: (org: XakOrg) => void;
+  onInvite: (org: XakOrgNew) => void;
 
   canUpdate: boolean;
   canDelete: boolean;
@@ -20,7 +20,7 @@ type ColumnActions = {
   setOpenMenuId: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
-export const columns = (actions: ColumnActions): ColumnDef<XakOrg>[] => [
+export const columns = (actions: ColumnActions): ColumnDef<XakOrgNew>[] => [
   {
     id: "rowNumber",
     header: "№",
@@ -28,19 +28,25 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrg>[] => [
     meta: { className: "w-[30px] text-center" },
     enableSorting: false,
   },
-  { accessorKey: "name", header: "Нэр" },
-  { accessorKey: "email", header: "И-мэйл" },
-  { accessorKey: "phone", header: "Утас" },
-  { accessorKey: "address", header: "Хаяг" },
+  { accessorKey: "org_register_no", header: "ХАК регистр" },
+  { accessorKey: "org_legal_name", header: "ХАК нэр" },
+  { accessorKey: "org_phone", header: "ХАК утас" },
+  { accessorKey: "org_email", header: "ХАК мэйл" },
+  { accessorKey: "org_address", header: "ХАК хаяг" },
+  { accessorKey: "org_head_name", header: "Удирдлага нэр" },
+  { accessorKey: "org_head_phone", header: "Удирдлага утас" },
+  { accessorKey: "org_head_email", header: "Удирдлага мэйл" },
+  { accessorKey: "created_date", header: "Бүртгэгдсэн огноо" },
+  { accessorKey: "org_status", header: "Төлөв" },
   {
     id: "actions",
     enableSorting: false,
     meta: { className: "w-[60px] text-center" },
     cell: ({ row }) => {
       const org = row.original;
-      const id = org.id;
-      const email = org.email?.trim();
-      const name = org.name;
+      const id = org.org_id;
+      const email = org.org_email?.trim();
+      const name = org.org_legal_name;
       const deleting = actions.deleteLoadingId === id;
 
       const menuActions = [
@@ -57,9 +63,9 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrg>[] => [
         // EMAIL ACTION
         {
           key: "invite",
-          label: org.email ? "Invite / OTP явуулах" : "E-mail байхгүй",
+          label: org.org_email ? "Invite / OTP явуулах" : "E-mail байхгүй",
           icon: <Mail className="h-4 w-4" />,
-          disabled: !org.email,
+          disabled: !org.org_email,
           onClick: () => actions.onInvite(org),
         },
         ...(actions.canDelete

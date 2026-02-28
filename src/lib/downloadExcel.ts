@@ -8,7 +8,7 @@ type DownloadExcelOptions = {
 
 export async function downloadExcel({
   endpoint,
-  filenamePrefix = "export",
+  filenamePrefix,
   params = {},
 }: DownloadExcelOptions) {
   const qs = new URLSearchParams();
@@ -23,7 +23,7 @@ export async function downloadExcel({
   const res = await fetchWithAuth(url);
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || "Excel татах үед алдаа гарлаа");
+    throw new Error(err.message || "Excel татах үед алдаа гарлаа123");
   }
 
   const blob = await res.blob();

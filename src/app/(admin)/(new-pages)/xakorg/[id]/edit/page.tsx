@@ -25,7 +25,7 @@ export default async function EditXakOrgPage({ params }: Props) {
 
   const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
-  const res = await fetch(`${protocol}://${host}/api/xakorg/${id}`, {
+  const res = await fetch(`${protocol}://${host}/api/xakorgnew/${id}`, {
     headers: { cookie: cookieHeader },
     cache: "no-store",
   });
@@ -42,7 +42,7 @@ export default async function EditXakOrgPage({ params }: Props) {
 
   return (
     <>
-      <PageBreadcrumb pageTitle="Байгууллага / Засах" />
+      <PageBreadcrumb pageTitle="ХАК бүртгэл засах" />
       <EditXakOrgClient id={id} initialData={data} />
     </>
   );

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/tables/DataTable";
 import { columns } from "./columns";
-import { XakOrg } from "./types";
+import { XakOrg, XakOrgNew } from "./types";
 import { Button } from "@/components/ui/button";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useAuth } from "@/context/AuthContext";
@@ -25,7 +25,8 @@ export default function XakorgListPage() {
   const canUpdate = hasPermission(user?.permissions, ["xakorg.update"]);
   const canDelete = hasPermission(user?.permissions, ["xakorg.delete"]);
 
-  const [data, setData] = useState<XakOrg[]>([]);
+  // const [data, setData] = useState<XakOrg[]>([]);
+  const [data, setData] = useState<XakOrgNew[]>([]);
   const [total, setTotal] = useState(0);
 
   const [listLoading, setListLoading] = useState(false);
@@ -37,7 +38,7 @@ export default function XakorgListPage() {
 
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
-  const [inviteOrg, setInviteOrg] = useState<XakOrg | null>(null);
+  const [inviteOrg, setInviteOrg] = useState<XakOrgNew | null>(null);
 
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -45,7 +46,7 @@ export default function XakorgListPage() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [reloadKey, setReloadKey] = useState(0);
 
-  const sortBy = useMemo(() => sorting[0]?.id ?? "id", [sorting]);
+  const sortBy = useMemo(() => sorting[0]?.id ?? "org_id", [sorting]);
   const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
 
   // Debounce search input -> real search
@@ -65,7 +66,7 @@ export default function XakorgListPage() {
 
       try {
         const res = await fetchWithAuth(
-          `/api/xakorg?page=${page}&limit=${limit}&search=${encodeURIComponent(
+          `/api/xakorgnew?page=${page}&limit=${limit}&search=${encodeURIComponent(
             search
           )}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
           { signal: controller.signal }
@@ -100,7 +101,7 @@ export default function XakorgListPage() {
     setDeleteLoadingId(id);
 
     try {
-      const res = await fetchWithAuth(`/api/xakorg/${id}`, { method: "DELETE" });
+      const res = await fetchWithAuth(`/api/xakorgnew/${id}`, { method: "DELETE" });
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -123,11 +124,11 @@ export default function XakorgListPage() {
 
   const handleDownload = async () => {
     try {
-      const sortBy = sorting[0]?.id ?? "id";
+      const sortBy = sorting[0]?.id ?? "org_id";
       const sortOrder = sorting[0]?.desc ? "desc" : "asc";
 
       await downloadExcel({
-        endpoint: "/api/xakorg/export",
+        endpoint: "/api/xakorgnew/export",
         filenamePrefix: "xakorg",
         params: { search, sortBy, sortOrder },
       });
@@ -137,9 +138,9 @@ export default function XakorgListPage() {
       toast("error", e?.message || "Excel татах үед алдаа гарлаа");
     }
   };
-  
-  const onInvite = (org: XakOrg) => {
-    if (!org.email) {
+
+  const onInvite = (org: XakOrgNew) => {
+    if (!org.org_email) {
       toast("error", "E-mail байхгүй байна");
       return;
     }
@@ -150,14 +151,14 @@ export default function XakorgListPage() {
   return (
     <>
       <div>
-        <PageBreadcrumb pageTitle="Байгууллага" />
+        <PageBreadcrumb pageTitle="Аудитын байгууллага" />
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
           <div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-              Байгууллагын жагсаалт
+              Аудитын байгууллагын жагсаалт
             </h3>
           </div>
 

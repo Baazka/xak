@@ -23,7 +23,7 @@ export default function CreateXakOrgPage() {
     setLoading(true);
 
     try {
-      const res = await fetchWithAuth("/api/xakorg", {
+      const res = await fetchWithAuth("/api/xakorgnew", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -48,7 +48,7 @@ export default function CreateXakOrgPage() {
   return (
     <>
       <div>
-        <PageBreadcrumb pageTitle="Байгууллага / Шинэ бүртгэл" />
+        <PageBreadcrumb pageTitle="ХАК шинээр бүртгэх" />
       </div>
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">

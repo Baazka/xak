@@ -8,11 +8,18 @@ export default function InviteOtpModal({
   onClose,
   onSuccess,
 }: {
-  org: { id: number; name: string; email: string | null };
+  org: {
+    org_id: number;
+    org_register_no: string;
+    org_legal_name: string;
+    org_phone: string;
+    org_email: string;
+    org_head_email: string;
+  };
   onClose: () => void;
   onSuccess: () => void;
 }) {
-  const [email, setEmail] = useState(org.email ?? "");
+  const [email, setEmail] = useState(org.org_email ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,13 +28,16 @@ export default function InviteOtpModal({
     if (!email || !email.includes("@")) return setError("Имэйл буруу байна");
 
     setLoading(true);
+
     try {
       const res = await fetchWithAuth("/api/users/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
-          username: org.name,
+          username: org.org_legal_name,
+          org_id: org.org_id,
+          user_phone: org.org_phone,
         }),
       });
 

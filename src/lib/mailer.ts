@@ -25,12 +25,12 @@ export async function sendResetEmail(email: string, link: string) {
     throw new Error(err instanceof Error ? err.message : "Failed to send reset email");
   }
 }
-export async function sendOtpEmail(email: string, otp: string, minutes = 10) {
+export async function sendOtpEmail(email: string, otp: string, minutes: number) {
   try {
     await transporter.sendMail({
       from: process.env.SMTP_FROM,
       to: email,
-      subject: "Таны баталгаажуулах код (OTP)",
+      subject: "QVerify - Таны баталгаажуулах код (OTP)",
       html: `
         <div style="font-family: Arial, sans-serif">
           <h3>Нэвтрэх баталгаажуулалт</h3>
@@ -45,7 +45,7 @@ export async function sendOtpEmail(email: string, otp: string, minutes = 10) {
           </div>
           <p>Энэ код <b>${minutes} минут</b> хүчинтэй.</p>
           <p style="color:#666;font-size:12px">
-            Хэрэв та энэ хүсэлтийг гаргаагүй бол энэ имэйлийг үл тооно уу.
+            Хэрэв та энэ хүсэлтийг гаргаагүй бол лавлах утсаар холбогдоно уу. Утас: 7777-8888
           </p>
         </div>
       `,

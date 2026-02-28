@@ -7,7 +7,7 @@ import { buildJwtPayload } from "@/lib/buildJwtPayload";
 import { getJwtSecretString } from "@/lib/jwt";
 
 const bcrypt = require("bcryptjs");
-const ACCESS_TOKEN_TTL = 60 * 15;
+const ACCESS_TOKEN_TTL = 60 * 60;
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -21,40 +21,59 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
+  // const { rows } = await db.query(
+  //   `SELECT id, email, username, avatar, firstname, lastname, phone, password, status FROM reg_users WHERE email = $1 or phone = $1`,
+  //   [email]
+  // );
+
   const { rows } = await db.query(
-    `SELECT id, email, username, avatar, firstname, lastname, phone, password, status FROM reg_users WHERE email = $1`,
+    `SELECT user_id, user_org_id, user_level_id, user_code, user_regdate, user_email, user_phone, user_register_no, user_lastname, user_firstname, user_password, user_otp, user_status_id, pending_token_hash, pending_token_expire, 
+    reset_token_hash, reset_token_expire, created_by, created_date FROM reg_users_new WHERE (user_email = $1 or user_phone = $1) and user_status_id in (0,1)`,
     [email]
   );
   const user = rows[0];
 
   if (!user) return NextResponse.json({ error: "Хэрэглэгч олдсонгүй." }, { status: 401 });
 
-  if (user.status === 0) {
+  //pending
+  if (user.user_status_id === 0) {
     return NextResponse.json(
       { error: "OTP баталгаажуулаагүй байна.", code: "OTP_REQUIRED" },
       { status: 403 }
     );
   }
 
-  if (user.status === 2) {
-    return NextResponse.json({ error: "Хэрэглэгч идэвхгүй байна." }, { status: 403 });
-  }
+  // if (user.status === 2) {
+  //   return NextResponse.json({ error: "Хэрэглэгч идэвхгүй байна." }, { status: 403 });
+  // }
 
-  if (!user.password) {
+  if (!user.user_password) {
     return NextResponse.json({ error: "Нууц үг тохируулаагүй байна." }, { status: 403 });
   }
-
-  const isMatch = await bcrypt.compare(String(password).trim(), String(user.password).trim());
-  if (!isMatch) return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
-
+  if (user.user_status_id === 0) {
+    const isPendingMatch = await bcrypt.compare(
+      String(password).trim(),
+      String(user.pending_token_hash).trim()
+    );
+    if (!isPendingMatch)
+      return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
+  }
+  if (user.user_status_id === 1) {
+    const isMatch = await bcrypt.compare(
+      String(password).trim(),
+      String(user.user_password).trim()
+    );
+    if (!isMatch) return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
+  }
+  //role avah
   const { rows: roles } = await db.query(
     `
-    SELECT r.id, r.code, r.name
-    FROM reg_user_roles ur
-    JOIN ref_user_roles r ON r.id = ur.role_id
-    WHERE ur.user_id = $1
+    select r.role_id. r.role_code, r.role_label
+    from reg_user_roles_new ur
+    join ref_user_role r on ur.role_id = r.role_id
+    where ur.user_id = $1;
     `,
-    [user.id]
+    [user.user_id]
   );
 
   if (roles.length === 0) return NextResponse.json({ error: "Role олдсонгүй" }, { status: 403 });
@@ -64,24 +83,25 @@ export async function POST(req: Request) {
   //  зөвхөн ACTIVE ROLE permission
   const { rows: perms } = await db.query(
     `
-    SELECT DISTINCT p.code
-    FROM reg_user_role_permissions rp
-    JOIN ref_user_permissions p ON p.id = rp.permission_id
-    WHERE rp.role_id = $1
+    select pr.permission_code
+    from ref_user_role r
+    join ref_role_permission p on r.role_id = p.role_id
+    join ref_permissions pr on p.permission_id = pr.permission_id
+    where r.role_id = $1;
     `,
-    [activeRole.id]
+    [activeRole.role_id]
   );
-  const permissions = perms.map((p: any) => p.code);
+  const permissions = perms.map((p: any) => p.permission_code);
 
   const payload = buildJwtPayload({
     user: {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      avatar: user.avatar,
+      id: user.user_id,
+      email: user.user_email,
+      username: user.user_firstname,
+      avatar: user?.avatar,
     },
-    activeRole: activeRole.code,
-    roles: roles.map((r: any) => r.code),
+    activeRole: activeRole.role_code,
+    roles: roles.map((r: any) => r.role_code),
     permissions,
   });
 
@@ -101,16 +121,16 @@ export async function POST(req: Request) {
   await db.query(
     `INSERT INTO reg_user_sessions (user_id, refresh_selector, refresh_token_hash, expires_at, active_role)
    VALUES ($1, $2, $3, $4, $5)`,
-    [user.id, selector, refreshHash, expiresAt, activeRole.code]
+    [user.user_id, selector, refreshHash, expiresAt, activeRole.role_code]
   );
 
   const res = NextResponse.json({
     success: true,
     user: {
-      sub: user.id,
-      email: user.email,
-      activeRole: activeRole.code,
-      roles: roles.map((r: any) => r.code),
+      sub: user.user_id,
+      email: user.user_email,
+      activeRole: activeRole.role_code,
+      roles: roles.map((r: any) => r.role_code),
       permissions,
     },
   });
