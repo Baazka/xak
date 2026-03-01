@@ -159,10 +159,10 @@ const AppHeader: React.FC = () => {
             </form>
           </div> */}
           {user.activeRole}
-          {/* <div className="relative">
+          <div className="relative">
             <NotificationBell />
             <NotificationDropdown />
-          </div> */}
+          </div>
         </div>
         <div
           className={`${
