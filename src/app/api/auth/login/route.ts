@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     select r.role_id, r.role_code, r.role_label
     from reg_user_roles_new ur
     join ref_user_role r on ur.role_id = r.role_id
-    where ur.user_id = $1;
+    where ur.user_id = $1
     `,
     [user.user_id]
   );
@@ -100,8 +100,8 @@ export async function POST(req: Request) {
       username: user.user_firstname,
       avatar: user?.avatar,
     },
-    activeRole: activeRole.role_code,
-    roles: roles.map((r: any) => r.role_code),
+    activeRole: activeRole.role_label,
+    roles: roles.map((r: any) => r.role_label),
     permissions,
   });
 
