@@ -25,13 +25,13 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const offset = (page - 1) * limit;
 
-    let whereClause = "WHERE status != 2"; 
-    const params: any[] = [];
+  let whereClause = "WHERE status != 2";
+  const params: any[] = [];
 
-    if (search) {
-      params.push(`%${search}%`);
-      whereClause += ` AND (username ILIKE $${params.length} OR email ILIKE $${params.length} )`;
-    }
+  if (search) {
+    params.push(`%${search}%`);
+    whereClause += ` AND (username ILIKE $${params.length} OR email ILIKE $${params.length} )`;
+  }
 
   const dataSql = `
     SELECT id, username, email
@@ -65,45 +65,43 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     client.release();
   }
 });
+export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
+  requirePermission(user.permissions, ["user.create"]);
 
-    switch (action) {
-      case "create":
-        requirePermission(user.permissions, ["user.create"]);
-        return await createUser(body.data);
+  const body = await req.json();
+  const username = String(body?.username ?? "").trim();
+  const email = String(body?.email ?? "")
+    .trim()
+    .toLowerCase();
+  const password = String(body?.password ?? "");
 
-      case "update":
-        requirePermission(user.permissions, ["user.update"]);
-        return await updateUser(body.data);
-
-      case "remove":
-        requirePermission(user.permissions, ["user.delete"]);
-        return await removeUser(body.data);
-
-      default:
-        return NextResponse.json({ error: "Unknown action" }, { status: 400 });
-    }
-  } catch (err) {
-    console.error("POST Error:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  if (!username || !email || !password) {
+    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
-});
-async function createUser({
-  username,
-  email,
-  password,
-}: {
-  username: string;
-  email: string;
-  password: string;
-}) {
+
+  const client = await db.connect();
+
   try {
-    const seq_id = await db.query("select nextval('reg_users_id_seq'::regclass)");
-    const seq_res = seq_id.rows[0].nextval;
-    const salt = bcrypt.genSaltSync(10);
-    const hashpw = bcrypt.hashSync(password, salt);
-    const result = await db.query(
-      "INSERT INTO reg_users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING *",
-      [seq_res, username, email, hashpw]
+    await client.query("BEGIN");
+
+    const exists = await client.query(
+      `SELECT 1 FROM reg_users WHERE email = $1 AND status IS DISTINCT FROM 2`,
+      [email]
+    );
+    if (exists.rowCount) {
+      await client.query("ROLLBACK");
+      return NextResponse.json({ error: "Email already exists" }, { status: 409 });
+    }
+
+    const hashpw = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+
+    const userRes = await client.query(
+      `
+      INSERT INTO reg_users (username, email, password)
+      VALUES ($1, $2, $3)
+      RETURNING id, username, email
+      `,
+      [username, email, hashpw]
     );
 
     const userId = userRes.rows[0].id;
@@ -121,6 +119,7 @@ async function createUser({
       return NextResponse.json({ error: "Email already exists" }, { status: 409 });
     }
     console.error("Create user error:", err);
+
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   } finally {
     client.release();
