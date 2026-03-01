@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
 import { sendOtpEmail, sendResetEmail } from "@/lib/mailer";
+import bcrypt from "bcryptjs";
 
 const genOtp6 = () => String(Math.floor(100000 + Math.random() * 900000));
 const hashOtp = (otp: string) => crypto.createHash("sha256").update(otp).digest("hex");
@@ -31,6 +32,7 @@ export async function POST(req: Request) {
     const otp = genOtp6();
     const otpHash = hashOtp(otp);
     const expiresMinutes = 15;
+    const hashpw = bcrypt.hashSync(otp, bcrypt.genSaltSync(10));
     //
     // const token = crypto.randomUUID();
     // const hash = crypto.createHash("sha256").update(token).digest("hex");
@@ -43,7 +45,7 @@ export async function POST(req: Request) {
         user_otp = $3
     WHERE user_id=$4
     `,
-      [otpHash, String(expiresMinutes), otp, user.rows[0].user_id]
+      [hashpw, String(expiresMinutes), otp, user.rows[0].user_id]
     );
 
     await sendOtpEmail(user.rows[0].user_email, otp, expiresMinutes);
