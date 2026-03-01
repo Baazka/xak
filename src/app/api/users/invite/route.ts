@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import db from "@/lib/db";
 import { sendOtpEmail } from "@/lib/mailer";
+import bcrypt from "bcryptjs";
 
 const genOtp6 = () => String(Math.floor(100000 + Math.random() * 900000));
 const hashOtp = (otp: string) => crypto.createHash("sha256").update(otp).digest("hex");
@@ -69,6 +70,7 @@ export async function POST(req: Request) {
     const otp = genOtp6();
     const otpHash = hashOtp(otp);
     const expiresMinutes = 30;
+    const hashpw = bcrypt.hashSync(otp, bcrypt.genSaltSync(10));
     // // reg_users_new insert
     const userResNew = await client.query(
       `INSERT INTO reg_users_new (user_org_id, user_level_id, user_regdate, user_email, user_phone, user_firstname, user_otp, pending_token_hash, pending_token_expire, user_password, user_status_id, created_by, created_date)
@@ -80,7 +82,7 @@ export async function POST(req: Request) {
         String(user_phone).trim().toLowerCase(),
         username,
         otp,
-        otpHash,
+        hashpw,
         String(expiresMinutes),
       ]
     );
