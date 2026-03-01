@@ -3,7 +3,10 @@ export const runtime = "nodejs";
 import crypto from "crypto";
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
-import { sendResetEmail } from "@/lib/mailer";
+import { sendOtpEmail, sendResetEmail } from "@/lib/mailer";
+
+const genOtp6 = () => String(Math.floor(100000 + Math.random() * 900000));
+const hashOtp = (otp: string) => crypto.createHash("sha256").update(otp).digest("hex");
 
 export async function POST(req: Request) {
   try {
@@ -13,28 +16,37 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    const { email } = body.trim().toLowerCase();
+    const email = String(body.email).trim().toLowerCase();
 
-    const user = await db.query("SELECT id FROM reg_users WHERE email=$1", [email]);
+    const user = await db.query(
+      "SELECT user_id, user_email FROM reg_users_new WHERE (user_email=$1 or user_phone = $1) and user_status_id in (0,1)",
+      [email]
+    );
 
     if (!user.rows || user.rows.length === 0) {
       return NextResponse.json({ ok: true });
     }
 
-    const token = crypto.randomUUID();
-    const hash = crypto.createHash("sha256").update(token).digest("hex");
+    // //OTP gen
+    const otp = genOtp6();
+    const otpHash = hashOtp(otp);
+    const expiresMinutes = 15;
+    //
+    // const token = crypto.randomUUID();
+    // const hash = crypto.createHash("sha256").update(token).digest("hex");
 
     await db.query(
       `
-    UPDATE reg_users
+    UPDATE reg_users_new
     SET reset_token_hash=$1,
-        reset_token_exp=NOW() + INTERVAL '15 minutes'
-    WHERE email=$2
+        reset_token_expire=current_timestamp + ($2 || ' minutes')::interval,
+        user_otp = $3
+    WHERE user_id=$4
     `,
-      [hash, email]
+      [otpHash, String(expiresMinutes), otp, user.rows[0].user_id]
     );
 
-    await sendResetEmail(email, `${process.env.APP_URL}/reset-password?token=${token}`);
+    await sendOtpEmail(user.rows[0].user_email, otp, expiresMinutes);
 
     return NextResponse.json({ ok: true });
   } catch (err) {

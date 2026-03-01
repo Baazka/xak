@@ -32,13 +32,43 @@ export async function POST(req: Request) {
     [email]
   );
   const user = rows[0];
-
   if (!user) return NextResponse.json({ error: "Хэрэглэгч олдсонгүй." }, { status: 401 });
+  console.log("status ", user.user_status_id);
+  console.log("expire ", user.pending_token_expire);
+  if (user.user_status_id === 0) {
+    const isPendingMatch = await bcrypt.compare(
+      String(password).trim(),
+      String(user.pending_token_hash).trim()
+    );
+    if (!isPendingMatch)
+      return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
+    if (user.pending_token_expire > new Date())
+      return NextResponse.json({ error: "Yadiin sda." }, { status: 401 });
+  }
+  if (user.user_status_id === 1) {
+    const isMatch = await bcrypt.compare(
+      String(password).trim(),
+      String(user.user_password).trim()
+    );
+    if (!isMatch) return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
+  }
 
   //pending
   if (user.user_status_id === 0) {
+    const token = crypto.randomUUID();
+    const hash = crypto.createHash("sha256").update(token).digest("hex");
+    await db.query(
+      `
+    UPDATE reg_users_new
+    SET pending_token_hash = $1,
+        pending_token_expire = current_timestamp + ('15 minutes')::interval,
+    WHERE user_id=$2
+    `,
+      [hash, user.rows[0].user_id]
+    );
+
     return NextResponse.json(
-      { error: "OTP баталгаажуулаагүй байна.", code: "OTP_REQUIRED" },
+      { error: "OTP баталгаажуулаагүй байна.", code: "RESET-PASSWORD", token: hash },
       { status: 403 }
     );
   }
@@ -50,21 +80,7 @@ export async function POST(req: Request) {
   if (!user.user_password) {
     return NextResponse.json({ error: "Нууц үг тохируулаагүй байна." }, { status: 403 });
   }
-  if (user.user_status_id === 0) {
-    const isPendingMatch = await bcrypt.compare(
-      String(password).trim(),
-      String(user.pending_token_hash).trim()
-    );
-    if (!isPendingMatch)
-      return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
-  }
-  if (user.user_status_id === 1) {
-    const isMatch = await bcrypt.compare(
-      String(password).trim(),
-      String(user.user_password).trim()
-    );
-    if (!isMatch) return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
-  }
+
   //role avah
   const { rows: roles } = await db.query(
     `

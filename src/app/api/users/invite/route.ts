@@ -74,7 +74,15 @@ export async function POST(req: Request) {
       `INSERT INTO reg_users_new (user_org_id, user_level_id, user_regdate, user_email, user_phone, user_firstname, user_otp, pending_token_hash, pending_token_expire, user_password, user_status_id, created_by, created_date)
        VALUES ($1, 3, current_timestamp, $2, $3, $4, $5, $6, current_timestamp + ($7 || ' minutes')::interval, 'pending', 0, 999, current_timestamp)
        RETURNING user_id`,
-      [org_id, email, user_phone, username, otp, otpHash, String(expiresMinutes)]
+      [
+        org_id,
+        String(email).trim().toLowerCase(),
+        String(user_phone).trim().toLowerCase(),
+        username,
+        otp,
+        otpHash,
+        String(expiresMinutes),
+      ]
     );
     const userNew = userResNew.rows[0];
 

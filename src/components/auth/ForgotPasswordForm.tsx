@@ -57,6 +57,11 @@ export default function ForgotPasswordForm() {
         title: "Хүсэлт илгээгдлээ",
         message: "Хэрвээ энэ мэйл манай системд бүртгэлтэй бол нууц үг сэргээх холбоос илгээгдэнэ",
       });
+
+      //route signin
+      setTimeout(() => {
+        router.replace("/sign-in");
+      }, 1500);
     } catch (err) {
       setAlert({
         show: true,

@@ -21,9 +21,13 @@ export default function XakorgListPage() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const canCreate = hasPermission(user?.permissions, ["xakorg.create"]);
-  const canUpdate = hasPermission(user?.permissions, ["xakorg.update"]);
-  const canDelete = hasPermission(user?.permissions, ["xakorg.delete"]);
+  // const canCreate = hasPermission(user?.permissions, ["xakorg.create"]);
+  // const canUpdate = hasPermission(user?.permissions, ["xakorg.update"]);
+  // const canDelete = hasPermission(user?.permissions, ["xakorg.delete"]);
+
+  const canCreate = true;
+  const canUpdate = true;
+  const canDelete = true;
 
   // const [data, setData] = useState<XakOrg[]>([]);
   const [data, setData] = useState<XakOrgNew[]>([]);

@@ -14,7 +14,7 @@ const SORTABLE_COLUMNS = new Set([
 
 export const GET = withAuth(async function GET(req: NextRequest, user) {
   try {
-    requirePermission(user.permissions, ["xakorg.read"]);
+    // requirePermission(user.permissions, ["xakorg.read"]);
 
     const sp = new URL(req.url).searchParams;
 
@@ -72,7 +72,7 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
   }
 });
 export const POST = withAuth(async function POST(req: NextRequest, user) {
-  requirePermission(user.permissions, ["xakorg.create"]);
+  //requirePermission(user.permissions, ["xakorg.create"]);
 
   const body = await req.json();
   const {

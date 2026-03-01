@@ -64,9 +64,10 @@ export default function SignInForm() {
 
       const data = await res.json();
 
-      if (data.code === "OTP_REQUIRED") {
-        router.replace(`/verify-otp?email=${encodeURIComponent(email)}`);
-        return; 
+      if (data.code === "RESET-PASSWORD") {
+        // router.replace(`/verify-otp?email=${encodeURIComponent(email)}`);
+        router.replace(`/reset-password?token=${data.token}`);
+        return;
       }
 
       if (!res.ok) {
