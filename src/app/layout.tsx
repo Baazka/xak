@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { getCurrentUser } from "@/lib/auth";
 import { ToastProvider } from "@/context/ToastContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 const roboto = Roboto({
   subsets: ["cyrillic", "latin"],
@@ -25,7 +26,9 @@ export default async function RootLayout({
         <ThemeProvider>
           <AuthProvider initialUser={user}>
             <SidebarProvider>
-              <ToastProvider>{children}</ToastProvider>
+              <NotificationProvider>
+                <ToastProvider>{children}</ToastProvider>
+              </NotificationProvider>
             </SidebarProvider>
           </AuthProvider>
         </ThemeProvider>
