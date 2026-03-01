@@ -33,8 +33,7 @@ export async function POST(req: Request) {
   );
   const user = rows[0];
   if (!user) return NextResponse.json({ error: "Хэрэглэгч олдсонгүй." }, { status: 401 });
-  console.log("status ", user.user_status_id);
-  console.log("expire ", user.pending_token_expire);
+
   if (user.user_status_id === 0) {
     const isPendingMatch = await bcrypt.compare(
       String(password).trim(),
@@ -44,7 +43,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
 
     if (user.pending_token_expire < new Date())
-      return NextResponse.json({ error: "Yadiin sda." }, { status: 401 });
+      return NextResponse.json(
+        { error: "Нэг удаагийн нууц үгийн хугацаа дууссан байна.!" },
+        { status: 401 }
+      );
+
+    const token = crypto.randomUUID();
+    const hash = crypto.createHash("sha256").update(token).digest("hex");
+    await db.query(
+      `
+    UPDATE reg_users_new
+    SET reset_token = $1,
+        reset_token_date = current_timestamp + ('15 minutes')::interval
+    WHERE user_id=$2
+    `,
+      [hash, user.user_id]
+    );
+
+    return NextResponse.json(
+      { error: "OTP баталгаажуулаагүй байна.", code: "RESET-PASSWORD", token: hash },
+      { status: 403 }
+    );
   }
   if (user.user_status_id === 1) {
     if (user.reset_token_hash) {
@@ -59,6 +78,23 @@ export async function POST(req: Request) {
           { error: "Нэг удаагийн нууц үгийн хугацаа дууссан байна." },
           { status: 401 }
         );
+      console.log("user_id ", user.user_id);
+      const token = crypto.randomUUID();
+      const hash = crypto.createHash("sha256").update(token).digest("hex");
+      await db.query(
+        `
+      UPDATE reg_users_new
+      SET reset_token = $1,
+          reset_token_date = current_timestamp + ('15 minutes')::interval
+      WHERE user_id=$2
+      `,
+        [hash, user.user_id]
+      );
+
+      return NextResponse.json(
+        { error: "OTP баталгаажуулаагүй байна.", code: "RESET-PASSWORD", token: hash },
+        { status: 403 }
+      );
     }
     const isMatch = await bcrypt.compare(
       String(password).trim(),
@@ -67,30 +103,6 @@ export async function POST(req: Request) {
 
     if (!isMatch) return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
   }
-
-  //pending
-  if (user.user_status_id === 0) {
-    const token = crypto.randomUUID();
-    const hash = crypto.createHash("sha256").update(token).digest("hex");
-    await db.query(
-      `
-    UPDATE reg_users_new
-    SET pending_token_hash = $1,
-        pending_token_expire = current_timestamp + ('15 minutes')::interval,
-    WHERE user_id=$2
-    `,
-      [hash, user.rows[0].user_id]
-    );
-
-    return NextResponse.json(
-      { error: "OTP баталгаажуулаагүй байна.", code: "RESET-PASSWORD", token: hash },
-      { status: 403 }
-    );
-  }
-
-  // if (user.status === 2) {
-  //   return NextResponse.json({ error: "Хэрэглэгч идэвхгүй байна." }, { status: 403 });
-  // }
 
   if (!user.user_password) {
     return NextResponse.json({ error: "Нууц үг тохируулаагүй байна." }, { status: 403 });

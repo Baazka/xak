@@ -14,11 +14,11 @@ export async function POST(req: Request) {
 
     const user = await db.query(
       `
-    SELECT id FROM reg_users
-    WHERE reset_token_hash=$1
-      AND reset_token_exp > NOW()
+    SELECT user_id FROM reg_users_new
+    WHERE reset_token=$1
+      AND reset_token_date > NOW()
     `,
-      [hash]
+      [token]
     );
 
     if (!user.rowCount) {
@@ -29,13 +29,19 @@ export async function POST(req: Request) {
 
     await db.query(
       `
-    UPDATE reg_users
-    SET password=$1,
-        reset_token_hash=NULL,
-        reset_token_exp=NULL
-    WHERE id=$2
+    UPDATE reg_users_new
+    SET user_password=$1,
+        reset_token =NULL,
+        reset_token_date=NULL,
+        user_status_id = 1,
+        user_otp = NULL,
+        pending_token_hash = NULL,
+        pending_token_expire = NULL,
+        reset_token_hash = NULL,
+        reset_token_expire = NULL
+    WHERE user_id=$2
     `,
-      [hashedPassword, user.rows[0].id]
+      [hashedPassword, user.rows[0].user_id]
     );
 
     return NextResponse.json({ ok: true });
