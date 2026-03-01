@@ -68,7 +68,7 @@ export async function POST(req: Request) {
   //role avah
   const { rows: roles } = await db.query(
     `
-    select r.role_id. r.role_code, r.role_label
+    select r.role_id, r.role_code, r.role_label
     from reg_user_roles_new ur
     join ref_user_role r on ur.role_id = r.role_id
     where ur.user_id = $1;
