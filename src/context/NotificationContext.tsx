@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 type Notification = {
@@ -31,17 +32,27 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   );
 
   const refresh = async () => {
-    const res = await fetch("/api/notifications", { cache: "no-store" });
+    const res = await fetchWithAuth("/api/notifications", { method: "GET" });
+
+    // fetchWithAuth дотор redirect хийнэ, гэхдээ safe check нэмье
+    if (!res.ok) return;
+
     const json = await res.json();
     setNotifications(Array.isArray(json?.data) ? json.data : []);
   };
 
   useEffect(() => {
     refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const markAsRead = async (id: number) => {
-    await fetch(`/api/notifications/${id}/read`, { method: "POST" });
+    const res = await fetchWithAuth(`/api/notifications/${id}/read`, {
+      method: "POST",
+    });
+
+    if (!res.ok) return;
+
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: 1 } : n)));
   };
 
