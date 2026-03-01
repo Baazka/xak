@@ -42,14 +42,29 @@ export async function POST(req: Request) {
     );
     if (!isPendingMatch)
       return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
-    if (user.pending_token_expire > new Date())
+
+    if (user.pending_token_expire < new Date())
       return NextResponse.json({ error: "Yadiin sda." }, { status: 401 });
   }
   if (user.user_status_id === 1) {
+    if (user.reset_token_hash) {
+      const isResetMatch = await bcrypt.compare(
+        String(password).trim(),
+        String(user.reset_token_hash).trim()
+      );
+      if (!isResetMatch)
+        return NextResponse.json({ error: "Нэг удаагийн нууц үг буруу байна." }, { status: 401 });
+      if (user.reset_token_expire < new Date())
+        return NextResponse.json(
+          { error: "Нэг удаагийн нууц үгийн хугацаа дууссан байна." },
+          { status: 401 }
+        );
+    }
     const isMatch = await bcrypt.compare(
       String(password).trim(),
       String(user.user_password).trim()
     );
+
     if (!isMatch) return NextResponse.json({ error: "Нууц үг буруу байна." }, { status: 401 });
   }
 
