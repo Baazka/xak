@@ -1,28 +1,48 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const NotificationContext = createContext<any>(null);
+type Notification = {
+  id: number;
+  title?: string;
+  content?: string;
+  date?: string;
+  is_read: number; // 0 | 1
+};
 
-export function NotificationProvider({ children }: any) {
-  const [notifications, setNotifications] = useState([]);
+type NotificationCtx = {
+  notifications: Notification[];
+  unreadCount: number;
+  open: boolean;
+  toggleOpen: () => void;
+  markAsRead: (id: number) => Promise<void>;
+  refresh: () => Promise<void>;
+};
+
+const NotificationContext = createContext<NotificationCtx | null>(null);
+
+export function NotificationProvider({ children }: { children: React.ReactNode }) {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
 
-  const unreadCount = notifications.filter((n: any) => !n.is_read).length;
+  const unreadCount = useMemo(
+    () => notifications.reduce((acc, n) => acc + (n.is_read === 0 ? 1 : 0), 0),
+    [notifications]
+  );
+
+  const refresh = async () => {
+    const res = await fetch("/api/notifications", { cache: "no-store" });
+    const json = await res.json();
+    setNotifications(Array.isArray(json?.data) ? json.data : []);
+  };
 
   useEffect(() => {
-    fetch("/api/notifications")
-      .then((res) => res.json())
-      .then(setNotifications);
+    refresh();
   }, []);
 
   const markAsRead = async (id: number) => {
     await fetch(`/api/notifications/${id}/read`, { method: "POST" });
-    setNotifications((prev: any) =>
-      prev.map((n: any) =>
-        n.id === id ? { ...n, is_read: true } : n
-      )
-    );
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: 1 } : n)));
   };
 
   return (
@@ -33,6 +53,7 @@ export function NotificationProvider({ children }: any) {
         open,
         toggleOpen: () => setOpen((p) => !p),
         markAsRead,
+        refresh,
       }}
     >
       {children}
@@ -40,4 +61,8 @@ export function NotificationProvider({ children }: any) {
   );
 }
 
-export const useNotifications = () => useContext(NotificationContext);
+export const useNotifications = () => {
+  const ctx = useContext(NotificationContext);
+  if (!ctx) throw new Error("useNotifications must be used within NotificationProvider");
+  return ctx;
+};
