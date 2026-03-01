@@ -306,37 +306,37 @@ const AppSidebar: React.FC = () => {
           <div className="flex flex-col gap-4">
             {mainMenus.length > 0 && (
               <div>
-                <h2
+                {/* <h2
                   className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
                     !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
                   }`}
                 >
                   {isExpanded || isHovered || isMobileOpen ? "Menu" : <HorizontaLDots />}
-                </h2>
+                </h2> */}
                 {renderMenuItems(mainMenus, "main")}
               </div>
             )}
             {supportMenus.length > 0 && (
               <div>
-                <h2
+                {/* <h2
                   className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
                     !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
                   }`}
                 >
                   {isExpanded || isHovered || isMobileOpen ? "Support" : <HorizontaLDots />}
-                </h2>
+                </h2> */}
                 {renderMenuItems(supportMenus, "support")}
               </div>
             )}
             {othersMenus.length > 0 && (
               <div>
-                <h2
+                {/* <h2
                   className={`mb-4 text-xs uppercase flex leading-5 text-gray-400 ${
                     !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
                   }`}
                 >
                   {isExpanded || isHovered || isMobileOpen ? "Others" : <HorizontaLDots />}
-                </h2>
+                </h2> */}
                 {renderMenuItems(othersMenus, "others")}
               </div>
             )}

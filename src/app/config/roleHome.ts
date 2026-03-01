@@ -1,10 +1,10 @@
 // src/app/config/roleHome.ts
-export type RoleCode = "ADMIN" | "XAKADMIN" | "USER" | "SUPERADMIN" | "XAKUSER";
+export type RoleCode = "GOD" | "ADMIN" | "HELPDESK" | "SUPERUSER" | "USER";
 
 export const ROLE_HOME_MAP: Record<RoleCode, string> = {
-  SUPERADMIN: "/dashboard1",
-  ADMIN: "/dashboard2",
-  XAKADMIN: "/dashboard3",
-  XAKUSER: "/dashboard4",
-  USER: "/",
+  ADMIN: "/dashboard1",
+  HELPDESK: "/dashboard2",
+  SUPERUSER: "/dashboard3",
+  USER: "/dashboard4",
+  GOD: "/",
 };

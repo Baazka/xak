@@ -7,11 +7,11 @@ import { jwtVerify } from "jose";
 import { RoleCode } from "@/app/config/roleHome";
 
 const ROUTE_ROLE_MAP: Record<string, RoleCode[]> = {
-  "/users": ["ADMIN", "USER"],
-  "/dashboard1": ["SUPERADMIN"],
-  "/dashboard2": ["ADMIN"],
-  "/dashboard3": ["XAKADMIN"],
-  "/dashboard4": ["XAKUSER"],
+  "/users": ["GOD"],
+  "/dashboard1": ["ADMIN"],
+  "/dashboard2": ["HELPDESK"],
+  "/dashboard3": ["SUPERUSER"],
+  "/dashboard4": ["USER"],
 };
 
 export async function middleware(req: NextRequest) {
