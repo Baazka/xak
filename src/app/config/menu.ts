@@ -123,11 +123,11 @@ export const MENU_CONFIG: MenuItem[] = [
     roles: ["ADMIN", "HELPDESK"],
   },
   {
-    key: "notification",
+    key: "notifications",
     icon: React.createElement(GridIcon),
     name: "Мэдэгдэл",
     section: "main",
-    path: "/notification",
+    path: "/notifications",
     //permissions: ["dashboard.read"],
     roles: ["ADMIN", "HELPDESK"],
   },
