@@ -26,9 +26,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <AuthProvider initialUser={user}>
             <SidebarProvider>
-              <NotificationProvider>
-                <ToastProvider>{children}</ToastProvider>
-              </NotificationProvider>
+              <ToastProvider>{children}</ToastProvider>
             </SidebarProvider>
           </AuthProvider>
         </ThemeProvider>
