@@ -27,8 +27,11 @@ export const columns = (actions: ColumnActions): ColumnDef<User>[] => [
     meta: { className: "w-[30px] text-center" },
     enableSorting: false,
   },
-  { accessorKey: "username", header: "Нэр" },
-  { accessorKey: "email", header: "И-мэйл" },
+  { accessorKey: "user_firstname", header: "Нэр" },
+  { accessorKey: "user_regdate", header: "Бүргэсэн огноо" },
+  { accessorKey: "user_email", header: "И-мэйл" },
+  { accessorKey: "user_register_no", header: "Регистрын дугаар" },
+  { accessorKey: "user_phone", header: "Утас" },
   {
     id: "actions",
     enableSorting: false,

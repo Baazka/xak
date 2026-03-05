@@ -9,7 +9,7 @@ type Props = {
   onOpenChange: (v: boolean) => void;
 
   mode: "create" | "edit";
-  initialUser?: Pick<User, "id" | "username" | "email"> | null;
+  initialUser?: Pick<User, "user_id" | "user_firstname" | "user_email"> | null;
 
   onSaved?: () => void;
 };
@@ -17,9 +17,12 @@ type Props = {
 export default function UserDialog({ open, onOpenChange, mode, initialUser, onSaved }: Props) {
   const isEdit = mode === "edit";
 
-  const [username, setUsername] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  // const [username, setUsername] = React.useState("");
+  // const [email, setEmail] = React.useState("");
+  // const [password, setPassword] = React.useState("");
+  const [user_firstname, setUser_firstname] = React.useState("");
+  const [user_email, setUser_email] = React.useState("");
+  const [user_password, setUser_password] = React.useState("");
 
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -28,13 +31,13 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
     if (!open) return;
 
     if (isEdit && initialUser) {
-      setUsername(initialUser.username ?? "");
-      setEmail(initialUser.email ?? "");
-      setPassword("");
+      setUser_firstname(initialUser.user_firstname ?? "");
+      setUser_email(initialUser.user_email ?? "");
+      setUser_password("");
     } else {
-      setUsername("");
-      setEmail("");
-      setPassword("");
+      setUser_firstname("");
+      setUser_email("");
+      setUser_password("");
     }
     setError(null);
     setLoading(false);
@@ -46,14 +49,14 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
 
     setError(null);
 
-    const u = username.trim();
-    const em = email.trim().toLowerCase();
+    const u = user_firstname.trim();
+    const em = user_email.trim().toLowerCase();
 
     if (!u || !em) {
       setError("Нэр, имэйлээ бөглөнө үү.");
       return;
     }
-    if (!isEdit && !password) {
+    if (!isEdit && !user_password) {
       setError("Нууц үгээ бөглөнө үү.");
       return;
     }
@@ -63,7 +66,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
       let res: Response;
 
       if (isEdit) {
-        const id = initialUser?.id;
+        const id = initialUser?.user_id;
         if (!id) {
           setError("Засах хэрэглэгч сонгогдоогүй байна.");
           return;
@@ -73,14 +76,14 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
         res = await fetchWithAuth(`/api/users/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: u, email: em }),
+          body: JSON.stringify({ user_firstname: u, user_email: em }),
         });
       } else {
         // ✅ CREATE → POST /api/users
         res = await fetchWithAuth("/api/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: u, email: em, password }),
+          body: JSON.stringify({ user_firstname: u, user_email: em, user_password }),
         });
       }
 
@@ -127,8 +130,8 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
             <label className="mb-1 block text-sm">Нэр</label>
             <input
               className="w-full rounded border px-3 py-2"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={user_firstname}
+              onChange={(e) => setUser_firstname(e.target.value)}
               placeholder="username"
               autoFocus
             />
@@ -138,8 +141,8 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
             <label className="mb-1 block text-sm">Имэйл</label>
             <input
               className="w-full rounded border px-3 py-2"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={user_email}
+              onChange={(e) => setUser_email(e.target.value)}
               placeholder="email@example.com"
             />
           </div>
@@ -149,8 +152,8 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
               <label className="mb-1 block text-sm">Нууц үг</label>
               <input
                 className="w-full rounded border px-3 py-2"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={user_password}
+                onChange={(e) => setUser_password(e.target.value)}
                 placeholder="********"
                 type="password"
               />

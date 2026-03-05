@@ -1,7 +1,7 @@
 export type User = {
-  id: number;
-  username: string;
-  email: string;
-  emailVerified: string;
-  password: string;
+  user_id: number;
+  user_firstname: string;
+  user_email: string;
+  user_phone: string;
+  user_password: string;
 };

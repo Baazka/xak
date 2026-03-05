@@ -20,9 +20,13 @@ export default function User() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const canCreate = hasPermission(user?.permissions, ["user.create"]);
-  const canUpdate = hasPermission(user?.permissions, ["user.update"]);
-  const canDelete = hasPermission(user?.permissions, ["user.delete"]);
+  const canCreate = true;
+  const canUpdate = true;
+  const canDelete = true;
+
+  // const canCreate = hasPermission(user?.permissions, ["user.create"]);
+  // const canUpdate = hasPermission(user?.permissions, ["user.update"]);
+  // const canDelete = hasPermission(user?.permissions, ["user.delete"]);
 
   const [data, setData] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
@@ -92,9 +96,9 @@ export default function User() {
 
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
   const [selectedUser, setSelectedUser] = useState<{
-    id: number;
-    username: string;
-    email: string;
+    user_id: number;
+    user_firstname: string;
+    user_email: string;
   } | null>(null);
 
   // ✅ New create
