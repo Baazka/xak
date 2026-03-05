@@ -158,11 +158,7 @@ const AppHeader: React.FC = () => {
               </div>
             </form>
           </div> */}
-          {user.activeRole}
-          <div className="relative">
-            <NotificationBell />
-            <NotificationDropdown />
-          </div>
+          {user?.activeRole}
         </div>
         <div
           className={`${
@@ -173,6 +169,10 @@ const AppHeader: React.FC = () => {
             {/* <!-- Dark Mode Toggler --> */}
             <ThemeToggleButton />
             {/* <!-- Dark Mode Toggler --> */}
+            <div className="relative">
+              <NotificationBell />
+              <NotificationDropdown />
+            </div>
 
             {/* <NotificationDropdown /> */}
             {/* <!-- Notification Menu Area --> */}
