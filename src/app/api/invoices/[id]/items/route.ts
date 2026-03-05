@@ -11,25 +11,25 @@ type Params = {
 /* ======================================================
    Helper: invoice editable эсэх
    ====================================================== */
-async function ensureInvoiceEditable(invoiceId: string) {
-  const res = await db.query(
-    `
-    SELECT s.code AS status
-    FROM invoices i
-    JOIN ref_invoice_status s ON s.id = i.status_id
-    WHERE i.id = $1
-    `,
-    [invoiceId]
-  );
+// async function ensureInvoiceEditable(invoiceId: string) {
+//   const res = await db.query(
+//     `
+//     SELECT s.code AS status
+//     FROM invoices i
+//     JOIN ref_invoice_status s ON s.id = i.status_id
+//     WHERE i.id = $1
+//     `,
+//     [invoiceId]
+//   );
 
-  if (res.rowCount === 0) {
-    throw new Error("INVOICE_NOT_FOUND");
-  }
+//   if (res.rowCount === 0) {
+//     throw new Error("INVOICE_NOT_FOUND");
+//   }
 
-  if (res.rows[0].status === "PAID") {
-    throw new Error("INVOICE_PAID");
-  }
-}
+//   if (res.rows[0].status === "PAID") {
+//     throw new Error("INVOICE_PAID");
+//   }
+// }
 
 /* ======================================================
    GET /api/invoices/{id}/items
@@ -83,7 +83,7 @@ export async function POST(req: Request, { params }: Params) {
     await client.query("BEGIN");
 
     // 🔒 Validate invoice state
-    await ensureInvoiceEditable(id);
+    //await ensureInvoiceEditable(id);
 
     const lineTotal = Number(quantity) * Number(unit_price);
 
@@ -166,7 +166,7 @@ export async function DELETE(req: Request, { params }: Params) {
     await client.query("BEGIN");
 
     // 🔒 Validate invoice state
-    await ensureInvoiceEditable(id);
+    //await ensureInvoiceEditable(id);
 
     const delRes = await client.query(
       `
