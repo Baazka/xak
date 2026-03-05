@@ -16,6 +16,7 @@ type NotificationCtx = {
   unreadCount: number;
   open: boolean;
   toggleOpen: () => void;
+  close: () => void;        
   markAsRead: (id: number) => Promise<void>;
   refresh: () => Promise<void>;
 };
@@ -34,7 +35,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const refresh = async () => {
     const res = await fetchWithAuth("/api/notifications", { method: "GET" });
 
-    // fetchWithAuth дотор redirect хийнэ, гэхдээ safe check нэмье
     if (!res.ok) return;
 
     const json = await res.json();
@@ -43,7 +43,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const markAsRead = async (id: number) => {
@@ -53,8 +52,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     if (!res.ok) return;
 
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: 1 } : n)));
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, is_read: 1 } : n))
+    );
   };
+
+  const toggleOpen = () => setOpen((p) => !p);
+
+  const close = () => setOpen(false); 
 
   return (
     <NotificationContext.Provider
@@ -62,7 +67,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         notifications,
         unreadCount,
         open,
-        toggleOpen: () => setOpen((p) => !p),
+        toggleOpen,
+        close,        
         markAsRead,
         refresh,
       }}
