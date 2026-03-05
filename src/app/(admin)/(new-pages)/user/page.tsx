@@ -13,7 +13,7 @@ import { hasPermission } from "@/lib/permission";
 import { useToast } from "@/context/ToastContext";
 import SkeletonTable from "@/components/tables/SkeletonTable";
 import { downloadExcel } from "@/lib/downloadExcel";
-import UserDialog from "./components/UserDialog";
+import UserDialog from "./components/userDialog";
 
 export default function User() {
   const router = useRouter();
