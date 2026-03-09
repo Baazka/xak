@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  // output: "standalone",
+  output: "standalone",
 
   webpack(config) {
     config.module.rules.push({
