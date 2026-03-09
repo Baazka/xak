@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
-    "start": "HOSTNAME=0.0.0.0 node .next/standalone/server.js",
+    "build1": "next build --webpack",
+    "build": "next build",
+    "start1": "node .next/standalone/server.js",
+    "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
