@@ -61,9 +61,9 @@ export default function SignInForm() {
         body: JSON.stringify({ email, password, remember }),
         headers: { "Content-Type": "application/json" },
       });
-
       const data = await res.json();
 
+      console.log(data, "dataLogin");
       if (data.code === "RESET-PASSWORD") {
         // router.replace(`/verify-otp?email=${encodeURIComponent(email)}`);
         router.replace(`/reset-password?token=${data.token}`);
