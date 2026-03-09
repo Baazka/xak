@@ -26,12 +26,9 @@ export default function CreateInvoicePage() {
 
   const addItem = () => setItems([...items, { description: "", qty: 1, unit_price: 0 }]);
 
-  const updateItem = (idx: number, field: keyof Item, value: any) => {
-    const next = [...items];
-    next[idx][field] = value;
-    setItems(next);
+  const updateItem = <K extends keyof Item>(idx: number, field: K, value: Item[K]) => {
+    setItems((prev) => prev.map((item, i) => (i === idx ? { ...item, [field]: value } : item)));
   };
-
   const removeItem = (idx: number) => {
     setItems(items.filter((_, i) => i !== idx));
   };

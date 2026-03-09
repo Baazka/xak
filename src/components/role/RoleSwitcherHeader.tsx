@@ -12,8 +12,10 @@ type Props = {
 
 const ROLE_LABELS: Record<RoleCode, string> = {
   ADMIN: "Админ",
-  XAKADMIN: "ХАК Админ",
-  USER: "Хэрэглэгч",
+  HELPDESK: "Дэд админ",
+  SUPERUSER: "ХАК Админ",
+  USER: "ХАК хэрэглэгч",
+  GOD: "Хэрэглэгч",
 };
 
 export default function RoleSwitcherHeader({ roles, activeRole }: Props) {

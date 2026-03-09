@@ -173,7 +173,7 @@ export default function InvoiceDetailPage() {
           ← Back to list
         </button>
 
-        {summary?.balance > 0 && invoice.status !== "PAID" && (
+        {summary && summary.balance > 0 && invoice.status !== "PAID" && (
           <button
             className="bg-green-600 text-white px-4 py-2 rounded"
             onClick={() => setShowPay(true)}

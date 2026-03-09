@@ -10,20 +10,32 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 
-export type RowActionItem = {
+type RowActionBase = {
   key: string;
+  disabled?: boolean;
+};
+
+type RowActionButton = RowActionBase & {
   label: string;
   onClick?: () => void;
   icon?: React.ReactNode;
   variant?: "default" | "danger";
-  disabled?: boolean;
-  custom?: React.ReactNode;
+  custom?: never;
 };
+
+type RowActionCustom = RowActionBase & {
+  custom: React.ReactNode;
+  label?: never;
+  onClick?: never;
+  icon?: never;
+  variant?: never;
+};
+
+export type RowActionItem = RowActionButton | RowActionCustom;
 
 type Props = {
   actions: RowActionItem[];
   disabled?: boolean;
-
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
@@ -54,8 +66,8 @@ export default function RowActionsMenu({ actions, disabled, open, onOpenChange }
           className="min-w-[180px] rounded-2xl border border-gray-200 bg-white p-2 shadow-theme-lg dark:border-gray-800 dark:bg-[#1E2635]"
         >
           {actions.map((a) =>
-            a.custom ? (
-              <DropdownMenuItem key={a.key} asChild className="p-0">
+            "custom" in a ? (
+              <DropdownMenuItem key={a.key} asChild className="p-0" disabled={a.disabled}>
                 {a.custom}
               </DropdownMenuItem>
             ) : (

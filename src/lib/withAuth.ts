@@ -1,33 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-import type { JwtPayload } from "@/lib/jwtPayload";
 import { getJwtSecret } from "@/lib/jwt";
+import type { JwtPayload } from "@/lib/jwtPayload";
 
-type Handler<TParams = undefined> = TParams extends undefined
-  ? (req: NextRequest, user: JwtPayload) => Promise<NextResponse>
-  : (
-      req: NextRequest,
-      user: JwtPayload,
-      context: { params: Promise<TParams> }
-    ) => Promise<NextResponse>;
+type RouteContext<TParams> = {
+  params: Promise<TParams>;
+};
 
-export function withAuth<TParams = undefined>(handler: Handler<TParams>) {
-  return async function (req: NextRequest, context?: { params: Promise<TParams> }) {
-    const token = req.cookies.get("access_token")?.value;
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+type AuthedHandler<TParams> = (
+  req: NextRequest,
+  user: JwtPayload,
+  context: RouteContext<TParams>
+) => Promise<Response>;
 
+export function withAuth<TParams>(handler: AuthedHandler<TParams>) {
+  return async function routeHandler(
+    req: NextRequest,
+    context: RouteContext<TParams>
+  ): Promise<Response> {
     try {
-      const { payload } = await jwtVerify<JwtPayload>(token, getJwtSecret());
+      const token = req.cookies.get("access_token")?.value;
 
-      if (context) {
-        return (handler as any)(req, payload, context);
+      if (!token) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
 
-      return (handler as any)(req, payload);
-    } catch {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      const { payload } = await jwtVerify(token, getJwtSecret());
+
+      return handler(req, payload as unknown as JwtPayload, context);
+    } catch (err) {
+      console.error("Auth error:", err);
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   };
 }

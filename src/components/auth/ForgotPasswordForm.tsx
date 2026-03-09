@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Label from "../form/Label";
 import Input from "@/components/form/input/InputField";
-import Button from "@/components/ui/button/Button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Alert from "../ui/alert/Alert";
 import LoadingScreen from "../ui/LoadingScreen";

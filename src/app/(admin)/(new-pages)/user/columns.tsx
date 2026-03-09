@@ -38,7 +38,7 @@ export const columns = (actions: ColumnActions): ColumnDef<User>[] => [
     meta: { className: "w-[60px] text-center" },
     cell: ({ row }) => {
       const org = row.original;
-      const id = org.id;
+      const id = org.user_id;
       const deleting = actions.deleteLoadingId === id;
 
       const menuActions = [

@@ -6,7 +6,7 @@ import {
   flexRender,
   SortingState,
   ColumnDef,
-  ColumnMeta,
+  OnChangeFn,
 } from "@tanstack/react-table";
 
 declare module "@tanstack/react-table" {
@@ -14,6 +14,7 @@ declare module "@tanstack/react-table" {
     className?: string;
   }
 }
+
 import {
   Table,
   TableBody,
@@ -39,7 +40,7 @@ type Props<TData> = {
   loading?: boolean;
   onSearchChange: (v: string) => void;
   onPageChange: (p: number) => void;
-  onSortingChange: (s: SortingState) => void;
+  onSortingChange: OnChangeFn<SortingState>;
   onLimitChange: (l: number) => void;
 };
 
@@ -109,7 +110,6 @@ export function DataTable<TData>({
                           {flexRender(h.column.columnDef.header, h.getContext())}
                         </p>
 
-                        {/* Sorting icons */}
                         {h.column.getCanSort() && (
                           <div className="flex flex-col gap-0.5 ml-2">
                             <AngleUpIcon
@@ -131,6 +131,7 @@ export function DataTable<TData>({
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
@@ -157,6 +158,7 @@ export function DataTable<TData>({
           </TableBody>
         </Table>
       </div>
+
       <div className="flex items-center flex-col sm:flex-row justify-between border-t border-gray-200 px-5 py-4 dark:border-gray-800">
         <div className="pb-3 sm:pb-0">
           <TotalRows total={total} />

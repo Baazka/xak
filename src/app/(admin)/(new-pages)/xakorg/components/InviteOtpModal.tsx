@@ -14,7 +14,7 @@ export default function InviteOtpModal({
     org_legal_name: string;
     org_phone: string;
     org_email: string;
-    org_head_email: string;
+    org_head_email?: string;
   };
   onClose: () => void;
   onSuccess: () => void;

@@ -101,24 +101,28 @@ export default function User() {
     user_email: string;
   } | null>(null);
 
-  // ✅ New create
+  //  New create
   const handleCreate = () => {
     setDialogMode("create");
     setSelectedUser(null);
     setOpen(true);
   };
 
-  // ✅ Edit
+  //  Edit
   const handleEdit = (id: number) => {
-    const u = data.find((x) => x.id === id);
+    const u = data.find((x) => x.user_id === id);
     if (!u) return;
 
     setDialogMode("edit");
-    setSelectedUser({ id: u.id, username: u.username, email: u.email });
+    setSelectedUser({
+      user_id: u.user_id,
+      user_firstname: u.user_firstname,
+      user_email: u.user_email,
+    });
     setOpen(true);
   };
 
-  // ✅ Delete
+  //  Delete
   const handleDelete = async (id: number) => {
     if (deleteLoadingId !== null) return;
 

@@ -1,11 +1,11 @@
 // src/app/api/invoices/[id]/payments/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
+import { withAuth } from "@/lib/withAuth";
+import type { JwtPayload } from "@/lib/jwtPayload";
 
-type Params = {
-  params: {
-    id: string; // invoice_id
-  };
+type RouteParams = {
+  id: string; // invoice_id
 };
 
 /* ======================================================
@@ -23,9 +23,11 @@ async function getInvoiceInfo(invoiceId: string) {
     JOIN ref_invoice_status s ON s.id = i.status_id
     LEFT JOIN payments p
       ON p.invoice_id = i.id
-     AND p.payment_status = 'PAID'
+     AND p.status_id = (
+       SELECT id FROM ref_payment_status WHERE code = 'PAID'
+     )
     WHERE i.id = $1
-    GROUP BY i.id, s.code
+    GROUP BY i.id, i.total_amount, s.code
     `,
     [invoiceId]
   );
@@ -46,24 +48,26 @@ async function getInvoiceInfo(invoiceId: string) {
 /* ======================================================
    GET /api/invoices/{id}/payments
    ====================================================== */
-export async function GET(req: Request, { params }: Params) {
-  const { id } = params;
+export const GET = withAuth<RouteParams>(async (_req: NextRequest, _user: JwtPayload, context) => {
+  const { id } = await context.params;
 
   try {
     const result = await db.query(
       `
-      SELECT
-        p.id,
-        p.amount,
-        p.paid_at,
-        p.payment_ref,
-        m.code AS method
-      FROM payments p
-      JOIN ref_payment_method m ON m.id = p.method_id
-      WHERE p.invoice_id = $1
-        AND p.payment_status = 'PAID'
-      ORDER BY p.paid_at DESC
-      `,
+        SELECT
+          p.id,
+          p.amount,
+          p.payment_date,
+          p.reference_no,
+          m.code AS method
+        FROM payments p
+        JOIN ref_payment_method m ON m.id = p.method_id
+        WHERE p.invoice_id = $1
+          AND p.status_id = (
+            SELECT id FROM ref_payment_status WHERE code = 'PAID'
+          )
+        ORDER BY p.payment_date DESC
+        `,
       [id]
     );
 
@@ -77,89 +81,76 @@ export async function GET(req: Request, { params }: Params) {
       { status: 500 }
     );
   }
-}
+});
 
 /* ======================================================
    POST /api/invoices/{id}/payments
    ====================================================== */
-// POST /api/invoices/[id]/payments
-export async function POST(req: Request, context: { params: Promise<{ id: string }> }) {
+export const POST = withAuth<RouteParams>(async (req: NextRequest, _user: JwtPayload, context) => {
   const { id: invoiceId } = await context.params;
   const client = await db.connect();
 
   try {
     const body = await req.json();
-    const { amount, method_id, reference_no } = body;
+    const amountNum = Number(body?.amount);
+    const methodIdNum = Number(body?.method_id);
+    const referenceNo = body?.reference_no ?? null;
 
-    if (!amount || !method_id) {
+    if (!amountNum || !methodIdNum) {
       return NextResponse.json({ message: "Invalid payload" }, { status: 400 });
     }
 
     await client.query("BEGIN");
 
-    // 1️⃣ Invoice total + paid
-    const invRes = await client.query(
-      `
-      SELECT
-        i.total_amount,
-        COALESCE(SUM(p.amount), 0) AS paid_amount
-      FROM invoices i
-      LEFT JOIN payments p
-        ON p.invoice_id = i.id
-       AND p.status_id = (
-         SELECT id FROM ref_payment_status WHERE code = 'PAID'
-       )
-      WHERE i.id = $1
-      GROUP BY i.total_amount
-      `,
-      [invoiceId]
-    );
+    const info = await getInvoiceInfo(invoiceId);
 
-    if (invRes.rowCount === 0) {
-      throw new Error("INVOICE_NOT_FOUND");
+    if (info.status === "PAID") {
+      await client.query("ROLLBACK");
+      return NextResponse.json({ message: "Cannot modify a PAID invoice" }, { status: 400 });
     }
 
-    const { total_amount, paid_amount } = invRes.rows[0];
-    const balance = Number(total_amount) - Number(paid_amount);
-
-    if (amount <= 0 || amount > balance) {
-      throw new Error("INVALID_AMOUNT");
+    if (amountNum <= 0 || amountNum > info.balance) {
+      await client.query("ROLLBACK");
+      return NextResponse.json({ message: "INVALID_AMOUNT" }, { status: 400 });
     }
-
-    // 2️⃣ Insert payment (DB schema-д таарсан)
-    await client.query(
-      `
-      INSERT INTO payments (
-        invoice_id,
-        amount,
-        payment_date,
-        reference_no,
-        status_id,
-        method_id
-      )
-      VALUES (
-        $1,
-        $2,
-        NOW(),
-        $3,
-        (SELECT id FROM ref_payment_status WHERE code = 'PAID'),
-        $4
-      )
-      `,
-      [invoiceId, amount, reference_no ?? null, method_id]
-    );
-
-    // 3️⃣ Update invoice status
-    const newStatus = amount === balance ? "PAID" : "PARTIAL";
 
     await client.query(
       `
-      UPDATE invoices
-      SET status_id = (
-        SELECT id FROM ref_invoice_status WHERE code = $1
-      )
-      WHERE id = $2
-      `,
+        INSERT INTO payments (
+          invoice_id,
+          amount,
+          payment_date,
+          reference_no,
+          status_id,
+          method_id
+        )
+        VALUES (
+          $1,
+          $2,
+          NOW(),
+          $3,
+          (SELECT id FROM ref_payment_status WHERE code = 'PAID'),
+          $4
+        )
+        `,
+      [invoiceId, amountNum, referenceNo, methodIdNum]
+    );
+
+    const remainingBalance = info.balance - amountNum;
+    const newStatus = remainingBalance === 0 ? "PAID" : "PARTIAL";
+
+    await client.query(
+      `
+        UPDATE invoices
+        SET
+          status_id = (
+            SELECT id
+            FROM ref_invoice_status
+            WHERE code = $1
+          ),
+          updated_at = NOW()
+        WHERE id = $2
+        `,
       [newStatus, invoiceId]
     );
 
@@ -171,11 +162,14 @@ export async function POST(req: Request, context: { params: Promise<{ id: string
     });
   } catch (err: any) {
     await client.query("ROLLBACK");
-
     console.error("❌ POST payment error:", err);
 
-    return NextResponse.json({ message: err.message }, { status: 500 });
+    if (err.message === "INVOICE_NOT_FOUND") {
+      return NextResponse.json({ message: "Invoice not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: err.message || "Failed to save payment" }, { status: 500 });
   } finally {
     client.release();
   }
-}
+});
