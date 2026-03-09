@@ -60,7 +60,7 @@ export default function ForgotPasswordForm() {
 
       //route signin
       setTimeout(() => {
-        router.replace("/sign-in");
+        router.replace("/signin");
       }, 1500);
     } catch (err) {
       setAlert({
