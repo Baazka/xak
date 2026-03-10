@@ -164,7 +164,7 @@ export async function POST(req: Request) {
   await db.query(
     `INSERT INTO reg_user_sessions (user_id, refresh_selector, refresh_token_hash, expires_at, active_role)
    VALUES ($1, $2, $3, $4, $5)`,
-    [user.user_id, selector, refreshHash, expiresAt, activeRole.role_code]
+    [user.user_id, selector, refreshHash, expiresAt, activeRole.role_label]
   );
 
   const res = NextResponse.json({
@@ -172,8 +172,8 @@ export async function POST(req: Request) {
     user: {
       sub: user.user_id,
       email: user.user_email,
-      activeRole: activeRole.role_code,
-      roles: roles.map((r: any) => r.role_code),
+      activeRole: activeRole.role_label,
+      roles: roles.map((r: any) => r.role_label),
       permissions,
     },
   });
