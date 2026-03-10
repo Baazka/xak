@@ -4,11 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build1": "next build --webpack",
     "build": "next build",
-    "start1": "next start",
     "start": "node .next/standalone/server.js",
-    "lint": "next lint",
+    "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
