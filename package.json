@@ -6,8 +6,8 @@
     "dev": "next dev --webpack",
     "build1": "next build --webpack",
     "build": "next build",
-    "start1": "node .next/standalone/server.js",
-    "start": "next start",
+    "start1": "next start",
+    "start": "node .next/standalone/server.js",
     "lint": "next lint",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
