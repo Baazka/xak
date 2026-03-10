@@ -63,7 +63,6 @@ export default function SignInForm() {
       });
       const data = await res.json();
 
-      console.log(data, "dataLogin");
       if (data.code === "RESET-PASSWORD") {
         // router.replace(`/verify-otp?email=${encodeURIComponent(email)}`);
         router.replace(`/reset-password?token=${data.token}`);
@@ -80,7 +79,7 @@ export default function SignInForm() {
         setLoading(false);
         return;
       }
-
+      console.log(res.ok, "res.ok");
       // Амжилттай
       setAlert({
         show: true,
@@ -90,9 +89,10 @@ export default function SignInForm() {
       });
 
       const meRes = await fetch("/api/auth/me");
+      console.log(meRes, "meRes");
       const { user } = await meRes.json();
       setUser(user);
-
+      console.log(user, "user");
       if (user.roles.length > 1) {
         router.replace("/select-role");
       } else {
