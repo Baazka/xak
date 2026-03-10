@@ -106,7 +106,7 @@ export async function POST() {
     httpOnly: true,
     path: "/",
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: false, //process.env.NODE_ENV === "production",
     maxAge: ACCESS_TOKEN_TTL,
   });
 

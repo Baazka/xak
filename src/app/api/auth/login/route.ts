@@ -182,7 +182,7 @@ export async function POST(req: Request) {
     httpOnly: true,
     path: "/",
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: false, //process.env.NODE_ENV === "production",
     maxAge: ACCESS_TOKEN_TTL,
   });
 
@@ -190,7 +190,7 @@ export async function POST(req: Request) {
     httpOnly: true,
     path: "/",
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: false, //process.env.NODE_ENV === "production",
     maxAge: remember ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7,
   });
 
