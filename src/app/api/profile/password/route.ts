@@ -10,7 +10,7 @@ export const PUT = withAuth(async (req, user) => {
     user.sub,
   ]);
 
-  const valid = await bcrypt.compare(currentPassword, result.rows[0].password);
+  const valid = await bcrypt.compare(currentPassword, result.rows[0].user_password);
 
   if (!valid) {
     return NextResponse.json({ error: "Одоогийн нууц үг буруу байна" }, { status: 400 });
