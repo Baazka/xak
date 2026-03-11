@@ -36,8 +36,8 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrgNew>[] => [
   { accessorKey: "org_head_name", header: "Удирдлага нэр" },
   { accessorKey: "org_head_phone", header: "Удирдлага утас" },
   { accessorKey: "org_head_email", header: "Удирдлага мэйл" },
-  { accessorKey: "created_date", header: "Бүртгэгдсэн огноо" },
-  { accessorKey: "org_status", header: "Төлөв" },
+  { accessorKey: "created_date", header: "Бүртгэгдсэн" },
+  // { accessorKey: "org_status", header: "Төлөв" },
   {
     id: "actions",
     enableSorting: false,

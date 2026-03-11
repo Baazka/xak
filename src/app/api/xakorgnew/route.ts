@@ -36,7 +36,19 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
     const dataParams = [...params, limit, offset];
 
     const dataSql = `
-      SELECT org_id, org_register_no, org_legal_name, org_phone, org_email, org_address, org_head_name, org_head_phone, org_head_email, org_status, created_by, created_date
+      SELECT 
+        org_id, 
+        org_register_no, 
+        org_legal_name, 
+        org_phone, 
+        org_email, 
+        org_address, 
+        org_head_name, 
+        org_head_phone, 
+        org_head_email, 
+        org_status, 
+        created_by, 
+        to_char(created_date, 'YYYY.MM.DD') as created_date
       FROM reg_aud_org
       ${whereClause}
       ORDER BY ${sortBy} ${sortOrder}

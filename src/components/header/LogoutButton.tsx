@@ -40,7 +40,7 @@ export default function LogoutButton() {
           fill=""
         />
       </svg>
-      Sign out
+      Системээс гарах
     </Link>
   );
 }

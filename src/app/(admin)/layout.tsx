@@ -24,7 +24,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       case "/video-generator":
         return "";
       default:
-        return "p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6";
+        return "p-2 mx-auto max-w-(--breakpoint-2xl) md:p-2";
     }
   };
 
@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const mainContentMargin = isMobileOpen
     ? "ml-0"
     : isExpanded || isHovered
-      ? "xl:ml-[290px]"
+      ? "xl:ml-[240px]"
       : "xl:ml-[90px]";
 
   return (

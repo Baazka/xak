@@ -20,7 +20,7 @@ export function safeParseFilters(raw: string | null): Filters {
 }
 
 export function buildWhereClause(search: string, filters: Filters) {
-  let whereClause = "WHERE ORG_STATUS IS NOT NULL";
+  let whereClause = "WHERE ORG_STATUS = 'ACTIVE' ";
   const params: any[] = [];
 
   // global search (чинийх шиг)

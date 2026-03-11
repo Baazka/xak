@@ -30,7 +30,7 @@ export default function UserDropdown() {
         className="flex items-center dropdown-toggle text-gray-700 dark:text-gray-400 dropdown-toggle"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <Image width={44} height={44} src="/images/user/owner.png" alt="User" />
+          <Image width={44} height={44} src="/images/user/q_user.png" alt="User" />
         </span>
 
         <span className="block mr-1 font-medium text-theme-sm">{displayName}</span>
@@ -92,10 +92,10 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              Edit profile
+              Хэрэглэгчийн мэдээлэл
             </DropdownItem>
           </li>
-          <li>
+          {/* <li>
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
@@ -119,8 +119,8 @@ export default function UserDropdown() {
               </svg>
               Account settings
             </DropdownItem>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
@@ -144,7 +144,7 @@ export default function UserDropdown() {
               </svg>
               Support
             </DropdownItem>
-          </li>
+          </li> */}
         </ul>
         <LogoutButton />
       </Dropdown>

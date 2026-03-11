@@ -14,7 +14,7 @@ const SORTABLE_COLUMNS = new Set([
 ]);
 
 export const GET = withAuth(async function GET(req: NextRequest, user) {
-  requirePermission(user.permissions, ["user.read"]);
+  //requirePermission(user.permissions, ["user.read"]);
 
   const sp = new URL(req.url).searchParams;
 
@@ -28,7 +28,7 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
   const { whereClause, params } = buildWhereClause(search, filters);
 
   const sql = `
-    SELECT org_id, org_register_no, org_legal_name, org_phone, org_email, org_address, org_head_name, org_head_phone, org_head_email, created_date
+    SELECT org_id, org_register_no, org_legal_name, org_phone, org_email, org_address, org_head_name, org_head_phone, org_head_email, to_char(created_date, 'YYYY.MM.DD') as created_date
     FROM reg_aud_org
     ${whereClause}
     ORDER BY ${sortBy} ${sortOrder}
@@ -52,7 +52,7 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
       { header: "Удирдлага нэр", key: "org_head_name", width: 30 },
       { header: "Удирдлага утас", key: "org_head_phone", width: 15 },
       { header: "Удирдлага мэйл", key: "org_head_email", width: 15 },
-      { header: "Бүртгэгдсэн огноо", key: "created_date", width: 18 },
+      { header: "Бүртгэгдсэн", key: "created_date", width: 18 },
     ];
     ws.getRow(1).font = { bold: true };
 

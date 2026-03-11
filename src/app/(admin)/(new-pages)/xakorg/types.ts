@@ -20,5 +20,5 @@ export type XakOrgNew = {
   org_head_email?: string;
   org_status: string;
   created_by?: number;
-  created_date?: Date;
+  created_date?: string;
 };
