@@ -15,6 +15,10 @@ import {
   PieChartIcon,
   PlugInIcon,
   BoxCubeIcon,
+  UserIcon,
+  GroupIcon,
+  BoxIcon,
+  InfoIcon,
 } from "../../icons";
 import { RoleCode } from "./roleHome";
 
@@ -77,7 +81,7 @@ export const MENU_CONFIG: MenuItem[] = [
   },
   {
     key: "xakorg",
-    icon: React.createElement(GridIcon),
+    icon: React.createElement(ListIcon),
     name: "ХАК-н бүртгэл",
     section: "main",
     path: "/xakorg",
@@ -86,7 +90,7 @@ export const MENU_CONFIG: MenuItem[] = [
   },
   {
     key: "user",
-    icon: React.createElement(GridIcon),
+    icon: React.createElement(GroupIcon),
     name: "Хэрэглэгч бүртгэл",
     section: "main",
     path: "/user",
@@ -95,7 +99,7 @@ export const MENU_CONFIG: MenuItem[] = [
   },
   {
     key: "users",
-    icon: React.createElement(GridIcon),
+    icon: React.createElement(TableIcon),
     name: "Төлбөр",
     section: "main",
     path: "/user",
@@ -104,7 +108,7 @@ export const MENU_CONFIG: MenuItem[] = [
   },
   {
     key: "payment",
-    icon: React.createElement(GridIcon),
+    icon: React.createElement(TableIcon),
     name: "Төлбөр",
     section: "main",
     roles: ["SUPERUSER"],
@@ -115,7 +119,7 @@ export const MENU_CONFIG: MenuItem[] = [
   },
   {
     key: "audit",
-    icon: React.createElement(GridIcon),
+    icon: React.createElement(BoxIcon),
     name: "Аудит",
     section: "main",
     path: "/audit",
@@ -124,7 +128,7 @@ export const MENU_CONFIG: MenuItem[] = [
   },
   {
     key: "notifications",
-    icon: React.createElement(GridIcon),
+    icon: React.createElement(InfoIcon),
     name: "Мэдэгдэл",
     section: "main",
     path: "/notifications",
@@ -133,7 +137,7 @@ export const MENU_CONFIG: MenuItem[] = [
   },
   {
     key: "helpdesk",
-    icon: React.createElement(GridIcon),
+    icon: React.createElement(ChatIcon),
     name: "Тусламж",
     section: "main",
     path: "/helpdesk",

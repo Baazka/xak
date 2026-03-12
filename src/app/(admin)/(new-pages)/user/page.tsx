@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/tables/DataTable";
-import type { User } from "./types";
+import type { User, UserForAdmin } from "./types";
 import { columns } from "./columns";
+import { columnsAdmin } from "./columnsAdmin";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { SortingState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
@@ -29,14 +30,18 @@ export default function User() {
   // const canDelete = hasPermission(user?.permissions, ["user.delete"]);
 
   const [data, setData] = useState<User[]>([]);
+  const [dataAdmin, setDataAdmin] = useState<UserForAdmin[]>([]);
   const [total, setTotal] = useState(0);
+  const [totalAdmin, setTotalAdmin] = useState(0);
 
   const [listLoading, setListLoading] = useState(false);
   const [deleteLoadingId, setDeleteLoadingId] = useState<number | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
 
   const [page, setPage] = useState(1);
+  const [pageAdmin, setPageAdmin] = useState(1);
   const [limit, setLimit] = useState(10);
+  const [limitAdmin, setLimitAdmin] = useState(10);
 
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
@@ -90,7 +95,36 @@ export default function User() {
       }
     };
 
+    const runAdmin = async () => {
+      setListLoading(true);
+
+      try {
+        const res = await fetchWithAuth(
+          `/api/usersAdmin?page=${page}&limit=${limit}&search=${encodeURIComponent(
+            search
+          )}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
+          { signal: controller.signal }
+        );
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.message || `API error: ${res.status}`);
+        }
+
+        const json = await res.json();
+        setDataAdmin(json.data);
+        setTotalAdmin(json.total);
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+        toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
+      } finally {
+        setListLoading(false);
+        setInitialLoading(false);
+      }
+    };
+
     run();
+    runAdmin();
     return () => controller.abort();
   }, [page, limit, search, sortBy, sortOrder, reloadKey, toast]);
 
@@ -223,6 +257,63 @@ export default function User() {
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+        <div className="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+              Хэрэглэгчийн жагсаалт /Админ/
+            </h3>
+          </div>
+
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={handleDownload}>
+              Татах
+              {/* icon... */}
+            </Button>
+
+            {canCreate && (
+              <Button
+                onClick={handleCreate}
+                className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
+              >
+                Шинэ бүртгэл
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-b-xl overflow-visible">
+          {initialLoading ? (
+            <SkeletonTable />
+          ) : (
+            <DataTable
+              columns={columnsAdmin({
+                onEdit: handleEdit,
+                onRemove: handleDelete,
+                canUpdate,
+                canDelete,
+                page,
+                limit,
+                deleteLoadingId,
+                openMenuId,
+                setOpenMenuId,
+              })}
+              data={dataAdmin}
+              total={totalAdmin}
+              page={pageAdmin}
+              limit={limitAdmin}
+              search={searchInput}
+              onSearchChange={setSearchInput}
+              sorting={sorting}
+              loading={listLoading}
+              onPageChange={setPageAdmin}
+              onSortingChange={setSorting}
+              onLimitChange={setLimitAdmin}
             />
           )}
         </div>

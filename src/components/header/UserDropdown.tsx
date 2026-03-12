@@ -12,7 +12,8 @@ export default function UserDropdown() {
 
   if (!user) return null;
   const displayName = user.username || user.email.split("@")[0];
-  const displayEmail = user.email;
+  const displayOrgName = user.org_legal_name;
+  const displayUserRole = user.role_text;
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -62,10 +63,10 @@ export default function UserDropdown() {
       >
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {displayName}
+            {displayOrgName}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {displayEmail}
+            {displayUserRole}
           </span>
         </div>
 
