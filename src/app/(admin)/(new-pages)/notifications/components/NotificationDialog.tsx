@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import {
   Dialog,
@@ -10,103 +10,205 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-type TargetType = "USER" | "ORG" | "ROLE";
+type NotificationType = {
+  type_id: number;
+  type_name: string;
+  type_description: string | null;
+};
+
+type TargetTypeItem = {
+  type_id: number;
+  type_name: string;
+  type_code: string;
+};
 
 export default function NotificationDialog() {
   const [open, setOpen] = useState(false);
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [targetType, setTargetType] = useState<TargetType>("USER");
-  const [targetIds, setTargetIds] = useState<string>(""); // comma separated
+
+  const [notificationTypes, setNotificationTypes] = useState<NotificationType[]>([]);
+  const [targetTypes, setTargetTypes] = useState<TargetTypeItem[]>([]);
+
+  const [notificationTypeId, setNotificationTypeId] = useState<number | "">("");
+  const [targetTypeCode, setTargetTypeCode] = useState<string>("");
+
+  const [targetIds, setTargetIds] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [metaLoading, setMetaLoading] = useState(false);
+
+  useEffect(() => {
+    const loadMeta = async () => {
+      try {
+        setMetaLoading(true);
+
+        const res = await fetchWithAuth("/api/notifications/meta", {
+          method: "GET",
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to load metadata");
+        }
+
+        const data = await res.json();
+
+        const notiTypes: NotificationType[] = data.notificationTypes ?? [];
+        const trgTypes: TargetTypeItem[] = data.targetTypes ?? [];
+
+        setNotificationTypes(notiTypes);
+        setTargetTypes(trgTypes);
+
+        if (notiTypes.length > 0) {
+          setNotificationTypeId(notiTypes[0].type_id);
+        }
+
+        if (trgTypes.length > 0) {
+          setTargetTypeCode(trgTypes[0].type_code);
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Dropdown data ачааллахад алдаа гарлаа");
+      } finally {
+        setMetaLoading(false);
+      }
+    };
+
+    loadMeta();
+  }, []);
 
   const handleSubmit = async () => {
-    if (!title || !content || !targetIds) return;
+    if (!title || !content || !notificationTypeId || !targetTypeCode) {
+      return;
+    }
+
+    const needsIds = targetTypeCode === "USER" || targetTypeCode === "ROLE";
+
+    if (needsIds && !targetIds.trim()) {
+      alert("Target IDs оруулна уу");
+      return;
+    }
 
     setLoading(true);
 
-    const ids = targetIds
-      .split(",")
-      .map((x) => Number(x.trim()))
-      .filter(Boolean);
+    try {
+      const ids = targetIds
+        .split(",")
+        .map((x) => Number(x.trim()))
+        .filter((x) => !Number.isNaN(x) && x > 0);
 
-    const body: any = {
-      title,
-      content,
-    };
+      const body: any = {
+        noti_type_id: notificationTypeId,
+        title,
+        content,
+        target_type_code: targetTypeCode,
+      };
 
-    if (targetType === "USER") body.userIds = ids;
-    if (targetType === "ORG") body.orgIds = ids;
-    if (targetType === "ROLE") body.roleIds = ids;
+      if (targetTypeCode === "USER") {
+        body.userIds = ids;
+      }
 
-    const res = await fetchWithAuth("/api/notifications/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+      if (targetTypeCode === "ROLE") {
+        body.roleIds = ids;
+      }
 
-    setLoading(false);
+      const res = await fetchWithAuth("/api/notifications/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-    if (res.ok) {
-      setOpen(false);
-      setTitle("");
-      setContent("");
-      setTargetIds("");
-      alert("Notification created");
-    } else {
+      if (res.ok) {
+        setOpen(false);
+        setTitle("");
+        setContent("");
+        setTargetIds("");
+        alert("Notification created");
+      } else {
+        const err = await res.json().catch(() => null);
+        alert(err?.error || "Error creating notification");
+      }
+    } catch (error) {
+      console.error(error);
       alert("Error creating notification");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="px-4 py-2 bg-black text-white rounded-lg">+ New Notification</button>
+        <button className="px-4 py-2 bg-black text-white rounded-lg">Шинэ мэдэгдэл</button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-lg z-1000">
+      <DialogContent className="max-w-lg z-[1000]">
         <DialogHeader>
-          <DialogTitle>Create Notification</DialogTitle>
+          <DialogTitle>Мэдэгдэл үүсгэх</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
           <input
-            placeholder="Title"
+            placeholder="Гарчиг"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full border p-2 rounded"
           />
 
           <textarea
-            placeholder="Content"
+            placeholder="Агуулга"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             className="w-full border p-2 rounded"
           />
 
           <select
-            value={targetType}
-            onChange={(e) => setTargetType(e.target.value as TargetType)}
+            value={notificationTypeId}
+            onChange={(e) => setNotificationTypeId(Number(e.target.value))}
             className="w-full border p-2 rounded"
+            disabled={metaLoading}
           >
-            <option value="USER">User</option>
-            <option value="ORG">Organization</option>
-            <option value="ROLE">Role</option>
+            <option value="">Мэдэгдэлийн төрөл сонгох</option>
+            {notificationTypes.map((item) => (
+              <option key={item.type_id} value={item.type_id}>
+                {item.type_name}
+              </option>
+            ))}
           </select>
 
-          <input
-            placeholder="Target IDs (comma separated: 1,2,3)"
-            value={targetIds}
-            onChange={(e) => setTargetIds(e.target.value)}
+          <select
+            value={targetTypeCode}
+            onChange={(e) => setTargetTypeCode(e.target.value)}
             className="w-full border p-2 rounded"
-          />
+            disabled={metaLoading}
+          >
+            <option value="">Хэрэглэгчийн төрөл сонгох</option>
+            {targetTypes.map((item) => (
+              <option key={item.type_id} value={item.type_code}>
+                {item.type_name}
+              </option>
+            ))}
+          </select>
+
+          {(targetTypeCode === "USER" || targetTypeCode === "ROLE") && (
+            <input
+              placeholder={
+                targetTypeCode === "USER"
+                  ? "User IDs (comma separated: 1,2,3)"
+                  : "Role IDs (comma separated: 1,2,3)"
+              }
+              value={targetIds}
+              onChange={(e) => setTargetIds(e.target.value)}
+              className="w-full border p-2 rounded"
+            />
+          )}
 
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || metaLoading}
             className="w-full bg-black text-white py-2 rounded"
           >
-            {loading ? "Creating..." : "Create"}
+            {loading ? "Хадгалж байна..." : "Хадгалах"}
           </button>
         </div>
       </DialogContent>
