@@ -77,27 +77,27 @@ export default function NotificationsPage() {
   };
 
   const title = useMemo(() => {
-    if (unreadOnly) return `Unread notifications (${unreadCount})`;
-    return `All notifications`;
+    if (unreadOnly) return `Уншаагүй мэдэгдэл (${unreadCount})`;
+    return `Бүх мэдэгдэл (${unreadCount} уншаагүй)`;
   }, [unreadOnly, unreadCount]);
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-start justify-between gap-4">
+        {/* LEFT */}
         <div>
           <h1 className="text-xl font-semibold">{title}</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Inbox style жагсаалт — уншсан/уншаагүй, pagination, mark read.
-          </p>
-          <NotificationDialog />
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* RIGHT ACTIONS */}
+        <div className="flex items-center gap-2">
+          <NotificationDialog />
+
           <button
             onClick={() => setUnreadOnly((v) => !v)}
             className="px-3 py-2 rounded-lg border text-sm hover:bg-gray-50"
           >
-            {unreadOnly ? "Show all" : "Show unread"}
+            {unreadOnly ? "Бүх мэдэгдэл" : "Уншаагүй мэдэгдэл"}
           </button>
 
           <button
@@ -105,15 +105,17 @@ export default function NotificationsPage() {
             className="px-3 py-2 rounded-lg bg-black text-white text-sm hover:opacity-90"
             disabled={unreadCount === 0}
           >
-            Mark all as read
+            Уншсан болгож тэмдэглэх
           </button>
         </div>
       </div>
 
-      <div className="mt-6 rounded-xl border bg-white">
+      <hr className="my-4" />
+
+      <div className="mt-4 rounded-xl border bg-white">
         <div className="p-3 border-b flex items-center justify-between">
           <div className="text-sm text-gray-600">
-            Page: <span className="font-medium">{page}</span>
+            Хуудас: <span className="font-medium">{page}</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -122,37 +124,33 @@ export default function NotificationsPage() {
               className="px-3 py-2 rounded-lg border text-sm hover:bg-gray-50"
               disabled={page === 1 || loading}
             >
-              Prev
+              {"<<"}
             </button>
+
             <button
               onClick={() => setPage((p) => p + 1)}
               className="px-3 py-2 rounded-lg border text-sm hover:bg-gray-50"
               disabled={loading || items.length < limit}
             >
-              Next
+              {">>"}
             </button>
           </div>
         </div>
 
         <div className="p-3">
           {loading ? (
-            <div className="p-6 text-center text-gray-400">Loading…</div>
+            <div className="p-6 text-center text-gray-400">Уншиж байна...</div>
           ) : items.length === 0 ? (
-            <div className="p-6 text-center text-gray-400">No notifications</div>
+            <div className="p-6 text-center text-gray-400">Хоосон</div>
           ) : (
             <div className="space-y-2">
               {items.map((n) => (
                 <div key={n.id} onClick={() => onMarkOneRead(n.id)}>
-                  {/* NotificationItem чинь date-fns-тай байгаа болохоор шууд ашиглана */}
                   <NotificationItem noti={n} />
                 </div>
               ))}
             </div>
           )}
-        </div>
-
-        <div className="p-3 border-t text-xs text-gray-500">
-          Tip: Next товч идэвхгүй бол {limit}-с бага дата ирсэн гэсэн үг.
         </div>
       </div>
     </div>
