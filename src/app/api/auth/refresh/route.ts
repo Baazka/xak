@@ -87,10 +87,18 @@ export async function POST() {
 
   const payload = buildJwtPayload({
     user: {
+      org_id: user.org_id,
+      org_register_no: user.org_register_no,
+      org_legal_name: user.org_legal_name,
+      org_phone: user.org_phone,
+      org_email: user.org_email,
+      org_address: user.org_address,
+      org_head_name: user.org_head_name,
+      org_head_phone: user.org_head_phone,
+      org_head_email: user.org_head_email,
       id: user.id,
       email: user.email,
       username: user.username,
-      avatar: user.avatar,
     },
     activeRole: activeRole.code,
     roles: roles.map((r: any) => r.code),
