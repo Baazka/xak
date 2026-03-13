@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   const remember = Boolean(body?.remember);
 
   if (typeof email !== "string" || typeof password !== "string") {
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+    return NextResponse.json({ error: "Мэдээлэл буруу байна." }, { status: 400 });
   }
 
   // const { rows } = await db.query(
@@ -27,8 +27,45 @@ export async function POST(req: Request) {
   // );
 
   const { rows } = await db.query(
-    `SELECT user_id, user_org_id, user_level_id, user_code, user_regdate, user_email, user_phone, user_register_no, user_lastname, user_firstname, user_password, user_otp, user_status_id, pending_token_hash, pending_token_expire, 
-    reset_token_hash, reset_token_expire, created_by, created_date FROM reg_users_new WHERE (user_email = $1 or user_phone = $1) and user_status_id in (0,1)`,
+    `SELECT 
+      ao.org_id,
+      ao.org_register_no,
+      ao.org_legal_name,
+      ao.org_phone,
+      ao.org_email,
+      ao.org_address,
+      ao.org_head_name,
+      ao.org_head_phone,
+      ao.org_head_email,
+      ru.user_id, 
+      user_org_id, 
+      user_level_id, 
+	    ul.level_name,
+      user_code, 
+      user_regdate, 
+      user_email, 
+      user_phone, 
+      user_register_no, 
+      user_lastname, 
+      user_firstname, 
+      user_password, 
+      user_otp, 
+      user_status_id, 
+      pending_token_hash, 
+      pending_token_expire, 
+        reset_token_hash, 
+      reset_token_expire, 
+      ru.created_by, 
+      ru.created_date,
+      rur.role_label,
+      rur.role_code,
+      rur.role_text
+    FROM reg_users_new ru
+    JOIN reg_aud_org ao on ru.user_org_id = ao.org_id 
+    JOIN ref_user_level ul on ru.user_level_id = ul.level_id
+    JOIN reg_user_roles_new ur on ru.user_id = ur.user_id and ur.is_active = 1
+    JOIN ref_user_role rur on ur.role_id = rur.role_id
+    WHERE (user_email = $1 or user_phone = $1) and user_status_id in (0,1)`,
     [email]
   );
   const user = rows[0];
@@ -78,7 +115,6 @@ export async function POST(req: Request) {
           { error: "Нэг удаагийн нууц үгийн хугацаа дууссан байна." },
           { status: 401 }
         );
-      console.log("user_id ", user.user_id);
       const token = crypto.randomUUID();
       const hash = crypto.createHash("sha256").update(token).digest("hex");
       await db.query(
@@ -138,12 +174,28 @@ export async function POST(req: Request) {
 
   const payload = buildJwtPayload({
     user: {
+      org_id: user.org_id,
+      org_register_no: user.org_register_no,
+      org_legal_name: user.org_legal_name,
+      org_phone: user.org_phone,
+      org_email: user.org_email,
+      org_address: user.org_address,
+      org_head_name: user.org_head_name,
+      org_head_phone: user.org_head_phone,
+      org_head_email: user.org_head_email,
       id: user.user_id,
+      user_level_id: user.user_level_id,
+      user_level_name: user.user_level_name,
       email: user.user_email,
       username: user.user_firstname,
-      avatar: user?.avatar,
+      user_phone: user.user_phone,
+      user_register_no: user.user_register_no,
+      role_label: user.role_label,
+      role_code: user.role_code,
+      role_text: user.role_text,
     },
-    activeRole: activeRole.role_label,
+    // activeRole: activeRole.role_label,
+    activeRole: user.level_name,
     roles: roles.map((r: any) => r.role_label),
     permissions,
   });
@@ -169,13 +221,17 @@ export async function POST(req: Request) {
 
   const res = NextResponse.json({
     success: true,
-    user: {
-      sub: user.user_id,
-      email: user.user_email,
-      activeRole: activeRole.role_label,
-      roles: roles.map((r: any) => r.role_label),
-      permissions,
-    },
+    // user: {
+    //   org_id: user.org_id,
+    //   org_register_no: user.org_register_no,
+    //   org_legal_name: user.org_legal_name,
+
+    //   sub: user.user_id,
+    //   email: user.user_email,
+    //   activeRole: activeRole.role_label,
+    //   roles: roles.map((r: any) => r.role_label),
+    //   permissions,
+    // },
   });
 
   res.cookies.set("access_token", accessToken, {

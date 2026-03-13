@@ -158,7 +158,6 @@ const AppHeader: React.FC = () => {
               </div>
             </form>
           </div> */}
-          {user?.activeRole}
         </div>
         <div
           className={`${

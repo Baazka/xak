@@ -79,7 +79,6 @@ export default function SignInForm() {
         setLoading(false);
         return;
       }
-      console.log(res.ok, "res.ok");
       // Амжилттай
       setAlert({
         show: true,
@@ -89,10 +88,8 @@ export default function SignInForm() {
       });
 
       const meRes = await fetch("/api/auth/me");
-      console.log(meRes, "meRes");
       const { user } = await meRes.json();
       setUser(user);
-      console.log(user, "user");
       if (user.roles.length > 1) {
         router.replace("/select-role");
       } else {
