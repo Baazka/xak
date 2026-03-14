@@ -59,7 +59,8 @@ export async function POST(req: Request) {
       ru.created_date,
       rur.role_label,
       rur.role_code,
-      rur.role_text
+      rur.role_text,
+      ur.role_id
     FROM reg_users_new ru
     JOIN reg_aud_org ao on ru.user_org_id = ao.org_id 
     JOIN ref_user_level ul on ru.user_level_id = ul.level_id

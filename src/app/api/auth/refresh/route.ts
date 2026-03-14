@@ -47,7 +47,46 @@ export async function POST() {
   }
 
   const { rows: users } = await db.query(
-    "SELECT id, email, username, avatar FROM reg_users WHERE id=$1",
+    `SELECT 
+      ao.org_id,
+      ao.org_register_no,
+      ao.org_legal_name,
+      ao.org_phone,
+      ao.org_email,
+      ao.org_address,
+      ao.org_head_name,
+      ao.org_head_phone,
+      ao.org_head_email,
+      ru.user_id, 
+      user_org_id, 
+      user_level_id, 
+	    ul.level_name,
+      user_code, 
+      user_regdate, 
+      user_email, 
+      user_phone, 
+      user_register_no, 
+      user_lastname, 
+      user_firstname, 
+      user_password, 
+      user_otp, 
+      user_status_id, 
+      pending_token_hash, 
+      pending_token_expire, 
+        reset_token_hash, 
+      reset_token_expire, 
+      ru.created_by, 
+      ru.created_date,
+      rur.role_label,
+      rur.role_code,
+      rur.role_text,
+      ur.role_id
+    FROM reg_users_new ru
+    JOIN reg_aud_org ao on ru.user_org_id = ao.org_id 
+    JOIN ref_user_level ul on ru.user_level_id = ul.level_id
+    JOIN reg_user_roles_new ur on ru.user_id = ur.user_id and ur.is_active = 1
+    JOIN ref_user_role rur on ur.role_id = rur.role_id 
+    WHERE user_id=$1`,
     [session.user_id]
   );
   const user = users[0];
@@ -55,19 +94,15 @@ export async function POST() {
   const { rows: roles } = await db.query(
     `
     SELECT r.id, r.code
-    FROM reg_user_roles ur
-    JOIN ref_user_roles r ON r.id = ur.role_id
+    FROM reg_user_roles_new ur
+    JOIN ref_user_role r ON r.id = ur.role_id
     WHERE ur.user_id = $1
     `,
     [user.id]
   );
 
-  if (!roles.length) {
-    return NextResponse.json({ error: "No roles" }, { status: 403 });
-  }
-
   const activeRoleCode = session.active_role;
-  const activeRole = roles.find((r) => r.code === activeRoleCode);
+  const activeRole = users.find((r) => r.level_name === activeRoleCode);
 
   if (!activeRole) {
     return NextResponse.json({ error: "Active role not found" }, { status: 403 });
@@ -80,7 +115,7 @@ export async function POST() {
     JOIN ref_user_permissions p ON p.id = rp.permission_id
     WHERE rp.role_id = $1
     `,
-    [activeRole.id]
+    [activeRole.role_id]
   );
 
   const permissions = perms.map((p: any) => p.code);
@@ -96,11 +131,18 @@ export async function POST() {
       org_head_name: user.org_head_name,
       org_head_phone: user.org_head_phone,
       org_head_email: user.org_head_email,
-      id: user.id,
-      email: user.email,
-      username: user.username,
+      id: user.user_id,
+      user_level_id: user.user_level_id,
+      user_level_name: user.user_level_name,
+      email: user.user_email,
+      username: user.user_firstname,
+      user_phone: user.user_phone,
+      user_register_no: user.user_register_no,
+      role_label: user.role_label,
+      role_code: user.role_code,
+      role_text: user.role_text,
     },
-    activeRole: activeRole.code,
+    activeRole: user.level_name,
     roles: roles.map((r: any) => r.code),
     permissions,
   });
