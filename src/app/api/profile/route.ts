@@ -14,7 +14,7 @@ export const PUT = withAuth(async (req, user) => {
         phone      = $4
     WHERE id = $5
     `,
-    [firstname, lastname, email, phone, user.sub]
+    [firstname, lastname, email, phone, user.id]
   );
 
   return NextResponse.json({ success: true });
