@@ -34,6 +34,10 @@ export default function UserProfileCard() {
   const { toast } = useToast();
   const [data, setData] = useState<User[]>([]);
   const [reloadKey, setReloadKey] = useState(0);
+  const [username, setUsername] = useState("");
+  const [reg_no, setReg_no] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -49,6 +53,10 @@ export default function UserProfileCard() {
 
         const json = await res.json();
         setData(json.data[0]);
+        setUsername(json.data[0].user_firstname);
+        setReg_no(json.data[0].user_register_no);
+        setPhone(json.data[0].user_phone);
+        setEmail(json.data[0].user_email);
       } catch (err: any) {
         if (err?.name === "AbortError") return;
         toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
@@ -60,10 +68,10 @@ export default function UserProfileCard() {
     return () => controller.abort();
   }, [reloadKey]);
 
-  const username = data?.user_firstname ?? "";
-  const reg_no = data?.user_register_no ?? "";
-  const email = data?.user_email ?? "";
-  const phone = data?.user_phone ?? "";
+  // setUsername(data.user_firstname);
+  // setReg_no(data.user_register_no);
+  // setPhone(data.user_phone);
+  // setEmail(data.user_email);
 
   // -------- Edit profile state
   const [form, setForm] = useState<ProfileForm>({
@@ -246,7 +254,7 @@ export default function UserProfileCard() {
             <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Овог нэр</p>
             <input
               className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
-              value={data?.user_firstname}
+              value={username}
               readOnly
             />
           </div>
@@ -257,7 +265,7 @@ export default function UserProfileCard() {
             </p>
             <input
               className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
-              value={data?.user_register_no ?? ""}
+              value={reg_no}
               readOnly
             />
           </div>
@@ -266,7 +274,7 @@ export default function UserProfileCard() {
             <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Утас</p>
             <input
               className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
-              value={data?.user_phone}
+              value={phone}
               readOnly
             />
           </div>
@@ -277,7 +285,7 @@ export default function UserProfileCard() {
             </p>
             <input
               className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
-              value={data?.user_email}
+              value={email}
               readOnly
             />
           </div>
