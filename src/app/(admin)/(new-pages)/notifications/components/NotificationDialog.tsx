@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Button from "@/components/ui/button/Button";
 
 type NotificationType = {
   type_id: number;
@@ -20,6 +21,11 @@ type TargetTypeItem = {
   type_id: number;
   type_name: string;
   type_code: string;
+};
+type OrgItem = {
+  org_id: number;
+  org_legal_name: string;
+  org_register_no?: string;
 };
 
 export default function NotificationDialog() {
@@ -33,6 +39,9 @@ export default function NotificationDialog() {
 
   const [notificationTypeId, setNotificationTypeId] = useState<number | "">("");
   const [targetTypeCode, setTargetTypeCode] = useState<string>("");
+
+  const [orgs, setOrgs] = useState<OrgItem[]>([]);
+  const [selectedOrgId, setSelectedOrgId] = useState<string>("");
 
   const [targetIds, setTargetIds] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -55,9 +64,11 @@ export default function NotificationDialog() {
 
         const notiTypes: NotificationType[] = data.notificationTypes ?? [];
         const trgTypes: TargetTypeItem[] = data.targetTypes ?? [];
+        const orgs: OrgItem[] = data.orgs ?? [];
 
         setNotificationTypes(notiTypes);
         setTargetTypes(trgTypes);
+        setOrgs(orgs);
 
         if (notiTypes.length > 0) {
           setNotificationTypeId(notiTypes[0].type_id);
@@ -65,6 +76,10 @@ export default function NotificationDialog() {
 
         if (trgTypes.length > 0) {
           setTargetTypeCode(trgTypes[0].type_code);
+        }
+
+        if (orgs.length > 0) {
+          setSelectedOrgId(orgs[0].org_id.toString());
         }
       } catch (error) {
         console.error(error);
@@ -104,6 +119,10 @@ export default function NotificationDialog() {
         target_type_code: targetTypeCode,
       };
 
+      if (targetTypeCode === "XAKADMIN") {
+        body.orgIds = ids;
+      }
+
       if (targetTypeCode === "USER") {
         body.userIds = ids;
       }
@@ -139,7 +158,9 @@ export default function NotificationDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="px-4 py-2 bg-black text-white rounded-lg">Шинэ мэдэгдэл</button>
+        <Button className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-brand-600">
+          Шинэ мэдэгдэл
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-lg z-[1000]">
@@ -189,7 +210,20 @@ export default function NotificationDialog() {
               </option>
             ))}
           </select>
-
+          {(targetTypeCode === "XAKADMIN" || targetTypeCode === "XAK") && (
+            <select
+              value={selectedOrgId}
+              onChange={(e) => setSelectedOrgId(e.target.value)}
+              className="w-full rounded-lg border px-3 py-2"
+            >
+              <option value="">Байгууллага сонгох</option>
+              {orgs.map((org) => (
+                <option key={org.org_id} value={org.org_id}>
+                  {org.org_legal_name}
+                </option>
+              ))}
+            </select>
+          )}
           {(targetTypeCode === "USER" || targetTypeCode === "ROLE") && (
             <input
               placeholder={
