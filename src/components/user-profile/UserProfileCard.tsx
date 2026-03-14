@@ -10,9 +10,18 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 
+type User = {
+  user_id: number;
+  user_firstname: string;
+  user_email: string;
+  user_phone: string;
+  user_register_no: string;
+  user_password: string;
+};
+
 type ProfileForm = {
-  firstname: string;
-  lastname: string;
+  username: string;
+  reg_no: string;
   email: string;
   phone: string;
 };
@@ -23,16 +32,43 @@ export default function UserProfileCard() {
 
   const { user, loading, refreshUser } = useAuth() as any;
   const { toast } = useToast();
+  const [data, setData] = useState<User[]>([]);
+  const [reloadKey, setReloadKey] = useState(0);
 
-  const firstname = user?.firstname ?? "";
-  const lastname = user?.lastname ?? "";
-  const email = user?.email ?? "";
-  const phone = user?.phone ?? "";
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const run = async () => {
+      try {
+        const res = await fetchWithAuth(`/api/profile`, { signal: controller.signal });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.message || `API error: ${res.status}`);
+        }
+
+        const json = await res.json();
+        setData(json.data[0]);
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+        toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
+      } finally {
+      }
+    };
+
+    run();
+    return () => controller.abort();
+  }, [reloadKey]);
+
+  const username = data?.user_firstname ?? "";
+  const reg_no = data?.user_register_no ?? "";
+  const email = data?.user_email ?? "";
+  const phone = data?.user_phone ?? "";
 
   // -------- Edit profile state
   const [form, setForm] = useState<ProfileForm>({
-    firstname: "",
-    lastname: "",
+    username: "",
+    reg_no: "",
     email: "",
     phone: "",
   });
@@ -42,14 +78,18 @@ export default function UserProfileCard() {
   useEffect(() => {
     if (!edit.isOpen || !user) return;
     setForm({
-      firstname,
-      lastname,
+      username,
+      reg_no,
       email,
       phone,
     });
     setSaveError(null);
     setSaveLoading(false);
   }, [edit.isOpen, user]); // eslint-disable-line
+
+  useEffect(() => {
+    useAuth;
+  }, [form]);
 
   const handleSaveProfile = async (e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -69,8 +109,8 @@ export default function UserProfileCard() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstname: form.firstname,
-          lastname: form.lastname,
+          username: form.username,
+          reg_no: form.reg_no,
           email: form.email,
           phone: form.phone,
         }),
@@ -81,8 +121,9 @@ export default function UserProfileCard() {
 
       // refresh auth user (UI sync)
       await refreshUser?.();
+      setReloadKey(reloadKey + 1);
 
-      toast("success", "Профайл шинэчлэгдлээ");
+      toast("success", "Хэрэглэгчийн мэдээлэл шинэчлэгдлээ");
       edit.closeModal();
     } catch (err: any) {
       const msg = err?.message || "Профайл хадгалахад алдаа гарлаа";
@@ -99,6 +140,11 @@ export default function UserProfileCard() {
   const [confirm, setConfirm] = useState("");
   const [pwdLoading, setPwdLoading] = useState(false);
   const [pwdError, setPwdError] = useState<string | null>(null);
+
+  const inputClass =
+    "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm " +
+    "focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 " +
+    "dark:border-gray-700 dark:bg-gray-900 dark:text-white";
 
   useEffect(() => {
     if (!pwd.isOpen) return;
@@ -157,11 +203,87 @@ export default function UserProfileCard() {
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div>
-        <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-          Хэрэглэгчийн мэдээлэл
-        </h4>
+        <div className="flex w-full flex-col gap-5 lg:w-auto lg:flex-row justify-between">
+          <div>
+            <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
+              Хэрэглэгчийн мэдээлэл
+            </h4>
+          </div>
+          {/* Actions */}
+          <div className="flex gap-3">
+            <button
+              onClick={pwd.openModal}
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 lg:inline-flex lg:w-auto"
+            >
+              Нууц үг солих
+            </button>
+            <button
+              onClick={edit.openModal}
+              className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+            >
+              <svg
+                className="fill-current"
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
+                  fill=""
+                />
+              </svg>
+              Засах
+            </button>
+          </div>
+        </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+          <div>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Овог нэр</p>
+            <input
+              className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
+              value={data?.user_firstname}
+              readOnly
+            />
+          </div>
+
+          <div>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+              Регистрын дугаар
+            </p>
+            <input
+              className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
+              value={data?.user_register_no ?? ""}
+              readOnly
+            />
+          </div>
+
+          <div>
+            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Утас</p>
+            <input
+              className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
+              value={data?.user_phone}
+              readOnly
+            />
+          </div>
+
+          <div>
+            <p className="rounded-2xl mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+              Мэйл хаяг
+            </p>
+            <input
+              className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
+              value={data?.user_email}
+              readOnly
+            />
+          </div>
+        </div>
+
+        {/* <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
           <div>
             <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
               First Name
@@ -191,88 +313,57 @@ export default function UserProfileCard() {
             <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Phone</p>
             <p className="text-sm font-medium text-gray-800 dark:text-white/90">{phone || "-"}</p>
           </div>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex w-full flex-col gap-2 lg:w-auto lg:flex-row">
-        <button
-          onClick={pwd.openModal}
-          className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 lg:inline-flex lg:w-auto"
-        >
-          Нууц үг солих
-        </button>
-        <button
-          onClick={edit.openModal}
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
-        >
-          <svg
-            className="fill-current"
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
-              fill=""
-            />
-          </svg>
-          Засах
-        </button>
+        </div> */}
       </div>
 
       {/* Edit profile modal */}
-      <Modal isOpen={edit.isOpen} onClose={edit.closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+      <Modal isOpen={edit.isOpen} onClose={edit.closeModal} className="max-w-[800px] m-1">
+        <div className="no-scrollbar relative w-full max-w-[800px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Personal Information
+              Хэрэглэгчийн мэдээлэл засах
             </h4>
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+            {/* <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
               Update your details to keep your profile up-to-date.
-            </p>
+            </p> */}
           </div>
 
           <form className="flex flex-col" onSubmit={(e) => e.preventDefault()}>
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <div className="col-span-2 lg:col-span-1">
-                  <Label>First Name</Label>
+                  <Label>Овог нэр</Label>
                   <Input
                     type="text"
-                    defaultValue={form.firstname}
-                    onChange={(e: any) => setForm((p) => ({ ...p, firstname: e.target.value }))}
+                    defaultValue={form.username}
+                    onChange={(e: any) => setForm((p) => ({ ...p, username: e.target.value }))}
                   />
                 </div>
 
                 <div className="col-span-2 lg:col-span-1">
-                  <Label>Last Name</Label>
+                  <Label>Регистрын дугаар</Label>
                   <Input
                     type="text"
-                    defaultValue={form.lastname}
-                    onChange={(e: any) => setForm((p) => ({ ...p, lastname: e.target.value }))}
+                    defaultValue={form.reg_no}
+                    onChange={(e: any) => setForm((p) => ({ ...p, reg_no: e.target.value }))}
                   />
                 </div>
 
                 <div className="col-span-2 lg:col-span-1">
-                  <Label>Email Address</Label>
-                  <Input
-                    type="text"
-                    defaultValue={form.email}
-                    onChange={(e: any) => setForm((p) => ({ ...p, email: e.target.value }))}
-                  />
-                </div>
-
-                <div className="col-span-2 lg:col-span-1">
-                  <Label>Phone</Label>
+                  <Label>Утас</Label>
                   <Input
                     type="text"
                     defaultValue={form.phone}
                     onChange={(e: any) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                  />
+                </div>
+
+                <div className="col-span-2 lg:col-span-1">
+                  <Label>Мэйл хаяг</Label>
+                  <Input
+                    type="text"
+                    defaultValue={form.email}
+                    onChange={(e: any) => setForm((p) => ({ ...p, email: e.target.value }))}
                   />
                 </div>
 
@@ -286,10 +377,10 @@ export default function UserProfileCard() {
 
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
               <Button size="sm" variant="outline" onClick={edit.closeModal}>
-                Close
+                Хаах
               </Button>
               <Button size="sm" onClick={handleSaveProfile} disabled={saveLoading}>
-                {saveLoading ? "Saving..." : "Save Changes"}
+                {saveLoading ? "Хадгалж байна..." : "Хадгалах"}
               </Button>
             </div>
           </form>

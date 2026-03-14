@@ -18,8 +18,8 @@ export default function Profile() {
         </h3>
         <div className="space-y-6">
           {/* <UserMetaCard /> */}
-          <UserOrgCard />
           <UserProfileCard />
+          <UserOrgCard />
         </div>
       </div>
     </div>

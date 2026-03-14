@@ -3,6 +3,7 @@ export type User = {
   user_firstname: string;
   user_email: string;
   user_phone: string;
+  user_register_no: string;
   user_password: string;
 };
 
