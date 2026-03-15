@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import Button from "@/components/ui/button/Button";
 import QuillEditor from "@/components/editor/QuillEditor";
+import OrgMultiSelect from "./OrgMultiSelect";
+import UserMultiSelect from "./UserMultiSelect";
 
 type NotificationType = {
   type_id: number;
@@ -26,6 +28,15 @@ type TargetTypeItem = {
 
 type OrgItem = {
   org_id: number;
+  org_legal_name: string;
+  org_register_no?: string;
+};
+
+type UserItem = {
+  user_id: number;
+  user_firstname: string;
+  user_phone: string;
+  user_email: string;
   org_legal_name: string;
   org_register_no?: string;
 };
@@ -50,12 +61,14 @@ export default function NotificationDialog() {
   const [targetTypeCode, setTargetTypeCode] = useState("");
 
   const [orgs, setOrgs] = useState<OrgItem[]>([]);
-  const [selectedOrgId, setSelectedOrgId] = useState("");
+  const [selectedOrgIds, setSelectedOrgIds] = useState<number[]>([]);
+
+  const [users, setUsers] = useState<UserItem[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
 
   const [roles, setRoles] = useState<RoleItem[]>([]);
   const [selectedRoleId, setSelectedRoleId] = useState("");
 
-  const [targetIds, setTargetIds] = useState("");
   const [loading, setLoading] = useState(false);
   const [metaLoading, setMetaLoading] = useState(false);
 
@@ -73,20 +86,22 @@ export default function NotificationDialog() {
         }
 
         const data = await res.json();
-
         const notiTypes: NotificationType[] = data.notificationTypes ?? [];
         const trgTypes: TargetTypeItem[] = data.targetTypes ?? [];
         const orgList: OrgItem[] = data.orgs ?? [];
+        const userList: UserItem[] = data.users ?? [];
         const roleList: RoleItem[] = data.roles ?? [];
 
         setNotificationTypes(notiTypes);
         setTargetTypes(trgTypes);
         setOrgs(orgList);
+        setUsers(userList);
         setRoles(roleList);
 
         setNotificationTypeId(notiTypes[0]?.type_id ?? "");
         setTargetTypeCode(trgTypes[0]?.type_code ?? "");
-        setSelectedOrgId(orgList[0]?.org_id?.toString() ?? "");
+        setSelectedOrgIds([]);
+        setSelectedUserIds([]);
         setSelectedRoleId(roleList[0]?.role_id?.toString() ?? "");
       } catch (error) {
         console.error(error);
@@ -103,18 +118,42 @@ export default function NotificationDialog() {
     if (!open) {
       setTitle("");
       setContent("");
-      setTargetIds("");
+      setSelectedOrgIds([]);
+      setSelectedUserIds([]);
+      setSelectedRoleId("");
+      return;
     }
-  }, [open]);
+
+    if (targetTypeCode === "ROLE" && roles.length > 0 && !selectedRoleId) {
+      setSelectedRoleId(String(roles[0].role_id));
+    }
+  }, [open, targetTypeCode, roles, selectedRoleId]);
+
+  useEffect(() => {
+    setSelectedOrgIds([]);
+    setSelectedUserIds([]);
+    setSelectedRoleId("");
+
+    if (targetTypeCode === "ROLE" && roles.length > 0) {
+      setSelectedRoleId(String(roles[0].role_id));
+    }
+  }, [targetTypeCode, roles]);
 
   const handleSubmit = async () => {
-    if (!title.trim() || !content.trim() || !notificationTypeId || !targetTypeCode) {
+    const plainContent = content.replace(/<[^>]*>/g, "").trim();
+
+    if (!title.trim() || !plainContent || !notificationTypeId || !targetTypeCode) {
       alert("Шаардлагатай талбаруудыг бөглөнө үү");
       return;
     }
 
-    if (targetTypeCode === "XAK" && !selectedOrgId) {
+    if (targetTypeCode === "XAK" && selectedOrgIds.length === 0) {
       alert("Байгууллага сонгоно уу");
+      return;
+    }
+
+    if (targetTypeCode === "USER" && selectedUserIds.length === 0) {
+      alert("Хэрэглэгч сонгоно уу");
       return;
     }
 
@@ -123,19 +162,9 @@ export default function NotificationDialog() {
       return;
     }
 
-    if (targetTypeCode === "USER" && !targetIds.trim()) {
-      alert("Хэрэглэгчийн ID оруулна уу");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const parsedUserIds = targetIds
-        .split(",")
-        .map((x) => Number(x.trim()))
-        .filter((x) => !Number.isNaN(x) && x > 0);
-
       const body: any = {
         noti_type_id: notificationTypeId,
         title: title.trim(),
@@ -144,7 +173,7 @@ export default function NotificationDialog() {
       };
 
       if (targetTypeCode === "XAK") {
-        body.orgIds = [Number(selectedOrgId)];
+        body.orgIds = selectedOrgIds;
       }
 
       if (targetTypeCode === "ROLE") {
@@ -152,7 +181,7 @@ export default function NotificationDialog() {
       }
 
       if (targetTypeCode === "USER") {
-        body.userIds = parsedUserIds;
+        body.userIds = selectedUserIds;
       }
 
       const res = await fetchWithAuth("/api/notifications/create", {
@@ -184,115 +213,115 @@ export default function NotificationDialog() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="z-[1000] max-w-lg">
+      <DialogContent className="z-[1000] !w-[90vw] !max-w-[90vw]">
         <DialogHeader>
           <DialogTitle>Мэдэгдэл үүсгэх</DialogTitle>
         </DialogHeader>
 
-        <div className="mt-4 space-y-4">
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">Гарчиг</label>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border px-3 py-2"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">Агуулга</label>
-            <QuillEditor value={content} onChange={setContent} />
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">Мэдэгдлийн төрөл</label>
-            <select
-              value={notificationTypeId}
-              onChange={(e) => setNotificationTypeId(e.target.value ? Number(e.target.value) : "")}
-              className="w-full rounded-lg border px-3 py-2"
-              disabled={metaLoading}
-            >
-              <option value="">Сонгох</option>
-              {notificationTypes.map((item) => (
-                <option key={item.type_id} value={item.type_id}>
-                  {item.type_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">Хэрэглэгчийн төрөл</label>
-            <select
-              value={targetTypeCode}
-              onChange={(e) => setTargetTypeCode(e.target.value)}
-              className="w-full rounded-lg border px-3 py-2"
-              disabled={metaLoading}
-            >
-              <option value="">Сонгох</option>
-              {targetTypes.map((item) => (
-                <option key={item.type_id} value={item.type_code}>
-                  {item.type_name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {targetTypeCode === "XAK" && (
+        <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="space-y-4">
             <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700">Байгууллага</label>
-              <select
-                value={selectedOrgId}
-                onChange={(e) => setSelectedOrgId(e.target.value)}
-                className="w-full rounded-lg border px-3 py-2"
-              >
-                <option value="">Сонгох</option>
-                {orgs.map((org) => (
-                  <option key={org.org_id} value={org.org_id}>
-                    {org.org_legal_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {targetTypeCode === "ROLE" && (
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700">Эрх</label>
-              <select
-                value={selectedRoleId}
-                onChange={(e) => setSelectedRoleId(e.target.value)}
-                className="w-full rounded-lg border px-3 py-2"
-              >
-                <option value="">Сонгох</option>
-                {roles.map((role) => (
-                  <option key={role.role_id} value={role.role_id}>
-                    {role.role_text || role.role_label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {targetTypeCode === "USER" && (
-            <div className="space-y-1">
-              <label className="block text-sm font-medium text-gray-700">Хэрэглэгчийн ID</label>
+              <label className="block text-sm font-medium text-gray-700">Гарчиг</label>
               <input
-                value={targetIds}
-                onChange={(e) => setTargetIds(e.target.value)}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 className="w-full rounded-lg border px-3 py-2"
               />
-              <p className="text-xs text-gray-500">Жишээ: 1,2,3</p>
             </div>
-          )}
 
-          <button
-            onClick={handleSubmit}
-            disabled={loading || metaLoading}
-            className="w-full rounded-lg bg-black py-2 text-white disabled:opacity-60"
-          >
-            {loading ? "Хадгалж байна..." : "Хадгалах"}
-          </button>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">Агуулга</label>
+              <QuillEditor value={content} onChange={setContent} />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">Мэдэгдлийн төрөл</label>
+              <select
+                value={notificationTypeId}
+                onChange={(e) =>
+                  setNotificationTypeId(e.target.value ? Number(e.target.value) : "")
+                }
+                className="w-full rounded-lg border px-3 py-2"
+                disabled={metaLoading}
+              >
+                <option value="">Сонгох</option>
+                {notificationTypes.map((item) => (
+                  <option key={item.type_id} value={item.type_id}>
+                    {item.type_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">Хэрэглэгчийн төрөл</label>
+              <select
+                value={targetTypeCode}
+                onChange={(e) => setTargetTypeCode(e.target.value)}
+                className="w-full rounded-lg border px-3 py-2"
+                disabled={metaLoading}
+              >
+                <option value="">Сонгох</option>
+                {targetTypes.map((item) => (
+                  <option key={item.type_id} value={item.type_code}>
+                    {item.type_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {targetTypeCode === "XAK" && (
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Байгууллага</label>
+                <OrgMultiSelect
+                  orgs={orgs}
+                  value={selectedOrgIds}
+                  onChange={setSelectedOrgIds}
+                  disabled={metaLoading}
+                />
+              </div>
+            )}
+
+            {targetTypeCode === "ROLE" && (
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Эрх</label>
+                <select
+                  value={selectedRoleId}
+                  onChange={(e) => setSelectedRoleId(e.target.value)}
+                  className="w-full rounded-lg border px-3 py-2"
+                >
+                  <option value="">Сонгох</option>
+                  {roles.map((role) => (
+                    <option key={role.role_id} value={role.role_id}>
+                      {role.role_text || role.role_label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {targetTypeCode === "USER" && (
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Хэрэглэгч</label>
+                <UserMultiSelect
+                  users={users}
+                  value={selectedUserIds}
+                  onChange={setSelectedUserIds}
+                  disabled={metaLoading}
+                />
+              </div>
+            )}
+
+            <button
+              onClick={handleSubmit}
+              disabled={loading || metaLoading}
+              className="w-full rounded-lg bg-black py-2 text-white disabled:opacity-60"
+            >
+              {loading ? "Хадгалж байна..." : "Хадгалах"}
+            </button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
