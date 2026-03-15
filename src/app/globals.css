@@ -1035,3 +1035,23 @@ pre[class*="language-"].line-numbers {
     @apply bg-background text-foreground;
   }
 }
+/* Quill Editor */
+.ql-toolbar.ql-snow {
+  border: 0 !important;
+  border-bottom: 1px solid rgb(229 231 235) !important;
+}
+
+.ql-container.ql-snow {
+  border: 0 !important;
+}
+
+.ql-editor {
+  min-height: 180px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ql-editor.ql-blank::before {
+  font-style: normal !important;
+  color: rgb(156 163 175) !important;
+}

@@ -12,6 +12,7 @@ type CreateBody = {
   target_type_code?: TargetTypeCode;
   userIds?: number[];
   roleIds?: number[];
+  orgIds?: number[];
 };
 
 export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
@@ -48,6 +49,9 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const roleIds = Array.isArray(body?.roleIds)
     ? body!.roleIds.map(Number).filter((x) => Number.isInteger(x) && x > 0)
+    : [];
+  const orgIds = Array.isArray(body?.orgIds)
+    ? body!.orgIds.map(Number).filter((x) => Number.isInteger(x) && x > 0)
     : [];
 
   if (targetTypeCode === "USER" && userIds.length === 0) {
@@ -124,8 +128,8 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       const roleUsers = await client.query(
         `
         SELECT DISTINCT ur.user_id, ur.role_id
-        FROM public.user_role ur
-        WHERE ur.role_id = ANY($1::int[])
+        FROM reg_user_roles_new ur
+        WHERE ur.is_active = 1 and ur.role_id = ANY($1::int[])
         `,
         [roleIds]
       );
@@ -148,8 +152,8 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       const allUsers = await client.query(
         `
         SELECT u.id AS user_id
-        FROM public.reg_users u
-        WHERE u.status = 1
+        FROM reg_users_new u
+        WHERE u.user_status_id = 1
         `
       );
 
@@ -166,9 +170,9 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       const admins = await client.query(
         `
         SELECT DISTINCT ur.user_id, ur.role_id
-        FROM public.user_role ur
-        JOIN public.ref_role rr ON rr.id = ur.role_id
-        WHERE UPPER(rr.code) = 'XAKADMIN'
+        FROM reg_user_roles_new ur
+        JOIN ref_user_role rur ON rur.role_id = ur.role_id
+        WHERE UPPER(rur.code) = 'XAKADMIN' and ur.is_active = 1
         `
       );
 
@@ -190,9 +194,10 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       const xakUsers = await client.query(
         `
         SELECT DISTINCT u.id AS user_id
-        FROM public.reg_users u
-        WHERE u.org_id IS NOT NULL
-        `
+        FROM reg_users_new ur
+        WHERE ur.org_id = ANY($1::int[]) and ur.user_status_id = 1
+        `,
+        [orgIds]
       );
 
       recipientUserIds = [

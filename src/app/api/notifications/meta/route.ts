@@ -4,15 +4,15 @@ import db from "@/lib/db";
 
 export async function GET() {
   try {
-    const [notiTypeResult, targetTypeResult, orgsRes] = await Promise.all([
+    const [notiTypeResult, targetTypeResult, orgsRes, rolesRes] = await Promise.all([
       db.query(`
         SELECT type_id, type_name, type_description
-        FROM public.sys_noti_type
+        FROM sys_noti_type
         ORDER BY type_id
       `),
       db.query(`
         SELECT type_id, type_name, type_code
-        FROM public.sys_target_type
+        FROM sys_target_type
         ORDER BY type_id
       `),
       db.query(`
@@ -21,12 +21,18 @@ export async function GET() {
         WHERE ORG_STATUS = 'ACTIVE'
         ORDER BY org_legal_name
       `),
+      db.query(`
+        SELECT role_id, role_label, role_code, role_text FROM ref_user_role
+        WHERE role_level = 2
+        ORDER BY role_id ASC 
+      `),
     ]);
 
     return NextResponse.json({
       notificationTypes: notiTypeResult.rows,
       targetTypes: targetTypeResult.rows,
       orgs: orgsRes.rows,
+      roles: rolesRes.rows,
     });
   } catch (error) {
     console.error("GET /api/notifications/meta error:", error);

@@ -47,16 +47,17 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       n.noti_date AS date,
       n.noti_title AS title,
       n.noti_content AS content,
-      t.target_is_read AS is_read
+      tu.is_read
     FROM sys_noti_target  t
     JOIN sys_notification n ON n.id = t.target_noti_id
+    JOIN sys_noti_target_user tu ON tu.target_id = t.target_id
     WHERE
       (
-        t.target_user_id = $1
+        tu.user_id = $1
         OR (t.target_org_id = $2)
         OR (t.target_role_id = ANY($3::int[]))
       )
-      AND ($4::boolean = false OR t.target_is_read = 0)
+      AND ($4::boolean = false OR tu.is_read = 0)
     ORDER BY n.noti_date DESC
     LIMIT $5 OFFSET $6
     `,
@@ -68,13 +69,14 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     `
     SELECT COUNT(*)::int AS unread_count
     FROM sys_noti_target  t
+    JOIN sys_noti_target_user tu ON tu.target_id = t.target_id
     WHERE
       (
-        t.target_user_id = $1
+        tu.user_id = $1
         OR (t.target_org_id = $2)
         OR (t.target_role_id = ANY($3::int[]))
       )
-      AND t.target_is_read = 0
+      AND tu.is_read = 0
     `,
     [userId, orgIdSafe, roleIdsSafe]
   );

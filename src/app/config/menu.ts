@@ -98,11 +98,11 @@ export const MENU_CONFIG: MenuItem[] = [
     roles: ["ADMIN", "HELPDESK", "SUPERUSER"],
   },
   {
-    key: "users",
+    key: "invoices",
     icon: React.createElement(TableIcon),
     name: "Төлбөр",
     section: "main",
-    path: "/user",
+    path: "/invoices",
     //permissions: ["dashboard.read"],
     roles: ["ADMIN", "HELPDESK"],
   },
