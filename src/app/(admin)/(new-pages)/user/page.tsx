@@ -37,6 +37,7 @@ export default function User() {
   const [listLoading, setListLoading] = useState(false);
   const [deleteLoadingId, setDeleteLoadingId] = useState<number | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [isAdmin, setisAdmin] = useState(false);
 
   const [page, setPage] = useState(1);
   const [pageAdmin, setPageAdmin] = useState(1);
@@ -86,6 +87,9 @@ export default function User() {
         const json = await res.json();
         setData(json.data);
         setTotal(json.total);
+        if (json.data.user_level_id < 3) {
+          setisAdmin(true);
+        }
       } catch (err: any) {
         if (err?.name === "AbortError") return;
         toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
@@ -133,6 +137,10 @@ export default function User() {
     user_id: number;
     user_firstname: string;
     user_email: string;
+    user_register_no: string;
+    user_phone: string;
+    role_id: number;
+    role_text: string;
   } | null>(null);
 
   //  New create
@@ -149,9 +157,13 @@ export default function User() {
 
     setDialogMode("edit");
     setSelectedUser({
-      user_id: u.user_id,
+      user_id: Number(u.user_id),
       user_firstname: u.user_firstname,
       user_email: u.user_email,
+      user_register_no: u.user_register_no,
+      user_phone: u.user_phone,
+      role_id: u.role_id,
+      role_text: u.role_text,
     });
     setOpen(true);
   };

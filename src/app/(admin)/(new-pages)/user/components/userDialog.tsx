@@ -9,7 +9,16 @@ type Props = {
   onOpenChange: (v: boolean) => void;
 
   mode: "create" | "edit";
-  initialUser?: Pick<User, "user_id" | "user_firstname" | "user_email"> | null;
+  initialUser?: Pick<
+    User,
+    | "user_id"
+    | "user_firstname"
+    | "user_email"
+    | "user_register_no"
+    | "user_phone"
+    | "role_id"
+    | "role_text"
+  > | null;
 
   onSaved?: () => void;
 };
@@ -20,9 +29,12 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
   // const [username, setUsername] = React.useState("");
   // const [email, setEmail] = React.useState("");
   // const [password, setPassword] = React.useState("");
+  const [regno, setRegno] = React.useState("");
   const [user_firstname, setUser_firstname] = React.useState("");
   const [user_email, setUser_email] = React.useState("");
+  const [user_phone, setUser_phone] = React.useState("");
   const [user_password, setUser_password] = React.useState("");
+  const [roleId, setRoleId] = React.useState("");
 
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -31,6 +43,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
     if (!open) return;
 
     if (isEdit && initialUser) {
+      setRegno(initialUser.user_register_no ?? "");
       setUser_firstname(initialUser.user_firstname ?? "");
       setUser_email(initialUser.user_email ?? "");
       setUser_password("");
