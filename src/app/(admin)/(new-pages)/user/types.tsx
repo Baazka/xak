@@ -1,4 +1,6 @@
 export type User = {
+  role_id: number;
+  role_text: string;
   user_id: number;
   user_firstname: string;
   user_email: string;
@@ -8,6 +10,7 @@ export type User = {
 };
 
 export type UserForAdmin = {
+  role_text: string;
   org_id: number;
   org_register_no: string;
   org_legal_name: string;

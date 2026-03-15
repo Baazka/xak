@@ -26,6 +26,9 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const offset = (page - 1) * limit;
 
   let whereClause = "WHERE user_status_id != 2";
+  if (user.user_level_id > 2) {
+    whereClause += ` AND USER_ORG_ID = ${user.org_id} `;
+  }
   const params: any[] = [];
 
   if (search) {
@@ -34,8 +37,27 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   }
 
   const dataSql = `
-    SELECT user_id, user_register_no, user_firstname, user_email, user_phone, user_regdate, user_status_id
-    FROM reg_users_new
+    SELECT 
+      ru.user_id, 
+      ru.user_register_no, 
+      ru.user_firstname, 
+      ru.user_email, 
+      ru.user_phone, 
+      to_char(ru.user_regdate, 'YYYY.MM.DD') as user_regdate, 
+      ru.user_status_id,
+      rur.role_id,
+      rur.role_label,
+      rur.role_code,
+      rur.role_text,
+      ao.org_id,
+      ao.org_register_no,
+      ao.org_legal_name,
+      ao.org_phone,
+      ao.org_email
+    FROM reg_users_new ru
+    JOIN reg_aud_org ao on ru.user_org_id = ao.org_id
+    JOIN reg_user_roles_new ur on ru.user_id = ur.user_id and ur.is_active = 1
+    JOIN ref_user_role rur on ur.role_id = rur.role_id 
     ${whereClause}
     ORDER BY ${sortBy} ${sortOrder}
     LIMIT $${params.length + 1}
