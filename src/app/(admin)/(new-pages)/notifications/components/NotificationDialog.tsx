@@ -177,7 +177,7 @@ export default function NotificationDialog() {
       }
 
       if (targetTypeCode === "ROLE") {
-        body.roleIds = [Number(selectedRoleId)];
+        body.roleId = Number(selectedRoleId);
       }
 
       if (targetTypeCode === "USER") {
