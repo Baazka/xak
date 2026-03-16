@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import NotificationItem from "@/components/notification/NotificationItem";
-import NotificationDialog from "./components/NotificationDialog";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 
 import { Button } from "@/components/ui/button";
@@ -100,8 +99,6 @@ export default function NotificationsPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <NotificationDialog />
-
             <Button variant="outline" onClick={() => setUnreadOnly((v) => !v)}>
               {unreadOnly ? "Бүх мэдэгдэл" : "Уншаагүй мэдэгдэл"}
             </Button>

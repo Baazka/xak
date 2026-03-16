@@ -49,7 +49,11 @@ type RoleItem = {
   role_text: string;
 };
 
-export default function NotificationDialog() {
+type NotificationDialogProps = {
+  onCreated?: () => void;
+};
+
+export default function NotificationDialog({ onCreated }: NotificationDialogProps) {
   const toast = useToast();
 
   const [open, setOpen] = useState(false);
