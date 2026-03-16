@@ -1,15 +1,18 @@
 // src/app/api/users/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { withAuth } from "@/lib/withAuth";
 import db from "@/lib/db";
 import { sendOtpEmail } from "@/lib/mailer";
 import bcrypt from "bcryptjs";
+import { JwtPayload } from "@/lib/jwtPayload";
 
 const genOtp6 = () => String(Math.floor(100000 + Math.random() * 900000));
 const hashOtp = (otp: string) => crypto.createHash("sha256").update(otp).digest("hex");
 
-export async function POST(req: Request) {
+export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const body = await req.json().catch(() => null);
+  const createdUser = user.id;
   const roleId = Number(body?.role_id ?? 2);
   const email = String(body?.email ?? "")
     .trim()
@@ -32,23 +35,23 @@ export async function POST(req: Request) {
     await client.query("BEGIN");
 
     // reg_users insert
-    const userRes = await client.query(
-      `INSERT INTO reg_users (email, username, status)
-       VALUES ($1, $2, 0)
-       ON CONFLICT (email) DO UPDATE
-         SET username = COALESCE(EXCLUDED.username, reg_users.username)
-       RETURNING id, email, status`,
-      [email, username]
-    );
-    const user = userRes.rows[0];
+    // const userRes = await client.query(
+    //   `INSERT INTO reg_users (email, username, status)
+    //    VALUES ($1, $2, 0)
+    //    ON CONFLICT (email) DO UPDATE
+    //      SET username = COALESCE(EXCLUDED.username, reg_users.username)
+    //    RETURNING id, email, status`,
+    //   [email, username]
+    // );
+    // const user = userRes.rows[0];
 
-    if (user.status === 2) {
-      await client.query("ROLLBACK");
-      return NextResponse.json({ message: "Хэрэглэгч inactive байна" }, { status: 400 });
-    }
+    // if (user.status === 2) {
+    //   await client.query("ROLLBACK");
+    //   return NextResponse.json({ message: "Хэрэглэгч inactive байна" }, { status: 400 });
+    // }
 
     // reg_user_roles – 1:1 (code-level)
-    await client.query(`DELETE FROM reg_user_roles WHERE user_id = $1`, [user.id]);
+    // await client.query(`DELETE FROM reg_user_roles WHERE user_id = $1`, [user.id]);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //check tuhain org-iin xak_admin user active bga eseh
@@ -74,7 +77,7 @@ export async function POST(req: Request) {
     // // reg_users_new insert
     const userResNew = await client.query(
       `INSERT INTO reg_users_new (user_org_id, user_level_id, user_regdate, user_email, user_phone, user_firstname, user_otp, pending_token_hash, pending_token_expire, user_password, user_status_id, created_by, created_date)
-       VALUES ($1, 3, current_timestamp, $2, $3, $4, $5, $6, current_timestamp + ($7 || ' minutes')::interval, 'pending', 0, 999, current_timestamp)
+       VALUES ($1, 3, current_timestamp, $2, $3, $4, $5, $6, current_timestamp + ($7 || ' minutes')::interval, 'pending', 0, $8, current_timestamp)
        RETURNING user_id`,
       [
         org_id,
@@ -84,6 +87,7 @@ export async function POST(req: Request) {
         otp,
         hashpw,
         String(expiresMinutes),
+        createdUser,
       ]
     );
     const userNew = userResNew.rows[0];
@@ -91,8 +95,8 @@ export async function POST(req: Request) {
     // // reg_user_roles_new insert
     await client.query(
       `INSERT INTO reg_user_roles_new (user_id, role_id, is_active, created_by, created_date)
-        VALUES ($1, 3, 1, 999, current_timestamp)`,
-      [userNew.user_id]
+        VALUES ($1, 3, 1, $2, current_timestamp)`,
+      [userNew.user_id, createdUser]
     );
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,4 +140,4 @@ export async function POST(req: Request) {
   } finally {
     client.release();
   }
-}
+});

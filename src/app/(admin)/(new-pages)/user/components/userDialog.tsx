@@ -3,6 +3,7 @@
 import * as React from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import type { User } from "../types";
+import { M_PLUS_1 } from "next/font/google";
 
 type Props = {
   open: boolean;
@@ -23,6 +24,13 @@ type Props = {
   onSaved?: () => void;
 };
 
+type userRoleType = {
+  role_id: number;
+  role_label: string;
+  role_code: string;
+  role_text: string;
+};
+
 export default function UserDialog({ open, onOpenChange, mode, initialUser, onSaved }: Props) {
   const isEdit = mode === "edit";
 
@@ -33,11 +41,42 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
   const [user_firstname, setUser_firstname] = React.useState("");
   const [user_email, setUser_email] = React.useState("");
   const [user_phone, setUser_phone] = React.useState("");
-  const [user_password, setUser_password] = React.useState("");
+  const [user_id, setUserId] = React.useState(0);
   const [roleId, setRoleId] = React.useState("");
+
+  const [RoleList, setRoleList] = React.useState<userRoleType[]>([]);
+  const [userRoleId, setUserRoleId] = React.useState<number | "">("");
 
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [metaLoading, setMetaLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    const loadMeta = async () => {
+      try {
+        setMetaLoading(true);
+
+        const res = await fetchWithAuth("/api/users/meta", {
+          method: "GET",
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to load metadata");
+        }
+
+        const data = await res.json();
+
+        const roles: userRoleType[] = data.userRole ?? [];
+        setRoleList(roles);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setMetaLoading(false);
+      }
+    };
+
+    loadMeta();
+  }, []);
 
   React.useEffect(() => {
     if (!open) return;
@@ -46,11 +85,14 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
       setRegno(initialUser.user_register_no ?? "");
       setUser_firstname(initialUser.user_firstname ?? "");
       setUser_email(initialUser.user_email ?? "");
-      setUser_password("");
+      setUser_phone(initialUser.user_phone ?? "");
+      setUserRoleId(initialUser.role_id ?? "");
+      setUserId(initialUser.user_id ?? "");
     } else {
+      setRegno("");
       setUser_firstname("");
       setUser_email("");
-      setUser_password("");
+      setUser_phone("");
     }
     setError(null);
     setLoading(false);
@@ -62,15 +104,11 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
 
     setError(null);
 
-    const u = user_firstname.trim();
+    const uname = user_firstname.trim();
     const em = user_email.trim().toLowerCase();
 
-    if (!u || !em) {
+    if (!uname || !em) {
       setError("Нэр, имэйлээ бөглөнө үү.");
-      return;
-    }
-    if (!isEdit && !user_password) {
-      setError("Нууц үгээ бөглөнө үү.");
       return;
     }
 
@@ -80,6 +118,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
 
       if (isEdit) {
         const id = initialUser?.user_id;
+        const isRoleChange = userRoleId === initialUser?.role_id ? 0 : 1;
         if (!id) {
           setError("Засах хэрэглэгч сонгогдоогүй байна.");
           return;
@@ -89,14 +128,27 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
         res = await fetchWithAuth(`/api/users/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_firstname: u, user_email: em }),
+          body: JSON.stringify({
+            user_register_no: regno,
+            user_firstname: uname,
+            user_phone: user_phone,
+            user_email: em,
+            role_id: userRoleId,
+            is_role_change: isRoleChange,
+          }),
         });
       } else {
         // ✅ CREATE → POST /api/users
         res = await fetchWithAuth("/api/users", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_firstname: u, user_email: em, user_password }),
+          body: JSON.stringify({
+            user_register_no: regno,
+            user_firstname: uname,
+            user_phone: user_phone,
+            user_email: em,
+            role_id: userRoleId,
+          }),
         });
       }
 
@@ -127,7 +179,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{isEdit ? "Хэрэглэгч засах" : "Шинэ хэрэглэгч"}</h2>
+          <h2 className="text-lg font-semibold">{isEdit ? "Мэдээлэл засах" : "Шинэ хэрэглэгч"}</h2>
 
           <button
             className="rounded px-2 py-1 hover:bg-gray-100"
@@ -140,18 +192,38 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
 
         <form onSubmit={onSubmit} className="space-y-3">
           <div>
-            <label className="mb-1 block text-sm">Нэр</label>
+            <label className="mb-1 block text-sm">Овог нэр:</label>
             <input
               className="w-full rounded border px-3 py-2"
               value={user_firstname}
               onChange={(e) => setUser_firstname(e.target.value)}
-              placeholder="username"
+              placeholder="хэрэглэгчийн нэр"
               autoFocus
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm">Имэйл</label>
+            <label className="mb-1 block text-sm">Регистрийн дугаар:</label>
+            <input
+              className="w-full rounded border px-3 py-2"
+              value={regno}
+              onChange={(e) => setRegno(e.target.value)}
+              placeholder="РД:"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm">Утас:</label>
+            <input
+              className="w-full rounded border px-3 py-2"
+              value={user_phone}
+              onChange={(e) => setUser_phone(e.target.value)}
+              placeholder="99998888"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm">Мэйл хаяг:</label>
             <input
               className="w-full rounded border px-3 py-2"
               value={user_email}
@@ -160,22 +232,21 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
             />
           </div>
 
-          {!isEdit && (
-            <div>
-              <label className="mb-1 block text-sm">Нууц үг</label>
-              <input
-                className="w-full rounded border px-3 py-2"
-                value={user_password}
-                onChange={(e) => setUser_password(e.target.value)}
-                placeholder="********"
-                type="password"
-              />
-            </div>
-          )}
-
-          {error ? (
-            <div className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>
-          ) : null}
+          <div>
+            <label className="mb-1 block text-sm">Хэрэглэгчийн эрхийн түвшин:</label>
+            <select
+              value={userRoleId}
+              onChange={(e) => setUserRoleId(Number(e.target.value))}
+              className="w-full rounded-lg border px-3 py-2"
+            >
+              <option value="">Сонгоно уу</option>
+              {RoleList.map((rl) => (
+                <option key={rl.role_code} value={rl.role_id}>
+                  {rl.role_text}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div className="flex justify-end gap-2 pt-2">
             <button

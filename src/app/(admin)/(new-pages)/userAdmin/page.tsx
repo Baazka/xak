@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/tables/DataTable";
-import type { User } from "./types";
-import { columns } from "./columns";
+import type { UserForAdmin } from "./types";
+import { columnsAdmin } from "./columns";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { SortingState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ import { hasPermission } from "@/lib/permission";
 import { useToast } from "@/context/ToastContext";
 import SkeletonTable from "@/components/tables/SkeletonTable";
 import { downloadExcel } from "@/lib/downloadExcel";
-import UserDialog from "./components/userDialog";
 
 export default function User() {
   const router = useRouter();
@@ -28,7 +27,7 @@ export default function User() {
   // const canUpdate = hasPermission(user?.permissions, ["user.update"]);
   // const canDelete = hasPermission(user?.permissions, ["user.delete"]);
 
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<UserForAdmin[]>([]);
   const [total, setTotal] = useState(0);
 
   const [listLoading, setListLoading] = useState(false);
@@ -44,12 +43,9 @@ export default function User() {
   const [search, setSearch] = useState("");
 
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [reloadKey, setReloadKey] = useState(0);
 
   const sortBy = useMemo(() => sorting[0]?.id ?? "id", [sorting]);
   const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
-
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -92,70 +88,7 @@ export default function User() {
 
     run();
     return () => controller.abort();
-  }, [page, limit, search, sortBy, sortOrder, reloadKey, toast]);
-
-  const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
-  const [selectedUser, setSelectedUser] = useState<{
-    user_id: number;
-    user_firstname: string;
-    user_email: string;
-    user_register_no: string;
-    user_phone: string;
-    role_id: number;
-    role_text: string;
-  } | null>(null);
-
-  //  New create
-  const handleCreate = () => {
-    setDialogMode("create");
-    setSelectedUser(null);
-    setOpen(true);
-  };
-
-  //  Edit
-  const handleEdit = (id: number) => {
-    const u = data.find((x) => x.user_id === id);
-    if (!u) return;
-    console.log("u ", u);
-
-    setDialogMode("edit");
-    setSelectedUser({
-      user_id: Number(u.user_id),
-      user_firstname: u.user_firstname,
-      user_email: u.user_email,
-      user_register_no: u.user_register_no,
-      user_phone: u.user_phone,
-      role_id: u.role_id,
-      role_text: u.role_text,
-    });
-    setOpen(true);
-  };
-
-  //  Delete
-  const handleDelete = async (id: number) => {
-    if (deleteLoadingId !== null) return;
-
-    setDeleteLoadingId(id);
-    try {
-      const res = await fetchWithAuth(`/api/users/${id}`, {
-        method: "DELETE",
-      });
-
-      const j = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(j?.error || j?.message || "Устгах үед алдаа гарлаа");
-
-      toast("success", "Хэрэглэгч амжилттай устгагдлаа");
-
-      // page дээр ганц мөр байсан бол page бууруулах (optional)
-      if (data.length === 1 && page > 1) setPage(page - 1);
-      else setReloadKey((k) => k + 1);
-    } catch (err: any) {
-      toast("error", err?.message || "Устгах үед алдаа гарлаа");
-    } finally {
-      setDeleteLoadingId(null);
-      setOpenMenuId(null);
-    }
-  };
+  }, [page, limit, search, sortBy, sortOrder, toast]);
 
   const handleDownload = async () => {
     try {
@@ -163,8 +96,8 @@ export default function User() {
       const sortOrder = sorting[0]?.desc ? "desc" : "asc";
 
       await downloadExcel({
-        endpoint: "/api/users/export",
-        filenamePrefix: "users",
+        endpoint: "/api/users/exportAdmin",
+        filenamePrefix: "usersAdmin",
         params: { search, sortBy, sortOrder },
       });
 
@@ -177,7 +110,7 @@ export default function User() {
   return (
     <div>
       <div>
-        <PageBreadcrumb pageTitle="Хэрэглэгч" />
+        <PageBreadcrumb pageTitle="Системийн хэрэглэгч" />
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -193,15 +126,6 @@ export default function User() {
               Татах
               {/* icon... */}
             </Button>
-
-            {canCreate && (
-              <Button
-                onClick={handleCreate}
-                className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
-              >
-                Шинэ бүртгэл
-              </Button>
-            )}
           </div>
         </div>
 
@@ -210,11 +134,7 @@ export default function User() {
             <SkeletonTable />
           ) : (
             <DataTable
-              columns={columns({
-                onEdit: handleEdit,
-                onRemove: handleDelete,
-                canUpdate,
-                canDelete,
+              columns={columnsAdmin({
                 page,
                 limit,
                 deleteLoadingId,
@@ -236,13 +156,6 @@ export default function User() {
           )}
         </div>
       </div>
-      <UserDialog
-        open={open}
-        onOpenChange={setOpen}
-        mode={dialogMode}
-        initialUser={selectedUser}
-        onSaved={() => setReloadKey((k) => k + 1)}
-      />
     </div>
   );
 }

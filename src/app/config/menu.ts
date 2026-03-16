@@ -95,7 +95,16 @@ export const MENU_CONFIG: MenuItem[] = [
     section: "main",
     path: "/user",
     //permissions: ["dashboard.read"],
-    roles: ["ADMIN", "HELPDESK", "SUPERUSER"],
+    roles: ["SUPERUSER"],
+  },
+  {
+    key: "userAdmin",
+    icon: React.createElement(GroupIcon),
+    name: "Хэрэглэгч бүртгэл",
+    section: "main",
+    path: "/userAdmin",
+    //permissions: ["dashboard.read"],
+    roles: ["ADMIN", "HELPDESK"],
   },
   {
     key: "invoices",

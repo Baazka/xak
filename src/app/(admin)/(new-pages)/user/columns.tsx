@@ -28,7 +28,7 @@ export const columns = (actions: ColumnActions): ColumnDef<User>[] => [
     enableSorting: false,
   },
   { accessorKey: "role_text", header: "Хэрэглэгчийн эрх" },
-  { accessorKey: "user_register_no", header: "Регистрын дугаар" },
+  { accessorKey: "user_register_no", header: "Регистрийн дугаар" },
   { accessorKey: "user_firstname", header: "Нэр" },
   { accessorKey: "user_phone", header: "Утас" },
   { accessorKey: "user_email", header: "И-мэйл" },
