@@ -6,5 +6,5 @@ export const ROLE_HOME_MAP: Record<RoleCode, string> = {
   HELPDESK: "/dashboard2",
   SUPERUSER: "/dashboard3",
   USER: "/dashboard4",
-  GOD: "/",
+  GOD: "/analytics",
 };

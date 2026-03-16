@@ -133,7 +133,7 @@ export const MENU_CONFIG: MenuItem[] = [
     section: "main",
     path: "/audit",
     //permissions: ["dashboard.read"],
-    roles: ["ADMIN", "HELPDESK"],
+    roles: ["ADMIN", "HELPDESK", "SUPERUSER", "USER"],
   },
   {
     key: "notifications",
