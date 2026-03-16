@@ -13,6 +13,7 @@ import Button from "@/components/ui/button/Button";
 import QuillEditor from "@/components/editor/QuillEditor";
 import OrgMultiSelect from "./OrgMultiSelect";
 import UserMultiSelect from "./UserMultiSelect";
+import { useToast } from "@/context/ToastContext";
 
 type NotificationType = {
   type_id: number;
@@ -49,6 +50,8 @@ type RoleItem = {
 };
 
 export default function NotificationDialog() {
+  const toast = useToast();
+
   const [open, setOpen] = useState(false);
 
   const [title, setTitle] = useState("");
@@ -105,14 +108,16 @@ export default function NotificationDialog() {
         setSelectedRoleId(roleList[0]?.role_id?.toString() ?? "");
       } catch (error) {
         console.error(error);
-        alert("Dropdown data ачааллахад алдаа гарлаа");
+        toast.error("Dropdown data ачааллахад алдаа гарлаа", {
+          title: "Алдаа",
+        });
       } finally {
         setMetaLoading(false);
       }
     };
 
     loadMeta();
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     if (!open) {
@@ -143,22 +148,30 @@ export default function NotificationDialog() {
     const plainContent = content.replace(/<[^>]*>/g, "").trim();
 
     if (!title.trim() || !plainContent || !notificationTypeId || !targetTypeCode) {
-      alert("Шаардлагатай талбаруудыг бөглөнө үү");
+      toast.warning("Шаардлагатай талбаруудыг бөглөнө үү", {
+        title: "Анхаар",
+      });
       return;
     }
 
     if (targetTypeCode === "XAK" && selectedOrgIds.length === 0) {
-      alert("Байгууллага сонгоно уу");
+      toast.warning("Байгууллага сонгоно уу", {
+        title: "Анхаар",
+      });
       return;
     }
 
     if (targetTypeCode === "USER" && selectedUserIds.length === 0) {
-      alert("Хэрэглэгч сонгоно уу");
+      toast.warning("Хэрэглэгч сонгоно уу", {
+        title: "Анхаар",
+      });
       return;
     }
 
     if (targetTypeCode === "ROLE" && !selectedRoleId) {
-      alert("Эрх сонгоно уу");
+      toast.warning("Эрх сонгоно уу", {
+        title: "Анхаар",
+      });
       return;
     }
 
@@ -192,14 +205,20 @@ export default function NotificationDialog() {
 
       if (res.ok) {
         setOpen(false);
-        alert("Notification created");
+        toast.success("Мэдэгдэл амжилттай үүслээ", {
+          title: "Амжилттай",
+        });
       } else {
         const err = await res.json().catch(() => null);
-        alert(err?.error || "Error creating notification");
+        toast.error(err?.error || "Мэдэгдэл үүсгэхэд алдаа гарлаа", {
+          title: "Алдаа",
+        });
       }
     } catch (error) {
       console.error(error);
-      alert("Error creating notification");
+      toast.error("Мэдэгдэл үүсгэх үед серверийн алдаа гарлаа", {
+        title: "Алдаа",
+      });
     } finally {
       setLoading(false);
     }

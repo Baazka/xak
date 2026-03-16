@@ -90,15 +90,16 @@ export default function NotificationsPage() {
         <PageBreadcrumb pageTitle="Мэдэгдэл" />
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100">
-        <div className="flex items-start justify-between gap-4 p-4">
-          {/* LEFT */}
+      <div className="rounded-2xl border border-gray-200 bg-white text-gray-900 shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100">
+        <div className="flex flex-col gap-4 border-b border-gray-200 p-5 dark:border-gray-800 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h1 className="text-xl font-semibold">{title}</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Танд ирсэн бүх мэдэгдлийг эндээс харж, уншсан төлөвт оруулна.
+            </p>
           </div>
 
-          {/* RIGHT ACTIONS */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <NotificationDialog />
 
             <Button variant="outline" onClick={() => setUnreadOnly((v) => !v)}>
@@ -106,51 +107,58 @@ export default function NotificationsPage() {
             </Button>
 
             <Button variant="outline" onClick={onMarkAllRead} disabled={unreadCount === 0}>
-              Уншсан болгож тэмдэглэх
+              Бүгдийг уншсан болгох
             </Button>
           </div>
         </div>
 
-        <div className="mt-4 rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-          <div className="flex items-center justify-between border-b border-gray-200 p-3 dark:border-gray-800">
-            <div className="text-sm text-gray-600 dark:text-gray-300">
-              Хуудас: <span className="font-medium">{page}</span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-                disabled={page === 1 || loading}
-              >
-                {"<<"}
-              </button>
-
-              <button
-                onClick={() => setPage((p) => p + 1)}
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-                disabled={loading || items.length < limit}
-              >
-                {">>"}
-              </button>
-            </div>
+        <div className="flex items-center justify-between px-5 py-3">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Хуудас <span className="font-medium text-gray-900 dark:text-gray-100">{page}</span>
           </div>
 
-          <div className="p-3">
-            {loading ? (
-              <div className="p-6 text-center text-gray-400 dark:text-gray-500">Уншиж байна...</div>
-            ) : items.length === 0 ? (
-              <div className="p-6 text-center text-gray-400 dark:text-gray-500">Хоосон</div>
-            ) : (
-              <div className="space-y-2">
-                {items.map((n) => (
-                  <div key={n.id} onClick={() => onMarkOneRead(n.id)}>
-                    <NotificationItem noti={n} />
-                  </div>
-                ))}
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || loading}
+              className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+            >
+              Өмнөх
+            </button>
+
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={loading || items.length < limit}
+              className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+            >
+              Дараах
+            </button>
           </div>
+        </div>
+
+        <div className="px-3 pb-3">
+          {loading ? (
+            <div className="rounded-xl border border-dashed border-gray-200 p-10 text-center text-gray-400 dark:border-gray-800 dark:text-gray-500">
+              Уншиж байна...
+            </div>
+          ) : items.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-gray-200 p-10 text-center text-gray-400 dark:border-gray-800 dark:text-gray-500">
+              Уншаагүй мэдэгдэл алга.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {items.map((n) => (
+                <button
+                  key={n.id}
+                  type="button"
+                  onClick={() => onMarkOneRead(n.id)}
+                  className="block w-full text-left"
+                >
+                  <NotificationItem noti={n} />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>

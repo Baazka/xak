@@ -4,6 +4,7 @@ import { formatDistanceToNow } from "date-fns";
 import { mn } from "date-fns/locale";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { useNotifications } from "../../context/NotificationContext";
+import { cn } from "@/lib/cn";
 
 export default function NotificationItem({ noti }: any) {
   const { markAsRead, close } = useNotifications();
@@ -23,23 +24,36 @@ export default function NotificationItem({ noti }: any) {
         markAsRead(noti.id);
         close();
       }}
-      className={`rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 transition 
-      dark:border-gray-800 
-      ${
-        unread
-          ? "bg-blue-50 hover:bg-blue-100 dark:bg-white/5"
-          : "hover:bg-gray-100 dark:hover:bg-white/5"
-      }`}
+      className="p-0"
     >
-      <div className="flex flex-col gap-1">
-        <div className="text-sm font-medium text-gray-800 dark:text-white">{noti.title}</div>
+      <div
+        className={cn(
+          "group relative rounded-xl border p-4 transition",
+          unread
+            ? "border-brand-200 bg-brand-50/60 hover:bg-brand-50 dark:border-brand-800 dark:bg-brand-900/10 dark:hover:bg-brand-900/20"
+            : "border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800/60"
+        )}
+      >
+        {unread && <span className="absolute left-3 top-5 h-2.5 w-2.5 rounded-full bg-brand-500" />}
 
-        <div className="text-sm text-gray-600 dark:text-gray-400">{noti.content}</div>
+        <div className="pl-5">
+          <div className="flex items-start justify-between gap-3">
+            <h3
+              className={cn(
+                "text-sm text-gray-900 dark:text-gray-100",
+                unread ? "font-semibold" : "font-medium"
+              )}
+            >
+              {noti.title}
+            </h3>
 
-        <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
-          <span>{noti.type ?? "System"}</span>
-          <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-          <span>{timeAgo}</span>
+            <span className="shrink-0 text-xs text-gray-500 dark:text-gray-400">{timeAgo}</span>
+          </div>
+
+          <div
+            className="prose prose-sm mt-2 max-w-none text-gray-600 dark:prose-invert dark:text-gray-300"
+            dangerouslySetInnerHTML={{ __html: noti.content ?? "" }}
+          />
         </div>
       </div>
     </DropdownItem>

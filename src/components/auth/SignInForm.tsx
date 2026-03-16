@@ -254,7 +254,7 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm" type="submit">
+                  <Button className="w-full" type="submit">
                     Нэвтрэх
                   </Button>
                 </div>

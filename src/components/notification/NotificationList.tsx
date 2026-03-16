@@ -8,7 +8,7 @@ export default function NotificationList() {
   const { notifications } = useNotifications();
 
   if (!notifications?.length) {
-    return <div className="text-center text-gray-400 py-10">No notifications</div>;
+    return <div className="text-center text-gray-400 py-10">Мэдэгдэл ирээгүй байна.</div>;
   }
 
   return (
