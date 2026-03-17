@@ -116,7 +116,6 @@ export default function User() {
   const handleEdit = (id: number) => {
     const u = data.find((x) => x.user_id === id);
     if (!u) return;
-    console.log("u ", u);
 
     setDialogMode("edit");
     setSelectedUser({

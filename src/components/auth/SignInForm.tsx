@@ -89,7 +89,6 @@ export default function SignInForm() {
 
       const meRes = await fetch("/api/auth/me");
       const { user } = await meRes.json();
-      console.log("user ", user);
       setUser(user);
       if (user.roles.length > 1) {
         router.replace("/select-role");

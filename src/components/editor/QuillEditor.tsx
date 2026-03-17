@@ -28,7 +28,7 @@ const formats = ["header", "bold", "italic", "underline", "strike", "list", "lin
 export default function QuillEditor({
   value,
   onChange,
-  placeholder = "Агуулга бичих...",
+  placeholder = "Дэлгэрэнгүй бичих...",
 }: QuillEditorProps) {
   return (
     <div className="quill-wrapper rounded-xl border border-gray-300 bg-white overflow-hidden">
