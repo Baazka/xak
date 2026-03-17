@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import NotificationItem from "@/components/notification/NotificationItem";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-
 import { Button } from "@/components/ui/button";
 
 type Notification = {
@@ -12,7 +11,7 @@ type Notification = {
   title?: string;
   content?: string;
   date?: string;
-  is_read: number; // 0/1
+  is_read: number;
 };
 
 type ApiResponse = {
@@ -26,10 +25,8 @@ export default function NotificationsPage() {
   const [items, setItems] = useState<Notification[]>([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
-
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-
   const [loading, setLoading] = useState(false);
 
   const fetchList = async (nextPage = page, nextUnreadOnly = unreadOnly) => {
@@ -52,6 +49,7 @@ export default function NotificationsPage() {
   };
 
   useEffect(() => {
+    setPage(1);
     fetchList(1, unreadOnly);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unreadOnly]);
@@ -62,16 +60,22 @@ export default function NotificationsPage() {
   }, [page]);
 
   const onMarkAllRead = async () => {
-    const res = await fetchWithAuth("/api/notifications/read-all", { method: "POST" });
+    const res = await fetchWithAuth("/api/notifications/read-all", {
+      method: "POST",
+    });
     if (!res.ok) return;
 
-    // UI update
     setItems((prev) => prev.map((n) => ({ ...n, is_read: 1 })));
     setUnreadCount(0);
   };
 
   const onMarkOneRead = async (notiId: number) => {
-    const res = await fetchWithAuth(`/api/notifications/${notiId}/read`, { method: "POST" });
+    const target = items.find((n) => n.id === notiId);
+    if (!target || target.is_read === 1) return;
+
+    const res = await fetchWithAuth(`/api/notifications/${notiId}/read`, {
+      method: "POST",
+    });
     if (!res.ok) return;
 
     setItems((prev) => prev.map((n) => (n.id === notiId ? { ...n, is_read: 1 } : n)));
@@ -116,6 +120,7 @@ export default function NotificationsPage() {
 
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1 || loading}
               className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
@@ -124,6 +129,7 @@ export default function NotificationsPage() {
             </button>
 
             <button
+              type="button"
               onClick={() => setPage((p) => p + 1)}
               disabled={loading || items.length < limit}
               className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
@@ -143,16 +149,9 @@ export default function NotificationsPage() {
               Уншаагүй мэдэгдэл алга.
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 overflow-y-auto max-h-[400px] px-1">
               {items.map((n) => (
-                <button
-                  key={n.id}
-                  type="button"
-                  onClick={() => onMarkOneRead(n.id)}
-                  className="block w-full text-left"
-                >
-                  <NotificationItem noti={n} />
-                </button>
+                <NotificationItem key={n.id} noti={n} onClick={() => onMarkOneRead(n.id)} />
               ))}
             </div>
           )}
