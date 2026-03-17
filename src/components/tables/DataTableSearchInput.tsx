@@ -15,7 +15,7 @@ export function SearchInput({ value, onChange, placeholder = "Хайх..." }: Se
       placeholder={placeholder}
       defaultValue={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-64 mb-2"
+      className="w-64 !h-9"
     />
   );
 }

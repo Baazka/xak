@@ -140,15 +140,8 @@ export const MENU_CONFIG: MenuItem[] = [
     icon: React.createElement(InfoIcon),
     name: "Мэдэгдэл",
     section: "main",
-    subItems: [
-      { key: "notifications", name: "Мэдэгдэл", path: "/notifications" },
-      {
-        key: "adminNotifications",
-        name: "Мэдэгдэл удирдлага",
-        path: "/notifications-admin",
-        roles: ["ADMIN", "HELPDESK"],
-      },
-    ],
+    path: "/notifications-admin",
+    roles: ["ADMIN", "HELPDESK"],
   },
 
   {

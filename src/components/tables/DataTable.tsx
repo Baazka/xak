@@ -12,6 +12,7 @@ import {
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData, TValue> {
     className?: string;
+    noTruncate?: boolean;
   }
 }
 
@@ -86,8 +87,8 @@ export function DataTable<TData>({
         </div>
       </div>
 
-      <div className="max-h-[520px] overflow-auto custom-scrollbar">
-        <Table>
+      <div className="max-h-[520px] overflow-hidden overflow-y-auto">
+        <Table className="w-full table-fixed">
           <TableHeader>
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id}>
@@ -135,17 +136,37 @@ export function DataTable<TData>({
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={`px-4 font-normal text-gray-800 border border-gray-100
-    dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap
-    ${cell.column.columnDef.meta?.className ?? ""}`}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+                <TableRow
+                  key={row.id}
+                  className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
+                >
+                  {row.getVisibleCells().map((cell) => {
+                    const rawValue = cell.getValue();
+                    const title =
+                      typeof rawValue === "string" || typeof rawValue === "number"
+                        ? String(rawValue)
+                        : "";
+
+                    const noTruncate = cell.column.columnDef.meta?.noTruncate;
+
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={`px-4 font-normal text-gray-800 border border-gray-100
+dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap
+max-w-[180px] py-1 border-collapse 
+${cell.column.columnDef.meta?.className ?? ""}`}
+                      >
+                        {noTruncate ? (
+                          flexRender(cell.column.columnDef.cell, cell.getContext())
+                        ) : (
+                          <div className="truncate overflow-hidden whitespace-nowrap" title={title}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </div>
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (
