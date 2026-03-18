@@ -3,7 +3,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { mn } from "date-fns/locale";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 type Props = {
   noti: {

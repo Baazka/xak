@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import NotificationItem from "@/components/notification/NotificationItem";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
@@ -22,6 +23,8 @@ type ApiResponse = {
 };
 
 export default function NotificationsPage() {
+  const router = useRouter();
+
   const [items, setItems] = useState<Notification[]>([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(20);
@@ -71,15 +74,27 @@ export default function NotificationsPage() {
 
   const onMarkOneRead = async (notiId: number) => {
     const target = items.find((n) => n.id === notiId);
-    if (!target || target.is_read === 1) return;
+    if (!target || target.is_read === 1) return true;
 
     const res = await fetchWithAuth(`/api/notifications/${notiId}/read`, {
       method: "POST",
     });
-    if (!res.ok) return;
+
+    if (!res.ok) return false;
 
     setItems((prev) => prev.map((n) => (n.id === notiId ? { ...n, is_read: 1 } : n)));
     setUnreadCount((c) => Math.max(0, c - 1));
+
+    return true;
+  };
+
+  const handleOpenDetail = async (noti: Notification) => {
+    if (noti.is_read === 0) {
+      const ok = await onMarkOneRead(noti.id);
+      if (!ok) return;
+    }
+
+    router.push(`/notifications/${noti.id}`);
   };
 
   const title = useMemo(() => {
@@ -149,9 +164,9 @@ export default function NotificationsPage() {
               Уншаагүй мэдэгдэл алга.
             </div>
           ) : (
-            <div className="space-y-2 overflow-y-auto max-h-[400px] px-1">
+            <div className="space-y-2">
               {items.map((n) => (
-                <NotificationItem key={n.id} noti={n} onClick={() => onMarkOneRead(n.id)} />
+                <NotificationItem key={n.id} noti={n} onClick={() => handleOpenDetail(n)} />
               ))}
             </div>
           )}
