@@ -2,11 +2,19 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtVerify } from "jose";
-import Link from "next/link";
 
 import { getJwtSecret } from "@/lib/jwt";
 import type { JwtPayload } from "@/lib/jwtPayload";
 import { getHomeByRole, RoleCode } from "@/app/config/roleHome";
+
+// components
+import Header from "@/components/landing/Header";
+import Hero from "@/components/landing/Hero";
+import Features from "@/components/landing/Features";
+import Finance from "@/components/landing/Finance";
+import Pricing from "@/components/landing/Pricing";
+import Testimonials from "@/components/landing/Testimonials";
+import Contact from "@/components/landing/Contact";
 
 export default async function LandingPage() {
   const token = (await cookies()).get("access_token")?.value;
@@ -29,15 +37,14 @@ export default async function LandingPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center">
-      <h1 className="mb-4 text-4xl font-bold">Тавтай морил</h1>
-      <p className="mb-8 text-center">Манай вэбсайт руу тавтай морил!</p>
-
-      <div className="flex gap-4">
-        <Link href="/signin" className="rounded bg-black px-6 py-3 text-white">
-          Нэвтрэх
-        </Link>
-      </div>
+    <main className="bg-white text-gray-900">
+      <Header />
+      <Hero />
+      <Features />
+      <Finance />
+      <Pricing />
+      <Testimonials />
+      <Contact />
     </main>
   );
 }
