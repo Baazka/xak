@@ -42,11 +42,11 @@ export const GET = withAuth(async function GET(req: NextRequest, user: JwtPayloa
     //   `;
     // }
 
-    // if (status === "deleted") {
-    //   whereClause += " AND COALESCE(n.is_deleted, 0) = 1";
-    // } else {
-    //   whereClause += " AND COALESCE(n.is_deleted, 0) = 0";
-    // }
+    if (status === "deleted") {
+      whereClause += " AND COALESCE(n.is_deleted, 0) = 1";
+    } else {
+      whereClause += " AND COALESCE(n.is_deleted, 0) = 0";
+    }
 
     if (search) {
       params.push(`%${search}%`);
@@ -96,9 +96,9 @@ export const GET = withAuth(async function GET(req: NextRequest, user: JwtPayloa
         n.noti_content,
         n.created_by,
         n.created_date,
-        --COALESCE(n.is_deleted, 0) AS is_deleted,
-        --n.deleted_by,
-        --n.deleted_date,
+        COALESCE(n.is_deleted, 0) AS is_deleted,
+        n.deleted_by,
+        n.deleted_date,
 
         creator.firstname || ' ' || creator.lastname AS created_by_name,
 
@@ -128,9 +128,9 @@ export const GET = withAuth(async function GET(req: NextRequest, user: JwtPayloa
         n.noti_content,
         n.created_by,
         n.created_date,
-        --n.is_deleted,
-        --n.deleted_by,
-        --n.deleted_date,
+        n.is_deleted,
+        n.deleted_by,
+        n.deleted_date,
         creator.firstname,
         creator.lastname
       ORDER BY ${orderByColumn} ${sortOrder}

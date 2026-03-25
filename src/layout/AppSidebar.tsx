@@ -29,6 +29,8 @@ import SidebarWidget from "./SidebarWidget";
 import { hasPermission } from "@/lib/permission";
 import { MENU_CONFIG, MenuItem } from "@/app/config/menu";
 import { useAuth } from "@/context/AuthContext";
+import AppLogo from "./AppLogo";
+import { getHomeByRole } from "@/app/config/roleHome";
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -38,6 +40,7 @@ const AppSidebar: React.FC = () => {
 
   const userPermissions = user?.permissions ?? [];
   const userRole = user?.activeRole;
+  const [logoHref, setLogoHref] = useState("/");
 
   const roleOk = (roles?: string[]) => {
     if (!roles || roles.length === 0) return true;
@@ -246,7 +249,17 @@ const AppSidebar: React.FC = () => {
       }
     }
   }, [openSubmenu]);
+  useEffect(() => {
+    if (!user) {
+      setLogoHref("/");
+      return;
+    }
 
+    const role = user?.activeRole;
+    const home = getHomeByRole(role);
+
+    setLogoHref(home ?? "/");
+  }, [user]);
   const handleSubmenuToggle = (index: number, menuType: "main" | "support" | "others") => {
     setOpenSubmenu((prevOpenSubmenu) => {
       if (prevOpenSubmenu && prevOpenSubmenu.type === menuType && prevOpenSubmenu.index === index) {
@@ -278,28 +291,12 @@ const AppSidebar: React.FC = () => {
           !isExpanded && !isHovered ? "xl:justify-center" : "justify-start"
         }`}
       >
-        <Link href="/">
-          {isExpanded || isHovered || isMobileOpen ? (
-            <>
-              <Image
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-              <Image
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-            </>
-          ) : (
-            <Image src="/images/logo/logo-icon.svg" alt="Logo" width={32} height={32} />
-          )}
-        </Link>
+        <AppLogo
+          href={logoHref}
+          isExpanded={isExpanded}
+          isHovered={isHovered}
+          isMobileOpen={isMobileOpen}
+        />
       </div>
       <div className="flex flex-col overflow-y-auto  duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">

@@ -3,12 +3,20 @@
 import { formatDistanceToNow } from "date-fns";
 import { mn } from "date-fns/locale";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { useNotifications } from "../../context/NotificationContext";
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
-export default function NotificationItem({ noti }: any) {
-  const { markAsRead, close } = useNotifications();
+type Props = {
+  noti: {
+    id: number;
+    title?: string;
+    content?: string;
+    date?: string;
+    is_read?: number | boolean;
+  };
+  onClick?: () => void;
+};
 
+export default function NotificationItem({ noti, onClick }: Props) {
   const timeAgo = noti?.date
     ? formatDistanceToNow(new Date(noti.date), {
         addSuffix: true,
@@ -19,13 +27,7 @@ export default function NotificationItem({ noti }: any) {
   const unread = noti?.is_read === 0 || noti?.is_read === false;
 
   return (
-    <DropdownItem
-      onItemClick={() => {
-        markAsRead(noti.id);
-        close();
-      }}
-      className="p-0"
-    >
+    <DropdownItem onItemClick={onClick} className="p-0">
       <div
         className={cn(
           "group relative rounded-xl border p-4 transition",

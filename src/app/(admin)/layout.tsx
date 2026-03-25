@@ -37,7 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <NotificationProvider>
-      <div className="min-h-screen xl:flex">
+      <div className="min-h-screen ">
         {/* Sidebar and Backdrop */}
         <AppSidebar />
         <Backdrop />

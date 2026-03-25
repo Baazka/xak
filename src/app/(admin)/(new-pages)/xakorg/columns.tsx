@@ -25,7 +25,7 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrgNew>[] => [
     id: "rowNumber",
     header: "№",
     cell: ({ row }) => (actions.page - 1) * actions.limit + row.index + 1,
-    meta: { className: "w-[30px] text-center" },
+    meta: { className: "w-[30px] text-center", noTruncate: true },
     enableSorting: false,
   },
   { accessorKey: "org_register_no", header: "ХАК регистр" },

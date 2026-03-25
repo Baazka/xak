@@ -1,22 +1,16 @@
-// middleware.ts
+// src/proxy.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
+
 import { publicRoutes } from "@/app/config/auth";
 import { getJwtSecret } from "@/lib/jwt";
-import { jwtVerify } from "jose";
-import { RoleCode } from "@/app/config/roleHome";
-
-const ROUTE_ROLE_MAP: Record<string, RoleCode[]> = {
-  "/users": ["GOD"],
-  "/dashboard1": ["ADMIN"],
-  "/dashboard2": ["HELPDESK"],
-  "/dashboard3": ["SUPERUSER"],
-  "/dashboard4": ["USER"],
-};
+import { ROUTE_ROLE_MAP, RoleCode } from "@/app/config/roleHome";
 
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Root болон static-уудыг алгасна
   if (
     pathname === "/" ||
     pathname.startsWith("/_next") ||
@@ -27,10 +21,11 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // Public route
   const isPublic = publicRoutes.some((r) => pathname === r || pathname.startsWith(r + "/"));
-
   if (isPublic) return NextResponse.next();
 
+  // Token шалгах
   const token = req.cookies.get("access_token")?.value;
 
   if (!token) {
@@ -45,33 +40,17 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/signin", req.url));
   }
 
-  if (pathname === "/select-role") {
-    if (!payload?.roles || payload.roles.length === 0) {
-      return NextResponse.redirect(new URL("/signin", req.url));
-    }
-  }
-
-  // Active role шалгах
+  // Role check
   const matched = Object.entries(ROUTE_ROLE_MAP).find(
     ([route]) => pathname === route || pathname.startsWith(route + "/")
   );
 
   if (matched) {
     const [, allowedRoles] = matched;
+    const activeRole = payload?.activeRole as RoleCode | undefined;
 
-    // activeRole байхгүй бол сонгуул
-    if (!payload?.activeRole) {
-      return NextResponse.redirect(new URL("/select-role", req.url));
-    }
-
-    // зөвшөөрөгдөөгүй бол
-    if (!allowedRoles.includes(payload.activeRole as RoleCode)) {
-      // хэрвээ өөр зөв role-той бол (403 биш)
-      const hasAnyAllowed = Array.isArray(payload.roles)
-        ? payload.roles.some((r: string) => allowedRoles.includes(r as RoleCode))
-        : false;
-
-      return NextResponse.redirect(new URL(hasAnyAllowed ? "/select-role" : "/403", req.url));
+    if (!activeRole || !allowedRoles.includes(activeRole)) {
+      return NextResponse.redirect(new URL("/403", req.url));
     }
   }
 
