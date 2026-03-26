@@ -122,7 +122,7 @@ export const MENU_CONFIG: MenuItem[] = [
     section: "main",
     roles: ["SUPERUSER"],
     subItems: [
-      { key: "ecommerce", name: "Данс", path: "/marketing" },
+      { key: "wallet", name: "Данс", path: "/wallet" },
       { key: "analytics", name: "Нэхэмжлэх", path: "/analytics" },
     ],
   },
