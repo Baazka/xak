@@ -135,6 +135,13 @@ export default function Audit() {
               Татах
               {/* icon... */}
             </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/test1")}
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              enter test1
+            </Button>
           </div>
         </div>
 
