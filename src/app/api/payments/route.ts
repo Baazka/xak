@@ -30,7 +30,7 @@ export async function GET(req: Request) {
           m.code AS method
         FROM payments p
         JOIN invoices i ON i.id = p.invoice_id
-        JOIN ref_payment_method m ON m.id = p.method_id
+        JOIN ref_payment_method_old m ON m.id = p.method_id
         WHERE
           ($1::text IS NULL OR i.invoice_no ILIKE '%' || $1 || '%')
           AND ($2::text IS NULL OR m.code = $2)

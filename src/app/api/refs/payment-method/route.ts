@@ -10,7 +10,7 @@ export async function GET() {
         id,
         code,
         name
-      FROM ref_payment_method
+      FROM ref_payment_method_old
       WHERE is_active = true
       ORDER BY id
       `

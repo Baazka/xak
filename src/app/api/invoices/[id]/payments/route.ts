@@ -24,7 +24,7 @@ async function getInvoiceInfo(invoiceId: string) {
     LEFT JOIN payments p
       ON p.invoice_id = i.id
      AND p.status_id = (
-       SELECT id FROM ref_payment_status WHERE code = 'PAID'
+       SELECT id FROM ref_payment_status_old WHERE code = 'PAID'
      )
     WHERE i.id = $1
     GROUP BY i.id, i.total_amount, s.code
@@ -61,10 +61,10 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, _user: JwtPay
           p.reference_no,
           m.code AS method
         FROM payments p
-        JOIN ref_payment_method m ON m.id = p.method_id
+        JOIN ref_payment_method_old m ON m.id = p.method_id
         WHERE p.invoice_id = $1
           AND p.status_id = (
-            SELECT id FROM ref_payment_status WHERE code = 'PAID'
+            SELECT id FROM ref_payment_status_old WHERE code = 'PAID'
           )
         ORDER BY p.payment_date DESC
         `,
@@ -129,7 +129,7 @@ export const POST = withAuth<RouteParams>(async (req: NextRequest, _user: JwtPay
           $2,
           NOW(),
           $3,
-          (SELECT id FROM ref_payment_status WHERE code = 'PAID'),
+          (SELECT id FROM ref_payment_status_old WHERE code = 'PAID'),
           $4
         )
         `,

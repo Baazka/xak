@@ -25,7 +25,7 @@ export async function GET(req: Request) {
           i.created_at,
           s.code AS status
         FROM invoices i
-        JOIN ref_invoice_status s ON s.id = i.status_id
+        JOIN ref_invoice_status_old s ON s.id = i.status_id
         WHERE
           ($1::text IS NULL OR i.invoice_no ILIKE '%' || $1 || '%')
           AND ($2::text = 'ALL' OR s.code = $2)
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
         $1, $2, $3,
         $4, $5, $6,
         $7,
-        (SELECT id FROM ref_invoice_status WHERE code = 'ISSUED')
+        (SELECT id FROM ref_invoice_status_old WHERE code = 'ISSUED')
       )
       RETURNING id
       `,

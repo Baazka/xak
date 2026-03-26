@@ -20,7 +20,7 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
         i.currency,
         s.code AS status
       FROM invoices i
-      JOIN ref_invoice_status s ON s.id = i.status_id
+      JOIN ref_invoice_status_old s ON s.id = i.status_id
       WHERE i.id = $1
       `,
       [id]
@@ -58,10 +58,10 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
     p.reference_no,
     m.code AS method
   FROM payments p
-  JOIN ref_payment_method m ON m.id = p.method_id
+  JOIN ref_payment_method_old m ON m.id = p.method_id
   WHERE p.invoice_id = $1
     AND p.status_id = (
-      SELECT id FROM ref_payment_status WHERE code = 'PAID'
+      SELECT id FROM ref_payment_status_old WHERE code = 'PAID'
     )
   ORDER BY p.payment_date
   `,
