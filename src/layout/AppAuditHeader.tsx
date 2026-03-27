@@ -1,29 +1,19 @@
 "use client";
 import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
-// import NotificationDropdown from "@/components/header/NotificationDropdown";
 import UserDropdown from "@/components/header/UserDropdown";
 import { useAuth } from "@/context/AuthContext";
 import RoleSwitcherHeader from "@/components/role/RoleSwitcherHeader";
-import { useSidebar } from "@/context/SidebarContext";
-import Image from "next/image";
-import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import NotificationBell from "@/components/notification/NotificationBell";
 import NotificationDropdown from "@/components/notification/NotificationDropdown";
+import AppLogo from "./AppLogo";
+import { getHomeByRole } from "@/app/config/roleHome";
 
 const AppAuditHeader: React.FC = () => {
   const { user } = useAuth();
+  const [logoHref, setLogoHref] = useState("/");
 
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
-  const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
-
-  const handleToggle = () => {
-    if (window.innerWidth >= 1280) {
-      toggleSidebar();
-    } else {
-      toggleMobileSidebar();
-    }
-  };
 
   const toggleApplicationMenu = () => {
     setApplicationMenuOpen(!isApplicationMenuOpen);
@@ -46,26 +36,23 @@ const AppAuditHeader: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!user) {
+      setLogoHref("/");
+      return;
+    }
+
+    const role = user?.activeRole;
+    const home = getHomeByRole(role);
+
+    setLogoHref(home ?? "/");
+  }, [user]);
+
   return (
     <header className="sticky top-0 flex w-full bg-white border-gray-200 z-999 dark:border-gray-800 dark:bg-gray-900 xl:border-b">
       <div className="flex flex-col items-center justify-between grow xl:flex-row xl:px-6">
         <div className="flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-gray-800 sm:gap-4 xl:justify-normal xl:border-b-0 xl:px-0 xl:py-4">
-          <Link href="/" className="xl:hidden">
-            <Image
-              width={154}
-              height={32}
-              className="dark:hidden"
-              src="./images/logo/logo.svg"
-              alt="Logo"
-            />
-            <Image
-              width={154}
-              height={32}
-              className="hidden dark:block"
-              src="./images/logo/logo-dark.svg"
-              alt="Logo"
-            />
-          </Link>
+          <AppLogo href={logoHref} isExpanded={true} isHovered={false} isMobileOpen={false} />
           <button
             onClick={toggleApplicationMenu}
             className="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-99999 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 xl:hidden"
