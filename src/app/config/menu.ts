@@ -116,6 +116,15 @@ export const MENU_CONFIG: MenuItem[] = [
     roles: ["ADMIN", "HELPDESK"],
   },
   {
+    key: "invoices_new",
+    icon: React.createElement(TableIcon),
+    name: "Төлбөр New",
+    section: "main",
+    path: "/invoices_new",
+    //permissions: ["dashboard.read"],
+    roles: ["ADMIN", "HELPDESK"],
+  },
+  {
     key: "payment",
     icon: React.createElement(TableIcon),
     name: "Төлбөр",
@@ -123,7 +132,7 @@ export const MENU_CONFIG: MenuItem[] = [
     roles: ["SUPERUSER"],
     subItems: [
       { key: "wallet", name: "Данс", path: "/wallet" },
-      { key: "analytics", name: "Нэхэмжлэх", path: "/analytics" },
+      { key: "invoice_xak", name: "Нэхэмжлэх", path: "/invoices_new" },
     ],
   },
   {

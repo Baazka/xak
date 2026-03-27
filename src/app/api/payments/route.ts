@@ -1,6 +1,7 @@
 // src/app/api/payments/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
+import { JwtPayload } from "@/lib/jwtPayload";
 
 /* ======================================================
    GET /api/payments
@@ -89,3 +90,5 @@ export async function GET(req: Request) {
     );
   }
 }
+
+export async function POST(req: NextRequest, user: JwtPayload) {}
