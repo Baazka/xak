@@ -1,5 +1,6 @@
 // src/app/api/payments/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/lib/withAuth";
 import db from "@/lib/db";
 import { JwtPayload } from "@/lib/jwtPayload";
 
@@ -91,4 +92,53 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: NextRequest, user: JwtPayload) {}
+export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
+  //requirePermission(user.permissions, ["user.create"]);
+
+  const body = await req.json();
+
+  const inv_type = body.inv_type_id;
+  const orgId = body.org_id;
+  const invAud = body.inv_aud_count;
+  const invAmt = body.inv_aud_amount;
+  const userId = user.id;
+
+  if (!invAmt || invAmt < 0 || invAmt > 5000000) {
+    return NextResponse.json({ error: "Цэнэглэх дүн буруу байна." }, { status: 422 });
+  }
+
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const invCodeRes = await client.query(`SELECT nextval('invoice_code_seq') AS seq`);
+    const invCodeSeq = invCodeRes.rows[0].seq;
+    const invCode = `INV${String(invCodeSeq).padStart(6, "0")}`;
+
+    const invRes = await client.query(
+      `INSERT INTO reg_invoices (inv_no, inv_org_id, inv_type_id, inv_date, inv_aud_count, inv_amount, inv_status_id, created_by, created_date)
+           VALUES ($1, $2, $3, current_timestamp, $4, $5, 1, $6, current_timestamp)
+           RETURNING inv_id`,
+      [invCode, orgId, inv_type, invAud, invAmt, userId]
+    );
+    const invNewId = invRes.rows[0].inv_id;
+
+    // log_task_status insert
+    // await client.query(
+    //   `INSERT INTO log_task_status (task_id, task_status_id, action_by, action_date)
+    //         VALUES ($1, 1, $2, current_timestamp)`,
+    //   [taskNewId, createdUser]
+    // );
+
+    await client.query("COMMIT");
+    return NextResponse.json({ inv_id: invNewId }, { status: 201 });
+  } catch (err: any) {
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("Invoice create error:", err);
+
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } finally {
+    client.release();
+  }
+});
