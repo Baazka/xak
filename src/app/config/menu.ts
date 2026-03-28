@@ -142,7 +142,20 @@ export const MENU_CONFIG: MenuItem[] = [
     section: "main",
     path: "/audit",
     //permissions: ["dashboard.read"],
-    roles: ["ADMIN", "HELPDESK", "SUPERUSER", "USER"],
+    roles: ["ADMIN", "HELPDESK"],
+  },
+  {
+    key: "auditUser",
+    icon: React.createElement(BoxIcon),
+    name: "Аудит",
+    section: "main",
+    path: "/audit",
+    //permissions: ["dashboard.read"],
+    roles: ["SUPERUSER", "USER"],
+    subItems: [
+      { key: "audit_add", name: "Аудит үүсгэх", path: "/auditadd" },
+      { key: "audit_xak", name: "Аудит жагсаалт", path: "/audit" },
+    ],
   },
   {
     key: "notifications",
