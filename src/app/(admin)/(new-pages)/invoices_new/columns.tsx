@@ -36,7 +36,11 @@ export const columns = (actions: ColumnActions): ColumnDef<InvoiceList>[] => [
   { accessorKey: "inv_type_name", header: "Төрөл" },
   { accessorKey: "inv_aud_count", header: "Аудит эрх" },
   { accessorKey: "inva_assign", header: "Ашигласан" },
-  { accessorKey: "inv_amount", header: "Нийт дүн" },
+  {
+    id: "inv_amount",
+    header: "Нийт дүн",
+    cell: ({ row }) => row.original.inv_amount.toLocaleString("en-US") + "₮",
+  },
   { accessorKey: "inv_status_name", header: "Төлөв" },
   {
     id: "actions",
@@ -105,7 +109,11 @@ export const columnsXak = (actions: ColumnActions): ColumnDef<InvoiceList>[] => 
   { accessorKey: "inv_type_name", header: "Төрөл" },
   { accessorKey: "inv_aud_count", header: "Аудит эрх" },
   { accessorKey: "inva_assign", header: "Ашигласан" },
-  { accessorKey: "inv_amount", header: "Нийт дүн" },
+  {
+    id: "inv_amount",
+    header: "Нийт дүн",
+    cell: ({ row }) => row.original.inv_amount.toLocaleString("en-US") + "₮",
+  },
   { accessorKey: "inv_status_name", header: "Төлөв" },
   {
     id: "actions",

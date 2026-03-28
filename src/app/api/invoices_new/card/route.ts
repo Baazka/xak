@@ -44,16 +44,6 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   try {
     const [tranRes, invRes] = await Promise.all([client.query(tranSql), client.query(invSql)]);
 
-    console.log(
-      "res ",
-      tranRes.rows[0].balance,
-      invRes.rows[0].invtotal,
-      invRes.rows[0].audtotal,
-      invRes.rows[0].amounttotal,
-      invRes.rows[0].unpaidtotal,
-      invRes.rows[0].unpaidamount
-    );
-
     return NextResponse.json({
       balance: tranRes.rows[0].balance,
       invTotal: invRes.rows[0].invtotal,

@@ -23,6 +23,10 @@ export const columns = (actions: ColumnActions): ColumnDef<Wallet>[] => [
   { accessorKey: "tran_cr_dt", header: "Төрөл" },
   { accessorKey: "tran_date", header: "Огноо" },
   { accessorKey: "tran_type_name", header: "Ангилал" },
-  { accessorKey: "tran_amount", header: "Дүн" },
+  {
+    id: "tran_locale",
+    header: "Дүн",
+    cell: ({ row }) => row.original.tran_amount.toLocaleString("en-US") + "₮",
+  },
   { accessorKey: "inv_no", header: "Нэхэмжлэх #" },
 ];
