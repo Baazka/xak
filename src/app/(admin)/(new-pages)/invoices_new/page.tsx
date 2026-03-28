@@ -16,6 +16,7 @@ import { downloadExcel } from "@/lib/downloadExcel";
 import { useToast } from "@/context/ToastContext";
 import InvoiceDialog from "./components/insertInvoiceDialog";
 import PaymentDialog from "./components/paymentDialog";
+import InvoiceCard from "./components/invoiceCard";
 
 export default function XakorgListPage() {
   const router = useRouter();
@@ -54,6 +55,14 @@ export default function XakorgListPage() {
   const sortBy = useMemo(() => sorting[0]?.id ?? "created_date", [sorting]);
   const sortOrder = useMemo(() => (sorting[0]?.desc ? "asc" : "desc"), [sorting]);
 
+  const [loading, setLoading] = useState(false);
+
+  const [cardBalance, setCardBalance] = useState<number | 0>(0);
+  const [cardInvTotal, setCardInvTotal] = useState<number | 0>(0);
+  const [cardInvAud, setCardAud] = useState<number | 0>(0);
+  const [cardUnpaid, setCardUnpaid] = useState<number | 0>(0);
+  const [cardUnpaidAmt, setCardUnpaidAmt] = useState<number | 0>(0);
+
   // Debounce search input -> real search
   useEffect(() => {
     const t = setTimeout(() => {
@@ -62,6 +71,34 @@ export default function XakorgListPage() {
     }, 400);
     return () => clearTimeout(t);
   }, [searchInput]);
+
+  useEffect(() => {
+    const loadMeta = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetchWithAuth("/api/invoices_new/card", {
+          method: "GET",
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to load metadata");
+        }
+        const data = await res.json();
+        setCardBalance(data.balance);
+        setCardInvTotal(data.inv_total);
+        setCardAud(data.inv_aud_total);
+        setCardUnpaid(data.unpaid_count);
+        setCardUnpaidAmt(data.unpaid_amount);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMeta();
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -203,6 +240,9 @@ export default function XakorgListPage() {
     <>
       <div>
         <PageBreadcrumb pageTitle="Нэхэмжлэх" />
+      </div>
+      <div className="mb-2">
+        <InvoiceCard />
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
