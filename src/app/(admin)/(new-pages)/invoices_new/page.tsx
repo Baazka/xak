@@ -59,7 +59,7 @@ export default function XakorgListPage() {
 
   const [cardBalance, setCardBalance] = useState<number | 0>(0);
   const [cardInvTotal, setCardInvTotal] = useState<number | 0>(0);
-  const [cardInvAud, setCardAud] = useState<number | 0>(0);
+  const [cardAud, setCardAud] = useState<number | 0>(0);
   const [cardUnpaid, setCardUnpaid] = useState<number | 0>(0);
   const [cardUnpaidAmt, setCardUnpaidAmt] = useState<number | 0>(0);
 
@@ -86,10 +86,10 @@ export default function XakorgListPage() {
         }
         const data = await res.json();
         setCardBalance(data.balance);
-        setCardInvTotal(data.inv_total);
-        setCardAud(data.inv_aud_total);
-        setCardUnpaid(data.unpaid_count);
-        setCardUnpaidAmt(data.unpaid_amount);
+        setCardInvTotal(data.invTotal);
+        setCardAud(data.audTotal);
+        setCardUnpaid(data.unpaidTotal);
+        setCardUnpaidAmt(data.unpaidAmount);
       } catch (error) {
         console.error(error);
       } finally {
@@ -242,7 +242,13 @@ export default function XakorgListPage() {
         <PageBreadcrumb pageTitle="Нэхэмжлэх" />
       </div>
       <div className="mb-2">
-        <InvoiceCard />
+        <InvoiceCard
+          balance={cardBalance}
+          invTotal={cardInvTotal}
+          audTotal={cardAud}
+          unpaidTotal={cardUnpaid}
+          unpaidAmount={cardUnpaidAmt}
+        />
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">

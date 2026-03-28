@@ -34,7 +34,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   }
 
   const body = (await req.json().catch(() => null)) as CreateBody | null;
-  console.log(body, "body");
   const title = String(body?.title ?? "").trim();
   const content = String(body?.content ?? "").trim();
   const targetTypeCode = String(body?.target_type_code ?? "")
