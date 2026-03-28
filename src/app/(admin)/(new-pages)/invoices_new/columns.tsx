@@ -45,28 +45,36 @@ export const columns = (actions: ColumnActions): ColumnDef<InvoiceList>[] => [
     cell: ({ row }) => {
       const inv = row.original;
       const id = inv.inv_id;
+      const inv_status = inv.inv_status_id === 1;
       const deleting = actions.deleteLoadingId === id;
 
       const menuActions = [
         ...(actions.canUpdate
-          ? [
-              {
-                key: "edit",
-                label: "Засах",
-                icon: <Pencil className="h-4 w-4 text-gray-500 dark:text-gray-400" />,
-                onClick: () => actions.onEdit(id),
-              },
-            ]
+          ? inv_status
+            ? [
+                {
+                  key: "edit",
+                  label: "Засах",
+                  icon: <Pencil className="h-4 w-4 text-gray-500 dark:text-gray-400" />,
+                  onClick: () => actions.onEdit(id),
+                },
+              ]
+            : []
           : []),
         ...(actions.canDelete
-          ? [
-              {
-                key: "delete",
-                custom: (
-                  <DeleteConfirmDialog loading={deleting} onConfirm={() => actions.onRemove(id)} />
-                ),
-              },
-            ]
+          ? inv_status
+            ? [
+                {
+                  key: "delete",
+                  custom: (
+                    <DeleteConfirmDialog
+                      loading={deleting}
+                      onConfirm={() => actions.onRemove(id)}
+                    />
+                  ),
+                },
+              ]
+            : []
           : []),
       ];
 
@@ -106,18 +114,21 @@ export const columnsXak = (actions: ColumnActions): ColumnDef<InvoiceList>[] => 
     cell: ({ row }) => {
       const inv = row.original;
       const id = inv.inv_id;
+      const inv_status = inv.inv_status_id === 1;
       const deleting = actions.deleteLoadingId === id;
 
       const menuActions = [
         ...(actions.canPayment
-          ? [
-              {
-                key: "payment",
-                label: "Төлөлт хийх",
-                icon: <Pencil className="h-4 w-4 text-gray-500 dark:text-gray-400" />,
-                onClick: () => actions.onPayment(id),
-              },
-            ]
+          ? inv_status
+            ? [
+                {
+                  key: "payment",
+                  label: "Төлөлт хийх",
+                  icon: <Pencil className="h-4 w-4 text-gray-500 dark:text-gray-400" />,
+                  onClick: () => actions.onPayment(id),
+                },
+              ]
+            : []
           : []),
       ];
 

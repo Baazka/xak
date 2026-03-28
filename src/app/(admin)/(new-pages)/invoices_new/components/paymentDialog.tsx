@@ -6,6 +6,7 @@ import type { InvoiceList } from "../types";
 import Label from "@/components/form/Label";
 import Radio from "@/components/form/input/Radio";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   open: boolean;
@@ -25,7 +26,7 @@ type Props = {
     | "org_legal_name"
   > | null;
 
-  onSaved?: () => void;
+  onSaved: () => void;
 };
 
 type orgListType = {
@@ -40,6 +41,7 @@ type orgList = {
 };
 
 export default function paymentDialog({ open, onOpenChange, initialInvoice, onSaved }: Props) {
+  const { toast } = useToast();
   const [orgId, setOrgId] = React.useState<number | "">("");
   const [realorg, setRealorg] = React.useState<orgList[]>([]);
 
@@ -90,6 +92,7 @@ export default function paymentDialog({ open, onOpenChange, initialInvoice, onSa
       setInv_status_name(initialInvoice.inv_status_name ?? "");
       setInv_aud_count(initialInvoice.inv_aud_count ?? "");
       setInv_amount(initialInvoice.inv_amount ?? "");
+      setOrgId(initialInvoice?.inv_org_id);
     } else {
       setInv_no("");
       setInv_date("");
@@ -157,12 +160,14 @@ export default function paymentDialog({ open, onOpenChange, initialInvoice, onSa
     try {
       let res: Response;
 
-      res = await fetchWithAuth("/api/payment", {
+      res = await fetchWithAuth("/api/payments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           org_id: orgId,
           inv_id: initialInvoice?.inv_id,
+          inv_amount: initialInvoice?.inv_amount,
+          inv_aud_count: initialInvoice?.inv_aud_count,
         }),
       });
 
@@ -171,9 +176,45 @@ export default function paymentDialog({ open, onOpenChange, initialInvoice, onSa
         setError(data?.error || data?.message || "Хадгалахад алдаа гарлаа");
         return;
       }
+      toast("success", "Төлбөр амжилттай хийгдлээ.");
 
       onOpenChange(false);
-      onSaved?.();
+      onSaved();
+    } catch (err: any) {
+      setError(err?.message || "Сүлжээний алдаа");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleQPay = async (e: any) => {
+    e.preventDefault();
+    if (loading) return;
+
+    setError(null);
+    setLoading(true);
+    try {
+      let res: Response;
+
+      res = await fetchWithAuth("/api/payments", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          org_id: orgId,
+          inv_id: initialInvoice?.inv_id,
+          inv_amount: initialInvoice?.inv_amount,
+          inv_aud_count: initialInvoice?.inv_aud_count,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data?.error || data?.message || "Хадгалахад алдаа гарлаа");
+        return;
+      }
+      toast("success", "Төлбөр амжилттай хийгдлээ.");
+
+      onOpenChange(false);
+      onSaved();
     } catch (err: any) {
       setError(err?.message || "Сүлжээний алдаа");
     } finally {
@@ -204,7 +245,7 @@ export default function paymentDialog({ open, onOpenChange, initialInvoice, onSa
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-3">
+        <form className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="mb-1 block text-sm">Нэхэмжлэхийн дугаар:</label>
@@ -288,26 +329,32 @@ export default function paymentDialog({ open, onOpenChange, initialInvoice, onSa
                     value={`${balance.toLocaleString("en-US")}₮`}
                     readOnly
                   />
-                  {isWalletGood ? (
-                    <Button
-                      onClick={handleWallet}
-                      className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
-                    >
-                      Төлбор хийх
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={handleWallet}
-                      className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
-                    >
-                      Данс цэнэглэх
-                    </Button>
-                  )}
+                  <Button
+                    disabled={!isWalletGood}
+                    onClick={handleWallet}
+                    className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
+                  >
+                    Төлбор хийх
+                  </Button>
                 </div>
               </div>
             ) : (
-              <div>
-                <p> QPay</p>
+              <div className="grid grid-cols-1">
+                <label className="mb-1 block text-sm mb-2">Төлөх дүн:</label>
+                <div className="flex items-center gap-6">
+                  <input
+                    className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
+                    value={`${inv_amount.toLocaleString("en-US")}₮`}
+                    readOnly
+                  />
+
+                  <Button
+                    onClick={handleQPay}
+                    className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
+                  >
+                    Төлбор хийх
+                  </Button>
+                </div>
               </div>
             )}
           </div>

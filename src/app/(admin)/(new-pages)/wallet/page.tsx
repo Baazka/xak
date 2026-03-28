@@ -46,8 +46,8 @@ export default function WalletPage() {
 
     setLoading(true);
 
-    const sortBy = sorting[0]?.id ?? "created_date";
-    const sortOrder = sorting[0]?.desc ? "desc" : "asc";
+    const sortBy = sorting[0]?.id ?? "tran_id";
+    const sortOrder = sorting[0]?.desc ? "asc" : "desc";
 
     try {
       const res = await fetchWithAuth(

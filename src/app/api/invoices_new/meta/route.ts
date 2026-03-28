@@ -8,9 +8,9 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   //requirePermission(user.permissions, ["user.read"]);
 
   const orgId = user.org_id;
-  let whereClause = "WHERE";
+  let whereClause = "WHERE 1=1";
   if (user.user_level_id > 2) {
-    whereClause += ` TRAN_ORG_ID = ${user.org_id} `;
+    whereClause += ` AND TRAN_ORG_ID = ${user.org_id} `;
   }
 
   const balanceSql = `

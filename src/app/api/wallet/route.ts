@@ -10,6 +10,7 @@ const SORTABLE_COLUMNS = new Set([
   "tran_code",
   "tran_amount",
   "inv_no",
+  "created_date",
 ]);
 
 export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
@@ -20,8 +21,8 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const limit = Math.max(parseInt(sp.get("limit") || "10"), 1);
   const search = sp.get("search") || "";
 
-  const sortByRaw = sp.get("sortBy") || "created_date";
-  const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "created_date";
+  const sortByRaw = sp.get("sortBy") || "tran_id";
+  const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "tran_id";
   const sortOrder = (sp.get("sortOrder") || "desc").toLowerCase() === "desc" ? "DESC" : "ASC";
 
   const offset = (page - 1) * limit;

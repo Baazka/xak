@@ -20,8 +20,9 @@ export const columns = (actions: ColumnActions): ColumnDef<Wallet>[] => [
     enableSorting: false,
   },
   { accessorKey: "tran_code", header: "Гүйлгээний #" },
-  { accessorKey: "tran_date", header: "Огноо" },
   { accessorKey: "tran_cr_dt", header: "Төрөл" },
+  { accessorKey: "tran_date", header: "Огноо" },
+  { accessorKey: "tran_type_name", header: "Ангилал" },
   { accessorKey: "tran_amount", header: "Дүн" },
   { accessorKey: "inv_no", header: "Нэхэмжлэх #" },
 ];

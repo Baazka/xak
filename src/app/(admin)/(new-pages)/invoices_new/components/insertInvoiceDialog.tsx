@@ -4,6 +4,7 @@ import * as React from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import type { InvoiceList } from "../types";
 import Select from "react-select";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   open: boolean;
@@ -42,6 +43,7 @@ export default function insertInvoiceDialog({
   initialInvoice,
   onSaved,
 }: Props) {
+  const { toast } = useToast();
   const isEdit = mode === "edit";
 
   const [orgId, setOrgId] = React.useState<number | "">("");
@@ -169,6 +171,7 @@ export default function insertInvoiceDialog({
         setError(data?.error || data?.message || "Хадгалахад алдаа гарлаа");
         return;
       }
+      toast("success", "Нэхэмжлэх амжилттай үүслээ.");
 
       onOpenChange(false);
       onSaved?.();

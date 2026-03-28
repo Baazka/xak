@@ -97,45 +97,124 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const body = await req.json();
 
-  const inv_type = body.inv_type_id;
+  const invId = body.inv_id;
   const orgId = body.org_id;
-  const invAud = body.inv_aud_count;
-  const invAmt = body.inv_aud_amount;
+  const invAudCnt = body.inv_aud_count;
+  const invAmt = Number(body.inv_amount);
   const userId = user.id;
 
-  if (!invAmt || invAmt < 0 || invAmt > 5000000) {
-    return NextResponse.json({ error: "Цэнэглэх дүн буруу байна." }, { status: 422 });
-  }
-
   const client = await db.connect();
+
+  if (!invAmt || !invAudCnt || !invId || !orgId) {
+    return NextResponse.json({ error: "Мэдээлэл бүрэн биш байна." }, { status: 422 });
+  }
 
   try {
     await client.query("BEGIN");
 
-    const invCodeRes = await client.query(`SELECT nextval('invoice_code_seq') AS seq`);
-    const invCodeSeq = invCodeRes.rows[0].seq;
-    const invCode = `INV${String(invCodeSeq).padStart(6, "0")}`;
+    const tranCodeRes = await client.query(`SELECT nextval('tran_code_seq') AS seq`);
+    const tranCodeSeq = tranCodeRes.rows[0].seq;
+    const tranCode = `TR04-${String(tranCodeSeq).padStart(6, "0")}`;
 
-    const invRes = await client.query(
-      `INSERT INTO reg_invoices (inv_no, inv_org_id, inv_type_id, inv_date, inv_aud_count, inv_amount, inv_status_id, created_by, created_date)
-           VALUES ($1, $2, $3, current_timestamp, $4, $5, 1, $6, current_timestamp)
-           RETURNING inv_id`,
-      [invCode, orgId, inv_type, invAud, invAmt, userId]
+    const tranRes = await client.query(
+      `INSERT INTO reg_transactions (tran_type_id, tran_cr_dt, tran_status_id, tran_code, tran_amount, tran_org_id, tran_user_id, tran_date, created_by, created_date, tran_inv_id)
+           VALUES (4, 'CR', 1, $1, $2, $3, $4, current_timestamp, $4, current_timestamp, $5)
+           RETURNING tran_id`,
+      [tranCode, invAmt, orgId, userId, invId]
     );
-    const invNewId = invRes.rows[0].inv_id;
+    const tranNewId = tranRes.rows[0].tran_id;
 
-    // log_task_status insert
-    // await client.query(
-    //   `INSERT INTO log_task_status (task_id, task_status_id, action_by, action_date)
-    //         VALUES ($1, 1, $2, current_timestamp)`,
-    //   [taskNewId, createdUser]
-    // );
+    const invUpdateRes = await client.query(
+      `UPDATE reg_invoices
+       SET inv_status_id = 2, updated_by = $1, updated_date = current_timestamp
+       WHERE inv_id = $2`,
+      [userId, invId]
+    );
+
+    for (let i = 0; i < invAudCnt; i++) {
+      await client.query(
+        `INSERT INTO reg_invoice_audit (inva_inv_id, created_by, created_date)
+         VALUES ($1, $2, current_timestamp)`,
+        [invId, userId]
+      );
+    }
 
     await client.query("COMMIT");
-    return NextResponse.json({ inv_id: invNewId }, { status: 201 });
+    return NextResponse.json({ tran_id: tranNewId }, { status: 201 });
   } catch (err: any) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Invoice create error:", err);
+    console.error("Payment wallet error:", err);
+
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } finally {
+    client.release();
+  }
+});
+
+export const PUT = withAuth(async (req: NextRequest, user: JwtPayload) => {
+  //requirePermission(user.permissions, ["user.create"]);
+
+  const body = await req.json();
+
+  const invId = body.inv_id;
+  const orgId = body.org_id;
+  const invAudCnt = body.inv_aud_count;
+  const invAmt = Number(body.inv_amount);
+  const userId = user.id;
+
+  const client = await db.connect();
+
+  if (!invAmt || !invAudCnt || !invId || !orgId) {
+    return NextResponse.json({ error: "Мэдээлэл бүрэн биш байна." }, { status: 422 });
+  }
+
+  try {
+    await client.query("BEGIN");
+
+    const tranDTCodeRes = await client.query(`SELECT nextval('tran_code_seq') AS seq`);
+    const tranDTCodeSeq = tranDTCodeRes.rows[0].seq;
+    const tranDTCode = `TR02-${String(tranDTCodeSeq).padStart(6, "0")}`;
+
+    const tranDTRes = await client.query(
+      `INSERT INTO reg_transactions (tran_type_id, tran_cr_dt, tran_status_id, tran_code, tran_amount, tran_org_id, tran_user_id, tran_date, created_by, created_date)
+           VALUES (2, 'DT', 1, $1, $2, $3, $4, current_timestamp, $4, current_timestamp)
+           RETURNING tran_id`,
+      [tranDTCode, invAmt, orgId, userId]
+    );
+    const tranDTId = tranDTRes.rows[0].tran_id;
+
+    const tranCRCodeRes = await client.query(`SELECT nextval('tran_code_seq') AS seq`);
+    const tranCRCodeSeq = tranCRCodeRes.rows[0].seq;
+    const tranCRCode = `TR03-${String(tranCRCodeSeq).padStart(6, "0")}`;
+
+    const tranCRRes = await client.query(
+      `INSERT INTO reg_transactions (tran_type_id, tran_cr_dt, tran_status_id, tran_code, tran_amount, tran_org_id, tran_user_id, tran_date, created_by, created_date, tran_inv_id)
+           VALUES (2, 'CR', 1, $1, $2, $3, $4, current_timestamp, $4, current_timestamp, $5)
+           RETURNING tran_id`,
+      [tranCRCode, invAmt, orgId, userId, invId]
+    );
+    const tranCRId = tranCRRes.rows[0].tran_id;
+
+    const invUpdateRes = await client.query(
+      `UPDATE reg_invoices
+       SET inv_status_id = 2, updated_by = $1, updated_date = current_timestamp
+       WHERE inv_id = $2`,
+      [userId, invId]
+    );
+
+    for (let i = 0; i < invAudCnt; i++) {
+      await client.query(
+        `INSERT INTO reg_invoice_audit (inva_inv_id, created_by, created_date)
+         VALUES ($1, $2, current_timestamp)`,
+        [invId, userId]
+      );
+    }
+
+    await client.query("COMMIT");
+    return NextResponse.json({ tran_id: tranCRId }, { status: 201 });
+  } catch (err: any) {
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("Payment QPay error:", err);
 
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   } finally {
