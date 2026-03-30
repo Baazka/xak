@@ -36,7 +36,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   try {
     await client.query("BEGIN");
 
-    const audCodeRes = await client.query(`SELECT nextval('aud_code_seq') AS seq`);
+    const audCodeRes = await client.query(`SELECT nextval('audit_code_seq') AS seq`);
     const audCodeSeq = audCodeRes.rows[0].seq;
     const audCode = `AUD${String(audCodeSeq).padStart(6, "0")}`;
 
@@ -74,14 +74,14 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       );
     } else {
       //3rd step: insert invoice
-      const invCodeRes = await client.query(`SELECT nextval('inv_code_seq') AS seq`);
+      const invCodeRes = await client.query(`SELECT nextval('invoice_code_seq') AS seq`);
       const invCodeSeq = invCodeRes.rows[0].seq;
       const invCode = `INV${String(invCodeSeq).padStart(6, "0")}`;
 
       let invAmount = 100000;
 
       const invRes = await client.query(
-        `INSERT INTO reg_invoices (inv_no, inv_org_id, int_type_id, inv_date, inv_aud_count, inv_amount, inv_status_id, created_by, created_date)
+        `INSERT INTO reg_invoices (inv_no, inv_org_id, inv_type_id, inv_date, inv_aud_count, inv_amount, inv_status_id, created_by, created_date)
               VALUES ($1, $2, 1, current_timestamp, 1, $3, 2, $4, current_timestamp)
               RETURNING inv_id`,
         [invCode, orgId, invAmount, userId]
@@ -93,9 +93,9 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       const tranDTCode = `TR02-${String(tranDTCodeSeq).padStart(6, "0")}`;
 
       await client.query(
-        `INSERT INTO reg_transactions (tran_type_id, tran_cr_dt, tran_status_id, tran_code, tran_amount, tran_org_id, tran_user_id, created_by, created_date)
-              VALUES (2, 'DT', 1, $1, $2, $3, $4, $5, $6, current_timestamp)`,
-        [tranDTCode, invAmount, orgId, userId, userId]
+        `INSERT INTO reg_transactions (tran_type_id, tran_cr_dt, tran_date, tran_status_id, tran_code, tran_amount, tran_org_id, tran_user_id, created_by, created_date)
+              VALUES (2, 'DT', current_timestamp, 1, $1, $2, $3, $4, $4, current_timestamp)`,
+        [tranDTCode, invAmount, orgId, userId]
       );
 
       const tranCRCodeRes = await client.query(`SELECT nextval('tran_code_seq') AS seq`);
@@ -103,9 +103,9 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       const tranCRCode = `TR03-${String(tranCRCodeSeq).padStart(6, "0")}`;
 
       await client.query(
-        `INSERT INTO reg_transactions (tran_type_id, tran_cr_dt, tran_status_id, tran_code, tran_amount, tran_org_id, tran_user_id, tran_inv_id, created_by, created_date)
-              VALUES (3, 'CR', 1, $1, $2, $3, $4, $5, $6, current_timestamp)`,
-        [tranCRCode, invAmount, orgId, userId, NewInvId, userId]
+        `INSERT INTO reg_transactions (tran_type_id, tran_cr_dt, tran_date, tran_status_id, tran_code, tran_amount, tran_org_id, tran_user_id, tran_inv_id, created_by, created_date)
+              VALUES (3, 'CR', current_timestamp, 1, $1, $2, $3, $4, $5, $4, current_timestamp)`,
+        [tranCRCode, invAmount, orgId, userId, NewInvId]
       );
       // 5th step: insert invoice_audit
       await client.query(
