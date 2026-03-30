@@ -1,5 +1,11 @@
 import Select, { SingleValue } from "react-select";
 import DatePicker from "../form/datePicker";
+import FileUpload from "./FileUpload";
+
+type UploadedFileItem = {
+  file: File;
+  preview?: string;
+};
 
 type StepOneData = {
   aud_name: string;
@@ -7,6 +13,7 @@ type StepOneData = {
   aud_comp_id: number;
   aud_begin_date: Date;
   aud_end_date: Date;
+  attachments: UploadedFileItem[];
 };
 
 type CompanyOption = {
@@ -18,7 +25,7 @@ type CompanyOption = {
 type Props = {
   values: StepOneData;
   orgOptions: CompanyOption[];
-  onChange: (field: keyof StepOneData, value: string | number | Date) => void;
+  onChange: <K extends keyof StepOneData>(field: K, value: StepOneData[K]) => void;
 };
 
 export default function StepOne({ values, orgOptions, onChange }: Props) {
@@ -66,22 +73,26 @@ export default function StepOne({ values, orgOptions, onChange }: Props) {
 
       <div className="space-y-2">
         <DatePicker
-          id="date-picker"
+          id="aud_begin_date"
           label="Эхлэх хугацаа"
           defaultDate={values.aud_begin_date}
-          onChange={(selectedDates, dateStr) => {
-            onChange("aud_begin_date", dateStr);
+          onChange={(selectedDates) => {
+            if (selectedDates?.[0]) {
+              onChange("aud_begin_date", selectedDates[0]);
+            }
           }}
         />
       </div>
 
       <div className="space-y-2">
         <DatePicker
-          id="date-picker"
+          id="aud_end_date"
           label="Дуусах хугацаа"
           defaultDate={values.aud_end_date}
-          onChange={(selectedDates, dateStr) => {
-            onChange("aud_end_date", dateStr);
+          onChange={(selectedDates) => {
+            if (selectedDates?.[0]) {
+              onChange("aud_end_date", selectedDates[0]);
+            }
           }}
         />
       </div>
@@ -139,6 +150,16 @@ export default function StepOne({ values, orgOptions, onChange }: Props) {
             +
           </button>
         </div>
+      </div>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Гэрээ хавсаргах</label>
+        <FileUpload
+          // label="Хавсралт файл"
+          accept=".pdf,.doc,.docx,.xls,.xlsx,image/*"
+          multiple={false}
+          value={values.attachments}
+          onChange={(files) => onChange("attachments", files)}
+        />
       </div>
     </div>
   );

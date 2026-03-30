@@ -6,7 +6,15 @@ import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { useRouter } from "next/navigation";
+import LoadingScreen from "../ui/LoadingScreen";
+import Alert from "../ui/alert/Alert";
 const currentYear = new Date().getFullYear();
+
+type UploadedFileItem = {
+  file: File;
+  preview?: string;
+};
 
 type FormDataType = {
   aud_name: string;
@@ -19,6 +27,7 @@ type FormDataType = {
   usertype5: number;
   usertype6: number[];
   payment_method: string;
+  attachments: UploadedFileItem[];
 };
 
 const initialData: FormDataType = {
@@ -32,6 +41,7 @@ const initialData: FormDataType = {
   usertype5: 0,
   usertype6: [],
   payment_method: "",
+  attachments: [],
 };
 
 type CompItem = {
@@ -48,6 +58,7 @@ type UserItem = {
 };
 
 export default function AuditForm() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormDataType>(initialData);
   const [message, setMessage] = useState("");
@@ -57,9 +68,50 @@ export default function AuditForm() {
   const [compID, setOrgs] = useState<CompItem[]>([]);
   const [userID, setUserIDs] = useState<UserItem[]>([]);
 
-  const updateField = (field: keyof FormDataType, value: string | number | Date | number[]) => {
+  const [alert, setAlert] = useState<{
+    show: boolean;
+    variant: "error" | "success" | "warning";
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    variant: "error",
+    title: "",
+    message: "",
+  });
+
+  const updateField = <K extends keyof FormDataType>(field: K, value: FormDataType[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  const updateStepOneField = <
+    K extends keyof Pick<
+      FormDataType,
+      "aud_name" | "aud_year" | "aud_comp_id" | "aud_begin_date" | "aud_end_date" | "attachments"
+    >,
+  >(
+    field: K,
+    value: any
+  ) => {
+    updateField(field, value);
+  };
+
+  const updateStepTwoField = <
+    K extends keyof Pick<FormDataType, "usertype3" | "usertype4" | "usertype5" | "usertype6">,
+  >(
+    field: K,
+    value: any
+  ) => {
+    updateField(field, value);
+  };
+
+  const updateStepThreeField = <K extends keyof Pick<FormDataType, "payment_method">>(
+    field: K,
+    value: any
+  ) => {
+    updateField(field, value);
+  };
+
   const orgOptions = compID.map((item) => ({
     value: item.comp_id,
     label: item.comp_legal_name,
@@ -108,20 +160,13 @@ export default function AuditForm() {
     setStep((prev) => prev - 1);
   };
 
-  const handleSubmit = async () => {
-    try {
-      const team_data = [
-        formData.usertype3 ? { user_id: Number(formData.usertype3), role_id: 3 } : null,
-        formData.usertype4 ? { user_id: Number(formData.usertype4), role_id: 4 } : null,
-        formData.usertype5 ? { user_id: Number(formData.usertype5), role_id: 5 } : null,
-        ...(Array.isArray(formData.usertype6)
-          ? formData.usertype6.map((id) => ({
-              user_id: Number(id),
-              role_id: 6,
-            }))
-          : []),
-      ].filter(Boolean);
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setAlert({ show: false, variant: "error", title: "", message: "" });
+    if (loading) return;
+    setLoading(true);
 
+    try {
       const payload = {
         aud_name: formData.aud_name,
         aud_year: formData.aud_year,
@@ -129,10 +174,16 @@ export default function AuditForm() {
         aud_begin_date: formData.aud_begin_date,
         aud_end_date: formData.aud_end_date,
         payment_method: formData.payment_method,
-        team_data,
+        team_data: [
+          formData.usertype3 ? { user_id: Number(formData.usertype3), role_id: 3 } : null,
+          formData.usertype4 ? { user_id: Number(formData.usertype4), role_id: 4 } : null,
+          formData.usertype5 ? { user_id: Number(formData.usertype5), role_id: 5 } : null,
+          ...formData.usertype6.map((id) => ({
+            user_id: Number(id),
+            role_id: 6,
+          })),
+        ].filter(Boolean),
       };
-
-      console.log(payload, "payload");
 
       const res = await fetch("/api/auditadd", {
         method: "POST",
@@ -145,13 +196,58 @@ export default function AuditForm() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        throw new Error(data?.message || "Хадгалах үед алдаа гарлаа");
+        setAlert({
+          show: true,
+          variant: "error",
+          title: "Алдаа",
+          message: data.error || "Мэдээлэл буруу байна",
+        });
+        setLoading(false);
+        return;
       }
 
-      alert("Амжилттай хадгаллаа");
-    } catch (err: any) {
-      console.error(err);
-      alert(err.message || "Алдаа гарлаа");
+      const auditId = data?.audit_id;
+
+      if (auditId && formData.attachments.length > 0) {
+        const fd = new FormData();
+        fd.append("audit_id", String(auditId));
+
+        formData.attachments.forEach((item) => {
+          fd.append("files", item.file);
+        });
+
+        const uploadRes = await fetch("/api/files/upload", {
+          method: "POST",
+          body: fd,
+        });
+
+        const uploadData = await uploadRes.json().catch(() => ({}));
+
+        if (!uploadRes.ok) {
+          throw new Error(uploadData?.error || "Файл upload хийхэд алдаа гарлаа");
+        }
+      }
+
+      // Амжилттай
+      setAlert({
+        show: true,
+        variant: "success",
+        title: "Амжилттай",
+        message: "Амжилттай нэвтэрлээ",
+      });
+
+      setTimeout(() => {
+        router.push("/audit");
+      }, 1500);
+    } catch (error) {
+      setAlert({
+        show: true,
+        variant: "error",
+        title: "Серверийн алдаа",
+        message: "Түр хүлээгээд дахин оролдоно уу",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -171,7 +267,6 @@ export default function AuditForm() {
         const compList: CompItem[] = data.company ?? [];
         const userList: UserItem[] = data.users ?? [];
 
-        console.log(userList);
         setOrgs(compList);
         setUserIDs(userList);
       } catch (error) {
@@ -186,7 +281,15 @@ export default function AuditForm() {
 
   return (
     <div className="rounded-2xl border p-6">
-      <div className="mb-6">
+      {alert.show && (
+        <Alert
+          variant={alert.variant}
+          title={alert.title}
+          message={alert.message}
+          showLink={false}
+        />
+      )}
+      <div className="mb-6 mt-4">
         <div className="flex gap-2">
           {steps.map((s) => (
             <div key={s.id} className="flex-1 text-center">
@@ -214,9 +317,10 @@ export default function AuditForm() {
             aud_comp_id: formData.aud_comp_id,
             aud_begin_date: formData.aud_begin_date,
             aud_end_date: formData.aud_end_date,
+            attachments: formData.attachments,
           }}
           orgOptions={orgOptions}
-          onChange={updateField}
+          onChange={updateStepOneField}
         />
       )}
 
@@ -229,7 +333,7 @@ export default function AuditForm() {
             usertype6: formData.usertype6,
           }}
           userOptions={userOptions}
-          onChange={updateField}
+          onChange={updateStepTwoField}
         />
       )}
 
@@ -238,7 +342,7 @@ export default function AuditForm() {
           values={{
             payment_method: formData.payment_method,
           }}
-          onChange={updateField}
+          onChange={updateStepThreeField}
         />
       )}
 
@@ -272,6 +376,7 @@ export default function AuditForm() {
           </button>
         )}
       </div>
+      <LoadingScreen show={loading} />
     </div>
   );
 }
