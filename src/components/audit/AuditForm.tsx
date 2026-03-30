@@ -233,7 +233,7 @@ export default function AuditForm() {
         show: true,
         variant: "success",
         title: "Амжилттай",
-        message: "Амжилттай нэвтэрлээ",
+        message: "Аудит амжилттай хадгалагдлаа",
       });
 
       setTimeout(() => {
