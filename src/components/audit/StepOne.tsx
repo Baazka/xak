@@ -1,4 +1,4 @@
-import Select from "react-select";
+import Select, { SingleValue } from "react-select";
 import DatePicker from "../form/datePicker";
 
 type StepOneData = {
@@ -9,16 +9,29 @@ type StepOneData = {
   aud_end_date: Date;
 };
 
-type Props = {
-  values: StepOneData;
-  onChange: (field: keyof StepOneData, value: string | Date) => void;
+type CompanyOption = {
+  value: number;
+  label: string;
+  regNo?: string;
 };
 
-export default function StepOne({ values, onChange }: Props) {
+type Props = {
+  values: StepOneData;
+  orgOptions: CompanyOption[];
+  onChange: (field: keyof StepOneData, value: string | number | Date) => void;
+};
+
+export default function StepOne({ values, orgOptions, onChange }: Props) {
   const currentYear = new Date().getFullYear();
   const MIN_YEAR = currentYear - 5;
   const safeYear =
     values.aud_year === "" || values.aud_year == null ? currentYear : Number(values.aud_year);
+
+  const selectedOrg = orgOptions.find((opt) => opt.value === values.aud_comp_id) ?? null;
+
+  const handleOrgChange = (selected: SingleValue<CompanyOption>) => {
+    onChange("aud_comp_id", selected?.value ?? 0);
+  };
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -35,12 +48,19 @@ export default function StepOne({ values, onChange }: Props) {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium">Шалгагдагч хуулийн этгээд</label>
-        <input
-          type="text"
-          value={values.aud_comp_id}
-          onChange={(e) => onChange("aud_comp_id", e.target.value)}
-          className="w-full rounded-lg border px-3 py-2"
-          placeholder="Шалгагдагч хуулийн этгээд"
+        <Select<CompanyOption, false>
+          options={orgOptions}
+          value={selectedOrg}
+          onChange={handleOrgChange}
+          placeholder="Нэрээр нь хайх..."
+          isSearchable
+          isClearable
+          formatOptionLabel={(option) => (
+            <div className="flex flex-col">
+              <span>{option.label}</span>
+              {option.regNo && <span className="text-xs text-gray-500">{option.regNo}</span>}
+            </div>
+          )}
         />
       </div>
 

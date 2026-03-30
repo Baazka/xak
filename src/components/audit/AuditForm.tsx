@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 const currentYear = new Date().getFullYear();
 
 type FormDataType = {
@@ -36,14 +37,37 @@ const initialData: FormDataType = {
   payment_method: 0,
 };
 
+type CompItem = {
+  comp_id: number;
+  comp_legal_name: string;
+  comp_reg_no?: string;
+};
+
+type UserItem = {
+  user_id: number;
+  user_firstname: string;
+  user_phone: string;
+  user_email: string;
+};
+
 export default function AuditForm() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormDataType>(initialData);
   const [message, setMessage] = useState("");
 
-  const updateField = (field: keyof FormDataType, value: string) => {
+  const [loading, setLoading] = useState(false);
+
+  const [compID, setOrgs] = useState<CompItem[]>([]);
+  const [userID, setUserIDs] = useState<UserItem[]>([]);
+
+  const updateField = (field: keyof FormDataType, value: string | number | Date) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+  const orgOptions = compID.map((item) => ({
+    value: item.comp_id,
+    label: item.comp_legal_name,
+    regNo: item.comp_reg_no,
+  }));
 
   const nextStep = () => {
     if (step === 1) {
@@ -109,6 +133,33 @@ export default function AuditForm() {
     { id: 3, label: "Төлбөр" },
   ];
 
+  useEffect(() => {
+    const loadMeta = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetchWithAuth("/api/auditadd/meta", {
+          method: "GET",
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to load metadata");
+        }
+        const data = await res.json();
+        const compList: CompItem[] = data.company ?? [];
+        const userList: UserItem[] = data.users ?? [];
+        setOrgs(compList);
+        setUserIDs(userList);
+      } catch (error) {
+        console.error("Error loading metadata:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMeta();
+  }, []);
+
   return (
     <div className="rounded-2xl border p-6">
       <div className="mb-6">
@@ -140,6 +191,7 @@ export default function AuditForm() {
             aud_begin_date: formData.aud_begin_date,
             aud_end_date: formData.aud_end_date,
           }}
+          orgOptions={orgOptions}
           onChange={updateField}
         />
       )}
