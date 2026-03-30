@@ -19,7 +19,7 @@ type UserItem = {
   user_firstname: string;
   user_phone: string;
   user_email: string;
-  org_legal_name: string;
+  org_legal_name?: string;
   org_register_no?: string;
 };
 
