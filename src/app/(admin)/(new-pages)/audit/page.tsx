@@ -100,7 +100,7 @@ export default function Audit() {
   }, [page, limit, search, sortBy, sortOrder, toast]);
 
   const handleLog = async () => {
-    const res = await fetch("/api/opendatalab?register=2672138");
+    const res = await fetch("/api/opendatalab?register=2672138"); //2702673 APU
     const data = await res.json();
 
     console.log(data);
