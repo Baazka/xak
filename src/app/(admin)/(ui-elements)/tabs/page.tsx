@@ -37,4 +37,3 @@ export default function Tabs() {
     </div>
   );
 }
-113 157
