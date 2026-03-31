@@ -6,7 +6,7 @@ import { withAuth } from "@/lib/withAuth";
 import { requirePermission } from "@/lib/requirePermission";
 import { JwtPayload } from "@/lib/jwtPayload";
 
-export async function GET(req: NextRequest, user: JwtPayload) {
+export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const compSql = `SELECT comp_id, comp_reg_no, comp_legal_name FROM reg_company`;
 
   let whereClause = "WHERE 1=1";
@@ -27,4 +27,4 @@ export async function GET(req: NextRequest, user: JwtPayload) {
     console.error("GET /api/auditadd/meta error:", error);
     return NextResponse.json({ error: "Failed to load notification metadata" }, { status: 500 });
   }
-}
+});
