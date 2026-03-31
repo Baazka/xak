@@ -1,24 +1,21 @@
-import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { NextRequest, NextResponse } from "next/server";
+import fs from "node:fs/promises";
+import path from "node:path";
 import db from "@/lib/db";
 
-type Params = {
-  params: Promise<{ id: string }>;
-};
-
-export async function GET(req: Request, { params }: Params) {
+export async function GET(req: NextRequest, ctx: RouteContext<"/api/files/download/[id]">) {
   try {
-    const { id } = await params;
+    const { id } = await ctx.params;
     const fileId = Number(id);
 
-    if (!fileId) {
+    if (!Number.isInteger(fileId) || fileId <= 0) {
       return NextResponse.json({ error: "Файлын id буруу байна" }, { status: 400 });
     }
 
     const result = await db.query(
       `
-      select 1 from dual
+      SELECT id, file_path, mime_type, original_name
+      FROM audit_files
       WHERE id = $1
       `,
       [fileId]
@@ -30,12 +27,16 @@ export async function GET(req: Request, { params }: Params) {
       return NextResponse.json({ error: "Файл олдсонгүй" }, { status: 404 });
     }
 
-    const fileBuffer = await fs.readFile(path.resolve(file.file_path));
+    const absPath = path.resolve(file.file_path);
+    const fileBuffer = await fs.readFile(absPath);
+    const body = new Uint8Array(fileBuffer);
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(body, {
       headers: {
         "Content-Type": file.mime_type || "application/octet-stream",
-        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(file.original_name)}`,
+        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(
+          file.original_name
+        )}`,
       },
     });
   } catch (error) {
