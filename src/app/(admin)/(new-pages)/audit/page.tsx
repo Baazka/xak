@@ -4,7 +4,7 @@ import { DataTable } from "@/components/tables/DataTable";
 import type { AuditForAdmin } from "./types";
 import { columns, columnsAdmin } from "./columns";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { SortingState } from "@tanstack/react-table";
+import { SortingState, VisibilityState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
@@ -47,6 +47,10 @@ export default function Audit() {
 
   const sortBy = useMemo(() => sorting[0]?.id ?? "aud_id", [sorting]);
   const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    aud_year: false, // default hide
+  });
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -174,8 +178,10 @@ export default function Audit() {
               onSearchChange={setSearchInput}
               sorting={sorting}
               loading={listLoading}
+              columnVisibility={columnVisibility}
               onPageChange={setPage}
               onSortingChange={setSorting}
+              onColumnVisibilityChange={setColumnVisibility}
               onLimitChange={setLimit}
             />
           ) : (
@@ -195,8 +201,10 @@ export default function Audit() {
               onSearchChange={setSearchInput}
               sorting={sorting}
               loading={listLoading}
+              columnVisibility={columnVisibility}
               onPageChange={setPage}
               onSortingChange={setSorting}
+              onColumnVisibilityChange={setColumnVisibility}
               onLimitChange={setLimit}
             />
           )}

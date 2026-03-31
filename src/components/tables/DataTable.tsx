@@ -7,12 +7,26 @@ import {
   SortingState,
   ColumnDef,
   OnChangeFn,
+  VisibilityState,
 } from "@tanstack/react-table";
+
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Settings2 } from "lucide-react";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData, TValue> {
     className?: string;
     noTruncate?: boolean;
+    columnLabel?: string;
+    hideFromToggle?: boolean;
   }
 }
 
@@ -38,10 +52,12 @@ type Props<TData> = {
   limit: number;
   search: string;
   sorting: SortingState;
+  columnVisibility: VisibilityState;
   loading?: boolean;
   onSearchChange: (v: string) => void;
   onPageChange: (p: number) => void;
   onSortingChange: OnChangeFn<SortingState>;
+  onColumnVisibilityChange: OnChangeFn<VisibilityState>;
   onLimitChange: (l: number) => void;
 };
 
@@ -53,20 +69,23 @@ export function DataTable<TData>({
   limit,
   search,
   sorting,
+  columnVisibility,
   loading = false,
   onSearchChange,
   onPageChange,
   onSortingChange,
+  onColumnVisibilityChange,
   onLimitChange,
 }: Props<TData>) {
   const table = useReactTable({
     data,
     columns,
-    state: { sorting },
+    state: { sorting, columnVisibility },
     manualSorting: true,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange,
+    onColumnVisibilityChange,
     pageCount: Math.ceil(total / limit),
   });
 
@@ -83,7 +102,52 @@ export function DataTable<TData>({
               onPageChange(1);
             }}
           />
-          <SearchInput value={search} onChange={onSearchChange} />
+          <div className="flex items-center gap-2">
+            <SearchInput value={search} onChange={onSearchChange} />
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10 gap-2 dark:border-gray-700 dark:bg-[#0f172a] dark:text-gray-300"
+                >
+                  <Settings2 className="h-4 w-4" />
+                  Баганууд
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Багана харагдац</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                {table
+                  .getAllLeafColumns()
+                  .filter(
+                    (column) =>
+                      column.columnDef.enableHiding !== false &&
+                      !column.columnDef.meta?.hideFromToggle
+                  )
+                  .map((column) => {
+                    const label =
+                      column.columnDef.meta?.columnLabel ??
+                      (typeof column.columnDef.header === "string"
+                        ? column.columnDef.header
+                        : column.id);
+
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      >
+                        {label}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 
