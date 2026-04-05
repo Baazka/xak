@@ -8,7 +8,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   //requirePermission(user.permissions, ["user.create"]);
 
   const body = await req.json();
-  console.log(body, "<<<<<<<<audit body");
   // 1st step: insert audit_data
   const audYear = body.aud_year;
   const audName = body.aud_name;
@@ -21,6 +20,21 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   if (!audYear || !audName || !audBeginDate || !audEndDate || !audCompId) {
     return NextResponse.json({ error: "Мэдээлэл дутуу байна." }, { status: 422 });
   }
+
+  // Insert audit_organization
+  const compData = body.comp_data; // expect { org_regno, org_legal_name, org_founded_date, org_certno, org_main_operation, org_responsibility, org_type, org_is_special, org_shareholder, org_founder, org_asset, org_address, org_phone, org_email, org_head_name, org_head_phone, org_head_email, org_acc_name, org_acc_phone, org_acc_email, org_operation_data[], org_detail_data[]}
+  // Insert audit_org_operation
+  const orgOperationData: { op_code: string; op_name: string; op_date: Date }[] =
+    compData.org_operation_data; // expect array of { op_code, op_name, op_date }
+  // Insert audit_org_detail
+  const orgDetailData: {
+    det_type_id: number;
+    det_category: string;
+    det_country: string;
+    det_lastname: string;
+    det_firstname: string;
+    det_date: Date;
+  }[] = compData.org_detail_data; // expect array of { det_type_id, det_category, det_country, det_lastname, det_firstname, det_date }
 
   // 2nd step: insert audit_team
   const teamData: { user_id: number; role_id: number }[] = body.team_data; // expect array of { user_id, role_id }
@@ -47,6 +61,59 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       [audCode, orgId, audCompId, audYear, audName, audBeginDate, audEndDate, userId]
     );
     const NewAudId = audDataRes.rows[0].aud_id;
+
+    // Insert audit_organization
+    await client.query(
+      `INSERT INTO audit_organization (aud_id, org_regno, org_legal_name, org_founded_date, org_certno, org_main_operation, org_responsibility, org_type, org_is_special, org_shareholder, org_founder, org_asset, org_address, org_phone, org_email, org_head_name, org_head_phone, org_head_email, org_acc_name, org_acc_phone, org_acc_email, created_by, created_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, current_timestamp)`,
+      [
+        NewAudId,
+        compData.org_regno,
+        compData.org_legal_name,
+        compData.org_founded_date,
+        compData.org_certno,
+        compData.org_main_operation,
+        compData.org_responsibility,
+        compData.org_type,
+        compData.org_is_special,
+        compData.org_shareholder,
+        compData.org_founder,
+        compData.org_asset,
+        compData.org_address,
+        compData.org_phone,
+        compData.org_email,
+        compData.org_head_name,
+        compData.org_head_phone,
+        compData.org_head_email,
+        compData.org_acc_name,
+        compData.org_acc_phone,
+        compData.org_acc_email,
+        userId,
+      ]
+    );
+    // Insert audit_org_operation
+    for (const op of orgOperationData) {
+      await client.query(
+        `INSERT INTO audit_org_operation (op_aud_id, op_code, op_name, op_date, op_flag)
+             VALUES ($1, $2, $3, $4, true)`,
+        [NewAudId, op.op_code, op.op_name, op.op_date]
+      );
+    }
+    // Insert audit_org_detail
+    for (const det of orgDetailData) {
+      await client.query(
+        `INSERT INTO audit_org_detail (det_aud_id, det_type_id, det_category, det_country, det_lastname, det_firstname, det_date)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          NewAudId,
+          det.det_type_id,
+          det.det_category,
+          det.det_country,
+          det.det_lastname,
+          det.det_firstname,
+          det.det_date,
+        ]
+      );
+    }
 
     // 2nd step: insert audit_team
     for (const member of teamData) {

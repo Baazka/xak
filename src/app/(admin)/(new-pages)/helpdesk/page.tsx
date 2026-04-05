@@ -4,7 +4,7 @@ import { DataTable } from "@/components/tables/DataTable";
 import type { TaskForAdmin } from "./types";
 import { columns, columnsAdmin } from "./columns";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { SortingState } from "@tanstack/react-table";
+import { SortingState, VisibilityState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
@@ -50,6 +50,10 @@ export default function Audit() {
   const sortBy = useMemo(() => sorting[0]?.id ?? "task_id", [sorting]);
   const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
   const [open, setOpen] = useState(false);
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    task_code: true, // default hide
+  });
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -174,6 +178,8 @@ export default function Audit() {
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
+              columnVisibility={columnVisibility}
+              onColumnVisibilityChange={setColumnVisibility}
             />
           ) : (
             <DataTable
@@ -195,6 +201,8 @@ export default function Audit() {
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
+              columnVisibility={columnVisibility}
+              onColumnVisibilityChange={setColumnVisibility}
             />
           )}
         </div>

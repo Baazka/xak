@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useAuth } from "@/context/AuthContext";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { SortingState } from "@tanstack/react-table";
+import { SortingState, VisibilityState } from "@tanstack/react-table";
 import { hasPermission } from "@/lib/permission";
 import SkeletonTable from "@/components/tables/SkeletonTable";
 import { downloadExcel } from "@/lib/downloadExcel";
@@ -52,6 +52,9 @@ export default function XakorgListPage() {
 
   const sortBy = useMemo(() => sorting[0]?.id ?? "org_id", [sorting]);
   const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    // default hide
+  });
 
   // Debounce search input -> real search
   useEffect(() => {
@@ -211,6 +214,8 @@ export default function XakorgListPage() {
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
+              columnVisibility={columnVisibility}
+              onColumnVisibilityChange={setColumnVisibility}
             />
           )}
         </div>
