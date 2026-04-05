@@ -41,7 +41,6 @@ export default function DatePicker({
 
     fpRef.current = flatpickr(inputRef.current, {
       mode: mode === "time" ? "single" : mode,
-      static: true,
       monthSelectorType: "static",
       defaultDate,
       minDate,
@@ -53,6 +52,8 @@ export default function DatePicker({
       enableTime: mode === "time",
       noCalendar: mode === "time",
       time_24hr: true,
+      appendTo: document.body,
+      position: "auto",
     });
 
     return () => {

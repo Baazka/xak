@@ -9,6 +9,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useRouter } from "next/navigation";
 import LoadingScreen from "../ui/LoadingScreen";
 import Alert from "../ui/alert/Alert";
+import AuditCompany from "./forms/AuditCompany";
 const currentYear = new Date().getFullYear();
 
 type UploadedFileItem = {
@@ -19,7 +20,6 @@ type UploadedFileItem = {
 type FormDataType = {
   aud_name: string;
   aud_year: string;
-  aud_comp_id: number;
   aud_begin_date: Date;
   aud_end_date: Date;
   usertype3: number;
@@ -28,12 +28,34 @@ type FormDataType = {
   usertype6: number[];
   payment_method: string;
   attachments: UploadedFileItem[];
+
+  org_regno: string;
+  org_legal_name: string;
+  org_founded_date: Date;
+  org_certno: string;
+  org_type: string;
+  org_main_operation: string;
+  is_special: string;
+  shareholder: string;
+  founder: string;
+  asset: string;
+
+  org_address: string;
+  org_phone: string;
+  org_email: string;
+
+  org_head_name: string;
+  org_head_phone: string;
+  org_head_email: string;
+
+  org_acc_name: string;
+  org_acc_phone: string;
+  org_acc_email: string;
 };
 
 const initialData: FormDataType = {
   aud_name: "",
   aud_year: String(currentYear),
-  aud_comp_id: 0,
   aud_begin_date: new Date(),
   aud_end_date: new Date(),
   usertype3: 0,
@@ -42,12 +64,26 @@ const initialData: FormDataType = {
   usertype6: [],
   payment_method: "",
   attachments: [],
-};
 
-type CompItem = {
-  comp_id: number;
-  comp_legal_name: string;
-  comp_reg_no?: string;
+  org_regno: "",
+  org_legal_name: "",
+  org_founded_date: new Date(),
+  org_certno: "",
+  org_type: "",
+  org_main_operation: "",
+  is_special: "",
+  shareholder: "",
+  founder: "",
+  asset: "",
+  org_address: "",
+  org_phone: "",
+  org_email: "",
+  org_head_name: "",
+  org_head_phone: "",
+  org_head_email: "",
+  org_acc_name: "",
+  org_acc_phone: "",
+  org_acc_email: "",
 };
 
 type UserItem = {
@@ -65,7 +101,6 @@ export default function AuditForm() {
 
   const [loading, setLoading] = useState(false);
 
-  const [compID, setOrgs] = useState<CompItem[]>([]);
   const [userID, setUserIDs] = useState<UserItem[]>([]);
 
   const [alert, setAlert] = useState<{
@@ -87,7 +122,7 @@ export default function AuditForm() {
   const updateStepOneField = <
     K extends keyof Pick<
       FormDataType,
-      "aud_name" | "aud_year" | "aud_comp_id" | "aud_begin_date" | "aud_end_date" | "attachments"
+      "aud_name" | "aud_year" | "aud_begin_date" | "aud_end_date" | "attachments"
     >,
   >(
     field: K,
@@ -96,6 +131,35 @@ export default function AuditForm() {
     updateField(field, value);
   };
 
+  const updateAuditCompanyField = <
+    K extends keyof Pick<
+      FormDataType,
+      | "org_regno"
+      | "org_legal_name"
+      | "org_founded_date"
+      | "org_certno"
+      | "org_type"
+      | "org_main_operation"
+      | "is_special"
+      | "shareholder"
+      | "founder"
+      | "asset"
+      | "org_address"
+      | "org_phone"
+      | "org_email"
+      | "org_head_name"
+      | "org_head_phone"
+      | "org_head_email"
+      | "org_acc_name"
+      | "org_acc_phone"
+      | "org_acc_email"
+    >,
+  >(
+    field: K,
+    value: any
+  ) => {
+    updateField(field, value);
+  };
   const updateStepTwoField = <
     K extends keyof Pick<FormDataType, "usertype3" | "usertype4" | "usertype5" | "usertype6">,
   >(
@@ -112,12 +176,6 @@ export default function AuditForm() {
     updateField(field, value);
   };
 
-  const orgOptions = compID.map((item) => ({
-    value: item.comp_id,
-    label: item.comp_legal_name,
-    regNo: item.comp_reg_no,
-  }));
-
   const userOptions = userID.map((item) => ({
     value: item.user_id,
     label: `${item.user_firstname} (${item.user_phone})`,
@@ -126,15 +184,16 @@ export default function AuditForm() {
 
   const steps = [
     { id: 1, label: "Аудитын мэдээлэл" },
-    { id: 2, label: "Багийн мэдээлэл" },
-    { id: 3, label: "Төлбөр" },
+    { id: 2, label: "Байгууллагын мэдээлэл" },
+    { id: 3, label: "Өмчлөгчийн мэдээлэл" },
+    { id: 4, label: "Багийн мэдээлэл" },
+    { id: 5, label: "Төлбөр" },
   ];
 
   const nextStep = () => {
     if (step === 1) {
       if (
         !formData.aud_name ||
-        !formData.aud_comp_id ||
         !formData.aud_begin_date ||
         !formData.aud_end_date ||
         !formData.aud_year
@@ -144,12 +203,12 @@ export default function AuditForm() {
       }
     }
 
-    // if (step === 2) {
-    //   if (!formData.email || !formData.address || !formData.city) {
-    //     setMessage("2-р алхмын бүх талбарыг бөглөнө үү");
-    //     return;
-    //   }
-    // }
+    if (step === 2) {
+      if (!formData.org_regno || !formData.org_legal_name) {
+        setMessage("2-р алхмын бүх талбарыг бөглөнө үү");
+        return;
+      }
+    }
 
     setMessage("");
     setStep((prev) => prev + 1);
@@ -264,10 +323,8 @@ export default function AuditForm() {
           throw new Error("Failed to load metadata");
         }
         const data = await res.json();
-        const compList: CompItem[] = data.company ?? [];
         const userList: UserItem[] = data.users ?? [];
 
-        setOrgs(compList);
         setUserIDs(userList);
       } catch (error) {
         console.error("Error loading metadata:", error);
@@ -280,7 +337,7 @@ export default function AuditForm() {
   }, []);
 
   return (
-    <div className="rounded-2xl border p-6">
+    <div className="rounded-2xl border p-6 overflow-hidden">
       {alert.show && (
         <Alert
           variant={alert.variant}
@@ -295,9 +352,7 @@ export default function AuditForm() {
             <div key={s.id} className="flex-1 text-center">
               {/* LABEL */}
               <div
-                className={`mb-1 text-xs ${
-                  s.id <= step ? "text-brand-500 font-medium" : "text-gray-400"
-                }`}
+                className={`mb-1 ${s.id <= step ? "text-brand-500 font-medium" : "text-gray-400"}`}
               >
                 {s.label}
               </div>
@@ -308,73 +363,109 @@ export default function AuditForm() {
           ))}
         </div>
       </div>
-
-      {step === 1 && (
-        <StepOne
-          values={{
-            aud_name: formData.aud_name,
-            aud_year: formData.aud_year,
-            aud_comp_id: formData.aud_comp_id,
-            aud_begin_date: formData.aud_begin_date,
-            aud_end_date: formData.aud_end_date,
-            attachments: formData.attachments,
-          }}
-          orgOptions={orgOptions}
-          onChange={updateStepOneField}
-        />
-      )}
-
-      {step === 2 && (
-        <StepTwo
-          values={{
-            usertype3: formData.usertype3,
-            usertype4: formData.usertype4,
-            usertype5: formData.usertype5,
-            usertype6: formData.usertype6,
-          }}
-          userOptions={userOptions}
-          onChange={updateStepTwoField}
-        />
-      )}
-
-      {step === 3 && (
-        <StepThree
-          values={{
-            payment_method: formData.payment_method,
-          }}
-          onChange={updateStepThreeField}
-        />
-      )}
-
-      {message && <p className="mt-4 text-sm text-red-500">{message}</p>}
-
-      <div className="mt-6 flex justify-between">
-        <button
-          type="button"
-          onClick={prevStep}
-          disabled={step === 1}
-          className="rounded-lg border px-4 py-2 disabled:opacity-50"
-        >
-          Өмнөх
-        </button>
-
-        {step < 3 ? (
-          <button
-            type="button"
-            onClick={nextStep}
-            className="rounded-lg bg-brand-500 px-4 py-2 text-white"
-          >
-            Дараах
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="rounded-lg bg-brand-500 px-4 py-2 text-white"
-          >
-            Хадгалах
-          </button>
+      <div className="overflow-y-auto max-h-[60vh] pr-2">
+        {step === 1 && (
+          <StepOne
+            values={{
+              aud_name: formData.aud_name,
+              aud_year: formData.aud_year,
+              aud_begin_date: formData.aud_begin_date,
+              aud_end_date: formData.aud_end_date,
+              attachments: formData.attachments,
+            }}
+            onChange={updateStepOneField}
+          />
         )}
+
+        {step === 2 && (
+          <AuditCompany
+            values={{
+              org_regno: formData.org_regno,
+              org_legal_name: formData.org_legal_name,
+              org_founded_date: formData.org_founded_date,
+              org_certno: formData.org_certno,
+              org_type: formData.org_type,
+              org_main_operation: formData.org_main_operation,
+              is_special: formData.is_special,
+              shareholder: formData.shareholder,
+              founder: formData.founder,
+              asset: formData.asset,
+              org_address: formData.org_address,
+              org_phone: formData.org_phone,
+              org_email: formData.org_email,
+              org_head_name: formData.org_head_name,
+              org_head_phone: formData.org_head_phone,
+              org_head_email: formData.org_head_email,
+              org_acc_name: formData.org_acc_name,
+              org_acc_phone: formData.org_acc_phone,
+              org_acc_email: formData.org_acc_email,
+            }}
+            onChange={updateAuditCompanyField}
+          />
+        )}
+        {/* {step === 3 && (<AuditCompany/>
+        // <AuditCompany
+        // values={{
+        //   aud_name: formData.aud_name,
+        //   aud_year: formData.aud_year,
+        //   aud_comp_id: formData.aud_comp_id,
+        //   aud_begin_date: formData.aud_begin_date,
+        //   aud_end_date: formData.aud_end_date,
+        //   attachments: formData.attachments,
+        // }}
+        // orgOptions={orgOptions}
+        // onChange={updateStepOneField}
+        />
+      )} */}
+        {step === 4 && (
+          <StepTwo
+            values={{
+              usertype3: formData.usertype3,
+              usertype4: formData.usertype4,
+              usertype5: formData.usertype5,
+              usertype6: formData.usertype6,
+            }}
+            userOptions={userOptions}
+            onChange={updateStepTwoField}
+          />
+        )}
+        {step === 5 && (
+          <StepThree
+            values={{
+              payment_method: formData.payment_method,
+            }}
+            onChange={updateStepThreeField}
+          />
+        )}
+        {message && <p className="mt-4 text-sm text-red-500">{message}</p>}
+        <div className="mt-6 flex justify-between">
+          <button
+            type="button"
+            onClick={prevStep}
+            disabled={step === 1}
+            className="rounded-lg border px-4 py-2 disabled:opacity-50"
+          >
+            Өмнөх
+          </button>
+
+          {step < 5 ? (
+            <button
+              type="button"
+              onClick={nextStep}
+              className="rounded-lg bg-brand-500 px-4 py-2 text-white"
+            >
+              Дараах
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="rounded-lg bg-brand-500 px-4 py-2 text-white"
+            >
+              Хадгалах
+            </button>
+          )}
+        </div>
       </div>
       <LoadingScreen show={loading} />
     </div>

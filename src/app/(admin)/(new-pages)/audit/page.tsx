@@ -103,12 +103,6 @@ export default function Audit() {
     return () => controller.abort();
   }, [page, limit, search, sortBy, sortOrder, toast]);
 
-  const handleLog = async () => {
-    const res = await fetch("/api/opendatalab?register=2672138"); //2702673 APU
-    const data = await res.json();
-
-    console.log(data);
-  };
   const handleDownload = async () => {
     try {
       const sortBy = sorting[0]?.id ?? "id";
@@ -141,9 +135,6 @@ export default function Audit() {
           </div>
 
           <div className="flex gap-3">
-            <Button variant="outline" onClick={handleLog}>
-              OPENDATALAB авах
-            </Button>
             <Button variant="outline" onClick={handleDownload}>
               Татах
               {/* icon... */}

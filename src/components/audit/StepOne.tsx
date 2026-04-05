@@ -10,35 +10,21 @@ type UploadedFileItem = {
 type StepOneData = {
   aud_name: string;
   aud_year: string;
-  aud_comp_id: number;
   aud_begin_date: Date;
   aud_end_date: Date;
   attachments: UploadedFileItem[];
 };
 
-type CompanyOption = {
-  value: number;
-  label: string;
-  regNo?: string;
-};
-
 type Props = {
   values: StepOneData;
-  orgOptions: CompanyOption[];
   onChange: <K extends keyof StepOneData>(field: K, value: StepOneData[K]) => void;
 };
 
-export default function StepOne({ values, orgOptions, onChange }: Props) {
+export default function StepOne({ values, onChange }: Props) {
   const currentYear = new Date().getFullYear();
   const MIN_YEAR = currentYear - 5;
   const safeYear =
     values.aud_year === "" || values.aud_year == null ? currentYear : Number(values.aud_year);
-
-  const selectedOrg = orgOptions.find((opt) => opt.value === values.aud_comp_id) ?? null;
-
-  const handleOrgChange = (selected: SingleValue<CompanyOption>) => {
-    onChange("aud_comp_id", selected?.value ?? 0);
-  };
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -50,50 +36,6 @@ export default function StepOne({ values, orgOptions, onChange }: Props) {
           onChange={(e) => onChange("aud_name", e.target.value)}
           className="w-full rounded-lg border px-3 py-2"
           placeholder="Аудитын нэр"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">Шалгагдагч хуулийн этгээд</label>
-        <Select<CompanyOption, false>
-          options={orgOptions}
-          value={selectedOrg}
-          onChange={handleOrgChange}
-          placeholder="Нэрээр нь хайх..."
-          isSearchable
-          isClearable
-          formatOptionLabel={(option) => (
-            <div className="flex flex-col">
-              <span>{option.label}</span>
-              {option.regNo && <span className="text-xs text-gray-500">{option.regNo}</span>}
-            </div>
-          )}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <DatePicker
-          id="aud_begin_date"
-          label="Эхлэх хугацаа"
-          defaultDate={values.aud_begin_date}
-          onChange={(selectedDates) => {
-            if (selectedDates?.[0]) {
-              onChange("aud_begin_date", selectedDates[0]);
-            }
-          }}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <DatePicker
-          id="aud_end_date"
-          label="Дуусах хугацаа"
-          defaultDate={values.aud_end_date}
-          onChange={(selectedDates) => {
-            if (selectedDates?.[0]) {
-              onChange("aud_end_date", selectedDates[0]);
-            }
-          }}
         />
       </div>
 
@@ -151,7 +93,34 @@ export default function StepOne({ values, orgOptions, onChange }: Props) {
           </button>
         </div>
       </div>
-      <div className="space-y-2">
+
+      <div className="space-y-2 overflow-visible ">
+        <DatePicker
+          id="aud_begin_date"
+          label="Эхлэх хугацаа"
+          defaultDate={values.aud_begin_date}
+          onChange={(selectedDates) => {
+            if (selectedDates?.[0]) {
+              onChange("aud_begin_date", selectedDates[0]);
+            }
+          }}
+        />
+      </div>
+
+      <div className="space-y-2 overflow-visible">
+        <DatePicker
+          id="aud_end_date"
+          label="Дуусах хугацаа"
+          defaultDate={values.aud_end_date}
+          onChange={(selectedDates) => {
+            if (selectedDates?.[0]) {
+              onChange("aud_end_date", selectedDates[0]);
+            }
+          }}
+        />
+      </div>
+
+      {/* <div className="space-y-2">
         <label className="block text-sm font-medium">Гэрээ хавсаргах</label>
         <FileUpload
           // label="Хавсралт файл"
@@ -160,7 +129,7 @@ export default function StepOne({ values, orgOptions, onChange }: Props) {
           value={values.attachments}
           onChange={(files) => onChange("attachments", files)}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
 type CompanyScrapeResult = {
-  url: string;
+  // url: string;
   register_no: string | null;
   legal_name: string | null;
-  founded_at: string | null;
-  address: string | null;
-  raw_text?: string;
+  // founded_at: string | null;
+  // address: string | null;
+  // raw_text?: string;
 };
 
 function cleanText(value?: string | null): string | null {
@@ -99,12 +99,12 @@ export async function GET(req: NextRequest) {
     ]);
 
     const result: CompanyScrapeResult = {
-      url,
+      // url,
       register_no: registerNo,
       legal_name: legalName,
-      founded_at: foundedAt,
-      address,
-      raw_text: pageText.slice(0, 4000),
+      // founded_at: foundedAt,
+      // address,
+      // raw_text: pageText.slice(0, 4000),
     };
 
     return NextResponse.json(result);

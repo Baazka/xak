@@ -1065,3 +1065,48 @@ pre[class*="language-"].line-numbers {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Custom Scrollbar for Calendar */
+.flatpickr-calendar {
+  font-size: 9px; /* 11 → ~9 */
+  width: 190px; /* 240 → ~190 */
+  padding: 4px;
+}
+
+.flatpickr-months {
+  padding: 4px 3px;
+}
+
+.flatpickr-current-month {
+  font-size: 11px; /* 14 → ~11 */
+  font-weight: 600;
+}
+
+.flatpickr-weekdays {
+  margin-top: 3px;
+}
+
+.flatpickr-weekday {
+  font-size: 9px; /* 11 → ~9 */
+}
+
+.flatpickr-days {
+  margin-top: 3px;
+}
+
+.flatpickr-day {
+  width: 24px; /* 30 → ~24 */
+  max-width: 24px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 9px;
+  border-radius: 4px;
+}
+
+.flatpickr-day.today {
+  border-width: 1px;
+}
+
+.flatpickr-day.selected {
+  border-radius: 4px;
+}
