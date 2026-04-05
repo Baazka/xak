@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
 type CompanyScrapeResult = {
-  // url: string;
-  register_no: string | null;
   legal_name: string | null;
-  // founded_at: string | null;
-  // address: string | null;
-  // raw_text?: string;
+  founded_date: string | null;
+  legal_form: string | null;
+  address: string | null;
 };
 
 function cleanText(value?: string | null): string | null {
@@ -15,17 +13,54 @@ function cleanText(value?: string | null): string | null {
   return v ? v : null;
 }
 
-function extractByLabel($: cheerio.CheerioAPI, labelVariants: string[]): string | null {
-  const bodyText = $("body").text().replace(/\s+/g, " ").trim();
+function normalizeCompanyName(value?: string | null): string | null {
+  const v = cleanText(value);
+  if (!v) return null;
 
-  for (const label of labelVariants) {
-    const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(
-      `${escaped}\\s*[:：]?\\s*(.{1,200}?)\\s(?=[A-ZА-ЯӨҮЁ][^\\s]{1,40}\\s*[:：]|$)`,
-      "i"
-    );
-    const m = bodyText.match(re);
-    if (m?.[1]) return cleanText(m[1]);
+  return v
+    .replace(/^Opendatalab\.mn\s*[-|–—]\s*/i, "")
+    .replace(/\s*[-|–—]\s*Opendatalab\.mn$/i, "")
+    .trim();
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function extractFieldByLabels(
+  pageText: string,
+  targetLabels: string[],
+  allLabels: string[]
+): string | null {
+  const normalized = pageText.replace(/\s+/g, " ").trim();
+
+  for (const label of targetLabels) {
+    const escapedLabel = escapeRegExp(label);
+
+    const otherLabels = allLabels.filter((l) => !targetLabels.includes(l)).map(escapeRegExp);
+
+    const nextLabelsPattern = otherLabels.length
+      ? `(?=\\s(?:${otherLabels.join("|")})\\s*[:：]?|$)`
+      : "$";
+
+    const re = new RegExp(`${escapedLabel}\\s*[:：]?\\s*(.+?)${nextLabelsPattern}`, "i");
+
+    const m = normalized.match(re);
+    if (m?.[1]) {
+      return cleanText(m[1]);
+    }
+  }
+
+  return null;
+}
+
+function extractDateByLabel(pageText: string, labels: string[]): string | null {
+  const normalized = pageText.replace(/\s+/g, " ").trim();
+
+  for (const label of labels) {
+    const escaped = escapeRegExp(label);
+    const m = normalized.match(new RegExp(`${escaped}\\s*[:：]?\\s*(\\d{4}-\\d{2}-\\d{2})`, "i"));
+    if (m?.[1]) return m[1];
   }
 
   return null;
@@ -69,42 +104,35 @@ export async function GET(req: NextRequest) {
     const pageText = $("body").text().replace(/\s+/g, " ").trim();
     const title = cleanText($("title").text());
 
-    // 1. legal name
+    const knownLabels = [
+      "Шинэчлэгдсэн огноо",
+      "Нэр",
+      "Регистер",
+      "Үүсгэн байгуулагдсан",
+      "Хэлбэр",
+      "Хаяг",
+    ];
+
     const legalName = pickFirstMeaningful([
-      $("h1").first().text(),
-      $("h2").first().text(),
-      $(".text-h4").first().text(),
-      $(".text-h5").first().text(),
-      title?.split("|")[0],
-      pageText.match(/^(.{2,120}?)\s+2672138/)?.[1], // loose fallback
+      normalizeCompanyName($("h1").first().text()),
+      normalizeCompanyName($("h2").first().text()),
+      normalizeCompanyName($(".text-h4").first().text()),
+      normalizeCompanyName($(".text-h5").first().text()),
+      normalizeCompanyName(title?.split("|")[0]),
     ]);
 
-    // 2. register no
-    const registerNo = pickFirstMeaningful([
-      extractByLabel($, ["Регистр", "Регистрийн дугаар"]),
-      pageText.match(/\b\d{7,10}\b/)?.[0],
-      register,
+    const foundedDate = pickFirstMeaningful([
+      extractDateByLabel(pageText, ["Үүсгэн байгуулагдсан"]),
     ]);
 
-    // 3. founded date
-    const foundedAt = pickFirstMeaningful([
-      extractByLabel($, ["Үүсгэн байгуулагдсан", "Бүртгүүлсэн огноо"]),
-      pageText.match(/\b(19|20)\d{2}-\d{2}-\d{2}\b/)?.[0],
-    ]);
-
-    // 4. address
-    const address = pickFirstMeaningful([
-      extractByLabel($, ["Хаяг", "Албан ёсны хаяг"]),
-      undefined,
-    ]);
+    const legalForm = extractFieldByLabels(pageText, ["Хэлбэр"], knownLabels);
+    const address = extractFieldByLabels(pageText, ["Хаяг"], knownLabels);
 
     const result: CompanyScrapeResult = {
-      // url,
-      register_no: registerNo,
       legal_name: legalName,
-      // founded_at: foundedAt,
-      // address,
-      // raw_text: pageText.slice(0, 4000),
+      founded_date: foundedDate,
+      legal_form: legalForm,
+      address: address,
     };
 
     return NextResponse.json(result);
