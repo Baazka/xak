@@ -32,11 +32,11 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   if (search) {
     params.push(`%${search}%`);
     if (user.user_level_id > 2) {
-      whereClause += ` AND (task_code ILIKE $${params.length} OR task_title ILIKE $${params.length} OR task_date ILIKE $${params.length} OR aud_code ILIKE $${params.length}
+      whereClause += ` AND (task_code ILIKE $${params.length} OR task_title ILIKE $${params.length} OR to_char(task_date,'YYYY.MM.DD HH24:MI') ILIKE $${params.length} OR aud_code ILIKE $${params.length}
         or aud_name ILIKE $${params.length})`;
     } else {
-      whereClause += ` AND (task_code ILIKE $${params.length} OR task_title ILIKE $${params.length} OR task_date ILIKE $${params.length} OR aud_code ILIKE $${params.length}
-        or aud_name ILIKE $${params.length} OR org_register_no ILIKE $${params.length} OR org_legal_name ILIKE $${params.length})`;
+      whereClause += ` AND (task_code ILIKE $${params.length} OR task_title ILIKE $${params.length} OR to_char(task_date,'YYYY.MM.DD HH24:MI') ILIKE $${params.length} OR aud_code ILIKE $${params.length}
+        or aud_name ILIKE $${params.length} OR rao.org_register_no ILIKE $${params.length} OR rao.org_legal_name ILIKE $${params.length})`;
     }
   }
 
@@ -47,7 +47,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         rao.org_register_no,
         rao.org_legal_name,
         task_code,
-        to_char(task_date,'YYYY.MM.DD HH24:MI') task_date,
+        to_char(task_date,'YYYY.MM.DD HH24:MI')::text as task_date,
         task_status_id,
         ts.status_label task_status_label,
         task_priority_id,
