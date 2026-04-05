@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { hasPermission } from "@/lib/permission";
-import { SortingState } from "@tanstack/react-table";
+import { SortingState, VisibilityState } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import QWalletCards from "./components/WalletCards";
@@ -40,6 +40,9 @@ export default function WalletPage() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [open, setOpen] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    // default hide
+  });
 
   const fetchData = async () => {
     if (loading) return;
@@ -122,6 +125,8 @@ export default function WalletPage() {
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
+              columnVisibility={columnVisibility}
+              onColumnVisibilityChange={setColumnVisibility}
             />
           )}
         </div>

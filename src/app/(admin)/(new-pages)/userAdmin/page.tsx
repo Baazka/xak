@@ -4,7 +4,7 @@ import { DataTable } from "@/components/tables/DataTable";
 import type { UserForAdmin } from "./types";
 import { columnsAdmin } from "./columns";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { SortingState } from "@tanstack/react-table";
+import { SortingState, VisibilityState } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
@@ -46,6 +46,9 @@ export default function User() {
 
   const sortBy = useMemo(() => sorting[0]?.id ?? "id", [sorting]);
   const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    // default hide
+  });
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -152,6 +155,8 @@ export default function User() {
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
+              columnVisibility={columnVisibility}
+              onColumnVisibilityChange={setColumnVisibility}
             />
           )}
         </div>

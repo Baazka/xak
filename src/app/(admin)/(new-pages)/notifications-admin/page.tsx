@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { SortingState } from "@tanstack/react-table";
+import { SortingState, VisibilityState } from "@tanstack/react-table";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { DataTable } from "@/components/tables/DataTable";
 import SkeletonTable from "@/components/tables/SkeletonTable";
@@ -47,6 +47,9 @@ export default function NotificationsAdminPage() {
 
   const sortBy = useMemo(() => sorting[0]?.id ?? "created_date", [sorting]);
   const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    // default hide
+  });
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -164,6 +167,8 @@ export default function NotificationsAdminPage() {
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
+              columnVisibility={columnVisibility}
+              onColumnVisibilityChange={setColumnVisibility}
             />
           )}
         </div>
