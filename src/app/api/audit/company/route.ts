@@ -4,6 +4,60 @@ import { withAuth } from "@/lib/withAuth";
 import { requirePermission } from "@/lib/requirePermission";
 import { JwtPayload } from "@/lib/jwtPayload";
 
+export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
+  //requirePermission(user.permissions, ["user.read"]);
+
+  const sp = new URL(req.url).searchParams;
+  const audId = sp.get("aud_id");
+  if (!audId) {
+    return NextResponse.json({ error: "Audit ID is required" }, { status: 400 });
+  }
+
+  const client = await db.connect();
+  try {
+    const dataRes = await client.query(
+      `
+      select 
+        aud_id, 
+        org_regno,
+        org_legal_name,
+        org_founded_date,
+        org_certno,
+        org_main_operation,
+        org_type,
+        org_is_special,
+        org_shareholder,
+        org_founder,
+        org_asset,
+        org_address,
+        org_phone,
+        org_email,
+        org_head_name,
+        org_head_phone,
+        org_head_email,
+        org_acc_name,
+        org_acc_phone,
+        org_acc_email
+        from audit_organization
+        where aud_id = $1
+    `,
+      [audId]
+    );
+
+    return NextResponse.json(
+      {
+        data: dataRes.rows,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("DB Error:", err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } finally {
+    client.release();
+  }
+});
+
 export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   //requirePermission(user.permissions, ["user.create"]);
 
