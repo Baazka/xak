@@ -82,7 +82,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         org_founded_date = $3,
         org_certno = $4,
         org_main_operation = $5,
-        org_responsibility = $6,
         org_type = $7,
         org_is_special = $8,
         org_shareholder = $9,
@@ -106,7 +105,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         body.org_founded_date,
         body.org_certno,
         body.org_main_operation,
-        body.org_responsibility,
         body.org_type,
         body.org_is_special,
         body.org_shareholder,
@@ -136,37 +134,4 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   } finally {
     client.release();
   }
-
-  //   else {
-  //     // INSERT
-  //     await client.query(
-  //       `
-  //       INSERT INTO audit_organization (aud_id, org_regno, org_legal_name, org_founded_date, org_certno, org_main_operation, org_responsibility, org_type, org_is_special, org_shareholder, org_founder, org_asset, org_address, org_phone, org_email, org_head_name, org_head_phone, org_head_email, org_acc_name, org_acc_phone, org_acc_email, created_by)
-  //       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, current_timestamp)`,
-  //       [
-  //         audId ?? null,
-  //         body.org_regno,
-  //         body.org_legal_name,
-  //         body.org_founded_date,
-  //         body.org_certno,
-  //         body.org_main_operation,
-  //         body.org_responsibility,
-  //         body.org_type,
-  //         body.org_is_special,
-  //         body.org_shareholder,
-  //         body.org_founder,
-  //         body.org_asset,
-  //         body.org_address,
-  //         body.org_phone,
-  //         body.org_email,
-  //         body.org_head_name,
-  //         body.org_head_phone,
-  //         body.org_head_email,
-  //         body.org_acc_name,
-  //         body.org_acc_phone,
-  //         body.org_acc_email,
-  //         userId,
-  //       ]
-  //     );
-  //   }
 });
