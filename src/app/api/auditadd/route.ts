@@ -14,7 +14,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const audName = body.aud_name;
   const audBeginDate = body.aud_begin_date;
   const audEndDate = body.aud_end_date;
-  const audCompId = body.aud_comp_id;
+  const audCompId = body.audCompId;
   const orgId = user.org_id;
   const userId = user.id;
 
@@ -26,7 +26,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const compData = body.comp_data; // expect { org_regno, org_legal_name, org_founded_date, org_certno, org_main_operation, org_responsibility, org_type, org_is_special, org_shareholder, org_founder, org_asset, org_address, org_phone, org_email, org_head_name, org_head_phone, org_head_email, org_acc_name, org_acc_phone, org_acc_email, org_operation_data[], org_detail_data[]}
   // Insert audit_org_operation
   const orgOperationData: { op_code: string; op_name: string; op_date: Date }[] =
-    compData.org_operation_data; // expect array of { op_code, op_name, op_date }
+    body.org_operation_data; // expect array of { op_code, op_name, op_date }
   // Insert audit_org_detail
   const orgDetailData: {
     det_type_id: number;
@@ -35,7 +35,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     det_lastname: string;
     det_firstname: string;
     det_date: Date;
-  }[] = compData.org_detail_data; // expect array of { det_type_id, det_category, det_country, det_lastname, det_firstname, det_date }
+  }[] = body.org_detail_data; // expect array of { det_type_id, det_category, det_country, det_lastname, det_firstname, det_date }
 
   // 2nd step: insert audit_team
   const teamData: { user_id: number; role_id: number }[] = body.team_data; // expect array of { user_id, role_id }
@@ -65,7 +65,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     // Insert audit_organization
     await client.query(
-      `INSERT INTO audit_organization (aud_id, org_regno, org_legal_name, org_founded_date, org_certno, org_main_operation, org_responsibility, org_type, org_is_special, org_shareholder, org_founder, org_asset, org_address, org_phone, org_email, org_head_name, org_head_phone, org_head_email, org_acc_name, org_acc_phone, org_acc_email, created_by, created_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, current_timestamp)`,
+      `INSERT INTO audit_organization (aud_id, org_regno, org_legal_name, org_founded_date, org_certno, org_main_operation, org_type, org_is_special, org_shareholder, org_founder, org_asset, org_address, org_phone, org_email, org_head_name, org_head_phone, org_head_email, org_acc_name, org_acc_phone, org_acc_email, created_by, created_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, current_timestamp)`,
       [
         NewAudId,
         compData.org_regno,
@@ -73,7 +73,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         compData.org_founded_date,
         compData.org_certno,
         compData.org_main_operation,
-        compData.org_responsibility,
         compData.org_type,
         compData.org_is_special,
         compData.org_shareholder,

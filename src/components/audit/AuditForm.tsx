@@ -70,9 +70,9 @@ type FormDataType = {
   org_type: string;
   org_main_operation: string;
   org_is_special: boolean;
-  org_shareholder: string;
-  org_founder: string;
-  org_asset: string;
+  org_shareholder: number;
+  org_founder: number;
+  org_asset: number;
 
   org_address: string;
   org_phone: string;
@@ -109,9 +109,9 @@ const initialData: FormDataType = {
   org_type: "",
   org_main_operation: "",
   org_is_special: false,
-  org_shareholder: "",
-  org_founder: "",
-  org_asset: "",
+  org_shareholder: 0,
+  org_founder: 0,
+  org_asset: 0,
   org_address: "",
   org_phone: "",
   org_email: "",

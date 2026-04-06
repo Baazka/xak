@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import DatePicker from "../../form/datePicker";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { on } from "events";
 type AuditCompanyFormData = {
   // Ерөнхий мэдээлэл
   org_regno: string;
@@ -10,9 +11,9 @@ type AuditCompanyFormData = {
   org_type: string;
   org_main_operation: string;
   org_is_special: boolean;
-  org_shareholder: string;
-  org_founder: string;
-  org_asset: string;
+  org_shareholder: number | null;
+  org_founder: number | null;
+  org_asset: number | null;
 
   // Хаяг
   org_address: string;
@@ -175,24 +176,24 @@ export default function AuditCompany({ values, onChange }: Props) {
         <div className="space-y-2">
           <label className="block text-sm font-medium">Эзэмшигчийн тоо</label>
           <input
-            value={values.org_shareholder}
-            onChange={(e) => onChange("org_shareholder", e.target.value)}
+            value={values.org_shareholder ?? 0}
+            onChange={(e) => onChange("org_shareholder", parseInt(e.target.value))}
             className="w-full rounded-lg border px-3 py-2"
           />
         </div>
         <div className="space-y-2">
-          <label className="block text-sm font-medium">Эцсийн өмчлөгч</label>
+          <label className="block text-sm font-medium">Эцсийн өмчлөгчийн тоо</label>
           <input
-            value={values.org_founder}
-            onChange={(e) => onChange("org_founder", e.target.value)}
+            value={values.org_founder ?? 0}
+            onChange={(e) => onChange("org_founder", parseInt(e.target.value))}
             className="w-full rounded-lg border px-3 py-2"
           />
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">Хувь нийлүүлсэн хөрөнгийн хэмжээ</label>
           <input
-            value={values.org_asset}
-            onChange={(e) => onChange("org_asset", e.target.value)}
+            value={values.org_asset ?? 0}
+            onChange={(e) => onChange("org_asset", parseInt(e.target.value))}
             className="w-full rounded-lg border px-3 py-2"
           />
         </div>
