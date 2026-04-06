@@ -6,6 +6,9 @@ type CompanyScrapeResult = {
   founded_date: string | null;
   legal_form: string | null;
   address: string | null;
+  activity: string | null;
+  lastOwner: string | null;
+  manager: string | null;
 };
 
 function cleanText(value?: string | null): string | null {
@@ -74,6 +77,68 @@ function pickFirstMeaningful(values: Array<string | null | undefined>): string |
   return null;
 }
 
+function extractFirstActivity($: cheerio.CheerioAPI): string | null {
+  const table = $("table")
+    .filter((_, el) => $(el).text().includes("Үйл ажиллагааны код"))
+    .first();
+
+  if (!table.length) return null;
+
+  const firstRow = table.find("tbody tr").first();
+
+  // 2 дахь багана (код + тайлбар)
+  const cell = firstRow.find("td").eq(1).text();
+
+  return cleanText(cell);
+}
+
+function extractLastOwner($: cheerio.CheerioAPI): string | null {
+  let owner: string | null = null;
+
+  $("*").each((_, el) => {
+    const text = cleanText($(el).text());
+
+    if (text === "Эцсийн өмчлөгч") {
+      const section = $(el).closest("div");
+      const table = section.find("table").first();
+
+      if (!table.length) return;
+
+      const rows = table.find("tr");
+
+      for (let i = rows.length - 1; i >= 1; i--) {
+        const cols = $(rows[i]).find("td");
+        if (cols.length >= 3) {
+          const name = cleanText(cols.eq(2).text());
+          if (name) {
+            owner = name;
+            return false;
+          }
+        }
+      }
+    }
+  });
+
+  return owner;
+}
+
+function extractManager(pageText: string): string | null {
+  const normalized = pageText.replace(/\s+/g, " ").trim();
+
+  const sectionMatch = normalized.match(
+    /Удирдах албан тушаалтан(.*?)(?=Үйл ажиллагаа|Эцсийн өмчлөгч|Оролцсон тендер|$)/i
+  );
+
+  const section = sectionMatch?.[1];
+  if (!section) return null;
+
+  const rowMatch = section.match(
+    /Д\/д\s+Албан тушаал\s+Улс\s+Нэр\s+Огноо\s+\d+\s+(.+?)\s+Монгол Улс\s+(.+?)\s+(\d{4}-\d{2}-\d{2})/i
+  );
+
+  return cleanText(rowMatch?.[2]);
+}
+
 export async function GET(req: NextRequest) {
   try {
     const register = req.nextUrl.searchParams.get("register")?.trim();
@@ -105,12 +170,15 @@ export async function GET(req: NextRequest) {
     const title = cleanText($("title").text());
 
     const knownLabels = [
-      "Шинэчлэгдсэн огноо",
       "Нэр",
       "Регистер",
       "Үүсгэн байгуулагдсан",
       "Хэлбэр",
+      "Төрөл",
       "Хаяг",
+      "Хувь эзэмшил",
+      "Хувь ззэмшил",
+      "Үйл ажиллагааны чиглэл",
     ];
 
     const legalName = pickFirstMeaningful([
@@ -128,11 +196,18 @@ export async function GET(req: NextRequest) {
     const legalForm = extractFieldByLabels(pageText, ["Хэлбэр"], knownLabels);
     const address = extractFieldByLabels(pageText, ["Хаяг"], knownLabels);
 
+    const activity = extractFirstActivity($);
+    const lastOwner = extractLastOwner($);
+    const manager = extractManager(pageText);
+
     const result: CompanyScrapeResult = {
       legal_name: legalName,
       founded_date: foundedDate,
       legal_form: legalForm,
       address: address,
+      activity: activity,
+      lastOwner: lastOwner,
+      manager: manager,
     };
 
     return NextResponse.json(result);

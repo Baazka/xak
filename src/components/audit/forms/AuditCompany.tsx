@@ -51,11 +51,14 @@ export default function AuditCompany({ values, onChange }: Props) {
 
       console.log(data);
 
-      // 👉 API-с ирсэн утгаар form fill хийх
+      // API-с ирсэн утгаар form fill хийх
       onChange("org_legal_name", data?.legal_name ?? "");
       onChange("org_founded_date", data?.founded_date ? new Date(data.founded_date) : null);
       onChange("org_type", data?.legal_form ?? "");
       onChange("org_address", data?.address ?? "");
+      onChange("org_main_operation", data?.activity ?? "");
+      onChange("founder", data?.lastOwner ?? "");
+      onChange("org_head_name", data?.manager ?? "");
     } catch (err) {
       console.error(err);
     } finally {
@@ -106,7 +109,7 @@ export default function AuditCompany({ values, onChange }: Props) {
           <label className="block text-sm font-medium">Байгуулагдсан огноо</label>
           <DatePicker
             id="org_founded_date"
-            defaultDate={values.org_founded_date}
+            defaultDate={values.org_founded_date ?? undefined}
             onChange={(dates) => {
               if (dates?.[0]) onChange("org_founded_date", dates[0]);
             }}
