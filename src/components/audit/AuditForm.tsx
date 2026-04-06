@@ -229,7 +229,6 @@ export default function AuditForm() {
       const payload = {
         aud_name: formData.aud_name,
         aud_year: formData.aud_year,
-        aud_comp_id: formData.aud_comp_id,
         aud_begin_date: formData.aud_begin_date,
         aud_end_date: formData.aud_end_date,
         payment_method: formData.payment_method,
