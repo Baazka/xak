@@ -5,7 +5,7 @@ type AuditCompanyFormData = {
   // Ерөнхий мэдээлэл
   org_regno: string;
   org_legal_name: string;
-  org_founded_date: Date;
+  org_founded_date: Date | null;
   org_certno: string;
   org_type: string;
   org_main_operation: string;
@@ -53,8 +53,9 @@ export default function AuditCompany({ values, onChange }: Props) {
 
       // 👉 API-с ирсэн утгаар form fill хийх
       onChange("org_legal_name", data?.legal_name ?? "");
-      //   onChange("org_type", data?.type ?? "");
-      //   onChange("org_address", data?.address ?? "");
+      onChange("org_founded_date", data?.founded_date ? new Date(data.founded_date) : null);
+      onChange("org_type", data?.legal_form ?? "");
+      onChange("org_address", data?.address ?? "");
     } catch (err) {
       console.error(err);
     } finally {
@@ -146,8 +147,9 @@ export default function AuditCompany({ values, onChange }: Props) {
             className="w-full rounded-lg border px-3 py-2"
           />
         </div>
+
         <div className="space-y-2">
-          <label className="block text-sm font-medium">Тусгай зориулалттай компани эсэх</label>
+          <label className="block text-sm font-medium">Эзэмшигчийн тоо</label>
           <input
             value={values.shareholder}
             onChange={(e) => onChange("shareholder", e.target.value)}
