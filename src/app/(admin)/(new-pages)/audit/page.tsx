@@ -141,7 +141,7 @@ export default function Audit() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => router.push("/auditDetail")}
+              onClick={() => router.push("/auditDetail/1")}
               className="px-4 py-2 bg-blue-500 text-white rounded"
             >
               enter audit detail
