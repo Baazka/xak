@@ -1,7 +1,7 @@
 "use client";
 
 import { FileText, FolderOpen } from "lucide-react";
-import type { FormItem } from "../AuditDetailClient";
+import type { FormItem } from "../AuditClient";
 
 type AuditSidebarProps = {
   forms: FormItem[];
