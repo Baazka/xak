@@ -13,6 +13,7 @@ export type FormItem = {
 };
 
 const forms: FormItem[] = [
+  { id: "m01", short: "М01", full: "Маягт 01" },
   { id: "form1", short: "М1", full: "Маягт 1" },
   { id: "form2", short: "М2", full: "Маягт 2" },
   { id: "form3", short: "М3", full: "Маягт 3" },
@@ -36,14 +37,13 @@ const forms: FormItem[] = [
   { id: "form20", short: "М20", full: "Маягт 20" },
 ];
 
-export default function AuditDetailClient() {
-  const router = useRouter();
-
+export default function AuditDetailClient({ auditId }: { auditId: number }) {
   const [openOrg, setOpenOrg] = useState(false);
   const [activeForm, setActiveForm] = useState("form1");
 
   // дараа нь API-аас ирэх shared data энд байна
   const auditData = {
+    auditId: auditId,
     orgName: "Байгууллагын нэр",
     regNo: "1234567",
   };

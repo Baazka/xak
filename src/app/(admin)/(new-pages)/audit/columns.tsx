@@ -1,9 +1,8 @@
 // columns.tsx
 import { ColumnDef } from "@tanstack/react-table";
 import { Audit, AuditForAdmin } from "./types";
-import RowActionsMenu from "@/components/tables/RowActionsMenu";
-import { Pencil, Mail } from "lucide-react";
-import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
+import Link from "next/link";
+import { EyeIcon } from "lucide-react";
 
 type ColumnActions = {
   page: number;
@@ -68,4 +67,24 @@ export const columns = (actions: ColumnActions): ColumnDef<Audit>[] => [
   { accessorKey: "aud_begin_date", header: "Эхлэх огноо" },
   { accessorKey: "aud_end_date", header: "Дуусах огноо" },
   { accessorKey: "aud_status_label", header: "Төлөв", enableHiding: false },
+  {
+    id: "actions",
+    header: "Үйлдэл",
+    cell: ({ row }) => (
+      <Link
+        href={`/auditDetail/${row.original.aud_id}`}
+        onClick={(e) => e.stopPropagation()}
+        className="inline-flex items-center rounded border px-2 py-2"
+      >
+        <EyeIcon className="h-4 w-4" />
+      </Link>
+    ),
+    meta: {
+      className: "w-[100px] text-center",
+      noTruncate: true,
+      hideFromToggle: true,
+    },
+    enableSorting: false,
+    enableHiding: false,
+  },
 ];

@@ -46,7 +46,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     return NextResponse.json(
       {
-        data: dataRes.rows,
+        data: dataRes.rows[0] || null,
       },
       { status: 200 }
     );
