@@ -8,6 +8,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   //requirePermission(user.permissions, ["user.create"]);
 
   const body = await req.json();
+  console.log(body, "<========body");
   // 1st step: insert audit_data
   const audYear = body.aud_year;
   const audName = body.aud_name;

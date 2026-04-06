@@ -10,11 +10,45 @@ import { useRouter } from "next/navigation";
 import LoadingScreen from "../ui/LoadingScreen";
 import Alert from "../ui/alert/Alert";
 import AuditCompany from "./forms/AuditCompany";
+import AuditCompanyOwner from "./forms/AuditCompanyOwner";
 const currentYear = new Date().getFullYear();
 
 type UploadedFileItem = {
   file: File;
   preview?: string;
+};
+type OperationRow = {
+  op_id: number;
+  op_aud_id: number;
+  op_code: string;
+  op_name: string;
+  op_date: string;
+};
+
+type DetailRow = {
+  det_id: number;
+  det_aud_id: number;
+  det_type_id: number;
+  det_category: string;
+  det_country: string;
+  det_lastname: string;
+  det_firstname: string;
+  det_date: string;
+};
+
+type OperationData = {
+  op_code: string;
+  op_name: string;
+  op_date: Date;
+};
+
+type DetailData = {
+  det_type_id: number;
+  det_category: string;
+  det_country: string;
+  det_lastname: string;
+  det_firstname: string;
+  det_date: Date;
 };
 
 type FormDataType = {
@@ -35,10 +69,10 @@ type FormDataType = {
   org_certno: string;
   org_type: string;
   org_main_operation: string;
-  is_special: string;
-  shareholder: string;
-  founder: string;
-  asset: string;
+  org_is_special: boolean;
+  org_shareholder: string;
+  org_founder: string;
+  org_asset: string;
 
   org_address: string;
   org_phone: string;
@@ -51,6 +85,9 @@ type FormDataType = {
   org_acc_name: string;
   org_acc_phone: string;
   org_acc_email: string;
+
+  org_operation_data?: [];
+  org_detail_data?: [];
 };
 
 const initialData: FormDataType = {
@@ -71,10 +108,10 @@ const initialData: FormDataType = {
   org_certno: "",
   org_type: "",
   org_main_operation: "",
-  is_special: "",
-  shareholder: "",
-  founder: "",
-  asset: "",
+  org_is_special: false,
+  org_shareholder: "",
+  org_founder: "",
+  org_asset: "",
   org_address: "",
   org_phone: "",
   org_email: "",
@@ -84,6 +121,8 @@ const initialData: FormDataType = {
   org_acc_name: "",
   org_acc_phone: "",
   org_acc_email: "",
+  org_operation_data: [],
+  org_detail_data: [],
 };
 
 type UserItem = {
@@ -115,15 +154,61 @@ export default function AuditForm() {
     message: "",
   });
 
+  const [detailRows, setDetailRows] = useState<Record<number, DetailRow[]>>({
+    1: [
+      {
+        det_id: 0,
+        det_aud_id: 0,
+        det_type_id: 1,
+        det_category: "",
+        det_country: "",
+        det_lastname: "",
+        det_firstname: "",
+        det_date: "",
+      },
+    ],
+    2: [
+      {
+        det_id: 0,
+        det_aud_id: 0,
+        det_type_id: 2,
+        det_category: "",
+        det_country: "",
+        det_lastname: "",
+        det_firstname: "",
+        det_date: "",
+      },
+    ],
+    3: [
+      {
+        det_id: 0,
+        det_aud_id: 0,
+        det_type_id: 3,
+        det_category: "",
+        det_country: "",
+        det_lastname: "",
+        det_firstname: "",
+        det_date: "",
+      },
+    ],
+  });
+
+  const [opRows, setOpRows] = useState<OperationRow[]>([
+    {
+      op_id: 0,
+      op_aud_id: 0,
+      op_code: "",
+      op_name: "",
+      op_date: "",
+    },
+  ]);
+
   const updateField = <K extends keyof FormDataType>(field: K, value: FormDataType[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const updateStepOneField = <
-    K extends keyof Pick<
-      FormDataType,
-      "aud_name" | "aud_year" | "aud_begin_date" | "aud_end_date" | "attachments"
-    >,
+    K extends keyof Pick<FormDataType, "aud_name" | "aud_year" | "aud_begin_date" | "aud_end_date">,
   >(
     field: K,
     value: any
@@ -140,10 +225,10 @@ export default function AuditForm() {
       | "org_certno"
       | "org_type"
       | "org_main_operation"
-      | "is_special"
-      | "shareholder"
-      | "founder"
-      | "asset"
+      | "org_is_special"
+      | "org_shareholder"
+      | "org_founder"
+      | "org_asset"
       | "org_address"
       | "org_phone"
       | "org_email"
@@ -160,6 +245,7 @@ export default function AuditForm() {
   ) => {
     updateField(field, value);
   };
+
   const updateStepTwoField = <
     K extends keyof Pick<FormDataType, "usertype3" | "usertype4" | "usertype5" | "usertype6">,
   >(
@@ -169,7 +255,9 @@ export default function AuditForm() {
     updateField(field, value);
   };
 
-  const updateStepThreeField = <K extends keyof Pick<FormDataType, "payment_method">>(
+  const updateStepThreeField = <
+    K extends keyof Pick<FormDataType, "payment_method" | "attachments">,
+  >(
     field: K,
     value: any
   ) => {
@@ -191,24 +279,24 @@ export default function AuditForm() {
   ];
 
   const nextStep = () => {
-    if (step === 1) {
-      if (
-        !formData.aud_name ||
-        !formData.aud_begin_date ||
-        !formData.aud_end_date ||
-        !formData.aud_year
-      ) {
-        setMessage("1-р алхмын бүх талбарыг бөглөнө үү");
-        return;
-      }
-    }
+    // if (step === 1) {
+    //   if (
+    //     !formData.aud_name ||
+    //     !formData.aud_begin_date ||
+    //     !formData.aud_end_date ||
+    //     !formData.aud_year
+    //   ) {
+    //     setMessage("1-р алхмын бүх талбарыг бөглөнө үү");
+    //     return;
+    //   }
+    // }
 
-    if (step === 2) {
-      if (!formData.org_regno || !formData.org_legal_name) {
-        setMessage("2-р алхмын бүх талбарыг бөглөнө үү");
-        return;
-      }
-    }
+    // if (step === 2) {
+    //   if (!formData.org_regno || !formData.org_legal_name) {
+    //     setMessage("2-р алхмын бүх талбарыг бөглөнө үү");
+    //     return;
+    //   }
+    // }
 
     setMessage("");
     setStep((prev) => prev + 1);
@@ -226,11 +314,53 @@ export default function AuditForm() {
     setLoading(true);
 
     try {
+      const operationData: OperationData[] = opRows.map((row) => ({
+        op_code: row.op_code,
+        op_name: row.op_name,
+        op_date: row.op_date ? new Date(row.op_date) : new Date(),
+      }));
+
+      const detailData: DetailData[] = Object.values(detailRows)
+        .flat()
+        .map((row) => ({
+          det_type_id: row.det_type_id,
+          det_category: row.det_category,
+          det_country: row.det_country,
+          det_lastname: row.det_lastname,
+          det_firstname: row.det_firstname,
+          det_date: row.det_date ? new Date(row.det_date) : new Date(),
+        }));
+
       const payload = {
         aud_name: formData.aud_name,
         aud_year: formData.aud_year,
         aud_begin_date: formData.aud_begin_date,
         aud_end_date: formData.aud_end_date,
+        audCompId: 1,
+        comp_data: {
+          org_regno: formData.org_regno,
+          org_legal_name: formData.org_legal_name,
+          org_founded_date: formData.org_founded_date,
+          org_certno: formData.org_certno,
+          org_main_operation: formData.org_main_operation,
+          org_type: formData.org_type,
+          org_is_special: formData.org_is_special,
+          org_shareholder: formData.org_shareholder,
+          org_founder: formData.org_founder,
+          org_asset: formData.org_asset,
+
+          org_address: formData.org_address,
+          org_phone: formData.org_phone,
+          org_email: formData.org_email,
+          org_head_name: formData.org_head_name,
+          org_head_phone: formData.org_head_phone,
+          org_head_email: formData.org_head_email,
+          org_acc_name: formData.org_acc_name,
+          org_acc_phone: formData.org_acc_phone,
+          org_acc_email: formData.org_acc_email,
+        },
+        org_operation_data: operationData,
+        org_detail_data: detailData,
         payment_method: formData.payment_method,
         team_data: [
           formData.usertype3 ? { user_id: Number(formData.usertype3), role_id: 3 } : null,
@@ -264,7 +394,7 @@ export default function AuditForm() {
         return;
       }
 
-      const auditId = data?.audit_id;
+      const auditId = data?.aud_id;
 
       if (auditId && formData.attachments.length > 0) {
         const fd = new FormData();
@@ -370,7 +500,6 @@ export default function AuditForm() {
               aud_year: formData.aud_year,
               aud_begin_date: formData.aud_begin_date,
               aud_end_date: formData.aud_end_date,
-              attachments: formData.attachments,
             }}
             onChange={updateStepOneField}
           />
@@ -385,10 +514,10 @@ export default function AuditForm() {
               org_certno: formData.org_certno,
               org_type: formData.org_type,
               org_main_operation: formData.org_main_operation,
-              is_special: formData.is_special,
-              shareholder: formData.shareholder,
-              founder: formData.founder,
-              asset: formData.asset,
+              org_is_special: formData.org_is_special,
+              org_shareholder: formData.org_shareholder,
+              org_founder: formData.org_founder,
+              org_asset: formData.org_asset,
               org_address: formData.org_address,
               org_phone: formData.org_phone,
               org_email: formData.org_email,
@@ -402,20 +531,24 @@ export default function AuditForm() {
             onChange={updateAuditCompanyField}
           />
         )}
-        {/* {step === 3 && (<AuditCompany/>
-        // <AuditCompany
-        // values={{
-        //   aud_name: formData.aud_name,
-        //   aud_year: formData.aud_year,
-        //   aud_comp_id: formData.aud_comp_id,
-        //   aud_begin_date: formData.aud_begin_date,
-        //   aud_end_date: formData.aud_end_date,
-        //   attachments: formData.attachments,
-        // }}
-        // orgOptions={orgOptions}
-        // onChange={updateStepOneField}
-        />
-      )} */}
+        {step === 3 && (
+          <AuditCompanyOwner
+            values={{
+              org_regno: formData.org_regno,
+              org_legal_name: formData.org_legal_name,
+              org_founded_date: formData.org_founded_date,
+              org_certno: formData.org_certno,
+              org_type: formData.org_type,
+              org_main_operation: formData.org_main_operation,
+              org_address: formData.org_address,
+              org_head_name: formData.org_head_name,
+            }}
+            rows={detailRows}
+            setRows={setDetailRows}
+            opRows={opRows}
+            setOpRows={setOpRows}
+          />
+        )}
         {step === 4 && (
           <StepTwo
             values={{
@@ -432,6 +565,7 @@ export default function AuditForm() {
           <StepThree
             values={{
               payment_method: formData.payment_method,
+              attachments: formData.attachments,
             }}
             onChange={updateStepThreeField}
           />

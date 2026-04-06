@@ -9,10 +9,10 @@ type AuditCompanyFormData = {
   org_certno: string;
   org_type: string;
   org_main_operation: string;
-  is_special: string;
-  shareholder: string;
-  founder: string;
-  asset: string;
+  org_is_special: boolean;
+  org_shareholder: string;
+  org_founder: string;
+  org_asset: string;
 
   // Хаяг
   org_address: string;
@@ -57,7 +57,7 @@ export default function AuditCompany({ values, onChange }: Props) {
       onChange("org_type", data?.legal_form ?? "");
       onChange("org_address", data?.address ?? "");
       onChange("org_main_operation", data?.activity ?? "");
-      onChange("founder", data?.lastOwner ?? "");
+      onChange("org_founder", data?.lastOwner ?? "");
       onChange("org_head_name", data?.manager ?? "");
     } catch (err) {
       console.error(err);
@@ -144,34 +144,55 @@ export default function AuditCompany({ values, onChange }: Props) {
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">Тусгай зориулалттай компани эсэх</label>
-          <input
-            value={values.is_special}
-            onChange={(e) => onChange("is_special", e.target.value)}
-            className="w-full rounded-lg border px-3 py-2"
-          />
+
+          <div className="flex items-center gap-6">
+            {/* Тийм */}
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="org_is_special"
+                checked={values.org_is_special === true}
+                onChange={() => onChange("org_is_special", true)}
+                className="h-4 w-4"
+              />
+              Тийм
+            </label>
+
+            {/* Үгүй */}
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="org_is_special"
+                checked={values.org_is_special === false}
+                onChange={() => onChange("org_is_special", false)}
+                className="h-4 w-4"
+              />
+              Үгүй
+            </label>
+          </div>
         </div>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium">Эзэмшигчийн тоо</label>
           <input
-            value={values.shareholder}
-            onChange={(e) => onChange("shareholder", e.target.value)}
+            value={values.org_shareholder}
+            onChange={(e) => onChange("org_shareholder", e.target.value)}
             className="w-full rounded-lg border px-3 py-2"
           />
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">Эцсийн өмчлөгч</label>
           <input
-            value={values.founder}
-            onChange={(e) => onChange("founder", e.target.value)}
+            value={values.org_founder}
+            onChange={(e) => onChange("org_founder", e.target.value)}
             className="w-full rounded-lg border px-3 py-2"
           />
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">Хувь нийлүүлсэн хөрөнгийн хэмжээ</label>
           <input
-            value={values.asset}
-            onChange={(e) => onChange("asset", e.target.value)}
+            value={values.org_asset}
+            onChange={(e) => onChange("org_asset", e.target.value)}
             className="w-full rounded-lg border px-3 py-2"
           />
         </div>

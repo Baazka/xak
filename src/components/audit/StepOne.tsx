@@ -1,18 +1,10 @@
-import Select, { SingleValue } from "react-select";
 import DatePicker from "../form/datePicker";
-import FileUpload from "./FileUpload";
-
-type UploadedFileItem = {
-  file: File;
-  preview?: string;
-};
 
 type StepOneData = {
   aud_name: string;
   aud_year: string;
   aud_begin_date: Date;
   aud_end_date: Date;
-  attachments: UploadedFileItem[];
 };
 
 type Props = {
@@ -119,17 +111,6 @@ export default function StepOne({ values, onChange }: Props) {
           }}
         />
       </div>
-
-      {/* <div className="space-y-2">
-        <label className="block text-sm font-medium">Гэрээ хавсаргах</label>
-        <FileUpload
-          // label="Хавсралт файл"
-          accept=".pdf,.doc,.docx,.xls,.xlsx,image/*"
-          multiple={false}
-          value={values.attachments}
-          onChange={(files) => onChange("attachments", files)}
-        />
-      </div> */}
     </div>
   );
 }

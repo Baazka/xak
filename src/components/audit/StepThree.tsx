@@ -1,7 +1,13 @@
 import Radio from "@/components/form/input/Radio";
+import FileUpload from "./FileUpload";
 
+type UploadedFileItem = {
+  file: File;
+  preview?: string;
+};
 type StepThreeData = {
   payment_method: string;
+  attachments: UploadedFileItem[];
 };
 
 type Props = {
@@ -34,6 +40,16 @@ export default function StepThree({ values, onChange }: Props) {
             onChange={(value) => onChange("payment_method", value)}
           />
         </div>
+      </div>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Гэрээ хавсаргах</label>
+        <FileUpload
+          // label="Хавсралт файл"
+          accept=".pdf,.doc,.docx,.xls,.xlsx,image/*"
+          multiple={false}
+          value={values.attachments}
+          onChange={(files) => onChange("attachments", files)}
+        />
       </div>
     </div>
   );
