@@ -18,7 +18,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const client = await db.connect();
   try {
     const isExistRes = await client.query(
-      `select 1 from audit_forms where form_aud_id = $1 and form_team_id = $2 and form_list_id = 1`,
+      `select form_id from audit_forms where form_aud_id = $1 and form_team_id = $2 and form_list_id = 1 limit 1`,
       [audId, teamId]
     );
     if (!isExistRes.rows[0]) {
