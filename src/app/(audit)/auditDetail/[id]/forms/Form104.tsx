@@ -3,7 +3,6 @@
 import DatePicker from "@/components/form/datePicker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
-import { json } from "stream/consumers";
 
 type Props = {
   auditId: number;
@@ -47,7 +46,7 @@ export default function Form104({ auditId }: Props) {
 
   useEffect(() => {
     async function loadBags() {
-      const res = await fetch("/api/audit/form104/meta?aud_id=" + auditId);
+      const res = await fetchWithAuth("/api/audit/form104/meta?aud_id=" + auditId);
       const result = await res.json();
 
       setBags(result.data || []);
@@ -67,9 +66,11 @@ export default function Form104({ auditId }: Props) {
       try {
         setLoading(true);
 
-        const res = await fetch(`/api/audit/form104?aud_id=${auditId}&team_id=${selectedBag}`);
+        const res = await fetchWithAuth(
+          `/api/audit/form104?aud_id=${auditId}&team_id=${selectedBag}`
+        );
         const result = await res.json();
-        console.log(result, "resultresultresultresultresultresult");
+
         setData(result.data);
         setFormId(result.form_id);
       } catch (err) {
@@ -93,7 +94,7 @@ export default function Form104({ auditId }: Props) {
         noti_value: row.noti_value,
       }));
 
-      const res = await fetch(`/api/audit/form104/`, {
+      const res = await fetchWithAuth(`/api/audit/form104/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

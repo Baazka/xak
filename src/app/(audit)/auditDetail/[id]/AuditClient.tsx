@@ -16,6 +16,7 @@ const forms: FormItem[] = [
   { id: "m01", short: "М01", full: "Маягт 01" },
   { id: "m02", short: "М02", full: "Маягт 02" },
   { id: "m03", short: "М03", full: "Маягт 03" },
+  { id: "m04", short: "М04", full: "Маягт 04" },
   { id: "form1", short: "М1", full: "Маягт 1" },
   { id: "form2", short: "М2", full: "Маягт 2" },
 ];
