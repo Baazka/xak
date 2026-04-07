@@ -3,7 +3,6 @@ import db from "@/lib/db";
 import { withAuth } from "@/lib/withAuth";
 import { requirePermission } from "@/lib/requirePermission";
 import { JwtPayload } from "@/lib/jwtPayload";
-import { useState } from "react";
 
 export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   //requirePermission(user.permissions, ["user.read"]);
@@ -14,7 +13,6 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   if (!audId) {
     return NextResponse.json({ error: "Audit ID is required" }, { status: 400 });
   }
-  const [formId, setFormId] = useState<number | null>(null);
 
   const client = await db.connect();
 
@@ -28,15 +26,18 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id) VALUES ($1, 5, 1) RETURNING form_id`,
         [audId]
       );
-      const formId = newFormRes.rows[0].form_id;
-      setFormId(formId);
+      const NewformId = newFormRes.rows[0].form_id;
 
       await client.query(
         `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, 1, current_timestamp, $2)`,
-        [formId, userId]
+        [NewformId, userId]
       );
     }
-    setFormId(formRes.rows[0].form_id);
+    const formResLast = await client.query(
+      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 5`,
+      [audId]
+    );
+    const formId = formResLast.rows[0].form_id;
 
     const dataRes = await client.query(
       `
@@ -62,6 +63,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     return NextResponse.json(
       {
         data: dataRes.rows,
+        form_id: formId,
       },
       { status: 200 }
     );
