@@ -72,3 +72,63 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     client.release();
   }
 });
+
+export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
+  //requirePermission(user.permissions, ["user.create"]);
+
+  const body = await req.json();
+
+  const userId = user.id;
+  const audId = body.aud_id;
+  const formId = body.form_id;
+  const meetingTypeId = body.meeting_type_id;
+  const meetingDate = body.meeting_date;
+  const meetingTime = body.meeting_time;
+  const meetingPlace = body.meeting_place;
+  const meetingScope = body.meeting_scope;
+  const meetingFileId = body.meeting_file_id;
+
+  if (
+    !meetingTypeId ||
+    !meetingDate ||
+    !meetingTime ||
+    !meetingPlace ||
+    !meetingScope ||
+    !meetingFileId
+  ) {
+    return NextResponse.json({ error: "Хүсэлтийн мэдээлэл бүрэн оруулна уу" }, { status: 400 });
+  }
+
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // audit_meetings insert
+    const meetingRes = await client.query(
+      `INSERT INTO audit_meetings (meeting_aud_id, meeting_form_id, meeting_type_id, meeting_place, meeting_date, meeting_time, meeting_scope, meeting_file_id, created_by, created_date)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp) RETURNING meeting_id`,
+      [
+        audId,
+        formId,
+        meetingTypeId,
+        meetingPlace,
+        meetingDate,
+        meetingTime,
+        meetingScope,
+        meetingFileId,
+        userId,
+      ]
+    );
+
+    await client.query("COMMIT");
+    return NextResponse.json({ meeting_id: meetingRes.rows[0].meeting_id }, { status: 201 });
+  } catch (err: any) {
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("Create meeting error:", err);
+
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } finally {
+    client.release();
+  }
+});
