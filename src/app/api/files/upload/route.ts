@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
+import db from "@/lib/db";
 // import db from "@/lib/db";
 
 export async function POST(req: Request) {
@@ -31,22 +32,25 @@ export async function POST(req: Request) {
       const ext = path.extname(file.name);
       const storedName = `${Date.now()}-${randomUUID()}${ext}`;
       const filePath = path.join(uploadDir, storedName);
-
+      const relativePath = `/uploads/${auditId}/${storedName}`;
       await fs.writeFile(filePath, buffer);
 
-      // await db.query(
-      //   `
-      //   INSERT INTO audit_files (audit_id, original_name, stored_name, file_path)
-      //   VALUES ($1, $2, $3, $4)
-      //   `,
-      //   [auditId, file.name, storedName, filePath]
-      // );
+      const result = await db.query(
+        `
+          INSERT INTO reg_file (file_name, file_type, file_enc_name, file_path)
+          VALUES ($1, $2, $3, $4)
+          RETURNING file_id
+        `,
+        [file.name, ext, storedName, relativePath]
+      );
+
+      const fileId = result.rows[0]?.file_id;
 
       savedFiles.push({
-        audit_id: auditId,
+        file_id: fileId,
         original_name: file.name,
         stored_name: storedName,
-        file_path: filePath,
+        file_path: relativePath,
       });
     }
 

@@ -3,10 +3,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import db from "@/lib/db";
 
-export async function GET(req: NextRequest, ctx: RouteContext<"/api/files/download/[id]">) {
+type Params = {
+  params: Promise<{ file_id: string }>;
+};
+
+export async function GET(req: NextRequest, { params }: Params) {
   try {
-    const { id } = await ctx.params;
-    const fileId = Number(id);
+    const { file_id } = await params;
+    const fileId = Number(file_id);
 
     if (!Number.isInteger(fileId) || fileId <= 0) {
       return NextResponse.json({ error: "Файлын id буруу байна" }, { status: 400 });
@@ -14,9 +18,9 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/files/downlo
 
     const result = await db.query(
       `
-      SELECT id, file_path, mime_type, original_name
-      FROM audit_files
-      WHERE id = $1
+      SELECT file_id, file_name, file_type, file_enc_name, file_path
+      FROM reg_file
+      WHERE file_id = $1
       `,
       [fileId]
     );
@@ -27,20 +31,52 @@ export async function GET(req: NextRequest, ctx: RouteContext<"/api/files/downlo
       return NextResponse.json({ error: "Файл олдсонгүй" }, { status: 404 });
     }
 
-    const absPath = path.resolve(file.file_path);
-    const fileBuffer = await fs.readFile(absPath);
-    const body = new Uint8Array(fileBuffer);
+    const absPath = path.isAbsolute(file.file_path)
+      ? file.file_path
+      : path.join(process.cwd(), file.file_path);
 
-    return new NextResponse(body, {
+    const fileBuffer = await fs.readFile(absPath);
+
+    return new NextResponse(new Uint8Array(fileBuffer), {
       headers: {
-        "Content-Type": file.mime_type || "application/octet-stream",
-        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(
-          file.original_name
-        )}`,
+        "Content-Type": getMimeType(file.file_type),
+        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(file.file_name)}`,
       },
     });
   } catch (error) {
     console.error("DOWNLOAD ERROR:", error);
     return NextResponse.json({ error: "Файл татах үед алдаа гарлаа" }, { status: 500 });
+  }
+}
+
+function getMimeType(ext: string | null | undefined) {
+  const value = (ext || "").toLowerCase();
+
+  switch (value) {
+    case ".pdf":
+      return "application/pdf";
+    case ".jpg":
+    case ".jpeg":
+      return "image/jpeg";
+    case ".png":
+      return "image/png";
+    case ".gif":
+      return "image/gif";
+    case ".webp":
+      return "image/webp";
+    case ".doc":
+      return "application/msword";
+    case ".docx":
+      return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    case ".xls":
+      return "application/vnd.ms-excel";
+    case ".xlsx":
+      return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    case ".txt":
+      return "text/plain; charset=utf-8";
+    case ".zip":
+      return "application/zip";
+    default:
+      return "application/octet-stream";
   }
 }
