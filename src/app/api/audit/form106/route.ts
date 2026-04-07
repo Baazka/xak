@@ -79,7 +79,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   //requirePermission(user.permissions, ["user.create"]);
 
   const body = await req.json();
-
+  console.log("Meeting BODY ", body);
   const userId = user.id;
   const audId = body.aud_id;
   const formId = body.form_id;

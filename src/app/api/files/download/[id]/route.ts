@@ -3,14 +3,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import db from "@/lib/db";
 
-type Params = {
-  params: Promise<{ file_id: string }>;
-};
-
-export async function GET(req: NextRequest, { params }: Params) {
+export async function GET(req: NextRequest, { params }: RouteContext<"/api/files/download/[id]">) {
   try {
-    const { file_id } = await params;
-    const fileId = Number(file_id);
+    const { id } = await params;
+    const fileId = Number(id);
 
     if (!Number.isInteger(fileId) || fileId <= 0) {
       return NextResponse.json({ error: "Файлын id буруу байна" }, { status: 400 });
@@ -31,16 +27,21 @@ export async function GET(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "Файл олдсонгүй" }, { status: 404 });
     }
 
-    const absPath = path.isAbsolute(file.file_path)
-      ? file.file_path
-      : path.join(process.cwd(), file.file_path);
+    const normalizedPath = String(file.file_path).replace(/^\/+/, "");
+    const absPath = path.join(process.cwd(), normalizedPath);
 
     const fileBuffer = await fs.readFile(absPath);
 
+    const mimeType = getMimeType(file.file_type);
+    const disposition =
+      mimeType === "application/pdf"
+        ? `inline; filename*=UTF-8''${encodeURIComponent(file.file_name)}`
+        : `attachment; filename*=UTF-8''${encodeURIComponent(file.file_name)}`;
+
     return new NextResponse(new Uint8Array(fileBuffer), {
       headers: {
-        "Content-Type": getMimeType(file.file_type),
-        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(file.file_name)}`,
+        "Content-Type": mimeType,
+        "Content-Disposition": disposition,
       },
     });
   } catch (error) {

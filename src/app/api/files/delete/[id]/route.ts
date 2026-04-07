@@ -1,16 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs/promises";
 import path from "node:path";
 import db from "@/lib/db";
 
-type Params = {
-  params: Promise<{ file_id: string }>;
-};
-
-export async function DELETE(req: Request, { params }: Params) {
+export async function GET(req: NextRequest, { params }: RouteContext<"/api/files/delete/[id]">) {
   try {
-    const { file_id } = await params;
-    const fileId = Number(file_id);
+    const { id } = await params;
+    const fileId = Number(id);
 
     if (!Number.isInteger(fileId) || fileId <= 0) {
       return NextResponse.json({ error: "Файлын id буруу байна" }, { status: 400 });

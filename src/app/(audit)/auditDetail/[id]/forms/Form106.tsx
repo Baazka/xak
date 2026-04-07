@@ -1,5 +1,7 @@
 "use client";
 
+import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
+import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -7,59 +9,37 @@ type Props = {
   auditId: number;
 };
 
-type TableRow = {
-  noti_id: number;
-  noti_form_id: number;
-  ind_id: number;
-  ind_group_label: string;
-  ind_label: string;
-  noti_value: boolean | null;
-};
-
 type MeetingType = {
-  role_id: number;
-  role_label: string;
-  role_code: string;
-  role_text: string;
+  type_id: number;
+  type_label: string;
 };
 
 type MeetingRow = {
-  meet_id: number;
-  role_id: number;
-  role_label: string;
+  meeting_id: number;
+  meeting_aud_id: number;
+  meeting_form_id: number;
+  meeting_type_id: number;
+  meeting_type_name: string;
   meeting_date: string;
-  note: string;
+  meeting_time: string;
+  meeting_place: string;
+  meeting_scope: string;
+  meeting_file_id: number;
 };
 
 export default function Form106({ auditId }: Props) {
-  const [data, setData] = useState<TableRow[]>([]);
-  const [meetingRows, setMeetingRows] = useState<MeetingRow[]>([]);
-  const [meetingList, setMeetingList] = useState<MeetingType[]>([]);
+  const [meetingTypeList, setMeetingTypeList] = useState<MeetingType[]>([]);
+  const [meetingList, setMeetingList] = useState<MeetingRow[]>([]);
+  const [draftRow, setDraftRow] = useState<Partial<MeetingRow> | null>(null);
   const [formId, setFormId] = useState(0);
+  const [meetingFiles, setMeetingFiles] = useState<UploadedFileItem[]>([]);
 
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [dialogSaving, setDialogSaving] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
-  const [dialogRoleId, setDialogRoleId] = useState<number | "">("");
-  const [dialogDate, setDialogDate] = useState("");
-  const [dialogNote, setDialogNote] = useState("");
 
-  const groupedData = useMemo(() => {
-    return data.reduce<Record<string, TableRow[]>>((acc, row) => {
-      const key = row.ind_group_label || "Бусад";
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(row);
-      return acc;
-    }, {});
-  }, [data]);
-
-  const resetDialog = () => {
-    setDialogRoleId("");
-    setDialogDate("");
-    setDialogNote("");
-  };
+  const resetDialog = () => {};
 
   const loadTableData = useCallback(async () => {
     try {
@@ -68,10 +48,13 @@ export default function Form106({ auditId }: Props) {
       const res = await fetchWithAuth(`/api/audit/form106?aud_id=${auditId}`);
       const result = await res.json();
 
-      setData(result.data || []);
+      const resMeta = await fetchWithAuth(`/api/audit/form106/meta`);
+      const resultMeta = await resMeta.json();
+
       setFormId(result.form_id || 0);
-      setMeetingRows(result.meeting_data || []);
-      setMeetingList(result.meeting_list || []);
+      setMeetingList(result.data || []);
+
+      setMeetingTypeList(resultMeta.meeting_type || []);
     } catch (err) {
       console.error(err);
       alert("Мэдээлэл дуудах үед алдаа гарлаа");
@@ -84,18 +67,13 @@ export default function Form106({ auditId }: Props) {
     loadTableData();
   }, [loadTableData]);
 
-  const onChange = (id: number, value: boolean) => {
-    setData((prev) => prev.map((row) => (row.ind_id === id ? { ...row, noti_value: value } : row)));
-  };
-
-
   const handleDialogSave = async () => {
-    try {
-      if (!dialogRoleId || !dialogDate) {
-        alert("Албан тушаал болон огноо оруулна уу");
-        return;
-      }
+    if (!draftRow?.meeting_type_id || !draftRow?.meeting_date) {
+      alert("Төрөл болон огноо оруулна уу");
+      return;
+    }
 
+    try {
       setDialogSaving(true);
 
       const res = await fetchWithAuth(`/api/audit/form106`, {
@@ -104,24 +82,39 @@ export default function Form106({ auditId }: Props) {
         body: JSON.stringify({
           aud_id: auditId,
           form_id: formId,
-          role_id: dialogRoleId,
-          meeting_date: dialogDate,
-          note: dialogNote,
+          meeting_id: draftRow?.meeting_id ?? null,
+          meeting_type_id: draftRow?.meeting_type_id ?? null,
+          meeting_date: draftRow?.meeting_date ?? null,
+          meeting_time: draftRow?.meeting_time ?? "",
+          meeting_place: draftRow?.meeting_place ?? "",
+          meeting_scope: draftRow?.meeting_scope ?? "",
+          meeting_file_id: draftRow?.meeting_file_id ?? null,
         }),
       });
 
+      const result = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        throw new Error("Мөр хадгалахад алдаа гарлаа");
+        throw new Error(result?.error || "Мэдээлэл хадгалах үед алдаа гарлаа");
       }
 
-      resetDialog();
+      setDraftRow(null);
       setOpenDialog(false);
       await loadTableData();
-
-      alert("Мөр амжилттай хадгалагдлаа");
     } catch (error) {
       console.error(error);
-      alert("Мөр хадгалахад алдаа гарлаа");
+
+      if (draftRow?.meeting_file_id) {
+        try {
+          await fetchWithAuth(`/api/files/delete/${draftRow.meeting_file_id}`, {
+            method: "DELETE",
+          });
+        } catch (err) {
+          console.error("Файл устгаж чадсангүй", err);
+        }
+      }
+
+      alert(error instanceof Error ? error.message : "Мэдээлэл хадгалах үед алдаа гарлаа");
     } finally {
       setDialogSaving(false);
     }
@@ -157,7 +150,19 @@ export default function Form106({ auditId }: Props) {
 
           <button
             type="button"
-            onClick={() => setOpenDialog(true)}
+            onClick={() => {
+              setMeetingFiles([]);
+              setDraftRow({
+                meeting_id: 0,
+                meeting_type_id: 0,
+                meeting_date: "",
+                meeting_time: "",
+                meeting_place: "",
+                meeting_scope: "",
+                meeting_file_id: 0,
+              });
+              setOpenDialog(true);
+            }}
             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
             + Нэмэх
@@ -169,30 +174,47 @@ export default function Form106({ auditId }: Props) {
             <thead>
               <tr className="bg-gray-100">
                 <th className="border px-3 py-2 text-center w-10">№</th>
-                <th className="border px-3 py-2 text-left">Албан тушаал</th>
+                <th className="border px-3 py-2 text-left">Хурлын төрөл</th>
                 <th className="border px-3 py-2 text-left">Огноо</th>
-                <th className="border px-3 py-2 text-left">Тайлбар</th>
+                <th className="border px-3 py-2 text-left">Цаг</th>
+                <th className="border px-3 py-2 text-left">Байршил</th>
+                <th className="border px-3 py-2 text-left">Цар хүрээ</th>
+                <th className="border px-3 py-2 text-left">Хавсралт</th>
                 <th className="border px-3 py-2 text-center w-24">Үйлдэл</th>
               </tr>
             </thead>
             <tbody>
-              {meetingRows.length === 0 ? (
+              {meetingList.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="border px-3 py-6 text-center text-gray-500">
                     Мэдээлэл байхгүй байна
                   </td>
                 </tr>
               ) : (
-                meetingRows.map((row, index) => (
-                  <tr key={row.meet_id} className="hover:bg-gray-50">
+                meetingList.map((row, index) => (
+                  <tr key={row.meeting_id} className="hover:bg-gray-50">
                     <td className="border px-3 py-2 text-center">{index + 1}</td>
-                    <td className="border px-3 py-2">{row.role_label}</td>
+                    <td className="border px-3 py-2">{row.meeting_type_name}</td>
                     <td className="border px-3 py-2">{row.meeting_date}</td>
-                    <td className="border px-3 py-2">{row.note}</td>
+                    <td className="border px-3 py-2">{row.meeting_time}</td>
+                    <td className="border px-3 py-2">{row.meeting_place}</td>
+                    <td className="border px-3 py-2">{row.meeting_scope}</td>
+                    <td className="border px-3 py-2">
+                      {row.meeting_file_id ? (
+                        <a
+                          href={`/api/files/download/${row.meeting_file_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          Хавсрал үзэх
+                        </a>
+                      ) : null}
+                    </td>
                     <td className="border px-3 py-2 text-center">
                       <button
                         type="button"
-                        onClick={() => handleDeleteMeeting(row.meet_id)}
+                        onClick={() => handleDeleteMeeting(row.meeting_id)}
                         className="rounded-md bg-red-500 px-3 py-1 text-white hover:bg-red-600"
                       >
                         Устгах
@@ -208,10 +230,10 @@ export default function Form106({ auditId }: Props) {
 
       {/* Dialog */}
       {openDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+        <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
             <div className="flex items-center justify-between border-b px-4 py-3">
-              <h3 className="text-base font-semibold">Мөр нэмэх</h3>
+              <h3 className="text-base font-semibold">Уулзалтын бүртгэл</h3>
               <button
                 type="button"
                 onClick={() => {
@@ -226,16 +248,21 @@ export default function Form106({ auditId }: Props) {
 
             <div className="space-y-4 px-4 py-4">
               <div>
-                <label className="mb-1 block text-sm font-medium">Албан тушаал</label>
+                <label className="mb-1 block text-sm font-medium">Уулзалтын төрөл</label>
                 <select
-                  value={dialogRoleId}
-                  onChange={(e) => setDialogRoleId(e.target.value ? Number(e.target.value) : "")}
+                  value={draftRow?.meeting_type_id ?? ""}
+                  onChange={(e) =>
+                    setDraftRow((prev) => ({
+                      ...prev!,
+                      meeting_type_id: Number(e.target.value),
+                    }))
+                  }
                   className="w-full rounded-lg border px-3 py-2"
                 >
                   <option value="">Сонгох</option>
-                  {meetingList.map((item) => (
-                    <option key={item.role_id} value={item.role_id}>
-                      {item.role_label}
+                  {meetingTypeList.map((item) => (
+                    <option key={item.type_id} value={item.type_id}>
+                      {item.type_label}
                     </option>
                   ))}
                 </select>
@@ -243,22 +270,74 @@ export default function Form106({ auditId }: Props) {
 
               <div>
                 <label className="mb-1 block text-sm font-medium">Огноо</label>
-                <input
-                  type="date"
-                  value={dialogDate}
-                  onChange={(e) => setDialogDate(e.target.value)}
+                <DatePicker
+                  id="meeting-date"
+                  defaultDate={draftRow?.meeting_date ?? ""}
+                  onChange={(value: Date[]) =>
+                    setDraftRow((prev) => ({
+                      ...prev!,
+                      meeting_date: value?.[0]?.toISOString().slice(0, 10) ?? "",
+                    }))
+                  }
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">Цаг</label>
+                <DatePicker
+                  id="meeting_time"
+                  mode="time"
+                  defaultDate={draftRow?.meeting_time ?? ""}
+                  onChange={(value: Date[]) =>
+                    setDraftRow((prev) => ({
+                      ...prev!,
+                      meeting_time: value?.[0]?.toISOString().slice(11, 16) ?? "",
+                    }))
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium">Байршил</label>
+                <textarea
+                  value={draftRow?.meeting_place ?? ""}
+                  onChange={(e) =>
+                    setDraftRow((prev) => ({
+                      ...prev!,
+                      meeting_place: e.target.value,
+                    }))
+                  }
                   className="w-full rounded-lg border px-3 py-2"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium">Тайлбар</label>
+                <label className="mb-1 block text-sm font-medium">Цар хүрээ</label>
                 <textarea
-                  value={dialogNote}
-                  onChange={(e) => setDialogNote(e.target.value)}
-                  rows={3}
+                  value={draftRow?.meeting_scope ?? ""}
+                  onChange={(e) =>
+                    setDraftRow((prev) => ({
+                      ...prev!,
+                      meeting_scope: e.target.value,
+                    }))
+                  }
                   className="w-full rounded-lg border px-3 py-2"
-                  placeholder="Тайлбар..."
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium">Хавсралт</label>
+                <FileUpload
+                  accept=".pdf,.doc,.docx"
+                  multiple={false}
+                  auditId={auditId}
+                  value={meetingFiles}
+                  onChange={setMeetingFiles}
+                  onUploaded={(fileIds) =>
+                    setDraftRow((prev) => ({
+                      ...prev!,
+                      meeting_file_id: fileIds[0] ?? null,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -267,7 +346,7 @@ export default function Form106({ auditId }: Props) {
               <button
                 type="button"
                 onClick={() => {
-                  resetDialog();
+                  setDraftRow(null);
                   setOpenDialog(false);
                 }}
                 className="rounded-lg border px-4 py-2"

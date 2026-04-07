@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Файл байхгүй байна" }, { status: 422 });
     }
 
-    const uploadDir = path.join(process.cwd(), "uploads", "audit", String(auditId));
+    const uploadDir = path.join(process.cwd(), "uploads", String(auditId));
     await fs.mkdir(uploadDir, { recursive: true });
 
     const savedFiles = [];

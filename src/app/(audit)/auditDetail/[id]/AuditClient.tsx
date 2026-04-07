@@ -25,7 +25,7 @@ const forms: FormItem[] = [
 export default function AuditDetailClient({ auditId }: { auditId: number }) {
   const [openOrg, setOpenOrg] = useState(false);
   const [openAudit, setOpenAudit] = useState(false);
-  const [activeForm, setActiveForm] = useState("m01");
+  const [activeForm, setActiveForm] = useState("m04");
 
   // дараа нь API-аас ирэх shared data энд байна
   const auditData = {
