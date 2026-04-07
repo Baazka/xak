@@ -50,13 +50,13 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const client = await db.connect();
 
   const opRawData: { op_id: number; op_code: string; op_name: string; op_date: Date }[] =
-    body.op_raw_data; // expect array of {op_id, op_code, op_name, op_date }
+    body.operations; // expect array of {op_id, op_code, op_name, op_date }
   try {
     for (const opData of opRawData) {
       const { op_id, op_code, op_name, op_date } = opData;
       if (!op_id || op_id === null) {
         await client.query(
-          `INSERT INTO audit_org_operation (aud_id, op_code, op_name, op_date)
+          `INSERT INTO audit_org_operation (op_aud_id, op_code, op_name, op_date)
             VALUES ($1, $2, $3, $4) RETURNING op_id`,
           [audId, op_code, op_name, op_date]
         );
