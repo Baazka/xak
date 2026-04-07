@@ -89,6 +89,7 @@ export default function Form104({ auditId }: Props) {
       const noti_data = data.map((row) => ({
         noti_id: row.noti_id,
         ind_id: row.ind_id,
+        form_id: formId,
         noti_value: row.noti_value,
       }));
 
