@@ -66,6 +66,8 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   // Check Insert or Update
   const audId = body.aud_id;
 
+  console.log(body, "<======body");
+
   if (!audId) {
     return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
   }
