@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AuditOrgCard from "./components/AuditOrgCard";
 import AuditSidebar from "./components/AuditSidebar";
 import AuditContent from "./components/AuditContent";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export type FormItem = {
   id: string;
@@ -22,6 +23,7 @@ const forms: FormItem[] = [
 
 export default function AuditDetailClient({ auditId }: { auditId: number }) {
   const [openOrg, setOpenOrg] = useState(false);
+  const [openAudit, setOpenAudit] = useState(false);
   const [activeForm, setActiveForm] = useState("m01");
 
   // дараа нь API-аас ирэх shared data энд байна
@@ -33,7 +35,19 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
 
   return (
     <div className="max-w-full space-y-4 p-4">
-      <AuditOrgCard open={openOrg} onToggle={() => setOpenOrg((prev) => !prev)} data={auditData} />
+      <AuditOrgCard
+        openOrg={openOrg}
+        openAudit={openAudit}
+        onToggleOrg={() => {
+          setOpenAudit(false);
+          setOpenOrg((prev) => !prev);
+        }}
+        onToggleAudit={() => {
+          setOpenOrg(false);
+          setOpenAudit((prev) => !prev);
+        }}
+        auditId={auditId}
+      />
 
       <div className="flex gap-4">
         <AuditSidebar forms={forms} activeForm={activeForm} onChange={setActiveForm} />
