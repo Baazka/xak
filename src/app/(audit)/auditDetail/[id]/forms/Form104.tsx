@@ -15,37 +15,45 @@ type BagOption = {
 };
 
 type TableRow = {
-  id: number;
-  title: string;
-  answer: "Тийм" | "Үгүй" | null;
+  noti_id: number;
+  noti_form_id: number;
+  ind_id: number;
+  ind_group_label: string;
+  ind_label: string;
+  noti_value: boolean | null;
 };
 
 export default function Form104({ auditId }: Props) {
   const [bags, setBags] = useState<BagOption[]>([]);
   const [selectedBag, setSelectedBag] = useState("");
 
-  const [data, setData] = useState<TableRow[]>([]);
+  const [data, setData] = useState<TableRow[]>([
+    {
+      noti_id: 0,
+      noti_form_id: 0,
+      ind_id: 0,
+      ind_group_label: "",
+      ind_label: "",
+      noti_value: null,
+    },
+  ]);
+  const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const onChange = <K extends keyof TableRow>(field: K, value: TableRow[K]) => {
-    setData((prev) => ({
-      ...prev!,
-      [field]: value,
-    }));
+  const onChange = (id: number, value: boolean) => {
+    setData((prev) => prev.map((row) => (row.ind_id === id ? { ...row, noti_value: value } : row)));
   };
 
   useEffect(() => {
     async function loadBags() {
       const res = await fetch("/api/audit/form104/meta?aud_id=" + auditId);
-      const data = await res.json();
+      const result = await res.json();
 
-      console.log(data, "data");
-      setBags(data.data);
+      setBags(result.data || []);
 
-      // default эхний утга
-      if (data.length > 0) {
-        setSelectedBag(data[0].id);
+      if (result.data?.length > 0) {
+        setSelectedBag(String(result.data[0].team_id));
       }
     }
 
@@ -60,9 +68,10 @@ export default function Form104({ auditId }: Props) {
         setLoading(true);
 
         const res = await fetch(`/api/audit/form104?aud_id=${auditId}&team_id=${selectedBag}`);
-        const data = await res.json();
-
-        setData(data);
+        const result = await res.json();
+        console.log(result, "resultresultresultresultresultresult");
+        setData(result.data);
+        setFormId(result.form_id);
       } catch (err) {
         console.error(err);
       } finally {
@@ -77,10 +86,22 @@ export default function Form104({ auditId }: Props) {
     try {
       setSaving(true);
 
-      const res = await fetch(`/api/audit/company/`, {
+      const noti_data = data.map((row) => ({
+        noti_id: row.noti_id,
+        ind_id: row.ind_id,
+        form_id: formId,
+        noti_value: row.noti_value,
+      }));
+
+      const res = await fetch(`/api/audit/form104/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, aud_id: auditId }),
+        body: JSON.stringify({
+          aud_id: auditId,
+          form_id: formId,
+          status_id: 1,
+          noti_data,
+        }),
       });
 
       if (!res.ok) {
@@ -96,6 +117,16 @@ export default function Form104({ auditId }: Props) {
     }
   };
 
+  const groupedData = data.reduce(
+    (acc, row) => {
+      if (!acc[row.ind_group_label]) {
+        acc[row.ind_group_label] = [];
+      }
+      acc[row.ind_group_label].push(row);
+      return acc;
+    },
+    {} as Record<string, TableRow[]>
+  );
   return (
     <>
       <div className="mb-4">
@@ -117,23 +148,58 @@ export default function Form104({ auditId }: Props) {
         <div>Уншиж байна...</div>
       ) : (
         <>
-          {JSON.stringify(data)}
-          {/* <table className="w-full border-collapse border">
+          <table className="w-full border-collapse border">
             <thead>
               <tr>
-                <th className="border p-2 text-left">Мэдэгдэл</th>
-                <th className="border p-2 text-left">Батламж</th>
+                <th className="border p-2 text-left">№</th>
+                <th className="border p-2 text-left">Суурь зарчмууд</th>
+                <th className="border p-2 text-left">Тайлбар</th>
               </tr>
             </thead>
             <tbody>
-              {data.map((row) => (
-                <tr key={row.id}>
-                  <td className="border p-2">{row.title}</td>
-                  <td className="border p-2">{row.answer ?? ""}</td>
-                </tr>
+              {Object.entries(groupedData).map(([groupLabel, rows]) => (
+                <>
+                  {/* GROUP HEADER */}
+                  <tr key={groupLabel} className="bg-gray-100">
+                    <td colSpan={4} className="border p-2 font-bold">
+                      {groupLabel}
+                    </td>
+                  </tr>
+
+                  {/* GROUP ROWS */}
+                  {rows.map((row, index) => (
+                    <tr key={row.ind_id}>
+                      <td className="border p-2">{index + 1}</td>
+                      <td className="border p-2">{row.ind_label}</td>
+                      <td className="border p-2">
+                        <div className="flex items-center gap-4">
+                          <label className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`noti-${row.ind_id}`}
+                              checked={row.noti_value === true}
+                              onChange={() => onChange(row.ind_id, true)}
+                            />
+                            Тийм
+                          </label>
+
+                          <label className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`noti-${row.ind_id}`}
+                              checked={row.noti_value === false}
+                              onChange={() => onChange(row.ind_id, false)}
+                            />
+                            Үгүй
+                          </label>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </>
               ))}
             </tbody>
-          </table> */}
+          </table>
           <div className="mt-6">
             <button
               type="button"
