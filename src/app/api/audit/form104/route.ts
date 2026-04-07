@@ -35,7 +35,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       );
 
       const indListRes = await client.query(
-        `SELECT ind_id, $1 as noti_form_id, true as noti_value, ind_group_label, ind_label FROM ref_indicator WHERE ind_form_list_id = 1`
+        `SELECT ind_id, true as noti_value, ind_group_label, ind_label FROM ref_indicator WHERE ind_form_list_id = 1`
       );
 
       for (const row of indListRes.rows) {
@@ -46,7 +46,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         );
       }
 
-      return NextResponse.json({ data: indListRes }, { status: 200 });
+      return NextResponse.json({ data: indListRes, form_id: formId }, { status: 200 });
     } else {
       const dataRes = await client.query(
         `
