@@ -40,10 +40,11 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
       for (const row of indListRes.rows) {
         const indId = row.ind_id;
-        await client.query(
-          `INSERT INTO audit_notices (noti_form_id, noti_ind_id) VALUES ($1, $2)`,
+        const notiRes = await client.query(
+          `INSERT INTO audit_notices (noti_form_id, noti_ind_id) VALUES ($1, $2) returning noti_id`,
           [formId, indId]
         );
+        row.noti_id = notiRes.rows[0].noti_id;
       }
 
       return NextResponse.json({ data: indListRes, form_id: formId }, { status: 200 });
@@ -51,6 +52,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       const dataRes = await client.query(
         `
       select 
+        n.noti_id,
         n.noti_form_id, 
         i.ind_id,
         i.ind_group_label,
