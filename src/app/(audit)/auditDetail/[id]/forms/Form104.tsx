@@ -93,7 +93,7 @@ export default function Form104({ auditId }: Props) {
         noti_value: row.noti_value,
       }));
 
-      const res = await fetch(`/api/audit/company/`, {
+      const res = await fetch(`/api/audit/form104/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
