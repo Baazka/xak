@@ -81,6 +81,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const userId = user.id;
   const audId = body.aud_id;
   const formId = body.form_id;
+  const meetingId = body.meeting_id;
   const meetingTypeId = body.meeting_type_id;
   const meetingDate = body.meeting_date;
   const meetingTime = body.meeting_time;
@@ -102,30 +103,73 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const client = await db.connect();
 
   try {
-    await client.query("BEGIN");
-
-    // audit_meetings insert
-    const meetingRes = await client.query(
-      `INSERT INTO audit_meetings (meeting_aud_id, meeting_form_id, meeting_type_id, meeting_place, meeting_date, meeting_time, meeting_scope, meeting_file_id, created_by, created_date)
+    if (meetingId) {
+      // audit_meetings update
+      await client.query(
+        `UPDATE audit_meetings SET meeting_type_id = $1, meeting_place = $2, meeting_date = $3, meeting_time = $4, meeting_scope = $5, meeting_file_id = $6 WHERE meeting_id = $7`,
+        [
+          meetingTypeId,
+          meetingPlace,
+          meetingDate,
+          meetingTime,
+          meetingScope,
+          meetingFileId,
+          meetingId,
+        ]
+      );
+      return NextResponse.json({ message: "Meeting updated successfully" }, { status: 201 });
+    } else {
+      // audit_meetings insert
+      const meetingRes = await client.query(
+        `INSERT INTO audit_meetings (meeting_aud_id, meeting_form_id, meeting_type_id, meeting_place, meeting_date, meeting_time, meeting_scope, meeting_file_id, created_by, created_date)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp) RETURNING meeting_id`,
-      [
-        audId,
-        formId,
-        meetingTypeId,
-        meetingPlace,
-        meetingDate,
-        meetingTime,
-        meetingScope,
-        meetingFileId,
-        userId,
-      ]
-    );
-
-    await client.query("COMMIT");
-    return NextResponse.json({ meeting_id: meetingRes.rows[0].meeting_id }, { status: 201 });
+        [
+          audId,
+          formId,
+          meetingTypeId,
+          meetingPlace,
+          meetingDate,
+          meetingTime,
+          meetingScope,
+          meetingFileId,
+          userId,
+        ]
+      );
+      return NextResponse.json({ meeting_id: meetingRes.rows[0].meeting_id }, { status: 200 });
+    }
   } catch (err: any) {
     await client.query("ROLLBACK").catch(() => {});
     console.error("Create meeting error:", err);
+
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } finally {
+    client.release();
+  }
+});
+
+export const DELETE = withAuth(async (req: NextRequest, user: JwtPayload) => {
+  //requirePermission(user.permissions, ["user.create"]);
+
+  const body = await req.json();
+
+  const meetingId = body.meeting_id;
+  if (!meetingId) {
+    return NextResponse.json({ error: "Meeting ID is required" }, { status: 400 });
+  }
+
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // audit_meetings delete
+    await client.query(`DELETE FROM audit_meetings WHERE meeting_id = $1`, [meetingId]);
+
+    await client.query("COMMIT");
+    return NextResponse.json({ message: "Meeting deleted successfully" }, { status: 200 });
+  } catch (err: any) {
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("Delete meeting error:", err);
 
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   } finally {
