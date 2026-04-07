@@ -24,6 +24,7 @@ type DetailRow = {
   det_date: string;
 };
 export default function FormAuditCompanyOwner({ auditId }: Props) {
+  const [orgData, setOrgData] = useState<any>({});
   const [detailRows, setDetailRows] = useState<Record<number, DetailRow[]>>({
     1: [
       {
@@ -185,7 +186,10 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
       try {
         setLoading(true);
 
-        const [detailRes, opRes] = await Promise.all([
+        const [orgRes, detailRes, opRes] = await Promise.all([
+          fetchWithAuth(`/api/audit/company?aud_id=${auditId}`, {
+            cache: "no-store",
+          }),
           fetchWithAuth(`/api/audit/company/detail?aud_id=${auditId}`, {
             cache: "no-store",
           }),
@@ -194,8 +198,13 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
           }),
         ]);
 
+        const orgJson = await orgRes.json();
         const detailJson = await detailRes.json();
         const opJson = await opRes.json();
+
+        if (orgRes.ok && orgJson.data) {
+          setOrgData(orgJson.data);
+        }
 
         if (detailRes.ok && Array.isArray(detailJson.data)) {
           const grouped: Record<number, DetailRow[]> = {
@@ -285,52 +294,60 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
     fetchForm();
   }, [auditId]);
 
-  const handleSave = async () => {
+  const handleSaveAll = async () => {
     try {
       setSaving(true);
 
-      const res = await fetchWithAuth(`/api/audit/company/detail/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          aud_id: auditId,
-          details: detailRows,
-        }),
-      });
+      const detail_raw_data = Object.values(detailRows)
+        .flat()
+        .map((row) => ({
+          det_id: row.det_id,
+          det_type_id: row.det_type_id,
+          det_category: row.det_category,
+          det_country: row.det_country,
+          det_lastname: row.det_lastname,
+          det_firstname: row.det_firstname,
+          det_date: row.det_date ? new Date(row.det_date) : null,
+        }));
 
-      if (!res.ok) {
-        throw new Error("Хадгалахад алдаа гарлаа");
+      const op_raw_data = opRows.map((row) => ({
+        op_id: row.op_id,
+        op_code: row.op_code,
+        op_name: row.op_name,
+        op_date: row.op_date ? new Date(row.op_date) : null,
+      }));
+
+      const [detailRes, opRes] = await Promise.all([
+        fetchWithAuth(`/api/audit/company/detail/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            aud_id: auditId,
+            detail_raw_data,
+          }),
+        }),
+        fetchWithAuth(`/api/audit/company/operation/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            aud_id: auditId,
+            op_raw_data,
+          }),
+        }),
+      ]);
+
+      // response check
+      if (!detailRes.ok || !opRes.ok) {
+        const err1 = await detailRes.json().catch(() => ({}));
+        const err2 = await opRes.json().catch(() => ({}));
+
+        throw new Error(err1?.message || err2?.message || "Хадгалахад алдаа гарлаа");
       }
 
       alert("Амжилттай хадгаллаа");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
-    } finally {
-      setSaving(false);
-    }
-  };
-  const handleOPSave = async () => {
-    try {
-      setSaving(true);
-
-      const res = await fetchWithAuth(`/api/audit/company/operation/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          aud_id: auditId,
-          operations: opRows,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Хадгалахад алдаа гарлаа");
-      }
-
-      alert("Амжилттай хадгаллаа");
-    } catch (error) {
-      console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
+      alert(error.message || "Хадгалахад алдаа гарлаа");
     } finally {
       setSaving(false);
     }
@@ -341,6 +358,43 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
   return (
     <>
       <div>
+        {/* Үндсэн мэдээлэл */}
+        <section>
+          <h2 className="mb-3 text-base font-semibold text-gray-800">Үндсэн мэдээлэл</h2>
+
+          <div className="overflow-x-auto rounded-md">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-100 sticky top-0 z-10">
+                <tr>
+                  {[
+                    "Регистрийн дугаар",
+                    "Оноосон нэр",
+                    "Бүртгэсэн огноо",
+                    "Хэлбэр",
+                    "Төрөл",
+                    "Хувьцаа эзэмшигчийн тоо",
+                    "Хуулийн этгээдийн хаяг",
+                  ].map((item) => (
+                    <th key={item} className="border px-2 py-3 text-center font-medium">
+                      {item}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border px-2 py-3">{orgData.org_regno || "-"}</td>
+                  <td className="border px-2 py-3">{orgData.org_legal_name || "-"}</td>
+                  <td className="border px-2 py-3">{orgData.org_founded_date}</td>
+                  <td className="border px-2 py-3">-</td>
+                  <td className="border px-2 py-3">{orgData.org_type || "-"}</td>
+                  <td className="border px-2 py-3">{orgData.org_main_operation || "-"}</td>
+                  <td className="border px-2 py-3">{orgData.org_address || "-"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
         {/* Хувьцаа эзэмшигч мэдээлэл */}
         <section>
           <h2 className="mb-3 text-base font-semibold text-gray-800">Хувьцаа эзэмшигч мэдээлэл</h2>
@@ -609,16 +663,6 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
             </table>
           </div>
         </section>
-        <div className="mt-6">
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:bg-gray-400"
-          >
-            {saving ? "Хадгалж байна..." : "Хадгалах"}
-          </button>
-        </div>
       </div>
       <div>
         {/* Үйл ажиллагааны чиглэл */}
@@ -696,7 +740,7 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
         <div className="mt-6">
           <button
             type="button"
-            onClick={handleOPSave}
+            onClick={handleSaveAll}
             disabled={saving}
             className="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:bg-gray-400"
           >
