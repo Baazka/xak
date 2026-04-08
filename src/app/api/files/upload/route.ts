@@ -3,7 +3,6 @@ import fs from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
 import db from "@/lib/db";
-// import db from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
@@ -12,8 +11,8 @@ export async function POST(req: Request) {
     const auditId = Number(formData.get("audit_id"));
     const files = formData.getAll("files") as File[];
 
-    if (!auditId) {
-      return NextResponse.json({ error: "audit_id байхгүй байна" }, { status: 422 });
+    if (!Number.isInteger(auditId) || auditId <= 0) {
+      return NextResponse.json({ error: "audit_id буруу байна" }, { status: 422 });
     }
 
     if (!files.length) {
@@ -21,9 +20,16 @@ export async function POST(req: Request) {
     }
 
     const uploadDir = path.join(process.cwd(), "uploads", String(auditId));
+    const relativeDir = `/uploads/${auditId}`;
+
     await fs.mkdir(uploadDir, { recursive: true });
 
-    const savedFiles = [];
+    const savedFiles: {
+      file_id: number;
+      original_name: string;
+      stored_name: string;
+      file_path: string;
+    }[] = [];
 
     for (const file of files) {
       const bytes = await file.arrayBuffer();
@@ -31,9 +37,9 @@ export async function POST(req: Request) {
 
       const ext = path.extname(file.name);
       const storedName = `${Date.now()}-${randomUUID()}${ext}`;
-      const filePath = path.join(uploadDir, storedName);
-      const relativePath = `/uploads/${auditId}/${storedName}`;
-      await fs.writeFile(filePath, buffer);
+      const fullPath = path.join(uploadDir, storedName);
+
+      await fs.writeFile(fullPath, buffer);
 
       const result = await db.query(
         `
@@ -41,7 +47,7 @@ export async function POST(req: Request) {
           VALUES ($1, $2, $3, $4)
           RETURNING file_id
         `,
-        [file.name, ext, storedName, relativePath]
+        [file.name, ext, storedName, relativeDir]
       );
 
       const fileId = result.rows[0]?.file_id;
@@ -50,7 +56,7 @@ export async function POST(req: Request) {
         file_id: fileId,
         original_name: file.name,
         stored_name: storedName,
-        file_path: relativePath,
+        file_path: relativeDir,
       });
     }
 
@@ -59,7 +65,7 @@ export async function POST(req: Request) {
       files: savedFiles,
     });
   } catch (error) {
-    console.error(error);
+    console.error("UPLOAD ERROR:", error);
     return NextResponse.json({ error: "Файл хадгалах үед алдаа гарлаа" }, { status: 500 });
   }
 }
