@@ -2,7 +2,7 @@
 
 import DatePicker from "@/components/form/datePicker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 type Props = {
   auditId: number;
@@ -14,7 +14,7 @@ type TableRow = {
   cr_ind_id: number;
   ind_group_label: string;
   ind_label: string;
-  cr_rate_value: boolean | null;
+  cr_rate_value: string | null;
   cr_description: string | null;
 };
 
@@ -34,9 +34,15 @@ export default function Form105({ auditId }: Props) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const onChange = (id: number, value: boolean) => {
+  const onRadioChange = (cr_id: number, value: string) => {
     setData((prev) =>
-      prev.map((row) => (row.cr_ind_id === id ? { ...row, cr_rate_value: value } : row))
+      prev.map((row) => (row.cr_id === cr_id ? { ...row, cr_rate_value: value } : row))
+    );
+  };
+
+  const onSelectChange = (cr_id: number, value: string) => {
+    setData((prev) =>
+      prev.map((row) => (row.cr_id === cr_id ? { ...row, cr_rate_value: value } : row))
     );
   };
 
@@ -99,7 +105,10 @@ export default function Form105({ auditId }: Props) {
     }
   };
 
-  const groupedData = data.reduce(
+  const normalData = data?.filter((row) => row.cr_ind_id !== 37);
+  const lastRowData = data?.filter((row) => row.cr_ind_id === 37);
+
+  const groupedData = normalData.reduce(
     (acc, row) => {
       if (!acc[row.ind_group_label]) {
         acc[row.ind_group_label] = [];
@@ -109,6 +118,7 @@ export default function Form105({ auditId }: Props) {
     },
     {} as Record<string, TableRow[]>
   );
+
   return (
     <>
       {loading ? (
@@ -119,25 +129,105 @@ export default function Form105({ auditId }: Props) {
             <thead>
               <tr>
                 <th className="border p-2 text-left w-10">№</th>
-                <th className="border p-2 text-left">Суурь зарчмууд</th>
+                <th className="border p-2 text-left">Үзүүлэлт</th>
+                <th className="border p-2 text-left">Үнэлгээ</th>
                 <th className="border p-2 text-left w-2/3">Тайлбар</th>
               </tr>
             </thead>
             <tbody>
               {Object.entries(groupedData).map(([groupLabel, rows]) => (
-                <>
-                  {/* GROUP HEADER */}
-                  <tr key={groupLabel} className="bg-gray-100">
-                    <td colSpan={4} className="border p-2 font-bold">
-                      {groupLabel}
-                    </td>
-                  </tr>
+                <Fragment key={groupLabel}>
+                  {groupLabel !== "null" && (
+                    <tr className="bg-gray-100">
+                      <td colSpan={4} className="border p-2 font-bold">
+                        {groupLabel}
+                      </td>
+                    </tr>
+                  )}
 
-                  {/* GROUP ROWS */}
                   {rows.map((row, index) => (
-                    <tr key={index}>
+                    <tr key={row.cr_id}>
                       <td className="border p-2">{index + 1}</td>
                       <td className="border p-2">{row.ind_label}</td>
+                      <td className="border p-2">
+                        {row.cr_ind_id === 22 ? (
+                          <select
+                            value={row.cr_rate_value ?? ""}
+                            onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
+                            className="border p-1 rounded w-full"
+                          >
+                            <option value="">Сонгох</option>
+                            <option value="1">СТОУС</option>
+                            <option value="2">ЖДААН-ийн СТОУС</option>
+                            <option value="3">УСНББОУС</option>
+                          </select>
+                        ) : row.cr_ind_id === 23 ? (
+                          <select
+                            value={row.cr_rate_value ?? ""}
+                            onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
+                            className="border p-1 rounded w-full"
+                          >
+                            <option value="">Сонгох</option>
+                            <option value="1">Аккруэл суурь</option>
+                            <option value="2">Тохируулсан аккруэл суурь</option>
+                            <option value="3">Тохируулсан мөнгөн суурь</option>
+                          </select>
+                        ) : row.cr_ind_id === 24 ? (
+                          <select
+                            value={row.cr_rate_value ?? ""}
+                            onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
+                            className="border p-1 rounded w-full"
+                          >
+                            <option value="">Сонгох</option>
+                            <option value="1">Нийтлэг зорилготой</option>
+                            <option value="2">Тусгай зорилготой</option>
+                          </select>
+                        ) : row.cr_ind_id === 25 ? (
+                          <select
+                            value={row.cr_rate_value ?? ""}
+                            onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
+                            className="border p-1 rounded w-full"
+                          >
+                            <option value="">Сонгох</option>
+                            <option value="1">Хувьцаа эзэмшигчид, ТУЗ</option>
+                            <option value="2">Төрийн байгууллага</option>
+                            <option value="3">Зээлдүүлэгч/Донор байгууллага</option>
+                            <option value="4">Бусад</option>
+                          </select>
+                        ) : row.cr_ind_id === 26 ? (
+                          <select
+                            value={row.cr_rate_value ?? ""}
+                            onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
+                            className="border p-1 rounded w-full"
+                          >
+                            <option value="">Сонгох</option>
+                            <option value="1">Үнэн зөв толилуулгын</option>
+                            <option value="2">Нийцлийн</option>
+                          </select>
+                        ) : (
+                          <div className="flex items-center gap-4">
+                            <label className="flex items-center gap-1">
+                              <input
+                                type="radio"
+                                name={`noti-${row.cr_id}`}
+                                checked={row.cr_rate_value === "true"}
+                                onChange={() => onRadioChange(row.cr_id, "true")}
+                              />
+                              Тийм
+                            </label>
+
+                            <label className="flex items-center gap-1">
+                              <input
+                                type="radio"
+                                name={`noti-${row.cr_id}`}
+                                checked={row.cr_rate_value === "false"}
+                                onChange={() => onRadioChange(row.cr_id, "false")}
+                              />
+                              Үгүй
+                            </label>
+                          </div>
+                        )}
+                      </td>
                       <td className="border p-2">
                         <textarea
                           value={row.cr_description || ""}
@@ -153,7 +243,38 @@ export default function Form105({ auditId }: Props) {
                       </td>
                     </tr>
                   ))}
-                </>
+                </Fragment>
+              ))}
+
+              {lastRowData.map((row) => (
+                <tr key={row.cr_id}>
+                  <td className="border p-2"></td>
+                  <td className="border p-2">{row.ind_label}</td>
+                  <td className="border p-2">
+                    <select
+                      value={row.cr_rate_value ?? ""}
+                      onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
+                      className="border p-1 rounded w-full"
+                    >
+                      <option value="">Сонгох</option>
+                      <option value="1">Хүлээн зөвшөөрөхүйц</option>
+                      <option value="2">Үл хүлээн зөвшөөрөхүйц</option>
+                    </select>
+                  </td>
+                  <td className="border p-2">
+                    <textarea
+                      value={row.cr_description || ""}
+                      onChange={(e) =>
+                        setData((prev) =>
+                          prev.map((r) =>
+                            r.cr_id === row.cr_id ? { ...r, cr_description: e.target.value } : r
+                          )
+                        )
+                      }
+                      className="w-full border rounded p-1"
+                    />
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>
