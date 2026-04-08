@@ -24,7 +24,7 @@ type MeetingRow = {
   meeting_time: string;
   meeting_place: string;
   meeting_scope: string;
-  meeting_file_id: number;
+  meeting_file_id: number | null;
 };
 
 export default function Form106({ auditId }: Props) {
@@ -33,13 +33,18 @@ export default function Form106({ auditId }: Props) {
   const [draftRow, setDraftRow] = useState<Partial<MeetingRow> | null>(null);
   const [formId, setFormId] = useState(0);
   const [meetingFiles, setMeetingFiles] = useState<UploadedFileItem[]>([]);
+  const [originalMeetingFileId, setOriginalMeetingFileId] = useState<number | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [dialogSaving, setDialogSaving] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
 
-  const resetDialog = () => {};
+  const resetDialog = () => {
+    setDraftRow(null);
+    setMeetingFiles([]);
+    setOriginalMeetingFileId(null);
+  };
 
   const loadTableData = useCallback(async () => {
     try {
@@ -73,6 +78,13 @@ export default function Form106({ auditId }: Props) {
       return;
     }
 
+    const isEditMode = Boolean(draftRow?.meeting_id && draftRow.meeting_id > 0);
+    const previousFileId = originalMeetingFileId ?? null;
+    const nextFileId =
+      draftRow?.meeting_file_id && Number(draftRow.meeting_file_id) > 0
+        ? Number(draftRow.meeting_file_id)
+        : null;
+
     try {
       setDialogSaving(true);
 
@@ -88,7 +100,7 @@ export default function Form106({ auditId }: Props) {
           meeting_time: draftRow?.meeting_time ?? "",
           meeting_place: draftRow?.meeting_place ?? "",
           meeting_scope: draftRow?.meeting_scope ?? "",
-          meeting_file_id: draftRow?.meeting_file_id ?? null,
+          meeting_file_id: nextFileId,
         }),
       });
 
@@ -98,19 +110,29 @@ export default function Form106({ auditId }: Props) {
         throw new Error(result?.error || "Мэдээлэл хадгалах үед алдаа гарлаа");
       }
 
-      setDraftRow(null);
+      if (isEditMode && previousFileId && previousFileId !== nextFileId) {
+        try {
+          await fetchWithAuth(`/api/files/delete/${previousFileId}`, {
+            method: "DELETE",
+          });
+        } catch (deleteErr) {
+          console.error("Хуучин файл устгаж чадсангүй", deleteErr);
+        }
+      }
+
+      resetDialog();
       setOpenDialog(false);
       await loadTableData();
     } catch (error) {
       console.error(error);
 
-      if (draftRow?.meeting_file_id) {
+      if (nextFileId && (!previousFileId || previousFileId !== nextFileId)) {
         try {
-          await fetchWithAuth(`/api/files/delete/${draftRow.meeting_file_id}`, {
+          await fetchWithAuth(`/api/files/delete/${nextFileId}`, {
             method: "DELETE",
           });
         } catch (err) {
-          console.error("Файл устгаж чадсангүй", err);
+          console.error("Шинэ upload хийсэн файлыг rollback delete хийж чадсангүй", err);
         }
       }
 
@@ -120,17 +142,72 @@ export default function Form106({ auditId }: Props) {
     }
   };
 
+  const handleEditMeeting = (row: MeetingRow) => {
+    setDraftRow({
+      meeting_id: row.meeting_id,
+      meeting_aud_id: row.meeting_aud_id,
+      meeting_form_id: row.meeting_form_id,
+      meeting_type_id: row.meeting_type_id,
+      meeting_type_name: row.meeting_type_name,
+      meeting_date: row.meeting_date ?? "",
+      meeting_time: row.meeting_time ?? "",
+      meeting_place: row.meeting_place ?? "",
+      meeting_scope: row.meeting_scope ?? "",
+      meeting_file_id: row.meeting_file_id ?? null,
+    });
+
+    setOriginalMeetingFileId(row.meeting_file_id ?? null);
+
+    if (row.meeting_file_id) {
+      const fakeFile = new File([""], `Хавсралт-${row.meeting_file_id}`);
+
+      setMeetingFiles([
+        {
+          file: fakeFile,
+          file_id: row.meeting_file_id,
+          original_name: `Хавсралт-${row.meeting_file_id}`,
+        },
+      ]);
+    } else {
+      setMeetingFiles([]);
+    }
+
+    setOpenDialog(true);
+  };
+
   const handleDeleteMeeting = async (meetId: number) => {
+    const targetRow = meetingList.find((row) => row.meeting_id === meetId);
+    const fileId = targetRow?.meeting_file_id ?? null;
+
     try {
-      const res = await fetchWithAuth(`/api/audit/form106/meeting/${meetId}`, {
+      const res = await fetchWithAuth(`/api/audit/form106`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ meeting_id: meetId }),
       });
 
       if (!res.ok) {
-        throw new Error("Устгахад алдаа гарлаа");
+        throw new Error("Мөр устгахад алдаа гарлаа");
+      }
+
+      let fileDeleteFailed = false;
+
+      if (fileId) {
+        try {
+          await fetchWithAuth(`/api/files/delete/${fileId}`, {
+            method: "DELETE",
+          });
+        } catch (fileError) {
+          fileDeleteFailed = true;
+          console.error("Холбоотой файл устгахад алдаа гарлаа", fileError);
+        }
       }
 
       await loadTableData();
+
+      if (fileDeleteFailed) {
+        alert("Мөр устсан, гэхдээ хавсаргасан файл устгаж чадсангүй");
+      }
     } catch (error) {
       console.error(error);
       alert("Мөр устгахад алдаа гарлаа");
@@ -151,7 +228,7 @@ export default function Form106({ auditId }: Props) {
           <button
             type="button"
             onClick={() => {
-              setMeetingFiles([]);
+              resetDialog();
               setDraftRow({
                 meeting_id: 0,
                 meeting_type_id: 0,
@@ -159,8 +236,9 @@ export default function Form106({ auditId }: Props) {
                 meeting_time: "",
                 meeting_place: "",
                 meeting_scope: "",
-                meeting_file_id: 0,
+                meeting_file_id: null,
               });
+              setOriginalMeetingFileId(null);
               setOpenDialog(true);
             }}
             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
@@ -186,7 +264,7 @@ export default function Form106({ auditId }: Props) {
             <tbody>
               {meetingList.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="border px-3 py-6 text-center text-gray-500">
+                  <td colSpan={8} className="border px-3 py-6 text-center text-gray-500">
                     Мэдээлэл байхгүй байна
                   </td>
                 </tr>
@@ -212,13 +290,22 @@ export default function Form106({ auditId }: Props) {
                       ) : null}
                     </td>
                     <td className="border px-3 py-2 text-center">
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteMeeting(row.meeting_id)}
-                        className="rounded-md bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-                      >
-                        Устгах
-                      </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleEditMeeting(row)}
+                          className="rounded-md bg-amber-500 px-3 py-1 text-white hover:bg-amber-600"
+                        >
+                          Засах
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteMeeting(row.meeting_id)}
+                          className="rounded-md bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                        >
+                          Устгах
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -233,7 +320,9 @@ export default function Form106({ auditId }: Props) {
         <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
             <div className="flex items-center justify-between border-b px-4 py-3">
-              <h3 className="text-base font-semibold">Уулзалтын бүртгэл</h3>
+              <h3 className="text-base font-semibold">
+                {draftRow?.meeting_id ? "Уулзалтын мэдээлэл засах" : "Уулзалтын бүртгэл"}
+              </h3>
               <button
                 type="button"
                 onClick={() => {
@@ -327,11 +416,21 @@ export default function Form106({ auditId }: Props) {
               <div>
                 <label className="mb-1 block text-sm font-medium">Хавсралт</label>
                 <FileUpload
+                  key={`${draftRow?.meeting_id ?? 0}-${draftRow?.meeting_file_id ?? 0}`}
                   accept=".pdf,.doc,.docx"
                   multiple={false}
                   auditId={auditId}
                   value={meetingFiles}
-                  onChange={setMeetingFiles}
+                  onChange={(files) => {
+                    setMeetingFiles(files);
+
+                    if (!files.length) {
+                      setDraftRow((prev) => ({
+                        ...prev!,
+                        meeting_file_id: null,
+                      }));
+                    }
+                  }}
                   onUploaded={(fileIds) =>
                     setDraftRow((prev) => ({
                       ...prev!,
@@ -346,7 +445,7 @@ export default function Form106({ auditId }: Props) {
               <button
                 type="button"
                 onClick={() => {
-                  setDraftRow(null);
+                  resetDialog();
                   setOpenDialog(false);
                 }}
                 className="rounded-lg border px-4 py-2"

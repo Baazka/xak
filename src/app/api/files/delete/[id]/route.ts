@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import db from "@/lib/db";
 
-export async function GET(req: NextRequest, { params }: RouteContext<"/api/files/delete/[id]">) {
+export async function DELETE(req: NextRequest, { params }: RouteContext<"/api/files/delete/[id]">) {
   try {
     const { id } = await params;
     const fileId = Number(id);
@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, { params }: RouteContext<"/api/files
 
     const result = await db.query(
       `
-      SELECT file_id, file_name, file_path
+      SELECT file_id, file_name, file_enc_name, file_path
       FROM reg_file
       WHERE file_id = $1
       `,
@@ -27,10 +27,11 @@ export async function GET(req: NextRequest, { params }: RouteContext<"/api/files
       return NextResponse.json({ error: "Файл олдсонгүй" }, { status: 404 });
     }
 
-    const absPath = path.isAbsolute(file.file_path)
-      ? file.file_path
-      : path.join(process.cwd(), file.file_path);
-
+    const absPath = path.join(
+      process.cwd(),
+      String(file.file_path).replace(/^\/+/, ""),
+      file.file_enc_name
+    );
     try {
       await fs.unlink(absPath);
     } catch (err: any) {
@@ -38,7 +39,6 @@ export async function GET(req: NextRequest, { params }: RouteContext<"/api/files
         throw err;
       }
     }
-
     await db.query(
       `
       DELETE FROM reg_file
