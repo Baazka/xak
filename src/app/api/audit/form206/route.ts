@@ -18,12 +18,12 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   try {
     const formRes = await client.query(
-      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 10`,
+      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 9`,
       [audId]
     );
     if (!formRes.rows[0]) {
       const newFormRes = await client.query(
-        `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id) VALUES ($1, 10, 1) RETURNING form_id`,
+        `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id) VALUES ($1, 9, 1) RETURNING form_id`,
         [audId]
       );
       const NewformId = newFormRes.rows[0].form_id;
@@ -34,7 +34,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       );
     }
     const formResLast = await client.query(
-      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 10`,
+      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 9`,
       [audId]
     );
     const formId = formResLast.rows[0].form_id;
