@@ -26,16 +26,7 @@ export default function Form104({ auditId }: Props) {
   const [bags, setBags] = useState<BagOption[]>([]);
   const [selectedBag, setSelectedBag] = useState("");
 
-  const [data, setData] = useState<TableRow[]>([
-    {
-      noti_id: 0,
-      noti_form_id: 0,
-      ind_id: 0,
-      ind_group_label: "",
-      ind_label: "",
-      noti_value: null,
-    },
-  ]);
+  const [data, setData] = useState<TableRow[]>([]);
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -71,8 +62,8 @@ export default function Form104({ auditId }: Props) {
         );
         const result = await res.json();
 
-        setData(result.data);
-        setFormId(result.form_id);
+        setData(Array.isArray(result.data) ? result.data : []);
+        setFormId(result.form_id ?? 0);
       } catch (err) {
         console.error(err);
       } finally {
@@ -81,7 +72,7 @@ export default function Form104({ auditId }: Props) {
     }
 
     loadTableData();
-  }, [selectedBag]);
+  }, [selectedBag, auditId]);
 
   const handleSave = async () => {
     try {
@@ -118,7 +109,7 @@ export default function Form104({ auditId }: Props) {
     }
   };
 
-  const groupedData = data.reduce(
+  const groupedData = (Array.isArray(data) ? data : []).reduce(
     (acc, row) => {
       if (!acc[row.ind_group_label]) {
         acc[row.ind_group_label] = [];
@@ -128,6 +119,7 @@ export default function Form104({ auditId }: Props) {
     },
     {} as Record<string, TableRow[]>
   );
+
   return (
     <>
       <div className="mb-4">
@@ -157,49 +149,47 @@ export default function Form104({ auditId }: Props) {
                 <th className="border p-2 text-left">Тайлбар</th>
               </tr>
             </thead>
-            <tbody>
-              {Object.entries(groupedData).map(([groupLabel, rows]) => (
-                <>
-                  {/* GROUP HEADER */}
-                  <tr key={groupLabel} className="bg-gray-100">
-                    <td colSpan={4} className="border p-2 font-bold">
-                      {groupLabel}
+            {Object.entries(groupedData).map(([groupLabel, rows]) => (
+              <tbody key={groupLabel}>
+                {/* GROUP HEADER */}
+                <tr className="bg-gray-100">
+                  <td colSpan={4} className="border p-2 font-bold">
+                    {groupLabel}
+                  </td>
+                </tr>
+
+                {/* GROUP ROWS */}
+                {rows.map((row, index) => (
+                  <tr key={row.ind_id}>
+                    <td className="border p-2">{index + 1}</td>
+                    <td className="border p-2">{row.ind_label}</td>
+                    <td className="border p-2">
+                      <div className="flex items-center gap-4">
+                        <label className="flex items-center gap-1">
+                          <input
+                            type="radio"
+                            name={`noti-${row.ind_id}`}
+                            checked={row.noti_value === true}
+                            onChange={() => onChange(row.ind_id, true)}
+                          />
+                          Тийм
+                        </label>
+
+                        <label className="flex items-center gap-1">
+                          <input
+                            type="radio"
+                            name={`noti-${row.ind_id}`}
+                            checked={row.noti_value === false}
+                            onChange={() => onChange(row.ind_id, false)}
+                          />
+                          Үгүй
+                        </label>
+                      </div>
                     </td>
                   </tr>
-
-                  {/* GROUP ROWS */}
-                  {rows.map((row, index) => (
-                    <tr key={row.ind_id}>
-                      <td className="border p-2">{index + 1}</td>
-                      <td className="border p-2">{row.ind_label}</td>
-                      <td className="border p-2">
-                        <div className="flex items-center gap-4">
-                          <label className="flex items-center gap-1">
-                            <input
-                              type="radio"
-                              name={`noti-${row.ind_id}`}
-                              checked={row.noti_value === true}
-                              onChange={() => onChange(row.ind_id, true)}
-                            />
-                            Тийм
-                          </label>
-
-                          <label className="flex items-center gap-1">
-                            <input
-                              type="radio"
-                              name={`noti-${row.ind_id}`}
-                              checked={row.noti_value === false}
-                              onChange={() => onChange(row.ind_id, false)}
-                            />
-                            Үгүй
-                          </label>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </>
-              ))}
-            </tbody>
+                ))}
+              </tbody>
+            ))}
           </table>
           <div className="mt-6">
             <button

@@ -1,36 +1,100 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import AuditOrgCard from "./components/AuditOrgCard";
 import AuditSidebar from "./components/AuditSidebar";
 import AuditContent from "./components/AuditContent";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 export type FormItem = {
-  id: string;
-  short: string;
-  full: string;
+  form_id: number;
+  form_name: string;
+  form_stage: string;
+  form_code: string;
 };
 
-const forms: FormItem[] = [
-  { id: "m01", short: "М01", full: "Маягт 01" },
-  { id: "m02", short: "М02", full: "Маягт 02" },
-  { id: "m03", short: "М03", full: "Маягт 03" },
-  { id: "m04", short: "М04", full: "Маягт 04" },
-  { id: "m05", short: "М05", full: "Маягт 05" },
-  { id: "form1", short: "М1", full: "Маягт 1" },
-  { id: "form2", short: "М2", full: "Маягт 2" },
-];
+export type GroupedForms = {
+  stage: string;
+  items: FormItem[];
+};
 
 export default function AuditDetailClient({ auditId }: { auditId: number }) {
   const [openOrg, setOpenOrg] = useState(false);
   const [openAudit, setOpenAudit] = useState(false);
-  const [activeForm, setActiveForm] = useState("m05");
+  const [activeForm, setActiveForm] = useState<number | null>(null);
+  const [forms, setForms] = useState<FormItem[]>([]);
 
-  // дараа нь API-аас ирэх shared data энд байна
+  useEffect(() => {
+    const loadForms = async () => {
+      try {
+        const res = await fetchWithAuth("/api/refs/audit_form");
+        const data = await res.json();
+        const rows: FormItem[] = Array.isArray(data?.data) ? data.data : [];
+
+        setForms(rows);
+
+        const defaultForm = rows.find((f) => f.form_code === "m01");
+        if (defaultForm) {
+          setActiveForm(defaultForm.form_id);
+        } else if (rows.length > 0) {
+          setActiveForm(rows[0].form_id);
+        }
+      } catch (err) {
+        console.error(err);
+        setForms([]);
+        setActiveForm(null);
+      }
+    };
+
+    loadForms();
+  }, []);
+
+  const staticForms: FormItem[] = [
+    {
+      form_id: -1,
+      form_name: "Маягт 01",
+      form_stage: "",
+      form_code: "M01",
+    },
+    {
+      form_id: -2,
+      form_name: "Маягт 02",
+      form_stage: "",
+      form_code: "M02",
+    },
+  ];
+
+  const mergedForms = useMemo(() => {
+    return [...staticForms, ...forms];
+  }, [forms]);
+
+  const pinnedCodes = ["M01", "M02"];
+
+  const pinnedForms = staticForms;
+
+  const groupedForms: GroupedForms[] = useMemo(() => {
+    const normalForms = forms.filter(
+      (form) => !pinnedCodes.includes((form.form_code || "").toUpperCase())
+    );
+
+    const map = new Map<string, FormItem[]>();
+
+    for (const form of normalForms) {
+      const stage = form.form_stage || "Бусад";
+      if (!map.has(stage)) {
+        map.set(stage, []);
+      }
+      map.get(stage)!.push(form);
+    }
+
+    return Array.from(map.entries()).map(([stage, items]) => ({
+      stage,
+      items,
+    }));
+  }, [forms]);
+
   const auditData = {
-    auditId: auditId,
+    auditId,
     orgName: "Байгууллагын нэр",
     regNo: "1234567",
   };
@@ -52,9 +116,14 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
       />
 
       <div className="flex gap-4">
-        <AuditSidebar forms={forms} activeForm={activeForm} onChange={setActiveForm} />
+        <AuditSidebar
+          pinnedForms={pinnedForms}
+          groupedForms={groupedForms}
+          activeForm={activeForm}
+          onChange={setActiveForm}
+        />
 
-        <AuditContent activeForm={activeForm} auditData={auditData} />
+        <AuditContent activeForm={activeForm} forms={mergedForms} auditData={auditData} />
       </div>
     </div>
   );

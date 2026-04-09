@@ -376,10 +376,10 @@ export default function Form106({ auditId }: Props) {
                   id="meeting_time"
                   mode="time"
                   defaultDate={draftRow?.meeting_time ?? ""}
-                  onChange={(value: Date[]) =>
+                  onChange={(selectedDates, dateStr) =>
                     setDraftRow((prev) => ({
                       ...prev!,
-                      meeting_time: value?.[0]?.toISOString().slice(11, 16) ?? "",
+                      meeting_time: dateStr ?? "",
                     }))
                   }
                 />

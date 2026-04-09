@@ -1,15 +1,21 @@
 "use client";
 
 import { FileText, FolderOpen } from "lucide-react";
-import type { FormItem } from "../AuditClient";
+import type { FormItem, GroupedForms } from "../AuditClient";
 
 type AuditSidebarProps = {
-  forms: FormItem[];
-  activeForm: string;
-  onChange: (id: string) => void;
+  pinnedForms: FormItem[];
+  groupedForms: GroupedForms[];
+  activeForm: number | null;
+  onChange: (id: number) => void;
 };
 
-export default function AuditSidebar({ forms, activeForm, onChange }: AuditSidebarProps) {
+export default function AuditSidebar({
+  pinnedForms,
+  groupedForms,
+  activeForm,
+  onChange,
+}: AuditSidebarProps) {
   return (
     <div className="group">
       <div className="flex h-[74vh] w-25 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 group-hover:w-64">
@@ -20,30 +26,68 @@ export default function AuditSidebar({ forms, activeForm, onChange }: AuditSideb
           </span>
         </div>
 
-        <div className="flex-1 space-y-1 overflow-y-auto p-2">
-          {forms.map((item) => {
-            const isActive = activeForm === item.id;
+        <div className="flex-1 space-y-3 overflow-y-auto p-2">
+          {/* PINNED FORMS */}
+          {pinnedForms.length > 0 && (
+            <div className="space-y-1 border-b pb-2 mb-2">
+              {pinnedForms.map((item) => {
+                const isActive = activeForm === item.form_id;
 
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => onChange(item.id)}
-                title={item.full}
-                className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition ${
-                  isActive ? "bg-gray-100 text-gray-900" : "text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                <FileText className="h-4 w-4 shrink-0 text-gray-500" />
+                return (
+                  <button
+                    key={item.form_id}
+                    type="button"
+                    onClick={() => onChange(item.form_id)}
+                    title={item.form_name}
+                    className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition ${
+                      isActive ? "bg-gray-100 text-gray-900" : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    <FileText className="h-4 w-4 shrink-0 text-gray-500" />
 
-                <span className="text-xs font-medium group-hover:hidden">{item.short}</span>
+                    <span className="text-xs font-medium group-hover:hidden">{item.form_code}</span>
 
-                <span className="hidden whitespace-nowrap text-sm group-hover:block">
-                  {item.full}
+                    <span className="hidden whitespace-nowrap text-sm group-hover:block">
+                      {item.form_name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {groupedForms.map((group) => (
+            <div key={group.stage} className="space-y-1">
+              <div className="px-2 pt-1">
+                <span className="hidden text-xs font-semibold tracking-wide text-gray-500 group-hover:block">
+                  {group.stage}
                 </span>
-              </button>
-            );
-          })}
+              </div>
+
+              {group.items.map((item) => {
+                const isActive = activeForm === item.form_id;
+
+                return (
+                  <button
+                    key={item.form_id}
+                    type="button"
+                    onClick={() => onChange(item.form_id)}
+                    title={item.form_name}
+                    className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition ${
+                      isActive ? "bg-gray-100 text-gray-900" : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    <FileText className="h-4 w-4 shrink-0 text-gray-500" />
+
+                    <span className="text-xs font-medium group-hover:hidden">{item.form_code}</span>
+
+                    <span className="hidden whitespace-nowrap text-sm group-hover:block">
+                      {item.form_name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -19,17 +19,7 @@ type TableRow = {
 };
 
 export default function Form105({ auditId }: Props) {
-  const [data, setData] = useState<TableRow[]>([
-    {
-      cr_id: 0,
-      cr_form_id: 0,
-      cr_ind_id: 0,
-      ind_group_label: "",
-      ind_label: "",
-      cr_rate_value: null,
-      cr_description: null,
-    },
-  ]);
+  const [data, setData] = useState<TableRow[]>([]);
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -54,10 +44,8 @@ export default function Form105({ auditId }: Props) {
         const res = await fetchWithAuth(`/api/audit/form105?aud_id=${auditId}`);
         const result = await res.json();
 
-        setData(result.data);
-        setFormId(result.form_id);
-
-        console.log(result, "result");
+        setData(Array.isArray(result.data) ? result.data : []);
+        setFormId(result.form_id ?? 0);
       } catch (err) {
         console.error(err);
       } finally {
@@ -105,8 +93,10 @@ export default function Form105({ auditId }: Props) {
     }
   };
 
-  const normalData = data?.filter((row) => row.cr_ind_id !== 37);
-  const lastRowData = data?.filter((row) => row.cr_ind_id === 37);
+  const safeData = Array.isArray(data) ? data : [];
+
+  const normalData = safeData.filter((row) => row.cr_ind_id !== 37);
+  const lastRowData = safeData.filter((row) => row.cr_ind_id === 37);
 
   const groupedData = normalData.reduce(
     (acc, row) => {
