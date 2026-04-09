@@ -59,13 +59,13 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         join ref_audit_form af on f.form_list_id = af.form_id
         join ref_form_status s on f.form_status_id = s.status_id
         where f.form_id = $1`,
-      [formId]
+      [lastFormId]
     );
 
     if (!formRes.rows[0]) {
       return NextResponse.json({ error: "Form not found" }, { status: 404 });
     }
-
+    console.log(formDataRes.rows[0], "daaaaaaaaaaaaaaaaaaaaaaa");
     return NextResponse.json(
       {
         formData: formDataRes.rows[0],

@@ -18,8 +18,47 @@ type TableRow = {
   cr_description: string | null;
 };
 
+type FormData = {
+  form_id: number;
+  form_aud_id: number;
+  form_list_id: number;
+  form_stage: string;
+  form_name: string;
+  form_code: string;
+  form_status_id: number;
+  form_status_name: string;
+  from_status_code: string;
+  form_description: string;
+  form_sup_value: string;
+  form_file_id: number;
+};
+type FormConfirm = {
+  action_id: number;
+  action_form_id: number;
+  action_status_id: number;
+  action_status_name: string;
+  action_date: string;
+  action_by: number;
+  user_firstname: string;
+  user_phone: string;
+  user_email: string;
+};
+type FormComment = {
+  comment_id: number;
+  comment_form_id: number;
+  comment_date: string;
+  comment_by: number;
+  user_firstname: string;
+  user_phone: string;
+  user_email: string;
+  comment_text: string;
+};
+
 export default function Form105({ auditId }: Props) {
   const [data, setData] = useState<TableRow[]>([]);
+  const [formData, setFormData] = useState<FormData | null>(null);
+  const [formConfirm, setFormConfirm] = useState<FormConfirm[]>([]);
+  const [formComment, setFormComment] = useState<FormComment[]>([]);
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -54,6 +93,31 @@ export default function Form105({ auditId }: Props) {
     }
 
     loadTableData();
+  }, [auditId]);
+
+  useEffect(() => {
+    async function loadFormData() {
+      try {
+        setLoading(true);
+
+        const resForm = await fetchWithAuth(`/api/audit/audit_forms?aud_id=${auditId}&form_id=2`);
+        const formResult = await resForm.json();
+        setFormData(formResult.formData);
+
+        const resConfirm = await fetchWithAuth(`/api/audit/audit_forms/confirmation?form_id=19`);
+        const confirmResult = await resConfirm.json();
+        setFormConfirm(confirmResult.confirm);
+
+        const resComment = await fetchWithAuth(`/api/audit/audit_forms/comments?form_id=19`);
+        const commentResult = await resComment.json();
+        setFormComment(commentResult.formComment);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadFormData();
   }, [auditId]);
 
   const handleSave = async () => {
@@ -108,6 +172,7 @@ export default function Form105({ auditId }: Props) {
     },
     {} as Record<string, TableRow[]>
   );
+  console.log("formData ----> ", formData);
 
   return (
     <>
@@ -115,6 +180,20 @@ export default function Form105({ auditId }: Props) {
         <div>Уншиж байна...</div>
       ) : (
         <>
+          <div>
+            <h2>{formData?.form_name}</h2>
+          </div>
+
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:bg-gray-400"
+            >
+              {saving ? "Хадгалж байна..." : "Хадгалах"}
+            </button>
+          </div>
           <table className="w-full border-collapse border">
             <thead>
               <tr>
@@ -268,15 +347,29 @@ export default function Form105({ auditId }: Props) {
               ))}
             </tbody>
           </table>
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:bg-gray-400"
-            >
-              {saving ? "Хадгалж байна..." : "Хадгалах"}
-            </button>
+          <div>
+            <div>Ажилбар</div>
+            <textarea
+              className="w-full border rounded p-2 mt-4"
+              value={formData?.form_description || ""}
+              onChange={(e) =>
+                setFormData((prev) => (prev ? { ...prev, form_description: e.target.value } : null))
+              }
+            />
+          </div>
+          <div>
+            {formConfirm[0]?.action_status_name}
+            <hr />
+            {formConfirm[1]?.action_status_name}
+          </div>
+          <div>
+            <textarea />
+            {formComment.map((comment) => (
+              <div key={comment.comment_id}>
+                {/*   <div>{comment.user_firstname}</div> */}
+                <div>{comment.comment_text}</div>
+              </div>
+            ))}
           </div>
         </>
       )}
