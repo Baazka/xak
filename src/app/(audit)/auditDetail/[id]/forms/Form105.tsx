@@ -1,10 +1,8 @@
 "use client";
 
-import DatePicker from "@/components/form/datePicker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Fragment, useEffect, useState } from "react";
-import AuditConfirm from "../components/AuditConfirm";
-import AuditComment from "../components/AuditComment";
+import FormActionSection from "../components/FormActionSection";
 
 type Props = {
   auditId: number;
@@ -20,24 +18,8 @@ type TableRow = {
   cr_description: string | null;
 };
 
-type FormData = {
-  form_id: number;
-  form_aud_id: number;
-  form_list_id: number;
-  form_stage: string;
-  form_name: string;
-  form_code: string;
-  form_status_id: number;
-  form_status_name: string;
-  from_status_code: string;
-  form_description: string;
-  form_sup_value: string;
-  form_file_id: number;
-};
-
 export default function Form105({ auditId }: Props) {
   const [data, setData] = useState<TableRow[]>([]);
-  const [formData, setFormData] = useState<FormData | null>(null);
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -64,11 +46,6 @@ export default function Form105({ auditId }: Props) {
 
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
-
-        const resForm = await fetchWithAuth(`/api/audit/audit_forms?aud_id=${auditId}&form_id=2`);
-        const formResult = await resForm.json();
-        console.log(formResult, "formResult");
-        setFormData(formResult.formData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -305,18 +282,7 @@ export default function Form105({ auditId }: Props) {
               ))}
             </tbody>
           </table>
-          <div>
-            <div>Ажилбар</div>
-            <textarea
-              className="w-full border rounded p-2 mt-4"
-              value={formData?.form_description || ""}
-              onChange={(e) =>
-                setFormData((prev) => (prev ? { ...prev, form_description: e.target.value } : null))
-              }
-            />
-          </div>
-          <AuditConfirm formId={formData?.form_id ?? 0} />
-          <AuditComment formId={formData?.form_id ?? 0} />
+          <FormActionSection auditId={auditId} formId={formId} />
         </>
       )}
     </>

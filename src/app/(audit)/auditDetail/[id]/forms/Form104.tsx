@@ -1,8 +1,8 @@
 "use client";
 
-import DatePicker from "@/components/form/datePicker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
+import FormActionSection from "../components/FormActionSection";
 
 type Props = {
   auditId: number;
@@ -64,6 +64,7 @@ export default function Form104({ auditId }: Props) {
 
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
+
       } catch (err) {
         console.error(err);
       } finally {
@@ -122,26 +123,41 @@ export default function Form104({ auditId }: Props) {
 
   return (
     <>
-      <div className="mb-4">
-        <label className="mr-2">Баг:</label>
-        <select
-          value={selectedBag}
-          onChange={(e) => setSelectedBag(e.target.value)}
-          className="border px-2 py-1"
+      <div className="m-2 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-600 whitespace-nowrap">Баг:</label>
+
+          <select
+            value={selectedBag}
+            onChange={(e) => setSelectedBag(e.target.value)}
+            className="h-10 rounded-md border border-gray-300 px-3 text-sm outline-none focus:border-blue-500"
+          >
+            <option value="">Сонгох</option>
+            {bags.map((bag) => (
+              <option key={bag.team_id} value={bag.team_id}>
+                {bag.user_firstname}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={saving}
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-gray-400"
         >
-          <option value="">Сонгох</option>
-          {bags.map((bag) => (
-            <option key={bag.team_id} value={bag.team_id}>
-              {bag.user_firstname}
-            </option>
-          ))}
-        </select>
+          {saving && (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
+          )}
+          {saving ? "Хадгалж байна..." : "Хадгалах"}
+        </button>
       </div>
       {loading ? (
         <div>Уншиж байна...</div>
       ) : (
         <>
-          <table className="w-full border-collapse border">
+          <table className="w-full text-sm">
             <thead>
               <tr>
                 <th className="border p-2 text-left">№</th>
@@ -151,14 +167,11 @@ export default function Form104({ auditId }: Props) {
             </thead>
             {Object.entries(groupedData).map(([groupLabel, rows]) => (
               <tbody key={groupLabel}>
-                {/* GROUP HEADER */}
                 <tr className="bg-gray-100">
                   <td colSpan={4} className="border p-2 font-bold">
                     {groupLabel}
                   </td>
                 </tr>
-
-                {/* GROUP ROWS */}
                 {rows.map((row, index) => (
                   <tr key={row.ind_id}>
                     <td className="border p-2">{index + 1}</td>
@@ -191,16 +204,7 @@ export default function Form104({ auditId }: Props) {
               </tbody>
             ))}
           </table>
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:bg-gray-400"
-            >
-              {saving ? "Хадгалж байна..." : "Хадгалах"}
-            </button>
-          </div>
+          <FormActionSection auditId={auditId} formId={formId} />
         </>
       )}
     </>
