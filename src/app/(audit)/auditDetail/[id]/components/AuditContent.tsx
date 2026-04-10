@@ -52,7 +52,7 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
   }
 
   return (
-    <div className="flex-1 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm overflow-y-auto h-[74vh]">
+    <div className="h-full min-h-0 overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
       {content}
     </div>
   );

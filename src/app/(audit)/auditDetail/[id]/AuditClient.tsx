@@ -100,7 +100,7 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
   };
 
   return (
-    <div className="max-w-full space-y-4 p-4">
+    <div className="relative space-y-4 p-4">
       <AuditOrgCard
         openOrg={openOrg}
         openAudit={openAudit}
@@ -114,16 +114,19 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
         }}
         auditId={auditId}
       />
+      <div className="flex h-[74vh] gap-4">
+        <div className="h-full shrink-0">
+          <AuditSidebar
+            pinnedForms={pinnedForms}
+            groupedForms={groupedForms}
+            activeForm={activeForm}
+            onChange={setActiveForm}
+          />
+        </div>
 
-      <div className="flex gap-4">
-        <AuditSidebar
-          pinnedForms={pinnedForms}
-          groupedForms={groupedForms}
-          activeForm={activeForm}
-          onChange={setActiveForm}
-        />
-
-        <AuditContent activeForm={activeForm} forms={mergedForms} auditData={auditData} />
+        <div className="h-full min-w-0 flex-1">
+          <AuditContent activeForm={activeForm} forms={mergedForms} auditData={auditData} />
+        </div>
       </div>
     </div>
   );

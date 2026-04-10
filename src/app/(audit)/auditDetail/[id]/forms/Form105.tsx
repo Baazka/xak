@@ -172,7 +172,6 @@ export default function Form105({ auditId }: Props) {
     },
     {} as Record<string, TableRow[]>
   );
-  console.log("formData ----> ", formData);
 
   return (
     <>
@@ -218,7 +217,7 @@ export default function Form105({ auditId }: Props) {
                     <tr key={row.cr_id}>
                       <td className="border p-2">{index + 1}</td>
                       <td className="border p-2">{row.ind_label}</td>
-                      <td className="border p-2">
+                      <td className="border p-2 items-center">
                         {row.cr_ind_id === 22 ? (
                           <select
                             value={row.cr_rate_value ?? ""}
@@ -317,31 +316,32 @@ export default function Form105({ auditId }: Props) {
 
               {lastRowData.map((row) => (
                 <tr key={row.cr_id}>
-                  <td className="border p-2"></td>
-                  <td className="border p-2">{row.ind_label}</td>
-                  <td className="border p-2">
-                    <select
-                      value={row.cr_rate_value ?? ""}
-                      onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
-                      className="border p-1 rounded w-full"
-                    >
-                      <option value="">Сонгох</option>
-                      <option value="1">Хүлээн зөвшөөрөхүйц</option>
-                      <option value="2">Үл хүлээн зөвшөөрөхүйц</option>
-                    </select>
+                  <td className="border p-2" colSpan={2}>
+                    {row.ind_label}
                   </td>
-                  <td className="border p-2">
-                    <textarea
-                      value={row.cr_description || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.cr_id === row.cr_id ? { ...r, cr_description: e.target.value } : r
-                          )
-                        )
-                      }
-                      className="w-full border rounded p-1"
-                    />
+
+                  <td className="border p-2" colSpan={2}>
+                    <div className="flex items-center gap-6">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={`last-${row.cr_id}`}
+                          checked={row.cr_rate_value === "1"}
+                          onChange={() => onRadioChange(row.cr_id, "1")}
+                        />
+                        Хүлээн зөвшөөрөхүйц
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={`last-${row.cr_id}`}
+                          checked={row.cr_rate_value === "2"}
+                          onChange={() => onRadioChange(row.cr_id, "2")}
+                        />
+                        Үл хүлээн зөвшөөрөхүйц
+                      </label>
+                    </div>
                   </td>
                 </tr>
               ))}
