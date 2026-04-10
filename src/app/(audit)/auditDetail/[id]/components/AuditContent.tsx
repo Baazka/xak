@@ -10,14 +10,13 @@ import FormAuditCompanyOwner from "../forms/FormAuditCompanyOwner";
 import type { FormItem } from "../AuditClient";
 
 type AuditContentProps = {
-  activeForm: number | null;
+  activeForm: FormItem | null;
   forms: FormItem[];
   auditData: any;
 };
 
 export default function AuditContent({ activeForm, forms, auditData }: AuditContentProps) {
-  const active = forms.find((f) => f.form_id === activeForm);
-
+  const active = activeForm;
   let content: React.ReactNode = null;
 
   const staticForms: Record<string, React.ReactNode> = {
@@ -53,6 +52,11 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
 
   return (
     <div className="h-full min-h-0 overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      {active && (
+        <div className="mb-4 border-b pb-2">
+          <h2 className="text-lg font-semibold text-gray-800">{active.form_name}</h2>
+        </div>
+      )}
       {content}
     </div>
   );

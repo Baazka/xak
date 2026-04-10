@@ -6,8 +6,8 @@ import type { FormItem, GroupedForms } from "../AuditClient";
 type AuditSidebarProps = {
   pinnedForms: FormItem[];
   groupedForms: GroupedForms[];
-  activeForm: number | null;
-  onChange: (id: number) => void;
+  activeForm: FormItem | null;
+  onChange: (form: FormItem) => void;
 };
 
 export default function AuditSidebar({
@@ -17,7 +17,7 @@ export default function AuditSidebar({
   onChange,
 }: AuditSidebarProps) {
   return (
-    <div className="relative h-full w-24 shrink-0">
+    <div className="relative h-full w-24 shrink-0 z-20">
       <div className="group sticky top-0 h-full">
         <div className="absolute left-0 top-0 z-10 flex h-full min-h-0 w-24 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 group-hover:w-64">
           <div className="flex shrink-0 items-center gap-3 border-b border-gray-100 px-3 py-4">
@@ -31,13 +31,12 @@ export default function AuditSidebar({
             {pinnedForms.length > 0 && (
               <div className="mb-2 space-y-1 border-b pb-2">
                 {pinnedForms.map((item) => {
-                  const isActive = activeForm === item.form_id;
-
+                  const isActive = activeForm?.form_id === item.form_id;
                   return (
                     <button
                       key={item.form_id}
                       type="button"
-                      onClick={() => onChange(item.form_id)}
+                      onClick={() => onChange(item)}
                       title={item.form_name}
                       className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition ${
                         isActive ? "bg-gray-100 text-gray-900" : "text-gray-700 hover:bg-gray-50"
@@ -67,13 +66,13 @@ export default function AuditSidebar({
                 </div>
 
                 {group.items.map((item) => {
-                  const isActive = activeForm === item.form_id;
+                  const isActive = activeForm?.form_id === item.form_id;
 
                   return (
                     <button
                       key={item.form_id}
                       type="button"
-                      onClick={() => onChange(item.form_id)}
+                      onClick={() => onChange(item)}
                       title={item.form_name}
                       className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition ${
                         isActive ? "bg-gray-100 text-gray-900" : "text-gray-700 hover:bg-gray-50"

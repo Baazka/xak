@@ -65,7 +65,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     if (!formRes.rows[0]) {
       return NextResponse.json({ error: "Form not found" }, { status: 404 });
     }
-    console.log(formDataRes.rows[0], "daaaaaaaaaaaaaaaaaaaaaaa");
+
     return NextResponse.json(
       {
         formData: formDataRes.rows[0],

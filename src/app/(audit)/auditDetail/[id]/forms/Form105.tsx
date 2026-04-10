@@ -3,6 +3,8 @@
 import DatePicker from "@/components/form/datePicker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Fragment, useEffect, useState } from "react";
+import AuditConfirm from "../components/AuditConfirm";
+import AuditComment from "../components/AuditComment";
 
 type Props = {
   auditId: number;
@@ -32,33 +34,10 @@ type FormData = {
   form_sup_value: string;
   form_file_id: number;
 };
-type FormConfirm = {
-  action_id: number;
-  action_form_id: number;
-  action_status_id: number;
-  action_status_name: string;
-  action_date: string;
-  action_by: number;
-  user_firstname: string;
-  user_phone: string;
-  user_email: string;
-};
-type FormComment = {
-  comment_id: number;
-  comment_form_id: number;
-  comment_date: string;
-  comment_by: number;
-  user_firstname: string;
-  user_phone: string;
-  user_email: string;
-  comment_text: string;
-};
 
 export default function Form105({ auditId }: Props) {
   const [data, setData] = useState<TableRow[]>([]);
   const [formData, setFormData] = useState<FormData | null>(null);
-  const [formConfirm, setFormConfirm] = useState<FormConfirm[]>([]);
-  const [formComment, setFormComment] = useState<FormComment[]>([]);
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -85,6 +64,11 @@ export default function Form105({ auditId }: Props) {
 
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
+
+        const resForm = await fetchWithAuth(`/api/audit/audit_forms?aud_id=${auditId}&form_id=2`);
+        const formResult = await resForm.json();
+        console.log(formResult, "formResult");
+        setFormData(formResult.formData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -93,31 +77,6 @@ export default function Form105({ auditId }: Props) {
     }
 
     loadTableData();
-  }, [auditId]);
-
-  useEffect(() => {
-    async function loadFormData() {
-      try {
-        setLoading(true);
-
-        const resForm = await fetchWithAuth(`/api/audit/audit_forms?aud_id=${auditId}&form_id=2`);
-        const formResult = await resForm.json();
-        setFormData(formResult.formData);
-
-        const resConfirm = await fetchWithAuth(`/api/audit/audit_forms/confirmation?form_id=19`);
-        const confirmResult = await resConfirm.json();
-        setFormConfirm(confirmResult.confirm);
-
-        const resComment = await fetchWithAuth(`/api/audit/audit_forms/comments?form_id=19`);
-        const commentResult = await resComment.json();
-        setFormComment(commentResult.formComment);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadFormData();
   }, [auditId]);
 
   const handleSave = async () => {
@@ -179,21 +138,20 @@ export default function Form105({ auditId }: Props) {
         <div>Уншиж байна...</div>
       ) : (
         <>
-          <div>
-            <h2>{formData?.form_name}</h2>
-          </div>
-
-          <div className="mt-6">
+          <div className="m-2 flex justify-end">
             <button
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:bg-gray-400"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400"
             >
+              {saving && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
+              )}
               {saving ? "Хадгалж байна..." : "Хадгалах"}
             </button>
           </div>
-          <table className="w-full border-collapse border">
+          <table className="w-full text-sm">
             <thead>
               <tr>
                 <th className="border p-2 text-left w-10">№</th>
@@ -215,7 +173,7 @@ export default function Form105({ auditId }: Props) {
 
                   {rows.map((row, index) => (
                     <tr key={row.cr_id}>
-                      <td className="border p-2">{index + 1}</td>
+                      <td className="border p-2 text-center">{index + 1}</td>
                       <td className="border p-2">{row.ind_label}</td>
                       <td className="border p-2 items-center">
                         {row.cr_ind_id === 22 ? (
@@ -357,20 +315,8 @@ export default function Form105({ auditId }: Props) {
               }
             />
           </div>
-          <div>
-            {formConfirm[0]?.action_status_name}
-            <hr />
-            {formConfirm[1]?.action_status_name}
-          </div>
-          <div>
-            <textarea />
-            {formComment.map((comment) => (
-              <div key={comment.comment_id}>
-                {/*   <div>{comment.user_firstname}</div> */}
-                <div>{comment.comment_text}</div>
-              </div>
-            ))}
-          </div>
+          <AuditConfirm formId={formData?.form_id ?? 0} />
+          <AuditComment formId={formData?.form_id ?? 0} />
         </>
       )}
     </>

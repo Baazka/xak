@@ -21,7 +21,7 @@ export type GroupedForms = {
 export default function AuditDetailClient({ auditId }: { auditId: number }) {
   const [openOrg, setOpenOrg] = useState(false);
   const [openAudit, setOpenAudit] = useState(false);
-  const [activeForm, setActiveForm] = useState<number | null>(null);
+  const [activeForm, setActiveForm] = useState<FormItem | null>(null);
   const [forms, setForms] = useState<FormItem[]>([]);
 
   useEffect(() => {
@@ -33,11 +33,11 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
 
         setForms(rows);
 
-        const defaultForm = rows.find((f) => f.form_code === "m01");
+        const defaultForm = rows.find((f) => f.form_code === "105");
         if (defaultForm) {
-          setActiveForm(defaultForm.form_id);
+          setActiveForm(defaultForm);
         } else if (rows.length > 0) {
-          setActiveForm(rows[0].form_id);
+          setActiveForm(rows[0]);
         }
       } catch (err) {
         console.error(err);
@@ -126,6 +126,7 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
 
         <div className="h-full min-w-0 flex-1">
           <AuditContent activeForm={activeForm} forms={mergedForms} auditData={auditData} />
+
         </div>
       </div>
     </div>
