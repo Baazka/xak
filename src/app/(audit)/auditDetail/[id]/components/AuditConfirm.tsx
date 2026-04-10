@@ -54,40 +54,45 @@ export default function AuditConfirm({ formId }: Props) {
     return <div>Уншиж байна...</div>;
   }
 
-  if (formConfirm.length === 0) {
-    return <div>Баталгаажуулалтын мэдээлэл алга</div>;
-  }
-
   return (
     <div className="mt-6">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-gray-800">Баталгаажуулалт</h3>
-        <div className="h-px flex-1 bg-gray-200 ml-3" />
+      <div className="mb-4 flex items-center gap-3">
+        <h3 className="shrink-0  text-gray-800">Баталгаажуулалт</h3>
+        <div className="h-px flex-1 bg-gray-200" />
       </div>
-      {formConfirm.map((item) => (
-        <div key={item.action_id} className="flex items-center gap-6 text-sm">
-          <div className="w-24 text-gray-800">{item.action_status_name}:</div>
 
-          <div className="min-w-[220px] border-b border-gray-300 pb-1 text-gray-900">
-            {item.user_firstname || ""}
-          </div>
-
-          <div className="text-gray-800">Огноо:</div>
-          <div className="min-w-[170px] border-b border-gray-300 pb-1 text-gray-900">
-            {item.action_date || ""}
-          </div>
-
-          <div className="text-gray-800">Утас:</div>
-          <div className="min-w-[140px] border-b border-gray-300 pb-1 text-gray-900">
-            {item.user_phone || ""}
-          </div>
-
-          <div className="text-gray-800">Имэйл:</div>
-          <div className="min-w-[150px] border-b border-gray-300 pb-1 text-gray-900">
-            {item.user_email || ""}
-          </div>
+      {formConfirm.length === 0 ? (
+        <div className="rounded-md border border-dashed border-gray-300 bg-gray-50 px-3 py-4 text-center text-xs text-gray-500">
+          Мэдээлэл алга
         </div>
-      ))}
+      ) : (
+        <div className="space-y-1">
+          {formConfirm.map((item) => (
+            <div key={item.action_id} className="flex items-center gap-6 text-sm">
+              <div className="w-24 text-gray-800">{item.action_status_name}:</div>
+
+              <div className="min-w-[220px] border-b border-gray-300 pb-1 text-gray-900">
+                {item.user_firstname || ""}
+              </div>
+
+              <div className="text-gray-800">Огноо:</div>
+              <div className="min-w-[170px] border-b border-gray-300 pb-1 text-gray-900">
+                {item.action_date || ""}
+              </div>
+
+              <div className="text-gray-800">Утас:</div>
+              <div className="min-w-[140px] border-b border-gray-300 pb-1 text-gray-900">
+                {item.user_phone || ""}
+              </div>
+
+              <div className="text-gray-800">Имэйл:</div>
+              <div className="min-w-[150px] border-b border-gray-300 pb-1 text-gray-900">
+                {item.user_email || ""}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

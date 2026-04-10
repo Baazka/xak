@@ -3,6 +3,7 @@
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Fragment, useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
+import AuditRisk from "../components/AuditRisk";
 
 type Props = {
   auditId: number;
@@ -114,6 +115,7 @@ export default function Form203({ auditId, formListId }: Props) {
             </thead>
             <tbody></tbody>
           </table>
+          <AuditRisk auditId={auditId} formListId={formListId} />
           <FormActionSection auditId={auditId} formId={formListId} />
         </>
       )}
