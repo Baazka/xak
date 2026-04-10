@@ -1,10 +1,10 @@
 "use client";
 
-import Form1 from "../forms/Form1";
 import Form104 from "../forms/Form104";
 import Form105 from "../forms/Form105";
 import Form106 from "../forms/Form106";
-import Form2 from "../forms/Form2";
+import Form201 from "../forms/Form201";
+import Form203 from "../forms/Form203";
 import FormAuditCompany from "../forms/FormAuditCompany";
 import FormAuditCompanyOwner from "../forms/FormAuditCompanyOwner";
 import type { FormItem } from "../AuditClient";
@@ -38,11 +38,11 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
         case "106":
           content = <Form106 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
-        case "form1":
-          content = <Form1 data={auditData} />;
+        case "201":
+          content = <Form201 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
-        case "form2":
-          content = <Form2 data={auditData} />;
+        case "203":
+          content = <Form203 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
         default:
           content = <div>Маягт олдсонгүй</div>;
