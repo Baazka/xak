@@ -6,6 +6,7 @@ import FormActionSection from "../components/FormActionSection";
 
 type Props = {
   auditId: number;
+  formListId: number;
 };
 
 type TableRow = {
@@ -18,7 +19,7 @@ type TableRow = {
   cr_description: string | null;
 };
 
-export default function Form105({ auditId }: Props) {
+export default function Form105({ auditId, formListId }: Props) {
   const [data, setData] = useState<TableRow[]>([]);
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -282,7 +283,7 @@ export default function Form105({ auditId }: Props) {
               ))}
             </tbody>
           </table>
-          <FormActionSection auditId={auditId} formId={formId} />
+          <FormActionSection auditId={auditId} formId={formListId} />
         </>
       )}
     </>

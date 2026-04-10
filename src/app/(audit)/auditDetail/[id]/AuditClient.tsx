@@ -126,7 +126,6 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
 
         <div className="h-full min-w-0 flex-1">
           <AuditContent activeForm={activeForm} forms={mergedForms} auditData={auditData} />
-
         </div>
       </div>
     </div>

@@ -40,7 +40,7 @@ export default function FormActionSection({ auditId, formId }: Props) {
         );
 
         if (!res.ok) {
-          throw new Error("formData татахад алдаа гарлаа");
+          throw new Error(`formData татахад алдаа гарлаа (${res.status})`);
         }
 
         const result = await res.json();

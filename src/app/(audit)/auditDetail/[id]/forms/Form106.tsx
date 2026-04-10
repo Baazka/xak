@@ -8,6 +8,7 @@ import FormActionSection from "../components/FormActionSection";
 
 type Props = {
   auditId: number;
+  formListId: number;
 };
 
 type MeetingType = {
@@ -28,7 +29,7 @@ type MeetingRow = {
   meeting_file_id: number | null;
 };
 
-export default function Form106({ auditId }: Props) {
+export default function Form106({ auditId, formListId }: Props) {
   const [meetingTypeList, setMeetingTypeList] = useState<MeetingType[]>([]);
   const [meetingList, setMeetingList] = useState<MeetingRow[]>([]);
   const [draftRow, setDraftRow] = useState<Partial<MeetingRow> | null>(null);
@@ -464,7 +465,7 @@ export default function Form106({ auditId }: Props) {
           </div>
         </div>
       )}
-      <FormActionSection auditId={auditId} formId={formId} />
+      <FormActionSection auditId={auditId} formId={formListId} />
     </div>
   );
 }

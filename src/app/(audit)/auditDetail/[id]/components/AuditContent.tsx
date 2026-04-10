@@ -30,13 +30,13 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
     } else {
       switch (active.form_code) {
         case "104":
-          content = <Form104 auditId={auditData.auditId} />;
+          content = <Form104 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
         case "105":
-          content = <Form105 auditId={auditData.auditId} />;
+          content = <Form105 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
         case "106":
-          content = <Form106 auditId={auditData.auditId} />;
+          content = <Form106 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
         case "form1":
           content = <Form1 data={auditData} />;

@@ -6,6 +6,7 @@ import FormActionSection from "../components/FormActionSection";
 
 type Props = {
   auditId: number;
+  formListId: number;
 };
 
 type BagOption = {
@@ -22,7 +23,7 @@ type TableRow = {
   noti_value: boolean | null;
 };
 
-export default function Form104({ auditId }: Props) {
+export default function Form104({ auditId, formListId }: Props) {
   const [bags, setBags] = useState<BagOption[]>([]);
   const [selectedBag, setSelectedBag] = useState("");
 
@@ -64,7 +65,6 @@ export default function Form104({ auditId }: Props) {
 
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
-
       } catch (err) {
         console.error(err);
       } finally {
@@ -204,7 +204,7 @@ export default function Form104({ auditId }: Props) {
               </tbody>
             ))}
           </table>
-          <FormActionSection auditId={auditId} formId={formId} />
+          <FormActionSection auditId={auditId} formId={formListId} />
         </>
       )}
     </>

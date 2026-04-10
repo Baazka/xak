@@ -81,7 +81,6 @@ export default function AuditOrgCard({
 
   return (
     <div className="relative z-20 rounded-2xl border border-gray-200 bg-white shadow-sm">
-      {/* HEADER */}
       <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-5">
         <div className="flex flex-col items-start gap-1 border-r border-gray-300 pr-4">
           <div className="flex items-center justify-center gap-1.5 ">
@@ -110,7 +109,7 @@ export default function AuditOrgCard({
         >
           <div>
             <p className="text-sm text-gray-500">Аудитын мэдээлэл</p>
-          </div>{" "}
+          </div>
           <ChevronDown className={`transition ${openAudit ? "rotate-180" : ""}`} />
         </button>
 
@@ -124,9 +123,8 @@ export default function AuditOrgCard({
         </Button>
       </div>
 
-      {/* ORG DROPDOWN */}
       {openOrg && (
-        <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border bg-white shadow-lg p-4">
+        <div className="absolute z-30 left-0 right-0 top-full mt-2 rounded-2xl border bg-white shadow-lg p-4">
           <div className="grid grid-auto-flow:column grid-cols-3 gap-4">
             <div className="pl-4">
               <div className="flex items-center gap-1 mb-2">
@@ -170,7 +168,6 @@ export default function AuditOrgCard({
         </div>
       )}
 
-      {/* AUDIT DROPDOWN */}
       {openAudit && (
         <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border bg-white shadow-lg p-4">
           <div className="grid grid-auto-flow:column grid-cols-2 gap-4">
