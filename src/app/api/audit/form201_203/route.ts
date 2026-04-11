@@ -41,7 +41,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       );
 
       for (const row of indListRes.rows) {
-        const indId = row.ind_id;
+        const indId = row.info_ind_id;
         const coreInfoRes = await client.query(
           `INSERT INTO audit_core_info (info_form_id, info_ind_id) VALUES ($1, $2) returning info_id`,
           [formId, indId]
