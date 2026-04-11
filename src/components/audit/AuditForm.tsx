@@ -13,10 +13,6 @@ import AuditCompany from "./forms/AuditCompany";
 import AuditCompanyOwner from "./forms/AuditCompanyOwner";
 const currentYear = new Date().getFullYear();
 
-type UploadedFileItem = {
-  file: File;
-  preview?: string;
-};
 type OperationRow = {
   op_id: number;
   op_aud_id: number;
@@ -61,7 +57,7 @@ type FormDataType = {
   usertype5: number;
   usertype6: number[];
   payment_method: string;
-  attachments: UploadedFileItem[];
+  aud_file_id: number | null;
 
   org_regno: string;
   org_legal_name: string;
@@ -100,7 +96,7 @@ const initialData: FormDataType = {
   usertype5: 0,
   usertype6: [],
   payment_method: "",
-  attachments: [],
+  aud_file_id: null,
 
   org_regno: "",
   org_legal_name: "",
@@ -256,7 +252,7 @@ export default function AuditForm() {
   };
 
   const updateStepThreeField = <
-    K extends keyof Pick<FormDataType, "payment_method" | "attachments">,
+    K extends keyof Pick<FormDataType, "payment_method" | "aud_file_id">,
   >(
     field: K,
     value: any
@@ -362,6 +358,7 @@ export default function AuditForm() {
         org_operation_data: operationData,
         org_detail_data: detailData,
         payment_method: formData.payment_method,
+        aud_file_id: formData.aud_file_id,
         team_data: [
           formData.usertype3 ? { user_id: Number(formData.usertype3), role_id: 3 } : null,
           formData.usertype4 ? { user_id: Number(formData.usertype4), role_id: 4 } : null,
@@ -392,28 +389,6 @@ export default function AuditForm() {
         });
         setLoading(false);
         return;
-      }
-
-      const auditId = data?.aud_id;
-
-      if (auditId && formData.attachments.length > 0) {
-        const fd = new FormData();
-        fd.append("audit_id", String(auditId));
-
-        formData.attachments.forEach((item) => {
-          fd.append("files", item.file);
-        });
-
-        const uploadRes = await fetch("/api/files/upload", {
-          method: "POST",
-          body: fd,
-        });
-
-        const uploadData = await uploadRes.json().catch(() => ({}));
-
-        if (!uploadRes.ok) {
-          throw new Error(uploadData?.error || "Файл upload хийхэд алдаа гарлаа");
-        }
       }
 
       // Амжилттай
@@ -479,14 +454,11 @@ export default function AuditForm() {
         <div className="flex gap-2">
           {steps.map((s) => (
             <div key={s.id} className="flex-1 text-center">
-              {/* LABEL */}
               <div
                 className={`mb-1 ${s.id <= step ? "text-brand-500 font-medium" : "text-gray-400"}`}
               >
                 {s.label}
               </div>
-
-              {/* BAR */}
               <div className={`h-2 rounded ${s.id <= step ? "bg-brand-500" : "bg-gray-200"}`} />
             </div>
           ))}
@@ -565,7 +537,7 @@ export default function AuditForm() {
           <StepThree
             values={{
               payment_method: formData.payment_method,
-              attachments: formData.attachments,
+              aud_file_id: formData.aud_file_id,
             }}
             onChange={updateStepThreeField}
           />

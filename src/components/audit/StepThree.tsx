@@ -1,13 +1,10 @@
 import Radio from "@/components/form/input/Radio";
-import FileUpload from "../ui/FileUpload";
+import FileUpload, { UploadedFileItem } from "../ui/FileUpload";
+import { useEffect, useState } from "react";
 
-type UploadedFileItem = {
-  file: File;
-  preview?: string;
-};
 type StepThreeData = {
   payment_method: string;
-  attachments: UploadedFileItem[];
+  aud_file_id: number | null;
 };
 
 type Props = {
@@ -16,6 +13,21 @@ type Props = {
 };
 
 export default function StepThree({ values, onChange }: Props) {
+  const [files, setFiles] = useState<UploadedFileItem[]>([]);
+
+  useEffect(() => {
+    if (values.aud_file_id) {
+      const fakeFile = new File([""], `Файл-${values.aud_file_id}`);
+
+      setFiles([
+        {
+          file: fakeFile,
+          file_id: values.aud_file_id,
+          original_name: `Файл-${values.aud_file_id}`,
+        },
+      ]);
+    }
+  }, [values.aud_file_id]);
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -43,6 +55,22 @@ export default function StepThree({ values, onChange }: Props) {
       </div>
       <div className="space-y-2">
         <label className="block text-sm font-medium">Гэрээ хавсаргах</label>
+        <FileUpload
+          accept=".pdf,.doc,.docx"
+          multiple={false}
+          auditId={9999999}
+          value={files}
+          onChange={(nextFiles) => {
+            setFiles(nextFiles);
+
+            if (!nextFiles.length) {
+              onChange("aud_file_id", null);
+            }
+          }}
+          onUploaded={(fileIds) => {
+            onChange("aud_file_id", fileIds[0] ?? null);
+          }}
+        />
       </div>
     </div>
   );
