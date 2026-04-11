@@ -102,7 +102,7 @@ export default function Form202({ auditId, formListId }: Props) {
             <thead>
               <tr>
                 <th className="border p-2 text-left w-10">№</th>
-                <th className="border p-2 text-left w-1/2">Үзүүлэлт</th>
+                <th className="border p-2 text-left w-2/3">Үзүүлэлт</th>
                 <th className="border p-2 text-left">20xx.12.31</th>
                 <th className="border p-2 text-left">20xx.01.01</th>
                 <th className="border p-2 text-left">Зөрүү дүн</th>
@@ -116,7 +116,7 @@ export default function Form202({ auditId, formListId }: Props) {
             <thead>
               <tr>
                 <th className="border p-2 text-left w-10">№</th>
-                <th className="border p-2 text-left w-1/2">Үзүүлэлт</th>
+                <th className="border p-2 text-left w-2/3">Үзүүлэлт</th>
                 <th className="border p-2 text-left">20xx.12.31</th>
                 <th className="border p-2 text-left">20xx.01.01</th>
                 <th className="border p-2 text-left">Зөрүү дүн</th>
@@ -130,7 +130,7 @@ export default function Form202({ auditId, formListId }: Props) {
             <thead>
               <tr>
                 <th className="border p-2 text-left w-10">№</th>
-                <th className="border p-2 text-left w-1/2">Үзүүлэлт</th>
+                <th className="border p-2 text-left w-2/3">Үзүүлэлт</th>
                 <th className="border p-2 text-left">20xx.12.31</th>
                 <th className="border p-2 text-left">20xx.01.01</th>
                 <th className="border p-2 text-left">Зөрүү дүн</th>
@@ -144,7 +144,7 @@ export default function Form202({ auditId, formListId }: Props) {
             <thead>
               <tr>
                 <th className="border p-2 text-left w-10">№</th>
-                <th className="border p-2 text-left w-1/2">Үзүүлэлт</th>
+                <th className="border p-2 text-left w-2/3">Үзүүлэлт</th>
                 <th className="border p-2 text-left">20xx.12.31</th>
                 <th className="border p-2 text-left">20xx.01.01</th>
                 <th className="border p-2 text-left">Зөрүү дүн</th>
@@ -158,7 +158,7 @@ export default function Form202({ auditId, formListId }: Props) {
             <thead>
               <tr>
                 <th className="border p-2 text-left w-10">№</th>
-                <th className="border p-2 text-left w-1/2">Үзүүлэлт</th>
+                <th className="border p-2 text-left w-2/3">Үзүүлэлт</th>
                 <th className="border p-2 text-left">20xx.12.31</th>
                 <th className="border p-2 text-left">20xx.01.01</th>
                 <th className="border p-2 text-left">Зөрүү дүн</th>
