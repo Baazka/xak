@@ -1,11 +1,13 @@
 "use client";
 
-import DatePicker from "@/components/form/datePicker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Fragment, useEffect, useState } from "react";
+import FormActionSection from "../components/FormActionSection";
+import AuditRisk from "../components/AuditRisk";
 
 type Props = {
   auditId: number;
+  formListId: number;
 };
 
 type TableRow = {
@@ -18,7 +20,7 @@ type TableRow = {
   cr_description: string | null;
 };
 
-export default function Form105({ auditId }: Props) {
+export default function Form105({ auditId, formListId }: Props) {
   const [data, setData] = useState<TableRow[]>([]);
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -115,7 +117,20 @@ export default function Form105({ auditId }: Props) {
         <div>Уншиж байна...</div>
       ) : (
         <>
-          <table className="w-full border-collapse border">
+          <div className="m-2 flex justify-end">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400"
+            >
+              {saving && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
+              )}
+              {saving ? "Хадгалж байна..." : "Хадгалах"}
+            </button>
+          </div>
+          <table className="w-full text-sm">
             <thead>
               <tr>
                 <th className="border p-2 text-left w-10">№</th>
@@ -137,9 +152,9 @@ export default function Form105({ auditId }: Props) {
 
                   {rows.map((row, index) => (
                     <tr key={row.cr_id}>
-                      <td className="border p-2">{index + 1}</td>
+                      <td className="border p-2 text-center">{index + 1}</td>
                       <td className="border p-2">{row.ind_label}</td>
-                      <td className="border p-2">
+                      <td className="border p-2 items-center">
                         {row.cr_ind_id === 22 ? (
                           <select
                             value={row.cr_rate_value ?? ""}
@@ -238,46 +253,39 @@ export default function Form105({ auditId }: Props) {
 
               {lastRowData.map((row) => (
                 <tr key={row.cr_id}>
-                  <td className="border p-2"></td>
-                  <td className="border p-2">{row.ind_label}</td>
-                  <td className="border p-2">
-                    <select
-                      value={row.cr_rate_value ?? ""}
-                      onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
-                      className="border p-1 rounded w-full"
-                    >
-                      <option value="">Сонгох</option>
-                      <option value="1">Хүлээн зөвшөөрөхүйц</option>
-                      <option value="2">Үл хүлээн зөвшөөрөхүйц</option>
-                    </select>
+                  <td className="border p-2" colSpan={2}>
+                    {row.ind_label}
                   </td>
-                  <td className="border p-2">
-                    <textarea
-                      value={row.cr_description || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.cr_id === row.cr_id ? { ...r, cr_description: e.target.value } : r
-                          )
-                        )
-                      }
-                      className="w-full border rounded p-1"
-                    />
+
+                  <td className="border p-2" colSpan={2}>
+                    <div className="flex items-center gap-6">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={`last-${row.cr_id}`}
+                          checked={row.cr_rate_value === "1"}
+                          onChange={() => onRadioChange(row.cr_id, "1")}
+                        />
+                        Хүлээн зөвшөөрөхүйц
+                      </label>
+
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={`last-${row.cr_id}`}
+                          checked={row.cr_rate_value === "2"}
+                          onChange={() => onRadioChange(row.cr_id, "2")}
+                        />
+                        Үл хүлээн зөвшөөрөхүйц
+                      </label>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:bg-gray-400"
-            >
-              {saving ? "Хадгалж байна..." : "Хадгалах"}
-            </button>
-          </div>
+          <AuditRisk auditId={auditId} formListId={formListId} />
+          <FormActionSection auditId={auditId} formId={formListId} />
         </>
       )}
     </>

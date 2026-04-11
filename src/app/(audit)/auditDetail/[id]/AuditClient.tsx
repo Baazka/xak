@@ -21,7 +21,7 @@ export type GroupedForms = {
 export default function AuditDetailClient({ auditId }: { auditId: number }) {
   const [openOrg, setOpenOrg] = useState(false);
   const [openAudit, setOpenAudit] = useState(false);
-  const [activeForm, setActiveForm] = useState<number | null>(null);
+  const [activeForm, setActiveForm] = useState<FormItem | null>(null);
   const [forms, setForms] = useState<FormItem[]>([]);
 
   useEffect(() => {
@@ -33,11 +33,11 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
 
         setForms(rows);
 
-        const defaultForm = rows.find((f) => f.form_code === "m01");
+        const defaultForm = rows.find((f) => f.form_code === "201");
         if (defaultForm) {
-          setActiveForm(defaultForm.form_id);
+          setActiveForm(defaultForm);
         } else if (rows.length > 0) {
-          setActiveForm(rows[0].form_id);
+          setActiveForm(rows[0]);
         }
       } catch (err) {
         console.error(err);
@@ -100,7 +100,7 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
   };
 
   return (
-    <div className="max-w-full space-y-4 p-4">
+    <div className="relative space-y-4 p-4">
       <AuditOrgCard
         openOrg={openOrg}
         openAudit={openAudit}
@@ -114,16 +114,19 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
         }}
         auditId={auditId}
       />
+      <div className="flex h-[74vh] gap-4">
+        <div className="h-full shrink-0">
+          <AuditSidebar
+            pinnedForms={pinnedForms}
+            groupedForms={groupedForms}
+            activeForm={activeForm}
+            onChange={setActiveForm}
+          />
+        </div>
 
-      <div className="flex gap-4">
-        <AuditSidebar
-          pinnedForms={pinnedForms}
-          groupedForms={groupedForms}
-          activeForm={activeForm}
-          onChange={setActiveForm}
-        />
-
-        <AuditContent activeForm={activeForm} forms={mergedForms} auditData={auditData} />
+        <div className="h-full min-w-0 flex-1">
+          <AuditContent activeForm={activeForm} forms={mergedForms} auditData={auditData} />
+        </div>
       </div>
     </div>
   );

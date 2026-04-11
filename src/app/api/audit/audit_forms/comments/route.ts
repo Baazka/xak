@@ -29,7 +29,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       c.comment_text
       FROM audit_form_comments c 
       join reg_users_new u on c.comment_by = u.user_id
-      WHERE form_id = $1 and is_active = 1
+      WHERE comment_form_id = $1 and is_active = 1
       order by comment_date desc`,
       [formId]
     );

@@ -4,9 +4,11 @@ import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
 import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import FormActionSection from "../components/FormActionSection";
 
 type Props = {
   auditId: number;
+  formListId: number;
 };
 
 type MeetingType = {
@@ -27,7 +29,7 @@ type MeetingRow = {
   meeting_file_id: number | null;
 };
 
-export default function Form106({ auditId }: Props) {
+export default function Form106({ auditId, formListId }: Props) {
   const [meetingTypeList, setMeetingTypeList] = useState<MeetingType[]>([]);
   const [meetingList, setMeetingList] = useState<MeetingRow[]>([]);
   const [draftRow, setDraftRow] = useState<Partial<MeetingRow> | null>(null);
@@ -220,7 +222,6 @@ export default function Form106({ auditId }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Meeting table */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="flex items-center justify-between border-b bg-gray-50 px-4 py-3">
           <div className="text-sm font-semibold">Уулзалтын мэдээлэл</div>
@@ -248,7 +249,7 @@ export default function Form106({ auditId }: Props) {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse text-sm">
+          <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-100">
                 <th className="border px-3 py-2 text-center w-10">№</th>
@@ -315,7 +316,6 @@ export default function Form106({ auditId }: Props) {
         </div>
       </div>
 
-      {/* Dialog */}
       {openDialog && (
         <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
@@ -465,6 +465,7 @@ export default function Form106({ auditId }: Props) {
           </div>
         </div>
       )}
+      <FormActionSection auditId={auditId} formId={formListId} />
     </div>
   );
 }
