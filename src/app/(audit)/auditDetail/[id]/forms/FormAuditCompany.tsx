@@ -128,18 +128,16 @@ export default function FormAuditCompany({ auditId }: Props) {
         <div className="space-y-2">
           <label className="block text-sm font-medium">Регистр</label>
 
-          <div className="relative">
-            <input
-              inputMode="numeric"
-              maxLength={7}
-              value={data.org_regno ?? ""}
-              onChange={(e) => {
-                const onlyNumbers = e.target.value.replace(/\D/g, "").slice(0, 7);
-                onChange("org_regno", onlyNumbers);
-              }}
-              className="w-full rounded-lg border px-3 py-2 pr-20"
-            />
-          </div>
+          <input
+            inputMode="numeric"
+            maxLength={7}
+            value={data.org_regno ?? ""}
+            onChange={(e) => {
+              const onlyNumbers = e.target.value.replace(/\D/g, "").slice(0, 7);
+              onChange("org_regno", onlyNumbers);
+            }}
+            className="w-full rounded-lg border px-3 py-2 pr-20"
+          />
         </div>
 
         <div className="space-y-2">

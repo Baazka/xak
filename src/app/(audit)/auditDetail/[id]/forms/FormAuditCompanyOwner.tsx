@@ -364,7 +364,7 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
 
           <div className="overflow-x-auto rounded-md">
             <table className="w-full text-sm">
-              <thead className="bg-gray-100 sticky top-0 z-10">
+              <thead className="bg-gray-100  top-0">
                 <tr>
                   {[
                     "Регистрийн дугаар",
@@ -400,7 +400,7 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
           <h2 className="mb-3 text-base font-semibold text-gray-800">Хувьцаа эзэмшигч мэдээлэл</h2>
           <div className="overflow-x-auto rounded-md border border-gray-200">
             <table className="w-full text-sm">
-              <thead className="bg-gray-100 sticky top-0 z-10">
+              <thead className="bg-gray-100  top-0">
                 <tr>
                   <th className="px-3 py-2 w-10">№</th>
                   <th className="px-3 py-2">Ангилал</th>
@@ -492,7 +492,7 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
 
           <div className="overflow-x-auto rounded-md border border-gray-200">
             <table className="w-full text-sm">
-              <thead className="bg-gray-100 sticky top-0 z-10">
+              <thead className="bg-gray-100  top-0">
                 <tr>
                   <th className="px-3 py-2 w-10">№</th>
                   <th className="px-3 py-2">Албан тушаал</th>
@@ -581,7 +581,7 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
 
           <div className="overflow-x-auto rounded-md border border-gray-200">
             <table className="w-full text-sm">
-              <thead className="bg-gray-100 sticky top-0 z-10">
+              <thead className="bg-gray-100  top-0">
                 <tr>
                   <th className="px-3 py-2 w-10">№</th>
                   <th>Ангилал</th>
@@ -673,7 +673,7 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
 
           <div className="overflow-x-auto rounded-md border border-gray-200">
             <table className="w-full text-sm">
-              <thead className="bg-gray-100 sticky top-0 z-10">
+              <thead className="bg-gray-100  top-0">
                 <tr>
                   <th className="px-3 py-2 w-10">№</th>
                   <th>Үйл ажиллагааны код</th>
