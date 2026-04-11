@@ -88,23 +88,23 @@ export default function FormActionSection({ auditId, formId }: Props) {
         throw new Error("Ажилбар хадгалахад алдаа гарлаа");
       }
 
-      alert("Ажилбар амжилттай хадгаллаа");
+      alert("Тайлбар амжилттай хадгаллаа");
     } catch (error) {
       console.error("FormActionSection save error:", error);
-      alert("Ажилбар хадгалахад алдаа гарлаа");
+      alert("Тайлбар хадгалахад алдаа гарлаа");
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <div className="mt-4">Ажилбар уншиж байна...</div>;
+    return <div className="mt-4">Тайлбар уншиж байна...</div>;
   }
 
   return (
     <div className="mt-4 space-y-4">
       <div>
-        <div className="mb-2 font-medium">Ажилбар</div>
+        <div className="mb-2 font-medium">Тайлбар</div>
 
         <textarea
           className="mt-1 min-h-[120px] w-full rounded border p-2"

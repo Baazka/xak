@@ -2,6 +2,7 @@
 
 import DatePicker from "@/components/form/datePicker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { Delete, Edit } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 type Props = {
@@ -173,13 +174,15 @@ export default function AuditRisk({ auditId, formListId }: Props) {
     }
   };
 
+  const isType1 = draftRow?.risk_type_id === 1;
+
   if (loading) {
     return <div>Уншиж байна...</div>;
   }
 
   return (
-    <div className="space-y-6">
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+    <div className="space-y-3 mt-3">
+      <div className="overflow-hidden rounded border border-gray-200 bg-white">
         <div className="flex items-center justify-between border-b bg-gray-50 px-4 py-3">
           <div className="text-sm font-semibold">Эрсдлийн бүртгэл</div>
 
@@ -221,27 +224,28 @@ export default function AuditRisk({ auditId, formListId }: Props) {
                 riskList.map((row, index) => (
                   <tr key={row.risk_id} className="hover:bg-gray-50">
                     <td className="border px-3 py-2 text-center">{index + 1}</td>
-                    <td>{row.risk_content}</td>
-                    <td>{row.risk_type_name}</td>
-                    <td>{row.risk_group_name}</td>
-                    <td>{row.risk_sub_group_name}</td>
-                    <td>{row.risk_cd_type_name}</td>
-                    <td>{row.risk_date}</td>
+                    <td className="border px-3 py-2">{row.risk_content}</td>
+                    <td className="border px-3 py-2">{row.risk_type_name}</td>
+                    <td className="border px-3 py-2 text-center">{row.risk_group_name}</td>
+                    <td className="border px-3 py-2 text-center">{row.risk_sub_group_name}</td>
+                    <td className="border px-3 py-2 text-center">{row.risk_cd_type_name}</td>
+                    <td className="border px-3 py-2 text-center">{row.risk_date}</td>
                     <td className="border px-3 py-2 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           type="button"
                           onClick={() => handleEditRisk(row)}
-                          className="rounded-md bg-amber-500 px-3 py-1 text-white hover:bg-amber-600"
+                          className="flex items-center gap-1 px-2 py-1 border rounded-md text-amber-600 border-amber-200 hover:bg-amber-50"
                         >
-                          Засах
+                          <Edit size={16} />
                         </button>
+
                         <button
                           type="button"
                           onClick={() => handleDeleteRisk(row.risk_id)}
-                          className="rounded-md bg-red-500 px-3 py-1 text-white hover:bg-red-600"
+                          className="flex items-center gap-1 px-2 py-1 border rounded-md text-red-600 border-red-200 hover:bg-red-50"
                         >
-                          Устгах
+                          <Delete size={16} />
                         </button>
                       </div>
                     </td>
@@ -275,7 +279,7 @@ export default function AuditRisk({ auditId, formListId }: Props) {
             <div className="space-y-4 px-4 py-4">
               <div>
                 <label className="mb-1 block text-sm font-medium">Тодорхойлсон эрсдэл</label>
-                <input
+                <textarea
                   value={draftRow?.risk_content ?? ""}
                   onChange={(e) =>
                     setDraftRow((prev) => ({
@@ -305,12 +309,20 @@ export default function AuditRisk({ auditId, formListId }: Props) {
                 <label className="mb-1 block text-sm font-medium">Эрсдэлийн ангилал</label>
                 <select
                   value={draftRow?.risk_type_id ?? ""}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+
                     setDraftRow((prev) => ({
                       ...prev!,
-                      risk_type_id: Number(e.target.value),
-                    }))
-                  }
+                      risk_type_id: value,
+
+                      ...(value === 1 && {
+                        risk_group_id: undefined,
+                        risk_sub_group_id: undefined,
+                        risk_cd_type_id: undefined,
+                      }),
+                    }));
+                  }}
                   className="w-full rounded-lg border px-3 py-2"
                 >
                   <option value="">Сонгох</option>
@@ -325,14 +337,15 @@ export default function AuditRisk({ auditId, formListId }: Props) {
               <div>
                 <label className="mb-1 block text-sm font-medium">Нөлөөлж буй АГАДҮТ</label>
                 <select
-                  value={draftRow?.risk_group_id ?? ""}
+                  value={isType1 ? "" : (draftRow?.risk_group_id ?? "")}
+                  disabled={isType1}
                   onChange={(e) =>
                     setDraftRow((prev) => ({
                       ...prev!,
                       risk_group_id: Number(e.target.value),
                     }))
                   }
-                  className="w-full rounded-lg border px-3 py-2"
+                  className="w-full rounded-lg border px-3 py-2 disabled:bg-gray-100 disabled:text-gray-400"
                 >
                   <option value="">Сонгох</option>
                   {riskGroupList.map((item) => (
@@ -346,14 +359,15 @@ export default function AuditRisk({ auditId, formListId }: Props) {
               <div>
                 <label className="mb-1 block text-sm font-medium">АГАДҮТ-н дэд анги</label>
                 <select
-                  value={draftRow?.risk_sub_group_id ?? ""}
+                  value={isType1 ? "" : (draftRow?.risk_sub_group_id ?? "")}
+                  disabled={isType1}
                   onChange={(e) =>
                     setDraftRow((prev) => ({
                       ...prev!,
                       risk_sub_group_id: Number(e.target.value),
                     }))
                   }
-                  className="w-full rounded-lg border px-3 py-2"
+                  className="w-full rounded-lg border px-3 py-2 disabled:bg-gray-100 disabled:text-gray-400"
                 >
                   <option value="">Сонгох</option>
                   {riskSubGroupList.map((item) => (
@@ -369,14 +383,15 @@ export default function AuditRisk({ auditId, formListId }: Props) {
                   Холбогдох батламж мэдэгдлүүд
                 </label>
                 <select
-                  value={draftRow?.risk_cd_type_id ?? ""}
+                  value={isType1 ? "" : (draftRow?.risk_cd_type_id ?? "")}
+                  disabled={isType1}
                   onChange={(e) =>
                     setDraftRow((prev) => ({
                       ...prev!,
                       risk_cd_type_id: Number(e.target.value),
                     }))
                   }
-                  className="w-full rounded-lg border px-3 py-2"
+                  className="w-full rounded-lg border px-3 py-2 disabled:bg-gray-100 disabled:text-gray-400"
                 >
                   <option value="">Сонгох</option>
                   {riskCDTypeList.map((item) => (

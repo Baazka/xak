@@ -13,7 +13,7 @@ export async function GET() {
             form_code
         FROM ref_audit_form
         WHERE is_active = 1
-        ORDER BY form_id
+        ORDER BY form_code
       `
     );
 
