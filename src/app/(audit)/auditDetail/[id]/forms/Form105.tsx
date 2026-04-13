@@ -154,7 +154,7 @@ export default function Form105({ auditId, formListId }: Props) {
                     <tr key={row.cr_id}>
                       <td className="border p-2 text-center">{index + 1}</td>
                       <td className="border p-2">{row.ind_label}</td>
-                      <td className="border p-2 items-center">
+                      <td className="border p-2 text-center">
                         {row.cr_ind_id === 22 ? (
                           <select
                             value={row.cr_rate_value ?? ""}
@@ -210,8 +210,8 @@ export default function Form105({ auditId, formListId }: Props) {
                             <option value="2">Нийцлийн</option>
                           </select>
                         ) : (
-                          <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-1">
+                          <div className="flex items-center justify-center gap-4">
+                            <label className="flex items-center gap-1 cursor-pointer">
                               <input
                                 type="radio"
                                 name={`noti-${row.cr_id}`}
@@ -221,7 +221,7 @@ export default function Form105({ auditId, formListId }: Props) {
                               Тийм
                             </label>
 
-                            <label className="flex items-center gap-1">
+                            <label className="flex items-center gap-1 cursor-pointer">
                               <input
                                 type="radio"
                                 name={`noti-${row.cr_id}`}
@@ -259,7 +259,7 @@ export default function Form105({ auditId, formListId }: Props) {
 
                   <td className="border p-2" colSpan={2}>
                     <div className="flex items-center gap-6">
-                      <label className="flex items-center gap-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="radio"
                           name={`last-${row.cr_id}`}
@@ -269,7 +269,7 @@ export default function Form105({ auditId, formListId }: Props) {
                         Хүлээн зөвшөөрөхүйц
                       </label>
 
-                      <label className="flex items-center gap-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
                         <input
                           type="radio"
                           name={`last-${row.cr_id}`}

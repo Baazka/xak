@@ -134,7 +134,7 @@ export default function AuditComment({ formId }: Props) {
           disabled={saving}
           className="h-9 shrink-0 rounded-md bg-blue-600 px-3 text-xs text-white hover:bg-blue-700 disabled:bg-gray-400"
         >
-          {saving ? "..." : "Хадгалах"}
+          {saving ? "..." : "Тайлбар нэмэх"}
         </button>
       </div>
 

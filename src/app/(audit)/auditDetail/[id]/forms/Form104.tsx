@@ -178,7 +178,7 @@ export default function Form104({ auditId, formListId }: Props) {
                     <td className="border p-2">{row.ind_label}</td>
                     <td className="border p-2">
                       <div className="flex items-center gap-4">
-                        <label className="flex items-center gap-1">
+                        <label className="flex items-center gap-1 cursor-pointer">
                           <input
                             type="radio"
                             name={`noti-${row.ind_id}`}
@@ -188,7 +188,7 @@ export default function Form104({ auditId, formListId }: Props) {
                           Тийм
                         </label>
 
-                        <label className="flex items-center gap-1">
+                        <label className="flex items-center gap-1 cursor-pointer">
                           <input
                             type="radio"
                             name={`noti-${row.ind_id}`}
