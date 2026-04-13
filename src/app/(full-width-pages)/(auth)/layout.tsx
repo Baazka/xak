@@ -1,9 +1,15 @@
 import GridShape from "@/components/common/GridShape";
 import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "QVerify - Санхүүгийн аудитын цахим систем",
+  description: "QVerify - Санхүүгийн аудитын цахим систем V1.0",
+};
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

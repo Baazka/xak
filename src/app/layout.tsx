@@ -8,10 +8,16 @@ import { AuthProvider } from "@/context/AuthContext";
 import { getCurrentUser } from "@/lib/auth";
 import { ToastProvider } from "@/context/ToastContext";
 import { NotificationProvider } from "@/context/NotificationContext";
+import { Metadata } from "next";
 
 const roboto = Roboto({
   subsets: ["cyrillic", "latin"],
 });
+
+export const metadata: Metadata = {
+  title: "QVerify - Санхүүгийн аудитын цахим систем",
+  description: "QVerify - Санхүүгийн аудитын цахим систем V1.0",
+};
 
 export default async function RootLayout({
   children,
