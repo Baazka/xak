@@ -96,6 +96,7 @@ export default function StepOne({ values, onChange }: Props) {
               onChange("aud_begin_date", selectedDates[0]);
             }
           }}
+          size="lg"
         />
       </div>
 
@@ -109,6 +110,7 @@ export default function StepOne({ values, onChange }: Props) {
               onChange("aud_end_date", selectedDates[0]);
             }
           }}
+          size="lg"
         />
       </div>
     </div>

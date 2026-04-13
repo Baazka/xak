@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import flatpickr from "flatpickr";
 import type { Instance } from "flatpickr/dist/types/instance";
-import "flatpickr/dist/flatpickr.css";
+import "flatpickr/dist/flatpickr.min.css";
 import Label from "./Label";
 import { CalenderIcon } from "../../icons";
 import type { Hook, DateOption } from "flatpickr/dist/types/options";
@@ -19,6 +19,7 @@ type PropsType = {
   maxDate?: DateOption;
   value?: string;
   name?: string;
+  size?: "sm" | "md" | "lg";
 };
 
 export default function DatePicker({
@@ -32,9 +33,20 @@ export default function DatePicker({
   maxDate,
   value,
   name,
+  size = "md",
 }: PropsType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const fpRef = useRef<Instance | null>(null);
+  const sizeClassMap = {
+    sm: "fp-sm",
+    md: "fp-md",
+    lg: "fp-lg",
+  };
+  const inputSizeMap = {
+    sm: "h-8 text-xs",
+    md: "h-10 text-sm",
+    lg: "h-11 text-base",
+  };
 
   useEffect(() => {
     if (!inputRef.current) return;
@@ -54,13 +66,20 @@ export default function DatePicker({
       time_24hr: true,
       appendTo: document.body,
       position: "auto",
+      onReady: function (_, __, instance) {
+        Object.values(sizeClassMap).forEach((cls) =>
+          instance.calendarContainer.classList.remove(cls)
+        );
+
+        instance.calendarContainer.classList.add(sizeClassMap[size]);
+      },
     });
 
     return () => {
       fpRef.current?.destroy();
       fpRef.current = null;
     };
-  }, [mode, onChange, defaultDate, minDate, maxDate]);
+  }, [mode, onChange, defaultDate, minDate, maxDate, size]);
 
   useEffect(() => {
     if (!fpRef.current) return;
@@ -70,7 +89,7 @@ export default function DatePicker({
   }, [value]);
 
   return (
-    <div>
+    <div className="space-y-2">
       {label && <Label htmlFor={id}>{label}</Label>}
 
       <div className="relative">
@@ -79,12 +98,19 @@ export default function DatePicker({
           id={id}
           name={name}
           placeholder={placeholder}
-          className="h-11 w-full rounded-lg border appearance-none bg-transparent px-4 py-2.5 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+          className={`w-full rounded-lg border bg-transparent px-2 py-1 pr-10 
+          ${inputSizeMap[size]} 
+          text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none 
+          dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30`}
           readOnly
         />
 
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
-          <CalenderIcon className="size-6" />
+          <CalenderIcon
+            className={`
+  ${size === "sm" ? "size-4" : size === "lg" ? "size-6" : "size-5"}
+`}
+          />
         </span>
       </div>
     </div>

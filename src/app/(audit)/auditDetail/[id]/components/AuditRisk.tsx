@@ -1,5 +1,6 @@
 "use client";
 
+import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import DatePicker from "@/components/form/datePicker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Delete, Edit } from "lucide-react";
@@ -231,22 +232,16 @@ export default function AuditRisk({ auditId, formListId }: Props) {
                     <td className="border px-3 py-2 text-center">{row.risk_cd_type_name}</td>
                     <td className="border px-3 py-2 text-center">{row.risk_date}</td>
                     <td className="border px-3 py-2 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          type="button"
+                      <div className="flex items-center justify-center">
+                        <a
+                          className="flex w-full justify-center text-yellow-500 cursor-pointer"
                           onClick={() => handleEditRisk(row)}
-                          className="flex items-center gap-1 px-2 py-1 border rounded-md text-amber-600 border-amber-200 hover:bg-amber-50"
+                          href="#"
                         >
-                          <Edit size={16} />
-                        </button>
+                          <Edit className="h-4 w-4" />
+                        </a>
 
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteRisk(row.risk_id)}
-                          className="flex items-center gap-1 px-2 py-1 border rounded-md text-red-600 border-red-200 hover:bg-red-50"
-                        >
-                          <Delete size={16} />
-                        </button>
+                        <DeleteConfirmDialog onConfirm={() => handleDeleteRisk(row.risk_id)} />
                       </div>
                     </td>
                   </tr>

@@ -275,24 +275,62 @@ export default function AuditForm() {
   ];
 
   const nextStep = () => {
-    // if (step === 1) {
-    //   if (
-    //     !formData.aud_name ||
-    //     !formData.aud_begin_date ||
-    //     !formData.aud_end_date ||
-    //     !formData.aud_year
-    //   ) {
-    //     setMessage("1-р алхмын бүх талбарыг бөглөнө үү");
-    //     return;
-    //   }
-    // }
+    if (step === 1) {
+      if (
+        !formData.aud_name ||
+        !formData.aud_begin_date ||
+        !formData.aud_end_date ||
+        !formData.aud_year
+      ) {
+        setMessage("Бүх талбарыг бөглөнө үү");
+        return;
+      }
+    }
 
-    // if (step === 2) {
-    //   if (!formData.org_regno || !formData.org_legal_name) {
-    //     setMessage("2-р алхмын бүх талбарыг бөглөнө үү");
-    //     return;
-    //   }
-    // }
+    if (step === 2) {
+      if (
+        !formData.org_regno ||
+        !formData.org_legal_name ||
+        !formData.org_founded_date
+        // ||
+        // !formData.org_certno ||
+        // !formData.org_type ||
+        // !formData.org_main_operation ||
+        // !formData.org_is_special ||
+        // !formData.org_shareholder ||
+        // !formData.org_founder ||
+        // !formData.org_asset ||
+        // !formData.org_address ||
+        // !formData.org_phone ||
+        // !formData.org_email ||
+        // !formData.org_head_name ||
+        // !formData.org_head_phone ||
+        // !formData.org_head_email ||
+        // !formData.org_acc_name ||
+        // !formData.org_acc_phone ||
+        // !formData.org_acc_email
+      ) {
+        setMessage("Бүх талбарыг бөглөнө үү");
+        return;
+      }
+    }
+    if (step === 4) {
+      if (
+        !formData.usertype3 ||
+        !formData.usertype4 ||
+        !formData.usertype5 ||
+        !formData.usertype6
+      ) {
+        setMessage("Бүх талбарыг бөглөнө үү");
+        return;
+      }
+    }
+    if (step === 5) {
+      if (!formData.payment_method) {
+        setMessage("Бүх талбарыг бөглөнө үү");
+        return;
+      }
+    }
 
     setMessage("");
     setStep((prev) => prev + 1);

@@ -1,3 +1,4 @@
+import DatePicker from "@/components/form/datePicker";
 import { useState } from "react";
 
 type AuditCompanyOwnerFormData = {
@@ -140,7 +141,7 @@ export default function AuditCompanyOwner({ values, rows, setRows, opRows, setOp
                 <th className="px-3 py-2">Улсын нэр</th>
                 <th className="px-3 py-2">Эцэг/эхийн нэр</th>
                 <th className="px-3 py-2">Нэр</th>
-                <th className="px-3 py-2">Бүртгэсэн огноо</th>
+                <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
                 <th className="px-3 py-2 w-10">
                   <button
                     type="button"
@@ -193,11 +194,19 @@ export default function AuditCompanyOwner({ values, rows, setRows, opRows, setOp
                   </td>
 
                   <td className="border-b px-2 py-1">
-                    <input
-                      type="date"
-                      value={row.det_date}
-                      onChange={(e) => updateRow(1, index, "det_date", e.target.value)}
-                      className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    <DatePicker
+                      id={`det_date_1_${index}`}
+                      placeholder="Огноо сонгох"
+                      value={row.det_date || ""}
+                      onChange={(selectedDates) => {
+                        updateRow(
+                          1,
+                          index,
+                          "det_date",
+                          selectedDates?.[0] ? selectedDates[0].toISOString().slice(0, 10) : ""
+                        );
+                      }}
+                      size="sm"
                     />
                   </td>
                   <td className="border-b px-2 py-1 text-center">
@@ -231,7 +240,7 @@ export default function AuditCompanyOwner({ values, rows, setRows, opRows, setOp
                 <th className="px-3 py-2">Улсын нэр</th>
                 <th className="px-3 py-2">Эцэг/эхийн нэр</th>
                 <th className="px-3 py-2">Нэр</th>
-                <th className="px-3 py-2">Бүртгэсэн огноо</th>
+                <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
                 <th className="px-3 py-2 w-10">
                   <button
                     type="button"
@@ -283,11 +292,19 @@ export default function AuditCompanyOwner({ values, rows, setRows, opRows, setOp
                   </td>
 
                   <td className="border-b px-2 py-1">
-                    <input
-                      type="date"
-                      value={row.det_date}
-                      onChange={(e) => updateRow(2, index, "det_date", e.target.value)}
-                      className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    <DatePicker
+                      id={`det_date_2_${index}`}
+                      placeholder="Огноо сонгох"
+                      value={row.det_date || ""}
+                      onChange={(selectedDates) => {
+                        updateRow(
+                          2,
+                          index,
+                          "det_date",
+                          selectedDates?.[0] ? selectedDates[0].toISOString().slice(0, 10) : ""
+                        );
+                      }}
+                      size="sm"
                     />
                   </td>
                   <td className="border-b px-2 py-1 text-center">
@@ -315,11 +332,11 @@ export default function AuditCompanyOwner({ values, rows, setRows, opRows, setOp
             <thead className="bg-gray-100 sticky top-0 z-10">
               <tr>
                 <th className="px-3 py-2 w-10">№</th>
-                <th>Ангилал</th>
-                <th>Улсын нэр</th>
-                <th>Эцэг/эхийн нэр</th>
-                <th>Нэр</th>
-                <th>Бүртгэсэн огноо</th>
+                <th className="px-3 py-2">Ангилал</th>
+                <th className="px-3 py-2">Улсын нэр</th>
+                <th className="px-3 py-2">Эцэг/эхийн нэр</th>
+                <th className="px-3 py-2">Нэр</th>
+                <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
                 <th className="px-3 py-2 w-10">
                   <button
                     type="button"
@@ -371,11 +388,19 @@ export default function AuditCompanyOwner({ values, rows, setRows, opRows, setOp
                   </td>
 
                   <td className="border-b px-2 py-1">
-                    <input
-                      type="date"
-                      value={row.det_date}
-                      onChange={(e) => updateRow(3, index, "det_date", e.target.value)}
-                      className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    <DatePicker
+                      id={`det_date_3_${index}`}
+                      placeholder="Огноо сонгох"
+                      value={row.det_date || ""}
+                      onChange={(selectedDates) => {
+                        updateRow(
+                          3,
+                          index,
+                          "det_date",
+                          selectedDates?.[0] ? selectedDates[0].toISOString().slice(0, 10) : ""
+                        );
+                      }}
+                      size="sm"
                     />
                   </td>
                   <td className="border-b px-2 py-1 text-center">
@@ -405,9 +430,9 @@ export default function AuditCompanyOwner({ values, rows, setRows, opRows, setOp
             <thead className="bg-gray-100 sticky top-0 z-10">
               <tr>
                 <th className="px-3 py-2 w-10">№</th>
-                <th>Үйл ажиллагааны код</th>
-                <th>Үйл ажиллагааны чиглэл</th>
-                <th>Бүртгэсэн огноо</th>
+                <th className="px-3 py-2">Үйл ажиллагааны код</th>
+                <th className="px-3 py-2">Үйл ажиллагааны чиглэл</th>
+                <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
                 <th className="px-3 py-2 w-10">
                   <button
                     type="button"
@@ -443,11 +468,18 @@ export default function AuditCompanyOwner({ values, rows, setRows, opRows, setOp
                   </td>
 
                   <td className="border-b px-2 py-1">
-                    <input
-                      type="date"
-                      value={row.op_date}
-                      onChange={(e) => updateOPRow(index, "op_date", e.target.value)}
-                      className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    <DatePicker
+                      id={`op_date_${index}`}
+                      placeholder="Огноо сонгох"
+                      value={row.op_date || ""}
+                      onChange={(selectedDates) => {
+                        updateOPRow(
+                          index,
+                          "op_date",
+                          selectedDates?.[0] ? selectedDates[0].toISOString().slice(0, 10) : ""
+                        );
+                      }}
+                      size="sm"
                     />
                   </td>
                   <td className="border-b px-2 py-1 text-center">

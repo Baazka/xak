@@ -1067,46 +1067,35 @@ pre[class*="language-"].line-numbers {
 }
 
 /* Custom Scrollbar for Calendar */
-.flatpickr-calendar {
-  font-size: 9px; /* 11 → ~9 */
-  width: 190px; /* 240 → ~190 */
-  padding: 4px;
+/* SMALL */
+.fp-sm {
+  font-size: 11px;
+  width: 220px;
+}
+.fp-sm .flatpickr-day {
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
 }
 
-.flatpickr-months {
-  padding: 4px 3px;
+/* MEDIUM (default) */
+.fp-md {
+  font-size: 12px;
+  width: 250px;
+}
+.fp-md .flatpickr-day {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
 }
 
-.flatpickr-current-month {
-  font-size: 11px; /* 14 → ~11 */
-  font-weight: 600;
+/* LARGE */
+.fp-lg {
+  font-size: 14px;
+  width: 300px;
 }
-
-.flatpickr-weekdays {
-  margin-top: 3px;
-}
-
-.flatpickr-weekday {
-  font-size: 9px; /* 11 → ~9 */
-}
-
-.flatpickr-days {
-  margin-top: 3px;
-}
-
-.flatpickr-day {
-  width: 24px; /* 30 → ~24 */
-  max-width: 24px;
-  height: 24px;
-  line-height: 24px;
-  font-size: 9px;
-  border-radius: 4px;
-}
-
-.flatpickr-day.today {
-  border-width: 1px;
-}
-
-.flatpickr-day.selected {
-  border-radius: 4px;
+.fp-lg .flatpickr-day {
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
 }

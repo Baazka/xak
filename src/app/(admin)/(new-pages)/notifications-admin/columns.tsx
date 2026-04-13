@@ -61,15 +61,12 @@ export function notificationAdminColumns({
       id: "actions",
       header: "Үйлдэл",
       enableSorting: false,
+      meta: { className: "w-[90px]" },
       cell: ({ row }) => {
         const item = row.original;
         const deleting = deleteLoadingId === item.id;
 
-        return (
-          <div className="flex items-center h-5">
-            <DeleteConfirmDialog loading={deleting} onConfirm={() => onDelete(item.id)} />
-          </div>
-        );
+        return <DeleteConfirmDialog loading={deleting} onConfirm={() => onDelete(item.id)} />;
       },
     },
   ];

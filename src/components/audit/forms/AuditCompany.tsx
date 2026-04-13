@@ -114,6 +114,7 @@ export default function AuditCompany({ values, onChange }: Props) {
             onChange={(dates) => {
               if (dates?.[0]) onChange("org_founded_date", dates[0]);
             }}
+            size="lg"
           />
         </div>
 
@@ -178,7 +179,7 @@ export default function AuditCompany({ values, onChange }: Props) {
           <input
             value={values.org_shareholder ?? 0}
             onChange={(e) => onChange("org_shareholder", parseInt(e.target.value))}
-            className="w-full rounded-lg border px-3 py-2"
+            className="w-full rounded-lg border px-3 py-2 text-right"
           />
         </div>
         <div className="space-y-2">
@@ -186,7 +187,7 @@ export default function AuditCompany({ values, onChange }: Props) {
           <input
             value={values.org_founder ?? 0}
             onChange={(e) => onChange("org_founder", parseInt(e.target.value))}
-            className="w-full rounded-lg border px-3 py-2"
+            className="w-full rounded-lg border px-3 py-2 text-right"
           />
         </div>
         <div className="space-y-2">
@@ -194,7 +195,7 @@ export default function AuditCompany({ values, onChange }: Props) {
           <input
             value={values.org_asset ?? 0}
             onChange={(e) => onChange("org_asset", parseInt(e.target.value))}
-            className="w-full rounded-lg border px-3 py-2"
+            className="w-full rounded-lg border px-3 py-2 text-right"
           />
         </div>
 

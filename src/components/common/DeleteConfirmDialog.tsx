@@ -12,7 +12,6 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 type Props = {
   loading?: boolean;
@@ -23,10 +22,9 @@ export default function DeleteConfirmDialog({ loading, onConfirm }: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" className="flex w-full justify-start gap-3 text-red-600">
+        <a className="flex w-full justify-center gap-3 text-red-600 cursor-pointer" href="#">
           <Trash2 className="h-4 w-4" />
-          Устгах
-        </Button>
+        </a>
       </AlertDialogTrigger>
 
       <AlertDialogContent>
