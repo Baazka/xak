@@ -22,7 +22,7 @@ export default function DeleteConfirmDialog({ loading, onConfirm }: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <a className="flex w-full justify-center gap-3 text-red-600 cursor-pointer" href="#">
+        <a className="flex w-full justify-center gap-3 text-red-500 cursor-pointer" href="#">
           <Trash2 className="h-4 w-4" />
         </a>
       </AlertDialogTrigger>
@@ -40,7 +40,7 @@ export default function DeleteConfirmDialog({ loading, onConfirm }: Props) {
           <AlertDialogAction
             onClick={onConfirm}
             disabled={loading}
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-red-500 hover:bg-red-700"
           >
             {loading ? "Устгаж байна..." : "Тийм, устгах"}
           </AlertDialogAction>

@@ -1,10 +1,13 @@
 "use client";
 
 import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
-import DatePicker from "@/components/form/date-picker";
+import DatePicker from "@/components/form/DatePicker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
+import { Delete, DeleteIcon, Edit } from "lucide-react";
+import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
+import TimePicker from "@/components/form/TimePicker";
 
 type Props = {
   auditId: number;
@@ -253,13 +256,13 @@ export default function Form106({ auditId, formListId }: Props) {
             <thead>
               <tr className="bg-gray-100">
                 <th className="border px-3 py-2 text-center w-10">№</th>
-                <th className="border px-3 py-2 text-left">Хурлын төрөл</th>
-                <th className="border px-3 py-2 text-left">Огноо</th>
-                <th className="border px-3 py-2 text-left">Цаг</th>
+                <th className="border px-3 py-2 text-left w-60">Хурлын төрөл</th>
+                <th className="border px-3 py-2 text-left w-30">Огноо</th>
+                <th className="border px-3 py-2 text-left w-30">Цаг</th>
                 <th className="border px-3 py-2 text-left">Байршил</th>
                 <th className="border px-3 py-2 text-left">Цар хүрээ</th>
-                <th className="border px-3 py-2 text-left">Хавсралт</th>
-                <th className="border px-3 py-2 text-center w-24">Үйлдэл</th>
+                <th className="border px-3 py-2 text-left w-30">Хавсралт</th>
+                <th className="border px-3 py-2 text-center w-10">Үйлдэл</th>
               </tr>
             </thead>
             <tbody>
@@ -286,26 +289,22 @@ export default function Form106({ auditId, formListId }: Props) {
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:underline"
                         >
-                          Хавсрал үзэх
+                          Хавсралт үзэх
                         </a>
                       ) : null}
                     </td>
-                    <td className="border px-3 py-2 text-center">
+                    <td className="border px-3 py-2 text-center w-10">
                       <div className="flex items-center justify-center gap-2">
-                        <button
-                          type="button"
+                        <a
+                          href="#"
                           onClick={() => handleEditMeeting(row)}
-                          className="rounded-md bg-amber-500 px-3 py-1 text-white hover:bg-amber-600"
+                          className="flex w-full justify-center text-yellow-500 cursor-pointer"
                         >
-                          Засах
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteMeeting(row.meeting_id)}
-                          className="rounded-md bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-                        >
-                          Устгах
-                        </button>
+                          <Edit className="h-4 w-4" />
+                        </a>
+                        <DeleteConfirmDialog
+                          onConfirm={() => handleDeleteMeeting(row.meeting_id)}
+                        />
                       </div>
                     </td>
                   </tr>
@@ -372,16 +371,17 @@ export default function Form106({ auditId, formListId }: Props) {
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium">Цаг</label>
-                <DatePicker
+                <TimePicker
                   id="meeting_time"
-                  mode="time"
-                  defaultDate={draftRow?.meeting_time ?? ""}
-                  onChange={(selectedDates, dateStr) =>
+                  value={draftRow?.meeting_time ?? ""}
+                  onChange={(val) =>
                     setDraftRow((prev) => ({
                       ...prev!,
-                      meeting_time: dateStr ?? "",
+                      meeting_time: val,
                     }))
                   }
+                  size="md"
+                  minuteStep={5}
                 />
               </div>
 

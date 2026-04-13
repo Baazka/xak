@@ -10,7 +10,7 @@ import type { Hook, DateOption } from "flatpickr/dist/types/options";
 
 type PropsType = {
   id?: string;
-  mode?: "single" | "multiple" | "range" | "time";
+  mode?: "single" | "multiple" | "range";
   onChange?: Hook | Hook[];
   defaultDate?: DateOption;
   label?: string;
@@ -37,11 +37,13 @@ export default function DatePicker({
 }: PropsType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const fpRef = useRef<Instance | null>(null);
+
   const sizeClassMap = {
     sm: "fp-sm",
     md: "fp-md",
     lg: "fp-lg",
   };
+
   const inputSizeMap = {
     sm: "h-8 text-xs",
     md: "h-10 text-sm",
@@ -52,25 +54,21 @@ export default function DatePicker({
     if (!inputRef.current) return;
 
     fpRef.current = flatpickr(inputRef.current, {
-      mode: mode === "time" ? "single" : mode,
+      mode,
       monthSelectorType: "static",
       defaultDate,
       minDate,
       maxDate,
       onChange,
-      altInput: mode !== "time",
-      altFormat: mode === "time" ? "H:i" : "Y-m-d",
-      dateFormat: mode === "time" ? "H:i" : "Y-m-d",
-      enableTime: mode === "time",
-      noCalendar: mode === "time",
-      time_24hr: true,
+      altInput: false,
+      altFormat: "Y-m-d",
+      dateFormat: "Y-m-d",
       appendTo: document.body,
       position: "auto",
       onReady: function (_, __, instance) {
         Object.values(sizeClassMap).forEach((cls) =>
           instance.calendarContainer.classList.remove(cls)
         );
-
         instance.calendarContainer.classList.add(sizeClassMap[size]);
       },
     });
@@ -98,18 +96,13 @@ export default function DatePicker({
           id={id}
           name={name}
           placeholder={placeholder}
-          className={`w-full rounded-lg border bg-transparent px-2 py-1 pr-10 
-          ${inputSizeMap[size]} 
-          text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none 
-          dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30`}
+          className={`w-full rounded-lg border bg-transparent px-2 py-1 pr-10 ${inputSizeMap[size]} text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30`}
           readOnly
         />
 
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
           <CalenderIcon
-            className={`
-  ${size === "sm" ? "size-4" : size === "lg" ? "size-6" : "size-5"}
-`}
+            className={size === "sm" ? "size-4" : size === "lg" ? "size-6" : "size-5"}
           />
         </span>
       </div>

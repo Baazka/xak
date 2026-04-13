@@ -1,4 +1,4 @@
-import DatePicker from "@/components/form/datePicker";
+import DatePicker from "@/components/form/DatePicker";
 import { useState } from "react";
 
 type AuditCompanyOwnerFormData = {
