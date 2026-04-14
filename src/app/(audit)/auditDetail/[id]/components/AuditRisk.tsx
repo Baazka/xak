@@ -177,251 +177,289 @@ export default function AuditRisk({ auditId, formListId }: Props) {
 
   const isType1 = draftRow?.risk_type_id === 1;
 
-  if (loading) {
-    return <div>Уншиж байна...</div>;
-  }
-
   return (
-    <div className="space-y-3 mt-3">
-      <div className="overflow-hidden rounded border border-gray-200 bg-white">
-        <div className="flex items-center justify-between border-b bg-gray-50 px-4 py-3">
-          <div className="text-sm font-semibold">Эрсдлийн бүртгэл</div>
+    <>
+      {loading ? (
+        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+      ) : (
+        <div className="mt-3 space-y-3">
+          <div className="overflow-hidden rounded border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+            <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800">
+              <div className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                Эрсдлийн бүртгэл
+              </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              resetDialog();
-              setDraftRow({});
-              setOpenDialog(true);
-            }}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            + Нэмэх
-          </button>
-        </div>
+              <button
+                type="button"
+                onClick={() => {
+                  resetDialog();
+                  setDraftRow({});
+                  setOpenDialog(true);
+                }}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+              >
+                + Нэмэх
+              </button>
+            </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border px-3 py-2 text-center w-10">№</th>
-                <th className="border px-3 py-2 text-left">Тодорхойлсон эрсдэл</th>
-                <th className="border px-3 py-2 text-left">Эрсдэлийн ангилал</th>
-                <th className="border px-3 py-2 text-left">Нөлөөлж буй АГАДҮТ</th>
-                <th className="border px-3 py-2 text-left">АГАДҮТ-н дэд анги</th>
-                <th className="border px-3 py-2 text-left">Холбогдох батламж мэдэгдлүүд</th>
-                <th className="border px-3 py-2 text-left">Огноо</th>
-                <th className="border px-3 py-2 text-center w-24">Үйлдэл</th>
-              </tr>
-            </thead>
-            <tbody>
-              {riskList.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="border px-3 py-6 text-center text-gray-500">
-                    Мэдээлэл байхгүй байна
-                  </td>
-                </tr>
-              ) : (
-                riskList.map((row, index) => (
-                  <tr key={row.risk_id} className="hover:bg-gray-50">
-                    <td className="border px-3 py-2 text-center">{index + 1}</td>
-                    <td className="border px-3 py-2">{row.risk_content}</td>
-                    <td className="border px-3 py-2">{row.risk_type_name}</td>
-                    <td className="border px-3 py-2 text-center">{row.risk_group_name}</td>
-                    <td className="border px-3 py-2 text-center">{row.risk_sub_group_name}</td>
-                    <td className="border px-3 py-2 text-center">{row.risk_cd_type_name}</td>
-                    <td className="border px-3 py-2 text-center">{row.risk_date}</td>
-                    <td className="border px-3 py-2 text-center">
-                      <div className="flex items-center justify-center">
-                        <a
-                          className="flex w-full justify-center text-yellow-500 cursor-pointer"
-                          onClick={() => handleEditRisk(row)}
-                          href="#"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </a>
-
-                        <DeleteConfirmDialog onConfirm={() => handleDeleteRisk(row.risk_id)} />
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-gray-800 dark:text-gray-200">
+                <thead>
+                  <tr className="bg-gray-100 dark:bg-gray-800">
+                    <th className="w-10 border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      №
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-left dark:border-gray-700">
+                      Тодорхойлсон эрсдэл
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-left dark:border-gray-700">
+                      Эрсдэлийн ангилал
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-left dark:border-gray-700">
+                      Нөлөөлж буй АГАДҮТ
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-left dark:border-gray-700">
+                      АГАДҮТ-н дэд анги
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-left dark:border-gray-700">
+                      Холбогдох батламж мэдэгдлүүд
+                    </th>
+                    <th className="border border-gray-200 px-3 py-2 text-left dark:border-gray-700">
+                      Огноо
+                    </th>
+                    <th className="w-24 border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      Үйлдэл
+                    </th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </thead>
 
-      {openDialog && (
-        <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <h3 className="text-base font-semibold">
-                {draftRow?.risk_id ? "Эрсдэл засах" : "Эрсдлийн бүртгэл"}
-              </h3>
-              <button
-                type="button"
-                onClick={() => {
-                  resetDialog();
-                  setOpenDialog(false);
-                }}
-                className="text-lg text-gray-500 hover:text-black"
-              >
-                ×
-              </button>
-            </div>
+                <tbody>
+                  {riskList.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={8}
+                        className="border border-gray-200 px-3 py-6 text-center text-gray-500 dark:border-gray-700 dark:text-gray-400"
+                      >
+                        Мэдээлэл байхгүй байна
+                      </td>
+                    </tr>
+                  ) : (
+                    riskList.map((row, index) => (
+                      <tr key={row.risk_id} className="hover:bg-gray-50 dark:hover:bg-gray-800/60">
+                        <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                          {index + 1}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 dark:border-gray-700">
+                          {row.risk_content}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 dark:border-gray-700">
+                          {row.risk_type_name}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                          {row.risk_group_name}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                          {row.risk_sub_group_name}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                          {row.risk_cd_type_name}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                          {row.risk_date}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                          <div className="flex items-center justify-center">
+                            <a
+                              className="flex w-full cursor-pointer justify-center text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300"
+                              onClick={() => handleEditRisk(row)}
+                              href="#"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </a>
 
-            <div className="space-y-4 px-4 py-4">
-              <div>
-                <label className="mb-1 block text-sm font-medium">Тодорхойлсон эрсдэл</label>
-                <textarea
-                  value={draftRow?.risk_content ?? ""}
-                  onChange={(e) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      risk_content: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border px-3 py-2"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium">Огноо</label>
-                <DatePicker
-                  id="risk_date"
-                  defaultDate={draftRow?.risk_date ?? ""}
-                  onChange={(value: Date[]) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      risk_date: value?.[0]?.toISOString().slice(0, 10) ?? "",
-                    }))
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium">Эрсдэлийн ангилал</label>
-                <select
-                  value={draftRow?.risk_type_id ?? ""}
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      risk_type_id: value,
-
-                      ...(value === 1 && {
-                        risk_group_id: undefined,
-                        risk_sub_group_id: undefined,
-                        risk_cd_type_id: undefined,
-                      }),
-                    }));
-                  }}
-                  className="w-full rounded-lg border px-3 py-2"
-                >
-                  <option value="">Сонгох</option>
-                  {riskTypeList.map((item) => (
-                    <option key={item.type_id} value={item.type_id}>
-                      {item.type_label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium">Нөлөөлж буй АГАДҮТ</label>
-                <select
-                  value={isType1 ? "" : (draftRow?.risk_group_id ?? "")}
-                  disabled={isType1}
-                  onChange={(e) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      risk_group_id: Number(e.target.value),
-                    }))
-                  }
-                  className="w-full rounded-lg border px-3 py-2 disabled:bg-gray-100 disabled:text-gray-400"
-                >
-                  <option value="">Сонгох</option>
-                  {riskGroupList.map((item) => (
-                    <option key={item.group_id} value={item.group_id}>
-                      {item.group_label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium">АГАДҮТ-н дэд анги</label>
-                <select
-                  value={isType1 ? "" : (draftRow?.risk_sub_group_id ?? "")}
-                  disabled={isType1}
-                  onChange={(e) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      risk_sub_group_id: Number(e.target.value),
-                    }))
-                  }
-                  className="w-full rounded-lg border px-3 py-2 disabled:bg-gray-100 disabled:text-gray-400"
-                >
-                  <option value="">Сонгох</option>
-                  {riskSubGroupList.map((item) => (
-                    <option key={item.sub_group_id} value={item.sub_group_id}>
-                      {item.sub_group_label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  Холбогдох батламж мэдэгдлүүд
-                </label>
-                <select
-                  value={isType1 ? "" : (draftRow?.risk_cd_type_id ?? "")}
-                  disabled={isType1}
-                  onChange={(e) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      risk_cd_type_id: Number(e.target.value),
-                    }))
-                  }
-                  className="w-full rounded-lg border px-3 py-2 disabled:bg-gray-100 disabled:text-gray-400"
-                >
-                  <option value="">Сонгох</option>
-                  {riskCDTypeList.map((item) => (
-                    <option key={item.cd_type_id} value={item.cd_type_id}>
-                      {item.cd_type_label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 border-t px-4 py-3">
-              <button
-                type="button"
-                onClick={() => {
-                  resetDialog();
-                  setOpenDialog(false);
-                }}
-                className="rounded-lg border px-4 py-2"
-              >
-                Болих
-              </button>
-
-              <button
-                type="button"
-                onClick={handleDialogSave}
-                disabled={dialogSaving}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-gray-400"
-              >
-                {dialogSaving ? "Хадгалж байна..." : "Хадгалах"}
-              </button>
+                            <DeleteConfirmDialog onConfirm={() => handleDeleteRisk(row.risk_id)} />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
+
+          {openDialog && (
+            <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 px-4">
+              <div className="w-full max-w-lg rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900">
+                <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+                  <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">
+                    {draftRow?.risk_id ? "Эрсдэл засах" : "Эрсдлийн бүртгэл"}
+                  </h3>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetDialog();
+                      setOpenDialog(false);
+                    }}
+                    className="text-lg text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-gray-100"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="space-y-4 px-4 py-4 text-gray-800 dark:text-gray-200">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">Тодорхойлсон эрсдэл</label>
+                    <textarea
+                      value={draftRow?.risk_content ?? ""}
+                      onChange={(e) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          risk_content: e.target.value,
+                        }))
+                      }
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">Огноо</label>
+                    <DatePicker
+                      id="risk_date"
+                      defaultDate={draftRow?.risk_date ?? ""}
+                      onChange={(value: Date[]) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          risk_date: value?.[0]?.toISOString().slice(0, 10) ?? "",
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">Эрсдэлийн ангилал</label>
+                    <select
+                      value={draftRow?.risk_type_id ?? ""}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          risk_type_id: value,
+                          ...(value === 1 && {
+                            risk_group_id: undefined,
+                            risk_sub_group_id: undefined,
+                            risk_cd_type_id: undefined,
+                          }),
+                        }));
+                      }}
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400"
+                    >
+                      <option value="">Сонгох</option>
+                      {riskTypeList.map((item) => (
+                        <option key={item.type_id} value={item.type_id}>
+                          {item.type_label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">Нөлөөлж буй АГАДҮТ</label>
+                    <select
+                      value={isType1 ? "" : (draftRow?.risk_group_id ?? "")}
+                      disabled={isType1}
+                      onChange={(e) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          risk_group_id: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+                    >
+                      <option value="">Сонгох</option>
+                      {riskGroupList.map((item) => (
+                        <option key={item.group_id} value={item.group_id}>
+                          {item.group_label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">АГАДҮТ-н дэд анги</label>
+                    <select
+                      value={isType1 ? "" : (draftRow?.risk_sub_group_id ?? "")}
+                      disabled={isType1}
+                      onChange={(e) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          risk_sub_group_id: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+                    >
+                      <option value="">Сонгох</option>
+                      {riskSubGroupList.map((item) => (
+                        <option key={item.sub_group_id} value={item.sub_group_id}>
+                          {item.sub_group_label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      Холбогдох батламж мэдэгдлүүд
+                    </label>
+                    <select
+                      value={isType1 ? "" : (draftRow?.risk_cd_type_id ?? "")}
+                      disabled={isType1}
+                      onChange={(e) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          risk_cd_type_id: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400 dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
+                    >
+                      <option value="">Сонгох</option>
+                      {riskCDTypeList.map((item) => (
+                        <option key={item.cd_type_id} value={item.cd_type_id}>
+                          {item.cd_type_label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 border-t border-gray-200 px-4 py-3 dark:border-gray-700">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetDialog();
+                      setOpenDialog(false);
+                    }}
+                    className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-800 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                  >
+                    Болих
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleDialogSave}
+                    disabled={dialogSaving}
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 dark:disabled:bg-gray-600 dark:disabled:text-gray-400"
+                  >
+                    {dialogSaving ? "Хадгалж байна..." : "Хадгалах"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 }

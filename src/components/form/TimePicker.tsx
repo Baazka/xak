@@ -50,7 +50,7 @@ export default function TimePicker({
         id={id}
         value={hour}
         onChange={(e) => handleHourChange(e.target.value)}
-        className={`w-full rounded-lg border bg-transparent px-2 ${sizeClassMap[size]} focus:outline-none`}
+        className={`w-full rounded-lg border border-gray-300 bg-white px-2 text-gray-900 ${sizeClassMap[size]} focus:outline-none focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400`}
       >
         <option value="">Цаг</option>
         {hours.map((h) => (
@@ -60,12 +60,12 @@ export default function TimePicker({
         ))}
       </select>
 
-      <span className="text-gray-500">:</span>
+      <span className="text-gray-500 dark:text-gray-400">:</span>
 
       <select
         value={minute}
         onChange={(e) => handleMinuteChange(e.target.value)}
-        className={`w-full rounded-lg border bg-transparent px-2 ${sizeClassMap[size]} focus:outline-none`}
+        className={`w-full rounded-lg border border-gray-300 bg-white px-2 text-gray-900 ${sizeClassMap[size]} focus:outline-none focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400`}
       >
         <option value="">Мин</option>
         {minutes.map((m) => (

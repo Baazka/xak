@@ -81,7 +81,7 @@ export default function Form202({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div>Уншиж байна...</div>
+        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
           <div className="m-2 flex justify-end">

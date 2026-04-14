@@ -79,9 +79,29 @@ export default function FormAuditCompany({ auditId }: Props) {
         const json = await res.json();
 
         if (res.ok) {
+          const raw = json.data ?? {};
+
           setData((prev) => ({
             ...prev,
-            ...json.data,
+            org_regno: raw.org_regno ?? "",
+            org_legal_name: raw.org_legal_name ?? "",
+            org_founded_date: raw.org_founded_date ?? null,
+            org_certno: raw.org_certno ?? "",
+            org_type: raw.org_type ?? "",
+            org_main_operation: raw.org_main_operation ?? "",
+            org_is_special: raw.org_is_special ?? false,
+            org_shareholder: raw.org_shareholder ?? null,
+            org_founder: raw.org_founder ?? null,
+            org_asset: raw.org_asset ?? null,
+            org_address: raw.org_address ?? "",
+            org_phone: raw.org_phone ?? "",
+            org_email: raw.org_email ?? "",
+            org_head_name: raw.org_head_name ?? "",
+            org_head_phone: raw.org_head_phone ?? "",
+            org_head_email: raw.org_head_email ?? "",
+            org_acc_name: raw.org_acc_name ?? "",
+            org_acc_phone: raw.org_acc_phone ?? "",
+            org_acc_email: raw.org_acc_email ?? "",
           }));
         }
       } catch (error) {

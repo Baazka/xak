@@ -125,12 +125,12 @@ export default function Form104({ auditId, formListId }: Props) {
     <>
       <div className="m-2 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 whitespace-nowrap">Баг:</label>
+          <label className="whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">Баг:</label>
 
           <select
             value={selectedBag}
             onChange={(e) => setSelectedBag(e.target.value)}
-            className="h-10 rounded-md border border-gray-300 px-3 text-sm outline-none focus:border-blue-500"
+            className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400"
           >
             <option value="">Сонгох</option>
             {bags.map((bag) => (
@@ -145,7 +145,7 @@ export default function Form104({ auditId, formListId }: Props) {
           type="button"
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-gray-400"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-gray-400 dark:disabled:bg-gray-700"
         >
           {saving && (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
@@ -153,47 +153,67 @@ export default function Form104({ auditId, formListId }: Props) {
           {saving ? "Хадгалж байна..." : "Хадгалах"}
         </button>
       </div>
+
       {loading ? (
-        <div>Уншиж байна...</div>
+        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
-          <table className="w-full text-sm">
+          <table className="w-full border-collapse text-sm">
             <thead>
-              <tr>
-                <th className="border p-2 text-left">№</th>
-                <th className="border p-2 text-left">Суурь зарчмууд</th>
-                <th className="border p-2 text-left">Тайлбар</th>
+              <tr className="bg-gray-50 dark:bg-gray-800">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  №
+                </th>
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Суурь зарчмууд
+                </th>
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Тайлбар
+                </th>
               </tr>
             </thead>
+
             {Object.entries(groupedData).map(([groupLabel, rows]) => (
               <tbody key={groupLabel}>
-                <tr className="bg-gray-100">
-                  <td colSpan={4} className="border p-2 font-bold">
+                <tr className="bg-gray-100 dark:bg-gray-800/80">
+                  <td
+                    colSpan={4}
+                    className="border border-gray-200 p-2 font-bold text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  >
                     {groupLabel}
                   </td>
                 </tr>
+
                 {rows.map((row, index) => (
-                  <tr key={row.ind_id}>
-                    <td className="border p-2">{index + 1}</td>
-                    <td className="border p-2">{row.ind_label}</td>
-                    <td className="border p-2">
-                      <div className="flex items-center gap-4">
-                        <label className="flex items-center gap-1 cursor-pointer">
+                  <tr key={row.ind_id} className="bg-white dark:bg-gray-900">
+                    <td className="border border-gray-200 p-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {index + 1}
+                    </td>
+
+                    <td className="border border-gray-200 p-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {row.ind_label}
+                    </td>
+
+                    <td className="border border-gray-200 p-2 dark:border-gray-700">
+                      <div className="flex items-center gap-4 text-gray-700 dark:text-gray-200">
+                        <label className="flex cursor-pointer items-center gap-1">
                           <input
                             type="radio"
                             name={`noti-${row.ind_id}`}
                             checked={row.noti_value === true}
                             onChange={() => onChange(row.ind_id, true)}
+                            className="accent-blue-600 dark:accent-blue-400"
                           />
                           Тийм
                         </label>
 
-                        <label className="flex items-center gap-1 cursor-pointer">
+                        <label className="flex cursor-pointer items-center gap-1">
                           <input
                             type="radio"
                             name={`noti-${row.ind_id}`}
                             checked={row.noti_value === false}
                             onChange={() => onChange(row.ind_id, false)}
+                            className="accent-blue-600 dark:accent-blue-400"
                           />
                           Үгүй
                         </label>
@@ -204,6 +224,7 @@ export default function Form104({ auditId, formListId }: Props) {
               </tbody>
             ))}
           </table>
+
           <FormActionSection auditId={auditId} formId={formListId} />
         </>
       )}

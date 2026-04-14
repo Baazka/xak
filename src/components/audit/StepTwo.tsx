@@ -1,5 +1,6 @@
 import UserMultiSelect from "@/app/(admin)/(new-pages)/notifications/components/UserMultiSelect";
 import Select, { SingleValue } from "react-select";
+import { useTheme } from "@/context/ThemeContext";
 
 type StepTwoData = {
   usertype3: number;
@@ -28,6 +29,45 @@ type Props = {
 };
 
 export default function StepTwo({ values, userOptions, onChange }: Props) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  const selectStyles = {
+    control: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: isDark ? "#111827" : "#ffffff",
+      borderColor: state.isFocused ? "#3b82f6" : isDark ? "#374151" : "#d1d5db",
+      color: isDark ? "#f9fafb" : "#111827",
+    }),
+
+    menu: (base: any) => ({
+      ...base,
+      backgroundColor: isDark ? "#111827" : "#ffffff",
+      color: isDark ? "#f9fafb" : "#111827",
+    }),
+
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isFocused ? (isDark ? "#1f2937" : "#f3f4f6") : "transparent",
+      color: isDark ? "#f9fafb" : "#111827",
+    }),
+
+    singleValue: (base: any) => ({
+      ...base,
+      color: isDark ? "#f9fafb" : "#111827",
+    }),
+
+    input: (base: any) => ({
+      ...base,
+      color: isDark ? "#f9fafb" : "#111827",
+    }),
+
+    placeholder: (base: any) => ({
+      ...base,
+      color: isDark ? "#9ca3af" : "#6b7280",
+    }),
+  };
+
   const selectedApprover = userOptions.find((opt) => opt.value === values.usertype3) ?? null;
   const selectedQualityReviewer = userOptions.find((opt) => opt.value === values.usertype4) ?? null;
   const selectedSeniorAuditor = userOptions.find((opt) => opt.value === values.usertype5) ?? null;
@@ -59,6 +99,8 @@ export default function StepTwo({ values, userOptions, onChange }: Props) {
           placeholder="Нэрээр нь хайх..."
           isSearchable
           isClearable
+          styles={selectStyles}
+          menuPortalTarget={document.body}
           formatOptionLabel={(option) => (
             <div className="flex flex-col">
               <span>{option.label}</span>
@@ -77,6 +119,8 @@ export default function StepTwo({ values, userOptions, onChange }: Props) {
           placeholder="Нэрээр нь хайх..."
           isSearchable
           isClearable
+          styles={selectStyles}
+          menuPortalTarget={document.body}
           formatOptionLabel={(option) => (
             <div className="flex flex-col">
               <span>{option.label}</span>
@@ -95,6 +139,8 @@ export default function StepTwo({ values, userOptions, onChange }: Props) {
           placeholder="Нэрээр нь хайх..."
           isSearchable
           isClearable
+          styles={selectStyles}
+          menuPortalTarget={document.body}
           formatOptionLabel={(option) => (
             <div className="flex flex-col">
               <span>{option.label}</span>

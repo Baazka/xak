@@ -114,7 +114,7 @@ export default function Form105({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div>Уншиж байна...</div>
+        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
           <div className="m-2 flex justify-end">
@@ -122,7 +122,7 @@ export default function Form105({ auditId, formListId }: Props) {
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:disabled:border-gray-700 dark:disabled:from-gray-700 dark:disabled:to-gray-700"
             >
               {saving && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
@@ -130,36 +130,55 @@ export default function Form105({ auditId, formListId }: Props) {
               {saving ? "Хадгалж байна..." : "Хадгалах"}
             </button>
           </div>
-          <table className="w-full text-sm">
+
+          <table className="w-full border-collapse text-sm">
             <thead>
-              <tr>
-                <th className="border p-2 text-left w-10">№</th>
-                <th className="border p-2 text-left">Үзүүлэлт</th>
-                <th className="border p-2 text-left">Үнэлгээ</th>
-                <th className="border p-2 text-left w-2/3">Тайлбар</th>
+              <tr className="bg-gray-50 dark:bg-gray-800">
+                <th className="w-10 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  №
+                </th>
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Үзүүлэлт
+                </th>
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Үнэлгээ
+                </th>
+                <th className="w-2/3 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Тайлбар
+                </th>
               </tr>
             </thead>
+
             <tbody>
               {Object.entries(groupedData).map(([groupLabel, rows]) => (
                 <Fragment key={groupLabel}>
                   {groupLabel !== "null" && (
-                    <tr className="bg-gray-100">
-                      <td colSpan={4} className="border p-2 font-bold">
+                    <tr className="bg-gray-100 dark:bg-gray-800/80">
+                      <td
+                        colSpan={4}
+                        className="border border-gray-200 p-2 font-bold text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
                         {groupLabel}
                       </td>
                     </tr>
                   )}
 
                   {rows.map((row, index) => (
-                    <tr key={row.cr_id}>
-                      <td className="border p-2 text-center">{index + 1}</td>
-                      <td className="border p-2">{row.ind_label}</td>
-                      <td className="border p-2 text-center">
+                    <tr key={row.cr_id} className="bg-white dark:bg-gray-900">
+                      <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        {index + 1}
+                      </td>
+
+                      <td className="border border-gray-200 p-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        {row.ind_label}
+                      </td>
+
+                      <td className="border border-gray-200 p-2 text-center dark:border-gray-700">
                         {row.cr_ind_id === 22 ? (
                           <select
                             value={row.cr_rate_value ?? ""}
                             onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
-                            className="border p-1 rounded w-full"
+                            className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
                             <option value="1">СТОУС</option>
@@ -170,7 +189,7 @@ export default function Form105({ auditId, formListId }: Props) {
                           <select
                             value={row.cr_rate_value ?? ""}
                             onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
-                            className="border p-1 rounded w-full"
+                            className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
                             <option value="1">Аккруэл суурь</option>
@@ -181,7 +200,7 @@ export default function Form105({ auditId, formListId }: Props) {
                           <select
                             value={row.cr_rate_value ?? ""}
                             onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
-                            className="border p-1 rounded w-full"
+                            className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
                             <option value="1">Нийтлэг зорилготой</option>
@@ -191,7 +210,7 @@ export default function Form105({ auditId, formListId }: Props) {
                           <select
                             value={row.cr_rate_value ?? ""}
                             onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
-                            className="border p-1 rounded w-full"
+                            className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
                             <option value="1">Хувьцаа эзэмшигчид, ТУЗ</option>
@@ -203,37 +222,40 @@ export default function Form105({ auditId, formListId }: Props) {
                           <select
                             value={row.cr_rate_value ?? ""}
                             onChange={(e) => onSelectChange(row.cr_id, e.target.value)}
-                            className="border p-1 rounded w-full"
+                            className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
                             <option value="1">Үнэн зөв толилуулгын</option>
                             <option value="2">Нийцлийн</option>
                           </select>
                         ) : (
-                          <div className="flex items-center justify-center gap-4">
-                            <label className="flex items-center gap-1 cursor-pointer">
+                          <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-200">
+                            <label className="flex cursor-pointer items-center gap-1">
                               <input
                                 type="radio"
                                 name={`noti-${row.cr_id}`}
                                 checked={row.cr_rate_value === "true"}
                                 onChange={() => onRadioChange(row.cr_id, "true")}
+                                className="accent-blue-600 dark:accent-blue-400"
                               />
                               Тийм
                             </label>
 
-                            <label className="flex items-center gap-1 cursor-pointer">
+                            <label className="flex cursor-pointer items-center gap-1">
                               <input
                                 type="radio"
                                 name={`noti-${row.cr_id}`}
                                 checked={row.cr_rate_value === "false"}
                                 onChange={() => onRadioChange(row.cr_id, "false")}
+                                className="accent-blue-600 dark:accent-blue-400"
                               />
                               Үгүй
                             </label>
                           </div>
                         )}
                       </td>
-                      <td className="border p-2">
+
+                      <td className="border border-gray-200 p-2 dark:border-gray-700">
                         <textarea
                           value={row.cr_description || ""}
                           onChange={(e) =>
@@ -243,7 +265,7 @@ export default function Form105({ auditId, formListId }: Props) {
                               )
                             )
                           }
-                          className="w-full border rounded p-1"
+                          className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                         />
                       </td>
                     </tr>
@@ -252,29 +274,34 @@ export default function Form105({ auditId, formListId }: Props) {
               ))}
 
               {lastRowData.map((row) => (
-                <tr key={row.cr_id}>
-                  <td className="border p-2" colSpan={2}>
+                <tr key={row.cr_id} className="bg-white dark:bg-gray-900">
+                  <td
+                    className="border border-gray-200 p-2 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                    colSpan={2}
+                  >
                     {row.ind_label}
                   </td>
 
-                  <td className="border p-2" colSpan={2}>
-                    <div className="flex items-center gap-6">
-                      <label className="flex items-center gap-2 cursor-pointer">
+                  <td className="border border-gray-200 p-2 dark:border-gray-700" colSpan={2}>
+                    <div className="flex items-center gap-6 text-gray-700 dark:text-gray-200">
+                      <label className="flex cursor-pointer items-center gap-2">
                         <input
                           type="radio"
                           name={`last-${row.cr_id}`}
                           checked={row.cr_rate_value === "1"}
                           onChange={() => onRadioChange(row.cr_id, "1")}
+                          className="accent-blue-600 dark:accent-blue-400"
                         />
                         Хүлээн зөвшөөрөхүйц
                       </label>
 
-                      <label className="flex items-center gap-2 cursor-pointer">
+                      <label className="flex cursor-pointer items-center gap-2">
                         <input
                           type="radio"
                           name={`last-${row.cr_id}`}
                           checked={row.cr_rate_value === "2"}
                           onChange={() => onRadioChange(row.cr_id, "2")}
+                          className="accent-blue-600 dark:accent-blue-400"
                         />
                         Үл хүлээн зөвшөөрөхүйц
                       </label>
@@ -284,6 +311,7 @@ export default function Form105({ auditId, formListId }: Props) {
               ))}
             </tbody>
           </table>
+
           <AuditRisk auditId={auditId} formListId={formListId} />
           <FormActionSection auditId={auditId} formId={formListId} />
         </>

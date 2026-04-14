@@ -50,49 +50,58 @@ export default function AuditConfirm({ formId }: Props) {
     }
   }, [formId]);
 
-  if (loading) {
-    return <div>Уншиж байна...</div>;
-  }
-
   return (
-    <div className="mt-6">
-      <div className="mb-4 flex items-center gap-3">
-        <h3 className="shrink-0  text-gray-800">Баталгаажуулалт</h3>
-        <div className="h-px flex-1 bg-gray-200" />
-      </div>
-
-      {formConfirm.length === 0 ? (
-        <div className="rounded-md border border-dashed border-gray-300 bg-gray-50 px-3 py-4 text-center text-xs text-gray-500">
-          Мэдээлэл алга
-        </div>
+    <>
+      {loading ? (
+        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
-        <div className="space-y-1">
-          {formConfirm.map((item) => (
-            <div key={item.action_id} className="flex items-center gap-6 text-sm">
-              <div className="w-24 text-gray-800">{item.action_status_name}:</div>
+        <div className="mt-6">
+          <div className="mb-4 flex items-center gap-3">
+            <h3 className="shrink-0 text-gray-800 dark:text-gray-100">Баталгаажуулалт</h3>
+            <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+          </div>
 
-              <div className="min-w-[220px] border-b border-gray-300 pb-1 text-gray-900">
-                {item.user_firstname || ""}
-              </div>
-
-              <div className="text-gray-800">Огноо:</div>
-              <div className="min-w-[170px] border-b border-gray-300 pb-1 text-gray-900">
-                {item.action_date || ""}
-              </div>
-
-              <div className="text-gray-800">Утас:</div>
-              <div className="min-w-[140px] border-b border-gray-300 pb-1 text-gray-900">
-                {item.user_phone || ""}
-              </div>
-
-              <div className="text-gray-800">Имэйл:</div>
-              <div className="min-w-[150px] border-b border-gray-300 pb-1 text-gray-900">
-                {item.user_email || ""}
-              </div>
+          {formConfirm.length === 0 ? (
+            <div className="rounded border border-dashed border-gray-300 bg-gray-50 px-3 py-4 text-center text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
+              Мэдээлэл алга
             </div>
-          ))}
+          ) : (
+            <div className="space-y-2">
+              {formConfirm.map((item) => (
+                <div
+                  key={item.action_id}
+                  className="rounded border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+                >
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="min-w-[120px] text-gray-700 dark:text-gray-300">
+                      {item.action_status_name}:
+                    </div>
+
+                    <div className="min-w-[220px] border-b border-gray-300 pb-1 text-gray-900 dark:border-gray-600 dark:text-gray-100">
+                      {item.user_firstname || ""}
+                    </div>
+
+                    <div className="text-gray-700 dark:text-gray-300">Огноо:</div>
+                    <div className="min-w-[170px] border-b border-gray-300 pb-1 text-gray-900 dark:border-gray-600 dark:text-gray-100">
+                      {item.action_date || ""}
+                    </div>
+
+                    <div className="text-gray-700 dark:text-gray-300">Утас:</div>
+                    <div className="min-w-[140px] border-b border-gray-300 pb-1 text-gray-900 dark:border-gray-600 dark:text-gray-100">
+                      {item.user_phone || ""}
+                    </div>
+
+                    <div className="text-gray-700 dark:text-gray-300">Имэйл:</div>
+                    <div className="min-w-[150px] border-b border-gray-300 pb-1 text-gray-900 dark:border-gray-600 dark:text-gray-100">
+                      {item.user_email || ""}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 }

@@ -109,67 +109,74 @@ export default function AuditComment({ formId }: Props) {
     }
   };
 
-  if (loading) {
-    return <div className="mt-6 text-sm text-gray-500">Уншиж байна...</div>;
-  }
-
   return (
-    <div className="mt-6">
-      <div className="mb-4 flex items-center gap-3">
-        <h3 className="shrink-0  text-gray-800">Хяналт</h3>
-        <div className="h-px flex-1 bg-gray-200" />
-      </div>
-
-      <div className="mb-3 flex items-center gap-2">
-        <textarea
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          placeholder="Тайлбар..."
-          className="flex-1 rounded-md border border-gray-300 px-2 py-1 text-sm outline-none focus:border-blue-500"
-        />
-
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="h-9 shrink-0 rounded-md bg-blue-600 px-3 text-xs text-white hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          {saving ? "..." : "Тайлбар нэмэх"}
-        </button>
-      </div>
-
-      {formComment.length === 0 ? (
-        <div className="rounded-md border border-dashed border-gray-300 bg-gray-50 px-3 py-4 text-center text-xs text-gray-500">
-          Мэдээлэл алга
-        </div>
+    <>
+      {" "}
+      {loading ? (
+        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
-        <div className="space-y-1">
-          {formComment.map((item) => (
-            <div
-              key={item.comment_id}
-              className="group rounded-md border border-gray-200 bg-white px-3 py-2 transition hover:bg-gray-50"
+        <div className="mt-6">
+          <div className="mb-4 flex items-center gap-3">
+            <h3 className="shrink-0 text-gray-800 dark:text-gray-100">Хяналт</h3>
+            <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+          </div>
+
+          <div className="mb-3 flex items-center gap-2">
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Тайлбар..."
+              className="flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-blue-400"
+            />
+
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="h-9 shrink-0 rounded bg-blue-600 px-3 text-xs text-white hover:bg-blue-700 disabled:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
             >
-              <div className="flex items-center justify-between text-[12px]">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-gray-800">{item.user_firstname}</span>
-                  <span className="text-gray-400">{item.comment_date}</span>
-                </div>
+              {saving ? "..." : "Тайлбар нэмэх"}
+            </button>
+          </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleDelete(item.comment_id)}
-                  disabled={deletingId === item.comment_id}
-                  className="opacity-0 text-red-500 transition group-hover:opacity-100 hover:text-red-600 disabled:opacity-50"
-                >
-                  {deletingId === item.comment_id ? "..." : "✕"}
-                </button>
-              </div>
-
-              <div className="mt-1 text-sm leading-snug text-gray-700">{item.comment_text}</div>
+          {formComment.length === 0 ? (
+            <div className="rounded border border-dashed border-gray-300 bg-gray-50 px-3 py-4 text-center text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
+              Мэдээлэл алга
             </div>
-          ))}
+          ) : (
+            <div className="space-y-1">
+              {formComment.map((item) => (
+                <div
+                  key={item.comment_id}
+                  className="group rounded border border-gray-200 bg-white px-3 py-2 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                >
+                  <div className="flex items-center justify-between text-[12px]">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-gray-800 dark:text-gray-100">
+                        {item.user_firstname}
+                      </span>
+                      <span className="text-gray-400 dark:text-gray-500">{item.comment_date}</span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item.comment_id)}
+                      disabled={deletingId === item.comment_id}
+                      className="opacity-0 text-red-500 transition group-hover:opacity-100 hover:text-red-600 disabled:opacity-50 dark:text-red-400 dark:hover:text-red-300"
+                    >
+                      {deletingId === item.comment_id ? "..." : "✕"}
+                    </button>
+                  </div>
+
+                  <div className="mt-1 text-sm leading-snug text-gray-700 dark:text-gray-300">
+                    {item.comment_text}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 }

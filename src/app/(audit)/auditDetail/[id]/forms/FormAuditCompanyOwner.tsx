@@ -361,12 +361,12 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
       <div>
         {/* Үндсэн мэдээлэл */}
         <section>
-          <h2 className="mb-3 text-base font-semibold text-gray-800">Үндсэн мэдээлэл</h2>
+          <h2 className="text-base font-semibold py-3">Үндсэн мэдээлэл</h2>
 
           <div className="overflow-x-auto rounded-md">
             <table className="w-full text-sm">
               <thead className="bg-gray-100  top-0">
-                <tr>
+                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
                   {[
                     "Регистрийн дугаар",
                     "Оноосон нэр",
@@ -398,11 +398,11 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
         </section>
         {/* Хувьцаа эзэмшигч мэдээлэл */}
         <section>
-          <h2 className="mb-3 text-base font-semibold text-gray-800">Хувьцаа эзэмшигч мэдээлэл</h2>
+          <h2 className="text-base font-semibold py-3">Хувьцаа эзэмшигч мэдээлэл</h2>
           <div className="overflow-x-auto rounded-md border border-gray-200">
             <table className="w-full text-sm">
               <thead className="bg-gray-100  top-0">
-                <tr>
+                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
                   <th className="px-3 py-2 w-10">№</th>
                   <th className="px-3 py-2">Ангилал</th>
                   <th className="px-3 py-2">Улсын нэр</th>
@@ -423,7 +423,10 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
 
               <tbody>
                 {detailRows[1]?.map((row, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition">
+                  <tr
+                    key={index}
+                    className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
+                  >
                     <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
                       {index + 1}
                     </td>
@@ -495,14 +498,14 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
 
         {/* Албан тушаалтан */}
         <section>
-          <h2 className="mb-3 text-base font-semibold text-gray-800">
+          <h2 className="text-base font-semibold py-3">
             Итгэмжлэлгүйгээр төлөөлөх эрх бүхий албан тушаалтан, эрх барих этгээдийн мэдээлэл
           </h2>
 
           <div className="overflow-x-auto rounded-md border border-gray-200">
             <table className="w-full text-sm">
               <thead className="bg-gray-100  top-0">
-                <tr>
+                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
                   <th className="px-3 py-2 w-10">№</th>
                   <th className="px-3 py-2">Албан тушаал</th>
                   <th className="px-3 py-2">Улсын нэр</th>
@@ -522,7 +525,10 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
               </thead>
               <tbody>
                 {detailRows[2]?.map((row, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition">
+                  <tr
+                    key={index}
+                    className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
+                  >
                     <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
                       {index + 1}
                     </td>
@@ -594,12 +600,12 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
 
         {/* Эцсийн өмчлөгч */}
         <section>
-          <h2 className="mb-3 text-base font-semibold text-gray-800">Эцсийн өмчлөгч</h2>
+          <h2 className="text-base font-semibold py-3">Эцсийн өмчлөгч</h2>
 
           <div className="overflow-x-auto rounded-md border border-gray-200">
             <table className="w-full text-sm">
               <thead className="bg-gray-100  top-0">
-                <tr>
+                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
                   <th className="px-3 py-2 w-10">№</th>
                   <th>Ангилал</th>
                   <th>Улсын нэр</th>
@@ -619,7 +625,10 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
               </thead>
               <tbody>
                 {detailRows[3]?.map((row, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition">
+                  <tr
+                    key={index}
+                    className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
+                  >
                     <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
                       {index + 1}
                     </td>
@@ -692,14 +701,14 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
       <div>
         {/* Үйл ажиллагааны чиглэл */}
         <section>
-          <h2 className="mb-3 text-base font-semibold text-gray-800">
+          <h2 className="text-base font-semibold py-3">
             Үйл ажиллагааны чиглэлийн мэдээлэл
           </h2>
 
           <div className="overflow-x-auto rounded-md border border-gray-200">
             <table className="w-full text-sm">
               <thead className="bg-gray-100  top-0">
-                <tr>
+                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
                   <th className="px-3 py-2 w-10">№</th>
                   <th>Үйл ажиллагааны код</th>
                   <th>Үйл ажиллагааны чиглэл</th>
@@ -717,7 +726,10 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
               </thead>
               <tbody>
                 {opRows.map((row, index) => (
-                  <tr key={index} className="hover:bg-gray-50 transition">
+                  <tr
+                    key={index}
+                    className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
+                  >
                     <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
                       {index + 1}
                     </td>

@@ -36,6 +36,7 @@ export default function Form203({ auditId, formListId }: Props) {
         const result = await res.json();
 
         setData(Array.isArray(result.data) ? result.data : []);
+        console.log(result.data, "result203");
 
         setFormId(result.form_id ?? 0);
       } catch (err) {
@@ -106,7 +107,7 @@ export default function Form203({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div>Уншиж байна...</div>
+        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
           <div className="m-2 flex justify-end">
@@ -114,67 +115,82 @@ export default function Form203({ auditId, formListId }: Props) {
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
             >
               {saving && (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
               )}
               {saving ? "Хадгалж байна..." : "Хадгалах"}
             </button>
           </div>
-          <div className="flex gap-2 border-b mb-3 overflow-x-auto">
+
+          <div className="mb-3 flex gap-2 overflow-x-auto border-b border-gray-200 dark:border-gray-700">
             {Object.keys(groupedData).map((group) => (
               <button
                 key={group}
                 onClick={() => setActiveTab(group)}
                 className={`px-4 py-2 text-sm whitespace-nowrap border-b-2 ${
                   activeTab === group
-                    ? "border-blue-600 text-blue-600 font-semibold"
-                    : "border-transparent text-gray-500"
+                    ? "border-blue-600 text-blue-600 font-semibold dark:border-blue-400 dark:text-blue-400"
+                    : "border-transparent text-gray-500 dark:text-gray-400"
                 }`}
               >
                 {group === "null" ? "Бусад" : group}
               </button>
             ))}
           </div>
+
           <div className="space-y-3 rounded">
-            <table className="w-full text-sm ">
-              <thead>
+            <table className="w-full text-sm text-gray-800 dark:text-gray-200">
+              <thead className="bg-gray-100 dark:bg-gray-800">
                 <tr>
-                  <th className="border p-2 text-left w-10">№</th>
-                  <th className="border p-2 text-left">Байгууллагын үйл ажиллагаа</th>
-                  <th className="border p-2 text-left w-2/3">Аудитад хамааралтай мэдээлэл</th>
+                  <th className="w-10 border border-gray-200 p-2 text-left dark:border-gray-700">
+                    №
+                  </th>
+                  <th className="border border-gray-200 p-2 text-left dark:border-gray-700">
+                    Байгууллагын үйл ажиллагаа
+                  </th>
+                  <th className="w-2/3 border border-gray-200 p-2 text-left dark:border-gray-700">
+                    Аудитад хамааралтай мэдээлэл
+                  </th>
                 </tr>
               </thead>
 
               <tbody>
                 {groupedData[activeTab]?.length ? (
                   groupedData[activeTab].map((row, index) => (
-                    <tr key={row.info_id}>
-                      <td className="border p-2 text-center">{index + 1}</td>
+                    <tr key={row.info_id} className="bg-white dark:bg-gray-900">
+                      <td className="border border-gray-200 p-2 text-center dark:border-gray-700">
+                        {index + 1}
+                      </td>
 
-                      <td className="border p-2">{row.ind_label}</td>
+                      <td className="border border-gray-200 p-2 dark:border-gray-700">
+                        {row.ind_label}
+                      </td>
 
-                      <td className="border p-2">
+                      <td className="border border-gray-200 p-2 dark:border-gray-700">
                         <textarea
-                          value={row.info_ind_value || ""}
+                          value={row.info_ind_value ?? ""}
                           onChange={(e) =>
                             setData((prev) =>
                               prev.map((r) =>
                                 r.info_id === row.info_id
-                                  ? { ...r, info_ind_value: e.target.value }
+                                  ? {
+                                      ...r,
+                                      info_ind_value: e.target.value,
+                                    }
                                   : r
                               )
                             )
                           }
-                          className="w-full border rounded p-1"
+                          className="w-full rounded border border-gray-300 bg-white p-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:ring-blue-400"
                         />
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="text-center p-6 text-gray-400">
+                    <td colSpan={3} className="p-6 text-center text-gray-500 dark:text-gray-400">
                       Өгөгдөл байхгүй
                     </td>
                   </tr>
@@ -182,6 +198,7 @@ export default function Form203({ auditId, formListId }: Props) {
               </tbody>
             </table>
           </div>
+
           <AuditRisk auditId={auditId} formListId={formListId} />
           <FormActionSection auditId={auditId} formId={formListId} />
         </>

@@ -97,40 +97,42 @@ export default function FormActionSection({ auditId, formId }: Props) {
     }
   };
 
-  if (loading) {
-    return <div className="mt-4">Тайлбар уншиж байна...</div>;
-  }
-
   return (
-    <div className="mt-4 space-y-4">
-      <div>
-        <div className="mb-2 font-medium">Тайлбар</div>
+    <>
+      {loading ? (
+        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+      ) : (
+        <div className="mt-4 space-y-4">
+          <div>
+            <div className="mb-2 font-medium text-gray-800 dark:text-gray-100">Тайлбар</div>
 
-        <textarea
-          className="mt-1 min-h-[120px] w-full rounded border p-2"
-          value={formData?.form_description ?? ""}
-          onChange={(e) =>
-            setFormData((prev) => (prev ? { ...prev, form_description: e.target.value } : null))
-          }
-        />
+            <textarea
+              className="mt-1 min-h-[120px] w-full rounded border border-gray-300 bg-white p-2 text-gray-900 outline-none focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400"
+              value={formData?.form_description ?? ""}
+              onChange={(e) =>
+                setFormData((prev) => (prev ? { ...prev, form_description: e.target.value } : null))
+              }
+            />
 
-        <div className="mt-2 flex justify-end">
-          <button
-            type="button"
-            onClick={handleSaveDescription}
-            disabled={saving}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400"
-          >
-            {saving && (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
-            )}
-            {saving ? "Хадгалж байна..." : "Хадгалах"}
-          </button>
+            <div className="mt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={handleSaveDescription}
+                disabled={saving}
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
+              >
+                {saving && (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
+                )}
+                {saving ? "Хадгалж байна..." : "Хадгалах"}
+              </button>
+            </div>
+          </div>
+
+          <AuditConfirm formId={formId} />
+          <AuditComment formId={formId} />
         </div>
-      </div>
-
-      <AuditConfirm formId={formId} />
-      <AuditComment formId={formId} />
-    </div>
+      )}
+    </>
   );
 }
