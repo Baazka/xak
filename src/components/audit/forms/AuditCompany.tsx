@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import DatePicker from "../../form/DatePicker";
+import DatePicker from "@/components/form/DatePicker";
 import LoadingScreen from "@/components/ui/LoadingScreen";
-import { on } from "events";
 type AuditCompanyFormData = {
   // Ерөнхий мэдээлэл
   org_regno: string;

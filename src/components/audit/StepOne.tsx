@@ -1,4 +1,4 @@
-import DatePicker from "../form/DatePicker";
+import DatePicker from "@/components/form/DatePicker";
 
 type StepOneData = {
   aud_name: string;
