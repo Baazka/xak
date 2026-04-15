@@ -1,7 +1,7 @@
 "use client";
 
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
-import DatePicker from "@/components/form/DatePicker";
+import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Delete, Edit } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";

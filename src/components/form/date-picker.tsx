@@ -1,75 +1,109 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.css";
+import type { Instance } from "flatpickr/dist/types/instance";
+import "flatpickr/dist/flatpickr.min.css";
 import Label from "./Label";
 import { CalenderIcon } from "../../icons";
-import Hook = flatpickr.Options.Hook;
-import DateOption = flatpickr.Options.DateOption;
-
-type PickerMode = "date" | "datetime" | "time" | "multiple" | "range";
+import type { Hook, DateOption } from "flatpickr/dist/types/options";
 
 type PropsType = {
-  id: string;
-  mode?: PickerMode;
+  id?: string;
+  mode?: "single" | "multiple" | "range";
   onChange?: Hook | Hook[];
   defaultDate?: DateOption;
   label?: string;
   placeholder?: string;
+  minDate?: DateOption;
+  maxDate?: DateOption;
+  value?: string;
+  name?: string;
+  size?: "sm" | "md" | "lg";
 };
 
 export default function DatePicker({
   id,
-  mode = "date",
+  mode = "single",
   onChange,
   label,
   defaultDate,
   placeholder,
+  minDate,
+  maxDate,
+  value,
+  name,
+  size = "md",
 }: PropsType) {
-  useEffect(() => {
-    const isTimeOnly = mode === "time";
-    const isDateTime = mode === "datetime";
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const fpRef = useRef<Instance | null>(null);
 
-    const instance = flatpickr(`#${id}`, {
-      mode: mode === "multiple" || mode === "range" ? mode : "single",
-      static: true,
+  const sizeClassMap = {
+    sm: "fp-sm",
+    md: "fp-md",
+    lg: "fp-lg",
+  };
+
+  const inputSizeMap = {
+    sm: "h-8 text-xs",
+    md: "h-10 text-sm",
+    lg: "h-11 text-base",
+  };
+
+  useEffect(() => {
+    if (!inputRef.current) return;
+
+    fpRef.current = flatpickr(inputRef.current, {
+      mode,
       monthSelectorType: "static",
-      dateFormat: isTimeOnly ? "H:i" : isDateTime ? "Y-m-d H:i" : "Y-m-d",
-      enableTime: isTimeOnly || isDateTime,
-      noCalendar: isTimeOnly,
-      time_24hr: true,
       defaultDate,
+      minDate,
+      maxDate,
       onChange,
+      altInput: false,
+      altFormat: "Y-m-d",
+      dateFormat: "Y-m-d",
+      appendTo: document.body,
+      position: "auto",
+      onReady: function (_, __, instance) {
+        Object.values(sizeClassMap).forEach((cls) =>
+          instance.calendarContainer.classList.remove(cls)
+        );
+        instance.calendarContainer.classList.add(sizeClassMap[size]);
+      },
     });
 
     return () => {
-      if (!Array.isArray(instance)) {
-        instance.destroy();
-      }
+      fpRef.current?.destroy();
+      fpRef.current = null;
     };
-  }, [mode, onChange, id, defaultDate]);
+  }, [mode, onChange, defaultDate, minDate, maxDate, size]);
+
+  useEffect(() => {
+    if (!fpRef.current) return;
+    if (value !== undefined) {
+      fpRef.current.setDate(value, false);
+    }
+  }, [value]);
 
   return (
-    <div>
+    <div className="space-y-2">
       {label && <Label htmlFor={id}>{label}</Label>}
 
       <div className="relative">
         <input
+          ref={inputRef}
           id={id}
-          placeholder={
-            placeholder ||
-            (mode === "time"
-              ? "Цаг сонгох"
-              : mode === "datetime"
-                ? "Огноо, цаг сонгох"
-                : "Огноо сонгох")
-          }
-          className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700 dark:focus:border-brand-800"
+          name={name}
+          placeholder={placeholder}
+          className={`w-full rounded-lg border bg-transparent px-2 py-1 pr-10 ${inputSizeMap[size]} text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30`}
+          readOnly
         />
 
-        <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-          <CalenderIcon className="size-6" />
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+          <CalenderIcon
+            className={size === "sm" ? "size-4" : size === "lg" ? "size-6" : "size-5"}
+          />
         </span>
       </div>
     </div>

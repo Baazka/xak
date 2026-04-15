@@ -1,4 +1,4 @@
-import DatePicker from "@/components/form/DatePicker";
+import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
 
@@ -701,9 +701,7 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
       <div>
         {/* Үйл ажиллагааны чиглэл */}
         <section>
-          <h2 className="text-base font-semibold py-3">
-            Үйл ажиллагааны чиглэлийн мэдээлэл
-          </h2>
+          <h2 className="text-base font-semibold py-3">Үйл ажиллагааны чиглэлийн мэдээлэл</h2>
 
           <div className="overflow-x-auto rounded-md border border-gray-200">
             <table className="w-full text-sm">

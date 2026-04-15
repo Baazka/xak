@@ -1,6 +1,6 @@
 "use client";
 
-import DatePicker from "@/components/form/DatePicker";
+import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
 

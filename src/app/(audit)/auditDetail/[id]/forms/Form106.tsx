@@ -1,7 +1,7 @@
 "use client";
 
 import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
-import DatePicker from "@/components/form/DatePicker";
+import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";

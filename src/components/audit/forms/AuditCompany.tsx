@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DatePicker from "@/components/form/DatePicker";
+import DatePicker from "@/components/form/date-picker";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 type AuditCompanyFormData = {
   // Ерөнхий мэдээлэл
