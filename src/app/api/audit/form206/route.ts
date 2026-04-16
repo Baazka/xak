@@ -32,6 +32,18 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, 1, current_timestamp, $2)`,
         [NewformId, userId]
       );
+      const indListRes = await client.query(
+        `SELECT ind_id FROM ref_corporality_indicator i order by i.ind_id`,
+        []
+      );
+
+      for (const row of indListRes.rows) {
+        const indId = row.ind_id;
+        await client.query(
+          `INSERT INTO audit_corporality (corp_form_id, corp_ind_id) VALUES ($1, $2) returning corp_id`,
+          [NewformId, indId]
+        );
+      }
     }
     const formResLast = await client.query(
       `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 9`,
@@ -73,7 +85,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         from audit_corporality c
         join ref_corporality_indicator i on c.corp_ind_id = i.ind_id
         where c.corp_form_id = $1
-      ORDER BY c.corp_id DESC
+      ORDER BY c.corp_ind_id
     `,
       [formId]
     );
@@ -101,7 +113,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const userId = user.id;
   const audId = body.aud_id;
   const formId = body.form_id;
-  const formStatusId = body.form_status_id;
+  const formStatusId = body.status_id;
   const formDescription = body.form_description;
 
   if (!audId || !formId || !formStatusId) {
@@ -111,7 +123,8 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     );
   }
 
-  const cropData: { corpId: number; corpIndId: number; corpIndValue: string }[] = body.corpData;
+  const corpData: { corp_id: number; corp_ind_id: number; corp_ind_value: string }[] =
+    body.corpData;
 
   const client = await db.connect();
 
@@ -125,11 +138,11 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       [formId, formStatusId, userId]
     );
 
-    for (const corp of cropData) {
-      const { corpId, corpIndId, corpIndValue } = corp;
+    for (const corp of corpData) {
+      const { corp_id, corp_ind_id, corp_ind_value } = corp;
       await client.query(
         `UPDATE audit_corporality SET corp_ind_value = $1 WHERE corp_id = $2 AND corp_form_id = $3 AND corp_ind_id = $4`,
-        [corpIndValue, corpId, formId, corpIndId]
+        [corp_ind_value, corp_id, formId, corp_ind_id]
       );
     }
 

@@ -19,7 +19,7 @@ export default function AuditSidebar({
   return (
     <div className="z-20 h-full w-24 shrink-0">
       <div className="group sticky top-0 h-full">
-        <div className="absolute left-0 top-0 z-10 flex h-full min-h-0 w-24 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 group-hover:w-64 dark:border-gray-800 dark:bg-gray-900">
+        <div className="absolute left-0 top-0 z-10 flex h-full min-h-0 w-24 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 group-hover:w-84 dark:border-gray-800 dark:bg-gray-900">
           <div className="flex shrink-0 items-center gap-3 border-b border-gray-100 px-3 py-4 dark:border-gray-800">
             <FolderOpen className="h-5 w-5 shrink-0 text-gray-600 dark:text-gray-300" />
             <span className="hidden text-sm font-semibold text-gray-800 dark:text-gray-100 group-hover:block">
