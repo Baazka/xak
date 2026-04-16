@@ -2,7 +2,7 @@ import UserMultiSelect from "@/app/(admin)/(new-pages)/notifications/components/
 import Select, { SingleValue } from "react-select";
 import { useTheme } from "@/context/ThemeContext";
 
-type StepTwoData = {
+export type StepTwoData = {
   usertype3: number;
   usertype4: number;
   usertype5: number;
@@ -39,9 +39,14 @@ export default function StepTwo({ values, userOptions, onChange }: Props) {
       borderColor: state.isFocused ? "#3b82f6" : isDark ? "#374151" : "#d1d5db",
       color: isDark ? "#f9fafb" : "#111827",
     }),
+    menuPortal: (base: any) => ({
+      ...base,
+      zIndex: 9999,
+    }),
 
     menu: (base: any) => ({
       ...base,
+      zIndex: 9999,
       backgroundColor: isDark ? "#111827" : "#ffffff",
       color: isDark ? "#f9fafb" : "#111827",
     }),
