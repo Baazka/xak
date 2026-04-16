@@ -128,7 +128,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       // audit_plan insert
       const planRes = await client.query(
         `INSERT INTO audit_plan (plan_form_id, plan_type_id, plan_file_id, plan_date, plan_comp_date, plan_description, plan_user_id)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, current_timestamp) RETURNING plan_id`,
+           VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING plan_id`,
         [formId, planTypeId, planFileId, planDate, planCompDate, planDescription, userId]
       );
       return NextResponse.json({ plan_id: planRes.rows[0].plan_id }, { status: 200 });
