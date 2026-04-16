@@ -10,7 +10,7 @@ import { JwtPayload } from "@/lib/jwtPayload";
 const genOtp6 = () => String(Math.floor(100000 + Math.random() * 900000));
 const hashOtp = (otp: string) => crypto.createHash("sha256").update(otp).digest("hex");
 
-export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
+export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const body = await req.json().catch(() => null);
   const createdUser = user.id;
   const roleId = Number(body?.role_id ?? 2);
@@ -103,8 +103,8 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     await client.query(
       `INSERT INTO reg_user_roles (user_id, role_id)
-        VALUES ($1, $2)`,
-      [user.id, roleId]
+        VALUES ($1, 2)`,
+      [userNew.user_id]
     );
 
     // old OTP invalidate
@@ -112,7 +112,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       `UPDATE reg_user_otps
         SET used_at = now()
         WHERE user_id = $1 AND used_at IS NULL AND purpose = 'invite'`,
-      [user.id]
+      [userNew.user_id]
     );
 
     //  OTP insert
@@ -123,7 +123,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     await client.query(
       `INSERT INTO reg_user_otps (user_id, otp_hash, purpose, expires_at)
        VALUES ($1, $2, 'invite', now() + ($3 || ' minutes')::interval)`,
-      [user.id, otpHash, String(expiresMinutes)]
+      [userNew.user_id, otpHash, String(expiresMinutes)]
     );
 
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     await client.query("COMMIT");
 
     // 4) Mail send
-    await sendOtpEmail(user.email, otp, expiresMinutes);
+    await sendOtpEmail(email, otp, expiresMinutes);
 
     return NextResponse.json({ ok: true, user_id: user.id });
   } catch (e: any) {
