@@ -52,6 +52,18 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
         case "203":
           content = <Form203 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
+        case "204":
+          content = <Form204 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "206":
+          content = <Form206 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "208":
+          content = <Form208 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "209":
+          content = <Form209 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
         default:
           content = <div className="text-gray-700 dark:text-gray-300">Маягт олдсонгүй</div>;
       }
