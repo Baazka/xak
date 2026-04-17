@@ -23,7 +23,7 @@ export async function downloadExcel({
   const res = await fetchWithAuth(url);
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || "Excel татах үед алдаа гарлаа123");
+    throw new Error(err.message || "Excel татах үед алдаа гарлаа");
   }
 
   const blob = await res.blob();

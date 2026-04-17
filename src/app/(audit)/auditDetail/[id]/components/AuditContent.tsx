@@ -6,6 +6,7 @@ import Form106 from "../forms/Form106";
 import Form201 from "../forms/Form201";
 import Form202 from "../forms/Form202";
 import Form203 from "../forms/Form203";
+import Form204 from "../forms/Form204";
 import FormAuditCompany from "../forms/FormAuditCompany";
 import FormAuditCompanyOwner from "../forms/FormAuditCompanyOwner";
 import type { FormItem } from "../AuditClient";
@@ -52,6 +53,9 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
         case "203":
           content = <Form203 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
+        case "204":
+          content = <Form204 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
         case "205":
           content = <Form205 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
@@ -71,7 +75,10 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
   }
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div
+      id="print-area"
+      className="print-clean h-full min-h-0 overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+    >
       {active && (
         <div className="mb-4 border-b border-gray-200 pb-2 dark:border-gray-800">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">

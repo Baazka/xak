@@ -3,6 +3,7 @@
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
+import { usePrint } from "@/hooks/usePrint";
 
 type Props = {
   auditId: number;
@@ -31,6 +32,7 @@ export default function Form104({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { handlePrint } = usePrint();
 
   const onChange = (id: number, value: boolean) => {
     setData((prev) => prev.map((row) => (row.ind_id === id ? { ...row, noti_value: value } : row)));
@@ -140,7 +142,6 @@ export default function Form104({ auditId, formListId }: Props) {
             ))}
           </select>
         </div>
-
         <button
           type="button"
           onClick={handleSave}
@@ -151,6 +152,13 @@ export default function Form104({ auditId, formListId }: Props) {
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
           )}
           {saving ? "Хадгалж байна..." : "Хадгалах"}
+        </button>
+        <button
+          type="button"
+          onClick={() => handlePrint("portrait")}
+          className="rounded-md bg-slate-700 px-4 py-2 text-white hover:bg-slate-800"
+        >
+          Хэвлэх
         </button>
       </div>
 
