@@ -9,6 +9,7 @@ import Form203 from "../forms/Form203";
 import FormAuditCompany from "../forms/FormAuditCompany";
 import FormAuditCompanyOwner from "../forms/FormAuditCompanyOwner";
 import type { FormItem } from "../AuditClient";
+import Form205 from "../forms/Form205";
 import Form206 from "../forms/Form206";
 import Form208 from "../forms/Form208";
 import Form209 from "../forms/Form209";
@@ -50,6 +51,9 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
           break;
         case "203":
           content = <Form203 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "205":
+          content = <Form205 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
         case "206":
           content = <Form206 auditId={auditData.auditId} formListId={active.form_id} />;
