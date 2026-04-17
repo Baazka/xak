@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, FolderOpen } from "lucide-react";
+import { CheckCircle, FileText, FolderOpen } from "lucide-react";
 import type { FormItem, GroupedForms } from "../AuditClient";
 
 type AuditSidebarProps = {
@@ -9,7 +9,6 @@ type AuditSidebarProps = {
   activeForm: FormItem | null;
   onChange: (form: FormItem) => void;
 };
-
 export default function AuditSidebar({
   pinnedForms,
   groupedForms,
@@ -62,11 +61,10 @@ export default function AuditSidebar({
             {groupedForms.map((group) => (
               <div key={group.stage} className="space-y-1">
                 <div className="px-2 pt-1">
-                  <span className="hidden text-xs font-semibold tracking-wide text-gray-500 dark:text-gray-400 group-hover:block">
+                  <span className="hidden border-l-2 border-blue-500 pl-2 font-semibold text-sm uppercase text-gray-600 dark:text-gray-300 group-hover:block">
                     {group.stage}
                   </span>
                 </div>
-
                 {group.items.map((item) => {
                   const isActive = activeForm?.form_id === item.form_id;
 
@@ -76,21 +74,31 @@ export default function AuditSidebar({
                       type="button"
                       onClick={() => onChange(item)}
                       title={item.form_name}
-                      className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition ${
+                      className={`group flex w-full items-start gap-3 rounded-xl px-2 py-2 text-left transition ${
                         isActive
                           ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100"
                           : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
                       }`}
                     >
-                      <FileText className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
+                      <FileText className="mt-0.5 h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
 
-                      <span className="text-xs font-medium group-hover:hidden">
+                      <span className="shrink-0 text-xs font-medium group-hover:hidden">
                         {item.form_code}
                       </span>
 
-                      <span className="hidden whitespace-nowrap text-sm group-hover:block">
-                        {item.form_name}
-                      </span>
+                      <div className="hidden w-full items-start justify-between gap-2 group-hover:flex">
+                        <div className="flex-1 text-sm leading-tight">
+                          <span className="break-words">{item.form_name}</span>
+                        </div>
+
+                        <div className="group/status relative shrink-0">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+
+                          <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/status:block">
+                            Баталгаажсан
+                          </div>
+                        </div>
+                      </div>
                     </button>
                   );
                 })}
