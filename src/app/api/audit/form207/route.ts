@@ -32,16 +32,17 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, 1, current_timestamp, $2)`,
         [NewformId, userId]
       );
-      await client.query(
-        `INSERT INTO audit_risk_response(risk_id, resp_form_id) SELECT risk_id, $1 FROM audit_risks WHERE risk_aud_id = $2`,
-        [NewformId, audId]
-      );
     }
     const formResLast = await client.query(
       `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 11`,
       [audId]
     );
     const formId = formResLast.rows[0].form_id;
+
+    await client.query(
+      `INSERT INTO audit_risk_response(risk_id, resp_form_id) SELECT r.risk_id, $1 FROM audit_risks r WHERE r.risk_aud_id = $2 and NOT EXISTS (SELECT rr.risk_id FROM audit_risk_response rr WHERE rr.risk_id = r.risk_id)`,
+      [formId, audId]
+    );
 
     const formDataRes = await client.query(
       `
@@ -76,6 +77,8 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         g.group_label risk_group_name,
         r.risk_sub_group_id,
         sg.sub_group_label risk_sub_group_name,
+        r.risk_cd_type_id,
+        cd.cd_type_label risk_cd_type_name,
         r.risk_content,
         rr.resp_main_type_id,
         rm.main_type_label resp_main_type_name,
@@ -84,13 +87,16 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         resp_simple_type,
         resp_response,
         resp_standard_clause,
-        resp_law_clause
+        resp_law_clause,
+        ri.risk_is_important
         from audit_risk_response rr
         join audit_risks r on rr.risk_id = r.risk_id
         join ref_risk_type t on r.risk_type_id = t.type_id
         left join ref_risk_group g on r.risk_group_id = g.group_id
         left join ref_risk_sub_group sg on r.risk_sub_group_id = sg.sub_group_id
-        join ref_risk_response_main rm on rr.resp_main_type_id = rm.main_type_id
+        left join ref_risk_cd_type cd on r.risk_cd_type_id = cd.cd_type_id
+        left join ref_risk_response_main rm on rr.resp_main_type_id = rm.main_type_id
+        join audit_risk_important ri on rr.risk_id = ri.risk_id
         where rr.resp_form_id = $1
     `,
       [formId]
@@ -164,7 +170,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         resp_law_clause,
       } = resp;
       await client.query(
-        `UPDATE audit_response SET 
+        `UPDATE audit_risk_response SET 
             resp_main_type_id = $1, 
             resp_rtype_id = $2, 
             resp_sub_rtype_id = $3, 

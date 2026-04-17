@@ -115,7 +115,7 @@ export default function Form205({ auditId, formListId }: Props) {
           <div className="mb-2">
             <div className="mb-2">
               <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                A: Санхүүгийн аудитын түвшний материаллаг буруу илэрхийллийн эрсдэлийн үнэлгээ
+                A: Санхүүгийн тайлангийн түвшний материаллаг буруу илэрхийллийн эрсдэлийн үнэлгээ
               </span>
             </div>
             <div>
