@@ -89,12 +89,14 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       op_inspection_rate,
       op_effect_rate,
       op_is_material,
-      op_is_impact
+      op_is_impact,
+      ri.risk_is_important
       from audit_risk_operation o
       join audit_risks r on o.risk_id = r.risk_id
       join ref_risk_type t on r.risk_type_id = t.type_id
       left join ref_risk_group g on r.risk_group_id = g.group_id
       left join ref_risk_sub_group sg on r.risk_sub_group_id = sg.sub_group_id
+      join audit_risk_important ri on o.risk_id = ri.risk_id
       where o.op_form_id = $1
     `,
       [formId]
@@ -133,19 +135,20 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       { status: 400 }
     );
   }
-
   const operationData: {
-    risk_Id: number;
-    op_Form_Id: number;
-    op_Is_Fraud: number;
-    op_Fraud_Reason: string;
-    op_Is_Control: number;
-    op_Genre: string;
-    op_Inspection_Rate: number;
-    op_Effect_Rate: number;
-    op_Is_Material: number;
-    op_Is_Impact: number;
+    risk_id: number;
+    op_form_id: number;
+    op_is_fraud: number;
+    op_fraud_reason: string;
+    op_is_control: number;
+    op_genre: string;
+    op_inspection_rate: number;
+    op_effect_rate: number;
+    op_is_material: number;
+    op_is_impact: number;
   }[] = body.operationData;
+
+  console.log("opDta ", operationData);
 
   const client = await db.connect();
 
@@ -161,16 +164,16 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     for (const operation of operationData) {
       const {
-        risk_Id,
-        op_Form_Id,
-        op_Is_Fraud,
-        op_Fraud_Reason,
-        op_Is_Control,
-        op_Genre,
-        op_Inspection_Rate,
-        op_Effect_Rate,
-        op_Is_Material,
-        op_Is_Impact,
+        risk_id,
+        op_form_id,
+        op_is_fraud,
+        op_fraud_reason,
+        op_is_control,
+        op_genre,
+        op_inspection_rate,
+        op_effect_rate,
+        op_is_material,
+        op_is_impact,
       } = operation;
       await client.query(
         `UPDATE audit_risk_operation SET 
@@ -184,15 +187,15 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
           op_is_impact = $8 
           WHERE risk_id = $9 AND op_form_id = $10`,
         [
-          op_Is_Fraud,
-          op_Fraud_Reason,
-          op_Is_Control,
-          op_Genre,
-          op_Inspection_Rate,
-          op_Effect_Rate,
-          op_Is_Material,
-          op_Is_Impact,
-          risk_Id,
+          op_is_fraud,
+          op_fraud_reason,
+          op_is_control,
+          op_genre,
+          op_inspection_rate,
+          op_effect_rate,
+          op_is_material,
+          op_is_impact,
+          risk_id,
           formId,
         ]
       );
