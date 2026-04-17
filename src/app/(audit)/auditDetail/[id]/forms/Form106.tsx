@@ -8,6 +8,7 @@ import FormActionSection from "../components/FormActionSection";
 import { Delete, DeleteIcon, Edit } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import TimePicker from "@/components/form/TimePicker";
+import { usePrint } from "@/hooks/usePrint";
 
 type Props = {
   auditId: number;
@@ -44,6 +45,7 @@ export default function Form106({ auditId, formListId }: Props) {
   const [dialogSaving, setDialogSaving] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
+  const { handlePrint } = usePrint();
 
   const resetDialog = () => {
     setDraftRow(null);
@@ -230,7 +232,6 @@ export default function Form106({ auditId, formListId }: Props) {
           <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
             Уулзалтын мэдээлэл
           </div>
-
           <button
             type="button"
             onClick={() => {
@@ -250,6 +251,13 @@ export default function Form106({ auditId, formListId }: Props) {
             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
             + Нэмэх
+          </button>
+          <button
+            type="button"
+            onClick={() => handlePrint("portrait")}
+            className="rounded-md bg-slate-700 px-4 py-2 text-white hover:bg-slate-800"
+          >
+            Хэвлэх
           </button>
         </div>
 
@@ -275,10 +283,10 @@ export default function Form106({ auditId, formListId }: Props) {
                 <th className="border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Цар хүрээ
                 </th>
-                <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 no-print">
                   Хавсралт
                 </th>
-                <th className="w-10 border border-gray-200 px-3 py-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-10 border border-gray-200 px-3 py-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 no-print">
                   Үйлдэл
                 </th>
               </tr>
@@ -318,7 +326,7 @@ export default function Form106({ auditId, formListId }: Props) {
                     <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
                       {row.meeting_scope}
                     </td>
-                    <td className="border border-gray-200 px-3 py-2 dark:border-gray-700">
+                    <td className="border border-gray-200 px-3 py-2 dark:border-gray-700 no-print">
                       {row.meeting_file_id ? (
                         <a
                           href={`/api/files/download/${row.meeting_file_id}`}
@@ -330,7 +338,7 @@ export default function Form106({ auditId, formListId }: Props) {
                         </a>
                       ) : null}
                     </td>
-                    <td className="w-10 border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                    <td className="w-10 border border-gray-200 px-3 py-2 text-center dark:border-gray-700 no-print">
                       <div className="flex items-center justify-center gap-2">
                         <a
                           href="#"

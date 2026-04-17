@@ -71,7 +71,10 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
   }
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div
+      id="print-area"
+      className="print-clean h-full min-h-0 overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+    >
       {active && (
         <div className="mb-4 border-b border-gray-200 pb-2 dark:border-gray-800">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">

@@ -1099,3 +1099,100 @@ pre[class*="language-"].line-numbers {
   height: 36px;
   line-height: 36px;
 }
+
+@media print {
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #print-area,
+  #print-area * {
+    visibility: visible;
+    background: white !important;
+  }
+
+  #print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  #print-area,
+  #print-area * {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  button {
+    display: none !important;
+  }
+
+  input,
+  textarea,
+  select {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1px solid #000 !important;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  tr {
+    border: 1px solid #000 !important;
+  }
+
+  td,
+  th {
+    border: 1px solid #000 !important;
+    padding: 4px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .print-section {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  h1,
+  h2,
+  h3 {
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
