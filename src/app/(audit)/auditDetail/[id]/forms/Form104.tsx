@@ -3,7 +3,6 @@
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
-import { downloadUIExcel } from "@/lib/downloadUIExcel";
 import { usePrint } from "@/hooks/usePrint";
 
 type Props = {
@@ -124,66 +123,6 @@ export default function Form104({ auditId, formListId }: Props) {
     {} as Record<string, TableRow[]>
   );
 
-  const handleExportExcel = () => {
-    const excelRows: any[] = [];
-
-    excelRows.push({
-      A: "ЁС ЗҮЙН ДҮРМИЙН БОЛОН ХАРААТ БУС БАЙДЛЫН ТУХАЙ МЭДЭГДЭЛ",
-    });
-
-    excelRows.push({});
-    excelRows.push({ A: "Баг", B: selectedBag ?? "" });
-    excelRows.push({});
-    // excelRows.push({ A: "Тайлбар", B: description ?? "" });
-    // excelRows.push({});
-
-    // excelRows.push({ A: "Баталгаажуулалт" });
-
-    // if ((confirmRows ?? []).length > 0) {
-    //   confirmRows.forEach((row: any, index: number) => {
-    //     excelRows.push({
-    //       A: index + 1,
-    //       B: row.comment ?? row.confirm_desc ?? "",
-    //     });
-    //   });
-    // } else {
-    //   excelRows.push({ A: "Мэдээлэл алга" });
-    // }
-
-    // excelRows.push({});
-    // excelRows.push({ A: "Хяналт" });
-
-    // if ((controlRows ?? []).length > 0) {
-    //   controlRows.forEach((row: any, index: number) => {
-    //     excelRows.push({
-    //       A: index + 1,
-    //       B: row.comment ?? row.control_desc ?? "",
-    //     });
-    //   });
-    // } else {
-    //   excelRows.push({ A: "Мэдээлэл алга" });
-    // }
-
-    excelRows.push({});
-    excelRows.push({ A: "Хүснэгтийн мэдээлэл" });
-
-    Object.entries(groupedData ?? {}).forEach(([groupLabel, groupRows]) => {
-      excelRows.push({});
-      excelRows.push({ A: groupLabel });
-
-      (groupRows as any[]).forEach((row: any, index: number) => {
-        excelRows.push({
-          A: index + 1,
-          B: row.ind_code ?? "",
-          C: row.ind_label ?? "",
-          D: row.noti_value ?? "",
-        });
-      });
-    });
-
-    downloadUIExcel(excelRows, "form104", "Form104");
-  };
-
   return (
     <>
       <div className="m-2 flex items-center justify-between gap-4">
@@ -294,7 +233,7 @@ export default function Form104({ auditId, formListId }: Props) {
             ))}
           </table>
 
-          <FormActionSection auditId={auditId} formId={formListId} onExport={handleExportExcel} />
+          <FormActionSection auditId={auditId} formId={formListId} />
         </>
       )}
     </>
