@@ -100,7 +100,7 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
   };
 
   return (
-    <div className="relative space-y-4 p-4">
+    <div className="relative space-y-4 px-4 pt-4">
       <AuditOrgCard
         openOrg={openOrg}
         openAudit={openAudit}
