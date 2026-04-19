@@ -18,12 +18,12 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   try {
     const formRes = await client.query(
-      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 18`,
+      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 20`,
       [audId]
     );
     if (!formRes.rows[0]) {
       const newFormRes = await client.query(
-        `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id) VALUES ($1, 18, 1) RETURNING form_id`,
+        `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id) VALUES ($1, 20, 1) RETURNING form_id`,
         [audId]
       );
       const NewformId = newFormRes.rows[0].form_id;
@@ -34,18 +34,18 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       );
     }
     const formResLast = await client.query(
-      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 18`,
+      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 20`,
       [audId]
     );
     const formId = formResLast.rows[0].form_id;
 
     await client.query(
-      `INSERT INTO audit_fault_correction(risk_id, fc_form_id) 
+      `INSERT INTO audit_fault_solution(risk_id, fs_form_id) 
         SELECT r.risk_id, $1 FROM audit_risks r 
         JOIN audit_risk_important i ON r.risk_id = i.risk_id
         JOIN audit_risk_result rr ON r.risk_id = rr.risk_id
         JOIN audit_risk_fault rf ON r.risk_id = rf.risk_id
-        WHERE r.risk_aud_id = $2 and rr.res_fault_level = 1 and rf.rf_is_correctable = 1 NOT EXISTS (SELECT fc.risk_id FROM audit_fault_correction fc WHERE fc.risk_id = r.risk_id)`,
+        WHERE r.risk_aud_id = $2 and rr.res_fault_level in (1,2) and rf.rf_is_correctable = 0 NOT EXISTS (SELECT fs.risk_id FROM audit_fault_solution fs WHERE fs.risk_id = r.risk_id)`,
       [formId, audId]
     );
 
@@ -59,7 +59,8 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         af.form_name,
         f.form_status_id,
         s.status_label form_status_name,
-        f.form_description
+        f.form_description,
+        f.form_file_id
         from audit_forms f
         join ref_audit_form af on f.form_list_id = af.form_id
         join ref_form_status s on f.form_status_id = s.status_id
@@ -94,26 +95,25 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         rf.rf_correctable,
         rf.rf_standard_clause,
         rf.rf_law_clause,
-        fc.fc_sub_type,
-        fc.fc_report_id,
-        rt.report_name fc_report_name,
-        fc.fc_description_id,
-        fd.description_name fc_description_name,
-        fc.fc_result
-        fc.fc_comment,
+        fs.fs_subject,
+        fs.fs_solution_id,
+        s.solution_label fs_solution_name,
+        fs.fs_solution_clause,
+        fs.fs_type_id,
+        ft.type_label fs_type_name,
         ri.risk_is_important
         from audit_risks r
         join audit_risk_fault rf on r.risk_id = rf.risk_id
         join audit_risk_result res on r.risk_id = res.risk_id
         join audit_risk_important ri on rr.risk_id = ri.risk_id
-        join audit_fault_correction fc on r.risk_id = fc.risk_id
-        left join ref_fc_report rt on fc.fc_report_id = rt.report_id
-        left join ref_fc_description fd on fc.fc_description_id = fd.description_id
+        join audit_fault_solution fs on r.risk_id = fs.risk_id
+        left join ref_fault_solution s on fs.fs_solution_id = s.solution_id
+        left join ref_fault_type ft on fs.fs_type_id = ft.type_id
         join ref_risk_type t on r.risk_type_id = t.type_id
         left join ref_risk_group g on r.risk_group_id = g.group_id
         left join ref_risk_sub_group sg on r.risk_sub_group_id = sg.sub_group_id
         left join ref_risk_cd_type cd on r.risk_cd_type_id = cd.cd_type_id
-        where fc.fc_form_id = $1
+        where fs.fs_form_id = $1
     `,
       [formId]
     );
@@ -151,14 +151,13 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     );
   }
 
-  const correctionData: {
+  const solutionData: {
     risk_id: number;
-    fc_sub_type: string;
-    fc_report_id: number;
-    fc_description_id: number;
-    fc_result: string;
-    fc_comment: string;
-  }[] = body.correctionData;
+    fs_subject: string;
+    fs_solution_id: number;
+    fs_solution_clause: string;
+    fs_type_id: number;
+  }[] = body.solutionData;
 
   const client = await db.connect();
 
@@ -172,28 +171,26 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       [formId, formStatusId, userId]
     );
 
-    for (const correction of correctionData) {
-      const { risk_id, fc_sub_type, fc_report_id, fc_description_id, fc_result, fc_comment } =
-        correction;
+    for (const solution of solutionData) {
+      const { risk_id, fs_subject, fs_solution_id, fs_solution_clause, fs_type_id } = solution;
       await client.query(
-        `UPDATE audit_fault_correction SET 
-            fc_sub_type = $1, 
-            fc_report_id = $2, 
-            fc_description_id = $3, 
-            fc_result = $4, 
-            fc_comment = $5 
-            WHERE risk_id = $6 AND fc_form_id = $7`,
-        [fc_sub_type, fc_report_id, fc_description_id, fc_result, fc_comment, risk_id, formId]
+        `UPDATE audit_fault_solution SET 
+            fs_subject = $1, 
+            fs_solution_id = $2, 
+            fs_solution_clause = $3, 
+            fs_type_id = $4 
+            WHERE risk_id = $5 AND fs_form_id = $6`,
+        [fs_subject, fs_solution_id, fs_solution_clause, fs_type_id, risk_id, formId]
       );
     }
 
     return NextResponse.json(
-      { message: "Audit Fault Correction updated successfully" },
+      { message: "Audit Fault Solution updated successfully" },
       { status: 201 }
     );
   } catch (err: any) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Audit Fault Correction update error:", err);
+    console.error("Audit Fault Solution update error:", err);
 
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   } finally {
