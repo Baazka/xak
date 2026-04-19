@@ -18,12 +18,12 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   try {
     const formRes = await client.query(
-      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 11`,
+      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 14`,
       [audId]
     );
     if (!formRes.rows[0]) {
       const newFormRes = await client.query(
-        `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id) VALUES ($1, 11, 1) RETURNING form_id`,
+        `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id) VALUES ($1, 14, 1) RETURNING form_id`,
         [audId]
       );
       const NewformId = newFormRes.rows[0].form_id;
@@ -34,13 +34,13 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       );
     }
     const formResLast = await client.query(
-      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 11`,
+      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 14`,
       [audId]
     );
     const formId = formResLast.rows[0].form_id;
 
     await client.query(
-      `INSERT INTO audit_risk_response(risk_id, resp_form_id) SELECT r.risk_id, $1 FROM audit_risks r WHERE r.risk_aud_id = $2 and NOT EXISTS (SELECT rr.risk_id FROM audit_risk_response rr WHERE rr.risk_id = r.risk_id)`,
+      `INSERT INTO audit_risk_result(risk_id, res_form_id) SELECT r.risk_id, $1 FROM audit_risks r WHERE r.risk_aud_id = $2 and NOT EXISTS (SELECT rr.risk_id FROM audit_risk_result rr WHERE rr.risk_id = r.risk_id)`,
       [formId, audId]
     );
 
@@ -69,8 +69,8 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     const dataRes = await client.query(
       `
       select 
-        rr.risk_id,
-        rr.resp_form_id,
+        r.risk_id,
+        res.res_form_id,
         r.risk_type_id,
         t.type_label risk_type_name,
         r.risk_group_id,
@@ -86,18 +86,20 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         resp_sub_rtype_id,
         resp_simple_type,
         resp_response,
-        resp_standard_clause,
-        resp_law_clause,
+        res.res_situation,
+        res.res_result,
+        res.res_fault_level,
         ri.risk_is_important
-        from audit_risk_response rr
-        join audit_risks r on rr.risk_id = r.risk_id
+        from audit_risks r
+        join audit_risk_response rr on r.risk_id = rr.risk_id
+        join audit_risk_result res on r.risk_id = res.risk_id
         join ref_risk_type t on r.risk_type_id = t.type_id
         left join ref_risk_group g on r.risk_group_id = g.group_id
         left join ref_risk_sub_group sg on r.risk_sub_group_id = sg.sub_group_id
         left join ref_risk_cd_type cd on r.risk_cd_type_id = cd.cd_type_id
         left join ref_risk_response_main rm on rr.resp_main_type_id = rm.main_type_id
         join audit_risk_important ri on rr.risk_id = ri.risk_id
-        where rr.resp_form_id = $1
+        where res.res_form_id = $1
     `,
       [formId]
     );
@@ -135,16 +137,12 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     );
   }
 
-  const respData: {
+  const resultData: {
     risk_id: number;
-    resp_main_type_id: number;
-    resp_rtype_id: number;
-    resp_sub_rtype_id: number;
-    resp_simple_type: string;
-    resp_response: string;
-    resp_standard_clause: string;
-    resp_law_clause: string;
-  }[] = body.respData;
+    res_situation: string;
+    res_result: string;
+    res_fault_level: number;
+  }[] = body.resultData;
 
   const client = await db.connect();
 
@@ -158,45 +156,22 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       [formId, formStatusId, userId]
     );
 
-    for (const resp of respData) {
-      const {
-        risk_id,
-        resp_main_type_id,
-        resp_rtype_id,
-        resp_sub_rtype_id,
-        resp_simple_type,
-        resp_response,
-        resp_standard_clause,
-        resp_law_clause,
-      } = resp;
+    for (const result of resultData) {
+      const { risk_id, res_situation, res_result, res_fault_level } = result;
       await client.query(
-        `UPDATE audit_risk_response SET 
-            resp_main_type_id = $1, 
-            resp_rtype_id = $2, 
-            resp_sub_rtype_id = $3, 
-            resp_simple_type = $4, 
-            resp_response = $5, 
-            resp_standard_clause = $6, 
-            resp_law_clause = $7 
-            WHERE risk_id = $8 AND resp_form_id = $9`,
-        [
-          resp_main_type_id,
-          resp_rtype_id,
-          resp_sub_rtype_id,
-          resp_simple_type,
-          resp_response,
-          resp_standard_clause,
-          resp_law_clause,
-          risk_id,
-          formId,
-        ]
+        `UPDATE audit_risk_result SET 
+            res_situation = $1, 
+            res_result = $2, 
+            res_fault_level = $3 
+            WHERE risk_id = $4 AND res_form_id = $5`,
+        [res_situation, res_result, res_fault_level, risk_id, formId]
       );
     }
 
-    return NextResponse.json({ message: "Audit Response updated successfully" }, { status: 201 });
+    return NextResponse.json({ message: "Audit Result updated successfully" }, { status: 201 });
   } catch (err: any) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Audit Response update error:", err);
+    console.error("Audit Result update error:", err);
 
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   } finally {
