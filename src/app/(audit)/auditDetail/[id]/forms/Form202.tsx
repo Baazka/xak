@@ -4,6 +4,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { formatCurrency } from "@/lib/formatCurrency";
+import ExpandableDataTable from "@/components/tables/ExpandableTable";
 type Props = {
   auditId: number;
   formListId: number;
@@ -21,6 +22,17 @@ type TableRow = {
   fs_val1: string | null;
   fs_val2: string | null;
 };
+
+const columns = [
+  {
+    key: "ind_group_label",
+    title: "Огноо",
+  },
+  {
+    key: "ind_code",
+    title: "Байршил",
+  },
+];
 
 export default function Form202({ auditId, formListId }: Props) {
   const [data, setData] = useState<TableRow[]>([]);
@@ -266,6 +278,19 @@ export default function Form202({ auditId, formListId }: Props) {
                 )}
               </tbody>
             </table>
+          </div>
+          <div className="my-3">
+            <ExpandableDataTable
+              data={data}
+              columns={columns}
+              getRowId={(r) => r.fs_id}
+              //onAdd={() => setOpenDialog(true)}
+              renderExpanded={(row) => (
+                <div className="p-3">
+                  <b>Detail:</b> {row.fs_ind_id}
+                </div>
+              )}
+            />
           </div>
 
           <FormActionSection auditId={auditId} formId={formListId} />

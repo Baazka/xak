@@ -4,6 +4,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { usePrint } from "@/hooks/usePrint";
+import { useHelpDesk } from "@/context/HelpDeskContext";
 
 type Props = {
   auditId: number;
@@ -32,6 +33,8 @@ export default function Form104({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { openHelp } = useHelpDesk();
+
   const { handlePrint } = usePrint();
 
   const onChange = (id: number, value: boolean) => {
@@ -153,6 +156,8 @@ export default function Form104({ auditId, formListId }: Props) {
           )}
           {saving ? "Хадгалж байна..." : "Хадгалах"}
         </button>
+
+        <button onClick={() => openHelp({ audId: 123, formId: 45 })}>Тусламж</button>
         <button
           type="button"
           onClick={() => handlePrint("portrait")}
