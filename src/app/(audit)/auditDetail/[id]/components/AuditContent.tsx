@@ -1,5 +1,8 @@
 "use client";
 
+import type { FormItem } from "../AuditClient";
+import FormAuditCompany from "../forms/FormAuditCompany";
+import FormAuditCompanyOwner from "../forms/FormAuditCompanyOwner";
 import Form104 from "../forms/Form104";
 import Form105 from "../forms/Form105";
 import Form106 from "../forms/Form106";
@@ -7,14 +10,12 @@ import Form201 from "../forms/Form201";
 import Form202 from "../forms/Form202";
 import Form203 from "../forms/Form203";
 import Form204 from "../forms/Form204";
-import FormAuditCompany from "../forms/FormAuditCompany";
-import FormAuditCompanyOwner from "../forms/FormAuditCompanyOwner";
-import type { FormItem } from "../AuditClient";
 import Form205 from "../forms/Form205";
 import Form206 from "../forms/Form206";
 import Form207 from "../forms/Form207";
 import Form208 from "../forms/Form208";
 import Form209 from "../forms/Form209";
+import Form301 from "../forms/Form301";
 
 type AuditContentProps = {
   activeForm: FormItem | null;
@@ -71,6 +72,9 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
           break;
         case "209":
           content = <Form209 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "301":
+          content = <Form301 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
         default:
           content = <div className="text-gray-700 dark:text-gray-300">Маягт олдсонгүй</div>;

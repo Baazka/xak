@@ -11,19 +11,19 @@ type Props = {
   formListId: number;
 };
 
-type RiskType = {
+export type RiskType = {
   type_id: number;
   type_label: string;
 };
-type RiskGroup = {
+export type RiskGroup = {
   group_id: number;
   group_label: string;
 };
-type RiskSubGroup = {
+export type RiskSubGroup = {
   sub_group_id: number;
   sub_group_label: string;
 };
-type RiskCDtype = {
+export type RiskCDtype = {
   cd_type_id: number;
   cd_type_label: string;
 };

@@ -51,8 +51,15 @@ export default function Form204({ auditId, formListId }: Props) {
         const res = await fetchWithAuth(`/api/audit/form204?aud_id=${auditId}`);
         const result = await res.json();
 
-        setData(Array.isArray(result.data) ? result.data : []);
+        const normalizedData = Array.isArray(result.data)
+          ? result.data.map((row: any) => ({
+              ...row,
+              risk_is_important: row.risk_is_important === 1 || row.risk_is_important === true,
+            }))
+          : [];
 
+        setData(normalizedData);
+        console.log(result, "<=======result204");
         setFormId(result.form_id ?? 0);
       } catch (err) {
         console.error(err);
@@ -70,7 +77,7 @@ export default function Form204({ auditId, formListId }: Props) {
 
       const importantData = data.map((row) => ({
         riskId: row.risk_id,
-        riskIsImportant: row.risk_is_important,
+        riskIsImportant: row.risk_is_important ? 1 : 0,
       }));
 
       const res = await fetchWithAuth(`/api/audit/form204/`, {
@@ -215,7 +222,6 @@ export default function Form204({ auditId, formListId }: Props) {
             </table>
           </div>
 
-          <AuditRisk auditId={auditId} formListId={formListId} />
           <FormActionSection auditId={auditId} formId={formListId} />
         </>
       )}
