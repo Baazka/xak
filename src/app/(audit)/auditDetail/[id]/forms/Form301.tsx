@@ -337,7 +337,7 @@ export default function Form301({ auditId, formListId }: Props) {
         <>
           <div className="m-2 flex items-center justify-between gap-3">
             <div className="flex flex-wrap gap-2">
-              <div className="relative border-b border-gray-200 dark:border-gray-700">
+              <div className="border-b border-gray-200 dark:border-gray-700">
                 <div className="flex gap-1 overflow-x-auto no-scrollbar">
                   {tabs.map((tab) => {
                     const isActive = activeTab === tab.key;
@@ -347,7 +347,7 @@ export default function Form301({ auditId, formListId }: Props) {
                         key={tab.key}
                         type="button"
                         onClick={() => setActiveTab(tab.key)}
-                        className={`relative whitespace-nowrap px-4 py-2 text-sm font-medium transition-all duration-200
+                        className={` whitespace-nowrap px-4 py-2 text-sm font-medium transition-all duration-200
             ${
               isActive
                 ? "text-blue-600 dark:text-blue-400"
@@ -366,18 +366,18 @@ export default function Form301({ auditId, formListId }: Props) {
                   })}
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  resetDialog();
-                  setDraftRow({});
-                  setOpenDialog(true);
-                }}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
-              >
-                + Нэмэх
-              </button>
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                resetDialog();
+                setDraftRow({});
+                setOpenDialog(true);
+              }}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+            >
+              + Нэмэх
+            </button>
           </div>
 
           <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
