@@ -8,6 +8,7 @@ import { Delete, Edit } from "lucide-react";
 import { RiskCDtype, RiskGroup, RiskSubGroup, RiskType } from "../components/AuditRisk";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import DatePicker from "@/components/form/date-picker";
+import { RMainType } from "./Form207";
 
 type Props = {
   auditId: number;
@@ -16,11 +17,10 @@ type Props = {
 
 type TableRow = {
   risk_id: number;
-  risk_form_id: number;
-  risk_is_important: boolean | number;
+  risk_aud_id: number;
   risk_source_id: number;
-
   risk_source_name: string;
+
   risk_date: string | null;
   risk_status_id: number;
   risk_status_name: string;
@@ -33,26 +33,27 @@ type TableRow = {
   risk_sub_group_name: string;
   risk_cd_type_id: number;
   risk_cd_type_name: string;
+  risk_is_important: boolean | number;
+
+  op_is_fraud?: number | boolean | null;
+  op_fraud_reason?: string | null;
+  op_is_control?: number | boolean | null;
 
   op_expected_rate?: string | null;
-  op_fraud_reason?: string | null;
   op_genre?: number | null;
   op_inspection_rate?: number | null;
   op_effect_rate?: number | null;
-  op_is_control?: number | boolean | null;
-  op_is_fraud?: number | boolean | null;
-  op_is_impact?: number | boolean | null;
   op_is_material?: number | boolean | null;
+  op_is_impact?: number | boolean | null;
 
-  resp_law_clause?: string | null;
   resp_main_type_id?: number | null;
   resp_main_type_name?: string | null;
-  resp_response?: string | null;
   resp_rtype_id?: number | null;
-  resp_type_id?: number | null;
-  resp_simple_type?: string | null;
-  resp_standard_clause?: string | null;
   resp_sub_rtype_id?: number | null;
+  resp_simple_type?: string | null;
+  resp_response?: string | null;
+  resp_standard_clause?: string | null;
+  resp_law_clause?: string | null;
 };
 
 type TabKey = "risk" | "op" | "response";
@@ -60,7 +61,6 @@ type TabKey = "risk" | "op" | "response";
 export default function Form301({ auditId, formListId }: Props) {
   const [data, setData] = useState<TableRow[]>([]);
   const [formId, setFormId] = useState(0);
-  const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("risk");
   const [draftRow, setDraftRow] = useState<Partial<TableRow> | null>(null);
 
@@ -68,6 +68,7 @@ export default function Form301({ auditId, formListId }: Props) {
   const [riskGroupList, setRiskGroupList] = useState<RiskGroup[]>([]);
   const [riskSubGroupList, setRiskSubGroupList] = useState<RiskSubGroup[]>([]);
   const [riskCDTypeList, setRiskCDTypeList] = useState<RiskCDtype[]>([]);
+  const [rMainType, setRMainType] = useState<RMainType[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [dialogSaving, setDialogSaving] = useState(false);
@@ -105,10 +106,6 @@ export default function Form301({ auditId, formListId }: Props) {
         op_is_material: null,
         op_is_impact: null,
 
-        resp_main_type_id: null,
-        resp_response: "",
-        resp_standard_clause: "",
-        resp_law_clause: "",
         resp_rtype_id: null,
         resp_sub_rtype_id: null,
         resp_simple_type: "",
@@ -185,10 +182,15 @@ export default function Form301({ auditId, formListId }: Props) {
       const resMeta = await fetchWithAuth(`/api/audit/risk/meta`);
       const resultMeta = await resMeta.json();
 
+      const resMainType = await fetchWithAuth("/api/audit/form207/meta");
+      const resultMainType = await resMainType.json();
+
       setRiskTypeList(resultMeta.riskTypes || []);
       setRiskGroupList(resultMeta.groups || []);
       setRiskSubGroupList(resultMeta.subGroups || []);
       setRiskCDTypeList(resultMeta.cdTypes || []);
+
+      setRMainType(resultMainType.response_main_type ?? []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -200,18 +202,100 @@ export default function Form301({ auditId, formListId }: Props) {
     loadMetaData();
   }, [auditId]);
 
-  const handleDialogSave = async () => {};
+  const handleDialogSave = async () => {
+    if (!draftRow?.risk_content) {
+      alert("Эрсдэл оруулна уу");
+      return;
+    }
+
+    try {
+      setDialogSaving(true);
+
+      const riskData = {
+        risk_content: draftRow.risk_content,
+        risk_type_id: draftRow.risk_type_id,
+        risk_group_id: draftRow.risk_group_id,
+        risk_sub_group_id: draftRow.risk_sub_group_id,
+        risk_cd_type_id: draftRow.risk_cd_type_id,
+        risk_is_important: draftRow.risk_is_important,
+        op_is_fraud: draftRow.op_is_fraud,
+        op_fraud_reason: draftRow.op_fraud_reason,
+        op_is_control: draftRow.op_is_control,
+        op_genre: draftRow.op_genre,
+        op_inspection_rate: draftRow.op_inspection_rate,
+        op_effect_rate: draftRow.op_effect_rate,
+        op_is_material: draftRow.op_is_material,
+        op_is_impact: draftRow.op_is_impact,
+        resp_main_type_id: draftRow.resp_main_type_id,
+        resp_rtype_id: draftRow.resp_rtype_id,
+        resp_sub_rtype_id: draftRow.resp_sub_rtype_id,
+        resp_simple_type: draftRow.resp_simple_type,
+        resp_response: draftRow.resp_response,
+        resp_standard_clause: draftRow.resp_standard_clause,
+        resp_law_clause: draftRow.resp_law_clause,
+      };
+      const res = await fetchWithAuth(`/api/audit/form301`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          aud_id: auditId,
+          form_id: formId,
+          form_status_id: 1,
+          form_description: 1,
+          riskData,
+        }),
+      });
+
+      const result = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(result?.error || "Мэдээлэл хадгалах үед алдаа гарлаа");
+      }
+
+      resetDialog();
+      setOpenDialog(false);
+      await loadTableData();
+    } catch (error) {
+      console.error(error);
+
+      alert(error instanceof Error ? error.message : "Мэдээлэл хадгалах үед алдаа гарлаа");
+    } finally {
+      setDialogSaving(false);
+    }
+  };
+
   const handleEditRisk = (row: TableRow) => {
     setDraftRow({
       risk_id: row.risk_id,
+      risk_aud_id: row.risk_aud_id,
       risk_source_id: row.risk_source_id,
       risk_date: row.risk_date,
       risk_status_id: row.risk_status_id,
+      risk_content: row.risk_content,
       risk_type_id: row.risk_type_id,
       risk_group_id: row.risk_group_id,
       risk_sub_group_id: row.risk_sub_group_id,
       risk_cd_type_id: row.risk_cd_type_id,
-      risk_content: row.risk_content,
+      risk_is_important: row.risk_is_important,
+
+      op_is_fraud: row.op_is_fraud,
+      op_fraud_reason: row.op_fraud_reason,
+      op_is_control: row.op_is_control,
+
+      op_expected_rate: row.op_expected_rate,
+      op_genre: row.op_genre,
+      op_inspection_rate: row.op_inspection_rate,
+      op_effect_rate: row.op_effect_rate,
+      op_is_material: row.op_is_material,
+      op_is_impact: row.op_is_impact,
+
+      resp_main_type_id: row.resp_main_type_id,
+      resp_rtype_id: row.resp_rtype_id,
+      resp_sub_rtype_id: row.resp_sub_rtype_id,
+      resp_simple_type: row.resp_simple_type,
+      resp_response: row.resp_response,
+      resp_standard_clause: row.resp_standard_clause,
+      resp_law_clause: row.resp_law_clause,
     });
 
     setOpenDialog(true);
@@ -238,9 +322,9 @@ export default function Form301({ auditId, formListId }: Props) {
 
   const tabs = useMemo(
     () => [
-      { key: "risk" as TabKey, label: "1. Эрсдэл" },
-      { key: "op" as TabKey, label: "2. OP" },
-      { key: "response" as TabKey, label: "3. Хариу арга хэмжээ" },
+      { key: "risk" as TabKey, label: "Эрсдэлийн бүртгэл" },
+      { key: "op" as TabKey, label: "Эрсдэлийн ерөнхий үнэлгээ" },
+      { key: "response" as TabKey, label: "Үнэлсэн эрсдэл хариу өгөх" },
     ],
     []
   );
@@ -253,24 +337,35 @@ export default function Form301({ auditId, formListId }: Props) {
         <>
           <div className="m-2 flex items-center justify-between gap-3">
             <div className="flex flex-wrap gap-2">
-              {tabs.map((tab) => {
-                const isActive = activeTab === tab.key;
+              <div className="relative border-b border-gray-200 dark:border-gray-700">
+                <div className="flex gap-1 overflow-x-auto no-scrollbar">
+                  {tabs.map((tab) => {
+                    const isActive = activeTab === tab.key;
 
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={() => setActiveTab(tab.key)}
-                    className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
-                      isActive
-                        ? "border-blue-600 bg-blue-600 text-white"
-                        : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                );
-              })}
+                    return (
+                      <button
+                        key={tab.key}
+                        type="button"
+                        onClick={() => setActiveTab(tab.key)}
+                        className={`relative whitespace-nowrap px-4 py-2 text-sm font-medium transition-all duration-200
+            ${
+              isActive
+                ? "text-blue-600 dark:text-blue-400"
+                : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
+            }
+          `}
+                      >
+                        {tab.label}
+                        <span
+                          className={`absolute left-0 -bottom-[1px] h-[2px] w-full rounded-full transition-all duration-300
+              ${isActive ? "bg-blue-600 dark:bg-blue-400" : "bg-transparent"}
+            `}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => {
@@ -328,7 +423,9 @@ export default function Form301({ auditId, formListId }: Props) {
                             <td className="border px-3 py-2">{row.risk_source_name}</td>
                             <td className="border px-3 py-2">{row.risk_status_name}</td>
                             <td className="border px-3 py-2">{row.risk_date}</td>
-                            <td className="border px-3 py-2"></td>
+                            <td className="border px-3 py-2">
+                              {row.risk_is_important === 1 ? "Тийм" : "Үгүй"}
+                            </td>
                             <td className="border px-3 py-2">
                               <div className="flex items-center justify-center">
                                 <a
@@ -398,97 +495,17 @@ export default function Form301({ auditId, formListId }: Props) {
                                 />
                               </td>
                               <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                                <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-200">
-                                  <label className="flex cursor-pointer items-center gap-1">
-                                    <input
-                                      type="radio"
-                                      name={`fraud-${rw.risk_id}`}
-                                      checked={rw.op_is_fraud === 1}
-                                      onChange={() =>
-                                        setData((prev) =>
-                                          prev.map((r) =>
-                                            r.risk_id === rw.risk_id ? { ...r, op_is_fraud: 1 } : r
-                                          )
-                                        )
-                                      }
-                                      className="accent-blue-600 dark:accent-blue-400"
-                                    />
-                                    Тийм
-                                  </label>
-
-                                  <label className="flex cursor-pointer items-center gap-1">
-                                    <input
-                                      type="radio"
-                                      name={`fraud-${rw.risk_id}`}
-                                      checked={rw.op_is_fraud === 0}
-                                      onChange={() =>
-                                        setData((prev) =>
-                                          prev.map((r) =>
-                                            r.risk_id === rw.risk_id ? { ...r, op_is_fraud: 0 } : r
-                                          )
-                                        )
-                                      }
-                                      className="accent-blue-600 dark:accent-blue-400"
-                                    />
-                                    Үгүй
-                                  </label>
-                                </div>
+                                {rw.op_is_fraud === 1 ? "Тийм" : "Үгүй"}
                               </td>
                               <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200 flex items-center justify-center">
                                 <textarea
+                                  readOnly
                                   value={rw.op_fraud_reason || ""}
-                                  onChange={(e) =>
-                                    setData((prev) =>
-                                      prev.map((r) =>
-                                        r.risk_id === rw.risk_id
-                                          ? { ...r, op_fraud_reason: e.target.value }
-                                          : r
-                                      )
-                                    )
-                                  }
                                   className="rounded border border-gray-300 w-full field-sizing-content p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                                 />
                               </td>
                               <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                                <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-200">
-                                  <label className="flex cursor-pointer items-center gap-1">
-                                    <input
-                                      type="radio"
-                                      name={`control-${rw.risk_id}`}
-                                      checked={rw.op_is_control === 1}
-                                      onChange={() =>
-                                        setData((prev) =>
-                                          prev.map((r) =>
-                                            r.risk_id === rw.risk_id
-                                              ? { ...r, op_is_control: 1 }
-                                              : r
-                                          )
-                                        )
-                                      }
-                                      className="accent-blue-600 dark:accent-blue-400"
-                                    />
-                                    Тийм
-                                  </label>
-
-                                  <label className="flex cursor-pointer items-center gap-1">
-                                    <input
-                                      type="radio"
-                                      name={`control-${rw.risk_id}`}
-                                      checked={rw.op_is_control === 0}
-                                      onChange={() =>
-                                        setData((prev) =>
-                                          prev.map((r) =>
-                                            r.risk_id === rw.risk_id
-                                              ? { ...r, op_is_control: 0 }
-                                              : r
-                                          )
-                                        )
-                                      }
-                                      className="accent-blue-600 dark:accent-blue-400"
-                                    />
-                                    Үгүй
-                                  </label>
-                                </div>
+                                {rw.op_is_control === 1 ? "Тийм" : "Үгүй"}
                               </td>
                             </tr>
                           ))}
@@ -683,94 +700,18 @@ export default function Form301({ auditId, formListId }: Props) {
                                   className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                                 />
                               </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              <td>
                                 <span>
                                   {rwb.risk_group_name} - {rwb.risk_sub_group_name}
                                 </span>
                               </td>
 
                               <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                                <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-200">
-                                  <label className="flex cursor-pointer items-center gap-1">
-                                    <input
-                                      type="radio"
-                                      name={`material-${rwb.risk_id}`}
-                                      checked={rwb.op_is_material === 1}
-                                      onChange={() =>
-                                        setData((prev) =>
-                                          prev.map((r) =>
-                                            r.risk_id === rwb.risk_id
-                                              ? { ...r, op_is_material: 1 }
-                                              : r
-                                          )
-                                        )
-                                      }
-                                      className="accent-blue-600 dark:accent-blue-400"
-                                    />
-                                    Тийм
-                                  </label>
-
-                                  <label className="flex cursor-pointer items-center gap-1">
-                                    <input
-                                      type="radio"
-                                      name={`material-${rwb.risk_id}`}
-                                      checked={rwb.op_is_material === 0}
-                                      onChange={() =>
-                                        setData((prev) =>
-                                          prev.map((r) =>
-                                            r.risk_id === rwb.risk_id
-                                              ? { ...r, op_is_material: 0 }
-                                              : r
-                                          )
-                                        )
-                                      }
-                                      className="accent-blue-600 dark:accent-blue-400"
-                                    />
-                                    Үгүй
-                                  </label>
-                                </div>
+                                {rwb.op_is_material === 1 ? "Тийм" : "Үгүй"}
                               </td>
 
                               <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                                <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-200">
-                                  <label className="flex cursor-pointer items-center gap-1">
-                                    <input
-                                      type="radio"
-                                      name={`impact-${rwb.risk_id}`}
-                                      checked={rwb.op_is_impact === 1}
-                                      onChange={() =>
-                                        setData((prev) =>
-                                          prev.map((r) =>
-                                            r.risk_id === rwb.risk_id
-                                              ? { ...r, op_is_impact: 1 }
-                                              : r
-                                          )
-                                        )
-                                      }
-                                      className="accent-blue-600 dark:accent-blue-400"
-                                    />
-                                    Тийм
-                                  </label>
-
-                                  <label className="flex cursor-pointer items-center gap-1">
-                                    <input
-                                      type="radio"
-                                      name={`impact-${rwb.risk_id}`}
-                                      checked={rwb.op_is_impact === 0}
-                                      onChange={() =>
-                                        setData((prev) =>
-                                          prev.map((r) =>
-                                            r.risk_id === rwb.risk_id
-                                              ? { ...r, op_is_impact: 0 }
-                                              : r
-                                          )
-                                        )
-                                      }
-                                      className="accent-blue-600 dark:accent-blue-400"
-                                    />
-                                    Үгүй
-                                  </label>
-                                </div>
+                                {rwb.op_is_impact === 1 ? "Тийм" : "Үгүй"}
                               </td>
                             </tr>
                           ))}
@@ -841,25 +782,17 @@ export default function Form301({ auditId, formListId }: Props) {
                               <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 {index + 1}
                               </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              <td>
                                 <textarea
                                   readOnly
                                   value={row.risk_content ?? ""}
                                   className=" w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                                 />
                               </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                                {row.resp_main_type_name}
-                              </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                                {row.resp_response}
-                              </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                                {row.resp_standard_clause}
-                              </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                                {row.resp_law_clause}
-                              </td>
+                              <td>{row.resp_main_type_name}</td>
+                              <td>{row.resp_response}</td>
+                              <td>{row.resp_standard_clause}</td>
+                              <td>{row.resp_law_clause}</td>
                             </tr>
                           ))}
                       </tbody>
@@ -944,7 +877,7 @@ export default function Form301({ auditId, formListId }: Props) {
                               <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 {index + 1}
                               </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              <td>
                                 <textarea
                                   readOnly
                                   value={row.risk_content ?? ""}
@@ -962,11 +895,11 @@ export default function Form301({ auditId, formListId }: Props) {
                                   {row.risk_cd_type_name}
                                 </span>
                               </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
                             </tr>
                           ))}
                       </tbody>
@@ -1006,9 +939,9 @@ export default function Form301({ auditId, formListId }: Props) {
                               <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 {index + 1}
                               </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
                             </tr>
                           ))}
                       </tbody>
@@ -1053,12 +986,7 @@ export default function Form301({ auditId, formListId }: Props) {
                           </label>
                           <textarea
                             value={draftRow?.risk_content ?? ""}
-                            onChange={(e) =>
-                              setDraftRow((prev) => ({
-                                ...prev!,
-                                risk_content: e.target.value,
-                              }))
-                            }
+                            onChange={(e) => handleDraftChange("risk_content", e.target.value)}
                             rows={2}
                             className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                           />
@@ -1086,18 +1014,9 @@ export default function Form301({ auditId, formListId }: Props) {
                           </label>
                           <select
                             value={draftRow?.risk_type_id ?? ""}
-                            onChange={(e) => {
-                              const value = Number(e.target.value);
-                              setDraftRow((prev) => ({
-                                ...prev!,
-                                risk_type_id: value,
-                                ...(value === 1 && {
-                                  risk_group_id: undefined,
-                                  risk_sub_group_id: undefined,
-                                  risk_cd_type_id: undefined,
-                                }),
-                              }));
-                            }}
+                            onChange={(e) =>
+                              handleDraftChange("risk_type_id", Number(e.target.value))
+                            }
                             className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                           >
                             <option value="">Сонгох</option>
@@ -1117,10 +1036,7 @@ export default function Form301({ auditId, formListId }: Props) {
                             value={isType1 ? "" : (draftRow?.risk_group_id ?? "")}
                             disabled={isType1}
                             onChange={(e) =>
-                              setDraftRow((prev) => ({
-                                ...prev!,
-                                risk_group_id: Number(e.target.value),
-                              }))
+                              handleDraftChange("risk_group_id", Number(e.target.value))
                             }
                             className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
                           >
@@ -1141,10 +1057,7 @@ export default function Form301({ auditId, formListId }: Props) {
                             value={isType1 ? "" : (draftRow?.risk_sub_group_id ?? "")}
                             disabled={isType1}
                             onChange={(e) =>
-                              setDraftRow((prev) => ({
-                                ...prev!,
-                                risk_sub_group_id: Number(e.target.value),
-                              }))
+                              handleDraftChange("risk_sub_group_id", Number(e.target.value))
                             }
                             className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
                           >
@@ -1165,10 +1078,7 @@ export default function Form301({ auditId, formListId }: Props) {
                             value={isType1 ? "" : (draftRow?.risk_cd_type_id ?? "")}
                             disabled={isType1}
                             onChange={(e) =>
-                              setDraftRow((prev) => ({
-                                ...prev!,
-                                risk_cd_type_id: Number(e.target.value),
-                              }))
+                              handleDraftChange("risk_cd_type_id", Number(e.target.value))
                             }
                             className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
                           >
@@ -1186,32 +1096,22 @@ export default function Form301({ auditId, formListId }: Props) {
                           </label>
 
                           <div className="flex gap-4">
-                            <label className="flex items-center gap-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
                               <input
                                 type="radio"
                                 name="risk_is_important"
                                 checked={Number(draftRow?.risk_is_important) === 1}
-                                onChange={() =>
-                                  setDraftRow((prev: any) => ({
-                                    ...prev,
-                                    risk_is_important: 1,
-                                  }))
-                                }
+                                onChange={(e) => handleDraftChange("risk_is_important", 1)}
                               />
                               Тийм
                             </label>
 
-                            <label className="flex items-center gap-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
                               <input
                                 type="radio"
                                 name="risk_is_important"
                                 checked={Number(draftRow?.risk_is_important) === 0}
-                                onChange={() =>
-                                  setDraftRow((prev: any) => ({
-                                    ...prev,
-                                    risk_is_important: 0,
-                                  }))
-                                }
+                                onChange={(e) => handleDraftChange("risk_is_important", 0)}
                               />
                               Үгүй
                             </label>
@@ -1226,272 +1126,200 @@ export default function Form301({ auditId, formListId }: Props) {
                         </h4>
                       </div>
                       {isType1 && (
-                        <div id="a">
-                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div>
-                              <label className="mb-2 block text-sm font-medium">
-                                Залилангийн эрсдэл гарах магадлалтай эсэх
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Залилангийн эрсдэл гарах магадлалтай эсэх
+                            </label>
+
+                            <div className="flex gap-4">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="op_is_fraud"
+                                  checked={Number(draftRow?.op_is_fraud) === 1}
+                                  onChange={(e) => handleDraftChange("op_is_fraud", 1)}
+                                />
+                                Тийм
                               </label>
 
-                              <div className="flex gap-4">
-                                <label className="flex items-center gap-2">
-                                  <input
-                                    type="radio"
-                                    name="op_is_fraud"
-                                    checked={Number(draftRow?.op_is_fraud) === 1}
-                                    onChange={() =>
-                                      setDraftRow((prev: any) => ({
-                                        ...prev,
-                                        op_is_fraud: 1,
-                                      }))
-                                    }
-                                  />
-                                  Тийм
-                                </label>
-
-                                <label className="flex items-center gap-2">
-                                  <input
-                                    type="radio"
-                                    name="op_is_fraud"
-                                    checked={Number(draftRow?.op_is_fraud) === 0}
-                                    onChange={() =>
-                                      setDraftRow((prev: any) => ({
-                                        ...prev,
-                                        op_is_fraud: 0,
-                                      }))
-                                    }
-                                  />
-                                  Үгүй
-                                </label>
-                              </div>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="op_is_fraud"
+                                  checked={Number(draftRow?.op_is_fraud) === 0}
+                                  onChange={(e) => handleDraftChange("op_is_fraud", 0)}
+                                />
+                                Үгүй
+                              </label>
                             </div>
-                            <div className="md:col-span-2">
-                              <label className="mb-1 block text-sm font-medium">
-                                Залилангийн эрсдэл гарах шалтгаан
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Дотоод хяналтын тогтолцооны бүрэлдэхүүн хэсгээс үүссэн дутагдал эсэх
+                            </label>
+
+                            <div className="flex gap-4">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="op_is_control"
+                                  checked={Number(draftRow?.op_is_control) === 1}
+                                  onChange={(e) => handleDraftChange("op_is_control", 1)}
+                                />
+                                Тийм
                               </label>
 
-                              <textarea
-                                value={draftRow?.op_fraud_reason ?? ""}
-                                onChange={(e) =>
-                                  setDraftRow((prev: any) => ({
-                                    ...prev,
-                                    op_fraud_reason: e.target.value,
-                                  }))
-                                }
-                                rows={3}
-                                className="w-full rounded-xl border px-3 py-2"
-                              />
-                            </div>
-                            <div>
-                              <label className="mb-2 block text-sm font-medium">
-                                Дотоод хяналтын тогтолцооны бүрэлдэхүүн хэсгээс үүссэн дутагдал эсэх
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="op_is_control"
+                                  checked={Number(draftRow?.op_is_control) === 0}
+                                  onChange={(e) => handleDraftChange("op_is_control", 0)}
+                                />
+                                Үгүй
                               </label>
-
-                              <div className="flex gap-4">
-                                <label className="flex items-center gap-2">
-                                  <input
-                                    type="radio"
-                                    name="op_is_control"
-                                    checked={Number(draftRow?.op_is_control) === 1}
-                                    onChange={() =>
-                                      setDraftRow((prev: any) => ({
-                                        ...prev,
-                                        op_is_control: 1,
-                                      }))
-                                    }
-                                  />
-                                  Тийм
-                                </label>
-
-                                <label className="flex items-center gap-2">
-                                  <input
-                                    type="radio"
-                                    name="op_is_control"
-                                    checked={Number(draftRow?.op_is_control) === 0}
-                                    onChange={() =>
-                                      setDraftRow((prev: any) => ({
-                                        ...prev,
-                                        op_is_control: 0,
-                                      }))
-                                    }
-                                  />
-                                  Үгүй
-                                </label>
-                              </div>
                             </div>
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="mb-1 block text-sm font-medium">
+                              Залилангийн эрсдэл гарах шалтгаан
+                            </label>
+
+                            <textarea
+                              value={draftRow?.op_fraud_reason ?? ""}
+                              onChange={(e) => handleDraftChange("op_fraud_reason", e.target.value)}
+                              rows={3}
+                              className="w-full rounded-xl border px-3 py-2"
+                            />
                           </div>
                         </div>
                       )}
                       {isType2 && (
-                        <div id="b">
-                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="md:col-span-2">
-                              <label className="mb-1 block text-sm font-medium">
-                                Уламжлалт эсвэл Хяналтын эрсдэл эсэх
-                              </label>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <div>
+                            <label className="mb-1 block text-sm font-medium">
+                              Уламжлалт эсвэл Хяналтын эрсдэл эсэх
+                            </label>
 
-                              <select
-                                value={draftRow?.op_genre ?? ""}
-                                onChange={(e) =>
-                                  setDraftRow((prev: any) => ({
-                                    ...prev,
-                                    op_genre: e.target.value === "" ? null : Number(e.target.value),
-                                  }))
-                                }
-                                className="w-full rounded-xl border px-3 py-2"
-                              >
-                                <option value="">Сонгох</option>
-                                <option value={1}>Уламжлалт</option>
-                                <option value={2}>Хяналтын</option>
-                              </select>
-                            </div>
-                            <div>
-                              <label className="mb-1 block text-sm font-medium">
-                                Тохиолдох магадлал
-                              </label>
-                              <select
-                                value={draftRow?.op_inspection_rate ?? 0}
-                                onChange={(e) =>
-                                  setData((prev) =>
-                                    prev.map((r) =>
-                                      r.risk_id === draftRow?.risk_id
-                                        ? { ...r, op_inspection_rate: Number(e.target.value) }
-                                        : r
-                                    )
-                                  )
-                                }
-                                className="rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                              >
-                                <option value={0}>Сонгох</option>
-                                <option value={0.3}>0.3 - Бага</option>
-                                <option value={0.6}>0.6 - Дунд</option>
-                                <option value={0.9}>0.9 - Их</option>
-                              </select>
-                            </div>
-                            <div className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                              <label>Санхүүгийн тайланд үзүүлэх нөлөө</label>
-                              <select
-                                value={draftRow?.op_effect_rate ?? 0}
-                                onChange={(e) =>
-                                  setData((prev) =>
-                                    prev.map((r) =>
-                                      r.risk_id === draftRow?.risk_id
-                                        ? { ...r, op_effect_rate: Number(e.target.value) }
-                                        : r
-                                    )
-                                  )
-                                }
-                                className="rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                              >
-                                <option value={0}>Сонгох</option>
-                                <option value={0.3}>0.3 - Бага</option>
-                                <option value={0.6}>0.6 - Дунд</option>
-                                <option value={0.9}>0.9 - Их</option>
-                              </select>
-                            </div>
-                            <div className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                              <label>Дундаж үнэлгээ</label>
-                              <span className="text-gray-700 dark:text-gray-200">
-                                {Number(draftRow?.op_inspection_rate) > 0 &&
-                                Number(draftRow?.op_effect_rate) > 0
-                                  ? (
-                                      (Number(draftRow?.op_inspection_rate) +
-                                        Number(draftRow?.op_effect_rate)) /
-                                      2
-                                    ).toFixed(2)
-                                  : "-"}
-                              </span>
-                            </div>
+                            <select
+                              value={draftRow?.op_genre ?? ""}
+                              onChange={(e) =>
+                                handleDraftChange("op_genre", Number(e.target.value))
+                              }
+                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                            >
+                              <option value="">Сонгох</option>
+                              <option value={1}>Уламжлалт</option>
+                              <option value={2}>Хяналтын</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="mb-1 block text-sm font-medium">
+                              Тохиолдох магадлал
+                            </label>
+                            <select
+                              value={draftRow?.op_inspection_rate ?? 0}
+                              onChange={(e) =>
+                                handleDraftChange("op_inspection_rate", Number(e.target.value))
+                              }
+                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                            >
+                              <option value={0}>Сонгох</option>
+                              <option value={0.3}>0.3 - Бага</option>
+                              <option value={0.6}>0.6 - Дунд</option>
+                              <option value={0.9}>0.9 - Их</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Санхүүгийн тайланд үзүүлэх нөлөө
+                            </label>
+                            <select
+                              value={draftRow?.op_effect_rate ?? 0}
+                              onChange={(e) =>
+                                handleDraftChange("op_effect_rate", Number(e.target.value))
+                              }
+                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                            >
+                              <option value={0}>Сонгох</option>
+                              <option value={0.3}>0.3 - Бага</option>
+                              <option value={0.6}>0.6 - Дунд</option>
+                              <option value={0.9}>0.9 - Их</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">Дундаж үнэлгээ</label>
+                            <span className="text-gray-700 dark:text-gray-200">
+                              {Number(draftRow?.op_inspection_rate) > 0 &&
+                              Number(draftRow?.op_effect_rate) > 0
+                                ? (
+                                    (Number(draftRow?.op_inspection_rate) +
+                                      Number(draftRow?.op_effect_rate)) /
+                                    2
+                                  ).toFixed(2)
+                                : "-"}
+                            </span>
                           </div>
                         </div>
                       )}
                       {isType3 && (
-                        <div id="c">
-                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                              <label>Шинж чанарын хувьд материаллаг эсэх</label>
-                              <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-200">
-                                <label className="flex cursor-pointer items-center gap-1">
-                                  <input
-                                    type="radio"
-                                    name={`material-${draftRow?.risk_id}`}
-                                    checked={draftRow?.op_is_material === 1}
-                                    onChange={() =>
-                                      setData((prev) =>
-                                        prev.map((r) =>
-                                          r.risk_id === draftRow?.risk_id
-                                            ? { ...r, op_is_material: 1 }
-                                            : r
-                                        )
-                                      )
-                                    }
-                                    className="accent-blue-600 dark:accent-blue-400"
-                                  />
-                                  Тийм
-                                </label>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Шинж чанарын хувьд материаллаг эсэх
+                            </label>
+                            <div className="flex gap-4">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name={`material-${draftRow?.risk_id}`}
+                                  checked={draftRow?.op_is_material === 1}
+                                  onChange={(e) => handleDraftChange("op_is_material", 1)}
+                                  className="accent-blue-600 dark:accent-blue-400"
+                                />
+                                Тийм
+                              </label>
 
-                                <label className="flex cursor-pointer items-center gap-1">
-                                  <input
-                                    type="radio"
-                                    name={`material-${draftRow?.risk_id}`}
-                                    checked={draftRow?.op_is_material === 0}
-                                    onChange={() =>
-                                      setData((prev) =>
-                                        prev.map((r) =>
-                                          r.risk_id === draftRow?.risk_id
-                                            ? { ...r, op_is_material: 0 }
-                                            : r
-                                        )
-                                      )
-                                    }
-                                    className="accent-blue-600 dark:accent-blue-400"
-                                  />
-                                  Үгүй
-                                </label>
-                              </div>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name={`material-${draftRow?.risk_id}`}
+                                  checked={draftRow?.op_is_material === 0}
+                                  onChange={(e) => handleDraftChange("op_is_material", 0)}
+                                  className="accent-blue-600 dark:accent-blue-400"
+                                />
+                                Үгүй
+                              </label>
                             </div>
+                          </div>
 
-                            <div className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                              <label>Материаллаг буруу илэрхийллийн эрсдэлд нөлөөлөх эсэх</label>
-                              <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-200">
-                                <label className="flex cursor-pointer items-center gap-1">
-                                  <input
-                                    type="radio"
-                                    name={`impact-${draftRow?.risk_id}`}
-                                    checked={draftRow?.op_is_impact === 1}
-                                    onChange={() =>
-                                      setData((prev) =>
-                                        prev.map((r) =>
-                                          r.risk_id === draftRow?.risk_id
-                                            ? { ...r, op_is_impact: 1 }
-                                            : r
-                                        )
-                                      )
-                                    }
-                                    className="accent-blue-600 dark:accent-blue-400"
-                                  />
-                                  Тийм
-                                </label>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Материаллаг буруу илэрхийллийн эрсдэлд нөлөөлөх эсэх
+                            </label>
+                            <div className="flex gap-4">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name={`impact-${draftRow?.risk_id}`}
+                                  checked={draftRow?.op_is_impact === 1}
+                                  onChange={(e) => handleDraftChange("op_is_impact", 1)}
+                                  className="accent-blue-600 dark:accent-blue-400"
+                                />
+                                Тийм
+                              </label>
 
-                                <label className="flex cursor-pointer items-center gap-1">
-                                  <input
-                                    type="radio"
-                                    name={`impact-${draftRow?.risk_id}`}
-                                    checked={draftRow?.op_is_impact === 0}
-                                    onChange={() =>
-                                      setData((prev) =>
-                                        prev.map((r) =>
-                                          r.risk_id === draftRow?.risk_id
-                                            ? { ...r, op_is_impact: 0 }
-                                            : r
-                                        )
-                                      )
-                                    }
-                                    className="accent-blue-600 dark:accent-blue-400"
-                                  />
-                                  Үгүй
-                                </label>
-                              </div>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name={`impact-${draftRow?.risk_id}`}
+                                  checked={draftRow?.op_is_impact === 0}
+                                  onChange={(e) => handleDraftChange("op_is_impact", 0)}
+                                  className="accent-blue-600 dark:accent-blue-400"
+                                />
+                                Үгүй
+                              </label>
                             </div>
                           </div>
                         </div>
@@ -1503,223 +1331,160 @@ export default function Form301({ auditId, formListId }: Props) {
                         <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                           3. Хариу
                         </h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Эрсдэлийн үнэлгээний мэдээлэл
-                        </p>
                       </div>
                       {isType1 && (
-                        <div id="a">
-                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                              <label> Eрөнхий хариу үйлдэл</label>
-                              <select
-                                value={draftRow?.resp_main_type_id ?? ""}
-                                onChange={(e) =>
-                                  setData((prev) =>
-                                    prev.map((r) =>
-                                      r.risk_id === draftRow?.risk_id
-                                        ? { ...r, resp_main_type_id: Number(e.target.value) }
-                                        : r
-                                    )
-                                  )
-                                }
-                                className="whitespace-normal w-full rounded border border-gray-300 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                              >
-                                <option value="">Сонгоно уу</option>
-                                {/* {rMainType.map((item) => (
-                        <option key={item.main_type_id} value={item.main_type_id}>
-                          {item.main_type_label}
-                        </option>
-                      ))} */}
-                              </select>
-                            </div>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Eрөнхий хариу үйлдэл
+                            </label>
+                            <select
+                              value={draftRow?.resp_main_type_id ?? ""}
+                              onChange={(e) =>
+                                handleDraftChange("resp_main_type_id", Number(e.target.value))
+                              }
+                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                            >
+                              <option value="">Сонгох</option>
+                              {rMainType.map((item) => (
+                                <option key={item.main_type_id} value={item.main_type_id}>
+                                  {item.main_type_label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
 
-                            <div className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                              <label>Гүйцэтгэх горим, сорил</label>
-                              <textarea
-                                value={draftRow?.resp_response || ""}
-                                onChange={(e) =>
-                                  setData((prev) =>
-                                    prev.map((r) =>
-                                      r.risk_id === draftRow?.risk_id
-                                        ? { ...r, resp_response: e.target.value }
-                                        : r
-                                    )
-                                  )
-                                }
-                                className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                              />
-                            </div>
-                            <div className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                              <label>Стандарт заалт</label>
-                              <textarea
-                                value={draftRow?.resp_standard_clause || ""}
-                                onChange={(e) =>
-                                  setData((prev) =>
-                                    prev.map((r) =>
-                                      r.risk_id === draftRow?.risk_id
-                                        ? { ...r, resp_standard_clause: e.target.value }
-                                        : r
-                                    )
-                                  )
-                                }
-                                className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                              />
-                            </div>
-                            <div className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                              <label>Хууль тогтоомжийн заалт</label>
-                              <textarea
-                                value={draftRow?.resp_law_clause || ""}
-                                onChange={(e) =>
-                                  setData((prev) =>
-                                    prev.map((r) =>
-                                      r.risk_id === draftRow?.risk_id
-                                        ? { ...r, resp_law_clause: e.target.value }
-                                        : r
-                                    )
-                                  )
-                                }
-                                className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                              />
-                            </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Гүйцэтгэх горим, сорил
+                            </label>
+                            <textarea
+                              value={draftRow?.resp_response || ""}
+                              onChange={(e) => handleDraftChange("resp_response", e.target.value)}
+                              className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">Стандарт заалт</label>
+                            <textarea
+                              value={draftRow?.resp_standard_clause || ""}
+                              onChange={(e) =>
+                                handleDraftChange("resp_standard_clause", e.target.value)
+                              }
+                              className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Хууль тогтоомжийн заалт
+                            </label>
+                            <textarea
+                              value={draftRow?.resp_law_clause || ""}
+                              onChange={(e) => handleDraftChange("resp_law_clause", e.target.value)}
+                              className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                            />
                           </div>
                         </div>
                       )}
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div id="b">
-                          <div className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                            <label>Горимын шинж чанар</label>
+                      {isType2 && (
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Горимын шинж чанар
+                            </label>
                             <select
                               value={draftRow?.resp_rtype_id || 0}
                               onChange={(e) =>
-                                setData((prev) =>
-                                  prev.map((r) =>
-                                    r.risk_id === draftRow?.risk_id
-                                      ? { ...r, resp_rtype_id: Number(e.target.value) }
-                                      : r
-                                  )
-                                )
+                                handleDraftChange("resp_rtype_id", Number(e.target.value))
                               }
-                              className="w-full p-1 min-h-38px rounded border border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
-                              <option value={0}>Сонгоно уу</option>
+                              <option value={0}>Сонгох</option>
                               <option value={1}>Хяналтад найдах</option>
                               <option value={2}>Биет горим хэрэгжүүлэх</option>
                             </select>
                           </div>
-                          <div className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                            <label>Хэрэгжүүлэх горим, сорил</label>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Хэрэгжүүлэх горим, сорил
+                            </label>
                             <select
                               value={draftRow?.resp_sub_rtype_id || 0}
                               onChange={(e) =>
-                                setData((prev) =>
-                                  prev.map((r) =>
-                                    r.risk_id === draftRow?.risk_id
-                                      ? { ...r, resp_sub_rtype_id: Number(e.target.value) }
-                                      : r
-                                  )
-                                )
+                                handleDraftChange("resp_sub_rtype_id", Number(e.target.value))
                               }
-                              className="w-full p-1 min-h-38px rounded border border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value={0}>Сонгоно уу</option>
-                              {draftRow?.resp_rtype_id === 1 && (
+                              {Number(draftRow?.resp_rtype_id) === 1 && (
                                 <option value={1}>Хяналтын сорил</option>
                               )}
-                              {draftRow?.resp_rtype_id === 2 && (
-                                <option value={2}>Шинжилгээний горим</option>
-                              )}
-                              {draftRow?.resp_rtype_id === 2 && (
-                                <option value={3}>Нарийвчилсан сорил</option>
+                              {Number(draftRow?.resp_rtype_id) === 2 && (
+                                <>
+                                  <option value={2}>Шинжилгээний горим</option>
+                                  <option value={3}>Нарийвчилсан сорил</option>
+                                </>
                               )}
                             </select>
                           </div>
-                          <div className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                            <label>Гүйцэтгэх горим, сорил</label>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Гүйцэтгэх горим, сорил
+                            </label>
                             <textarea
                               value={draftRow?.resp_response ?? ""}
-                              onChange={(e) =>
-                                setData((prev) =>
-                                  prev.map((r) =>
-                                    r.risk_id === draftRow?.risk_id
-                                      ? { ...r, resp_response: e.target.value }
-                                      : r
-                                  )
-                                )
-                              }
+                              onChange={(e) => handleDraftChange("resp_response", e.target.value)}
                               className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                             />
                           </div>
-                          <div className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                            <label>Стандарт заалт</label>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">Стандарт заалт</label>
                             <textarea
                               value={draftRow?.resp_standard_clause ?? ""}
                               onChange={(e) =>
-                                setData((prev) =>
-                                  prev.map((r) =>
-                                    r.risk_id === draftRow?.risk_id
-                                      ? { ...r, resp_standard_clause: e.target.value }
-                                      : r
-                                  )
-                                )
+                                handleDraftChange("resp_standard_clause", e.target.value)
                               }
                               className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                             />
                           </div>
-                          <div className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                            <label>Хууль тогтоомжийн заалт</label>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Хууль тогтоомжийн заалт
+                            </label>
                             <textarea
                               value={draftRow?.resp_law_clause || ""}
-                              onChange={(e) =>
-                                setData((prev) =>
-                                  prev.map((r) =>
-                                    r.risk_id === draftRow?.risk_id
-                                      ? { ...r, resp_law_clause: e.target.value }
-                                      : r
-                                  )
-                                )
-                              }
+                              onChange={(e) => handleDraftChange("resp_law_clause", e.target.value)}
                               className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                             />
                           </div>
                         </div>
+                      )}
+                      {isType3 && (
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                          <div id="c">
-                            <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                              <label>Хамгийн энгийн бие даасан горим</label>
-                              <textarea
-                                value={draftRow?.resp_simple_type ?? ""}
-                                onChange={(e) =>
-                                  setData((prev) =>
-                                    prev.map((r) =>
-                                      r.risk_id === draftRow?.risk_id
-                                        ? { ...r, resp_simple_type: e.target.value }
-                                        : r
-                                    )
-                                  )
-                                }
-                                className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                              />
-                            </td>
-                            <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                              <label>Гүйцэтгэх горим, сорил</label>
-                              <textarea
-                                value={draftRow?.resp_response ?? ""}
-                                onChange={(e) =>
-                                  setData((prev) =>
-                                    prev.map((r) =>
-                                      r.risk_id === draftRow?.risk_id
-                                        ? { ...r, resp_response: e.target.value }
-                                        : r
-                                    )
-                                  )
-                                }
-                                className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                              />
-                            </td>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Хамгийн энгийн бие даасан горим
+                            </label>
+                            <textarea
+                              value={draftRow?.resp_simple_type ?? ""}
+                              onChange={(e) =>
+                                handleDraftChange("resp_simple_type", e.target.value)
+                              }
+                              className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-2 block text-sm font-medium">
+                              Гүйцэтгэх горим, сорил
+                            </label>
+                            <textarea
+                              value={draftRow?.resp_response ?? ""}
+                              onChange={(e) => handleDraftChange("resp_response", e.target.value)}
+                              className="rounded border border-gray-300 w-full field-sizing-content min-h-18 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                            />
                           </div>
                         </div>
-                      </div>
+                      )}
                     </section>
 
                     <div className="flex justify-end gap-2 border-t border-gray-200 px-4 py-3 dark:border-gray-700">
