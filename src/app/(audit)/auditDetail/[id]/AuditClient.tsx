@@ -33,7 +33,7 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
 
         setForms(rows);
 
-        const defaultForm = rows.find((f) => f.form_code === "301");
+        const defaultForm = rows.find((f) => f.form_code === "302");
         if (defaultForm) {
           setActiveForm(defaultForm);
         } else if (rows.length > 0) {

@@ -380,7 +380,7 @@ export default function Form301({ auditId, formListId }: Props) {
             </button>
           </div>
 
-          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="overflow-x-auto">
             {activeTab === "risk" && (
               <table className="w-full text-sm text-gray-800 dark:text-gray-200">
                 <thead>
