@@ -45,7 +45,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     await client.query(
       `INSERT INTO audit_risk_collection (risk_id, col_form_id) 
         SELECT r.risk_id, $1 FROM audit_risks r where r.risk_aud_id = $2 and r.risk_type_id = 2 and r.risk_is_important = 1 AND NOT EXISTS (SELECT rc.risk_id FROM audit_risk_collection rc WHERE rc.col_form_id = $1 and rc.risk_id = r.risk_id)`,
-      [formId]
+      [formId, audId]
     );
 
     const formDataRes = await client.query(
