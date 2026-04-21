@@ -17,7 +17,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const client = await db.connect();
   try {
     const formRes = await client.query(
-      `select form_id from audit_forms where form_aud_id = $1 and form_list_id = 19 limit 1 return form_id`,
+      `select form_id from audit_forms where form_aud_id = $1 and form_list_id = 19 limit 1`,
       [audId]
     );
     if (!formRes.rows[0].form_id) {
