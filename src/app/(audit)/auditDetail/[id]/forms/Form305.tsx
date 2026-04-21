@@ -299,7 +299,6 @@ export default function Form305({ auditId, formListId }: Props) {
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
                       <input
-                        type="number"
                         value={row.rf_law_clause || ""}
                         onChange={(e) =>
                           setData((prev) =>

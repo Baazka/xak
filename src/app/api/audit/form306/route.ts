@@ -38,14 +38,14 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       [audId]
     );
     const formId = formResLast.rows[0].form_id;
-
+    
     await client.query(
       `INSERT INTO audit_fault_correction(risk_id, fc_form_id) 
         SELECT r.risk_id, $1 FROM audit_risks r 
         JOIN audit_risk_important i ON r.risk_id = i.risk_id
         JOIN audit_risk_result rr ON r.risk_id = rr.risk_id
         JOIN audit_risk_fault rf ON r.risk_id = rf.risk_id
-        WHERE r.risk_aud_id = $2 and rr.res_fault_level = 1 and rf.rf_is_correctable = 1 NOT EXISTS (SELECT fc.risk_id FROM audit_fault_correction fc WHERE fc.risk_id = r.risk_id)`,
+        WHERE r.risk_aud_id = $2 and rr.res_fault_level = 1 and rf.rf_correctable = 1 AND NOT EXISTS (SELECT fc.risk_id FROM audit_fault_correction fc WHERE fc.risk_id = r.risk_id)`,
       [formId, audId]
     );
 
@@ -99,13 +99,13 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         rt.report_name fc_report_name,
         fc.fc_description_id,
         fd.description_name fc_description_name,
-        fc.fc_result
+        fc.fc_result,
         fc.fc_comment,
         ri.risk_is_important
         from audit_risks r
         join audit_risk_fault rf on r.risk_id = rf.risk_id
         join audit_risk_result res on r.risk_id = res.risk_id
-        join audit_risk_important ri on rr.risk_id = ri.risk_id
+        join audit_risk_important ri on r.risk_id = ri.risk_id
         join audit_fault_correction fc on r.risk_id = fc.risk_id
         left join ref_fc_report rt on fc.fc_report_id = rt.report_id
         left join ref_fc_description fd on fc.fc_description_id = fd.description_id
