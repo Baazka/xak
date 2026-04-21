@@ -15,6 +15,7 @@ import Form206 from "../forms/Form206";
 import Form207 from "../forms/Form207";
 import Form208 from "../forms/Form208";
 import Form209 from "../forms/Form209";
+import Form302 from "../forms/Form302";
 
 type AuditContentProps = {
   activeForm: FormItem | null;
@@ -71,6 +72,9 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
           break;
         case "209":
           content = <Form209 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "302":
+          content = <Form302 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
         default:
           content = <div className="text-gray-700 dark:text-gray-300">Маягт олдсонгүй</div>;

@@ -42,6 +42,11 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     const formId = formLastRes.rows[0].form_id;
 
+    await client.query(
+      `INSERT INTO audit_risk_corporality (risk_id, rc_form_id) select r.risk_id, $1 from audit_risks r where r.risk_aud_id = $2 and NOT EXISTS (SELECT rc.risk_id FROM audit_risk_corporality rc WHERE rc.rc_form_id = $1 and rc.risk_id = r.risk_id)`,
+      [formId, userId]
+    );
+
     const formPrevRes = await client.query(
       `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 9`,
       [audId]
