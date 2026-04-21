@@ -30,9 +30,10 @@ export default function Form401({ auditId, formListId }: Props) {
       try {
         setLoading(true);
 
-        const res = await fetchWithAuth(`/api/audit/form208?aud_id=${auditId}`);
+        const res = await fetchWithAuth(`/api/audit/form401?aud_id=${auditId}`);
         const result = await res.json();
 
+        console.log(result, "<====result401");
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
       } catch (err) {
@@ -55,7 +56,7 @@ export default function Form401({ auditId, formListId }: Props) {
         str_ind_value: row.str_ind_value,
       }));
 
-      const res = await fetchWithAuth(`/api/audit/form208/`, {
+      const res = await fetchWithAuth(`/api/audit/form401/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -99,46 +100,165 @@ export default function Form401({ auditId, formListId }: Props) {
             </button>
           </div>
 
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-gray-800">
-                <th
-                  colSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Авч үзэх асуудлууд
-                </th>
-                <th className="w-3/5 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Тайлбар
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, index) => (
-                <tr key={row.str_id} className="bg-white dark:bg-gray-900">
-                  <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {index + 1}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.str_ind_label}
-                  </td>
-                  <td className="border border-gray-200 p-2 dark:border-gray-700">
-                    <textarea
-                      value={row.str_ind_value || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.str_id === row.str_id ? { ...r, str_ind_value: e.target.value } : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          <div className="p-4 text-sm text-gray-900">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="flex items-center gap-3">
+                  <label className="w-48 text-right leading-5">
+                    Тогтоосон материаллаг
+                    <br />
+                    байдал:
+                  </label>
+                  <input
+                    type="text"
+                    readOnly
+                    value="637,946,494.07"
+                    className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="w-48 text-right leading-5">
+                    Гүйцэтгэлийн материаллаг
+                    <br />
+                    байдал:
+                  </label>
+                  <input
+                    type="text"
+                    readOnly
+                    value="446,562,545.85"
+                    className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="w-48 text-right leading-5">
+                    Шинж чанарын хувьд
+                    <br />
+                    материаллаг:
+                  </label>
+                  <input
+                    type="text"
+                    readOnly
+                    value="0.00"
+                    className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="w-48 text-right">Материаллаг:</label>
+                  <input
+                    type="text"
+                    readOnly
+                    value="2,147,188,503.00"
+                    className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="w-48 text-right">Материаллаг бус:</label>
+                  <input
+                    type="text"
+                    readOnly
+                    value="27,598,573,897.42"
+                    className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-500 pt-3">
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  Санхүүгийн тайлангийн аудитын асуудал
+                </h2>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                  <div className="flex items-center gap-3">
+                    <label className="w-48 text-right">Нийт алдааны дүн:</label>
+                    <input
+                      type="text"
+                      readOnly
+                      value="296,515,396.96"
+                      className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
                     />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <label className="w-56 text-right">Залруулсан алдааны дүн:</label>
+                    <input
+                      type="text"
+                      readOnly
+                      value="296,515,396.96"
+                      className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <label className="w-56 text-right">Залруулаагүй алдааны дүн:</label>
+                    <input
+                      type="text"
+                      readOnly
+                      value="0.00"
+                      className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <label className="w-48 text-right">Нийт зөрчлийн дүн:</label>
+                    <input
+                      type="text"
+                      readOnly
+                      value="25,943,312,867.46"
+                      className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-500 pt-3">
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  Санхүүгийн тайлангийн аудитаар шалгасан нийцлийн аудитын асуудал
+                </h2>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div className="flex items-center gap-3">
+                    <label className="w-52 text-right leading-5">
+                      Шилэн дансны хуулийн хэрэгжилт:
+                    </label>
+                    <input
+                      type="text"
+                      readOnly
+                      value="1,358,745,633.00"
+                      className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <label className="w-48 text-right">Бусад хууль тогтоомж:</label>
+                    <input
+                      type="text"
+                      readOnly
+                      value="2,147,188,503.00"
+                      className="h-9 w-52 rounded border border-gray-400 bg-white px-3 text-right outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Аудитын дүгнэлт</h2>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <select className="h-9 rounded border border-gray-400 bg-white px-3 outline-none">
+                    <option>Өөрчлөлттэй</option>
+                  </select>
+
+                  <select className="h-9 rounded border border-gray-400 bg-white px-3 outline-none">
+                    <option>Хязгаарлалттай</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <FormActionSection auditId={auditId} formId={formListId} />
         </>
