@@ -140,374 +140,369 @@ export default function Form304({ auditId, formListId }: Props) {
             </button>
           </div>
 
-          <div className="mb-2">
-            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              A: Санхүүгийн тайлангийн түвшний материаллаг буруу илэрхийллийн эрсдэлийн үнэлгээ
-            </span>
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            A: Санхүүгийн тайлангийн түвшний материаллаг буруу илэрхийллийн эрсдэлийн үнэлгээ
+          </h2>
 
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="bg-gray-50 dark:bg-gray-800">
-                  <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    №
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Тодорхойлсон эрсдэл
-                  </th>
-                  <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Ерөнхий хариу үйлдэл
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Гүйцэтгэх горим, сорил
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Нөхцөл байдал
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Горим, сорилын үр дүн
-                  </th>
-                  <th className="w-1/12 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Тухайн үр дүнг алдаа зөрчилд тооцох эсэх
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data
-                  .filter((row) => row.risk_type_id === 1)
-                  .map((rw, index) => (
-                    <tr key={rw.risk_id} className="bg-white dark:bg-gray-900">
-                      <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                        {index + 1}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <textarea
-                          readOnly
-                          value={rw.risk_content ?? ""}
-                          className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                        />
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        {rw.resp_main_type_name}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        {rw.resp_response}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <textarea
-                          value={rw.res_situation || ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.risk_id === rw.risk_id
-                                  ? {
-                                      ...r,
-                                      res_situation: e.target.value,
-                                    }
-                                  : r
-                              )
+          <table className="w-full border-collapse text-sm mb-2">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-800">
+                <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  №
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Тодорхойлсон эрсдэл
+                </th>
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Ерөнхий хариу үйлдэл
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Гүйцэтгэх горим, сорил
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Нөхцөл байдал
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Горим, сорилын үр дүн
+                </th>
+                <th className="w-1/12 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Тухайн үр дүнг алдаа зөрчилд тооцох эсэх
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data
+                .filter((row) => row.risk_type_id === 1)
+                .map((rw, index) => (
+                  <tr key={rw.risk_id} className="bg-white dark:bg-gray-900">
+                    <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {index + 1}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <textarea
+                        readOnly
+                        value={rw.risk_content ?? ""}
+                        className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      {rw.resp_main_type_name}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      {rw.resp_response}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <textarea
+                        value={rw.res_situation || ""}
+                        onChange={(e) =>
+                          setData((prev) =>
+                            prev.map((r) =>
+                              r.risk_id === rw.risk_id
+                                ? {
+                                    ...r,
+                                    res_situation: e.target.value,
+                                  }
+                                : r
                             )
-                          }
-                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                        />
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <textarea
-                          value={rw.res_result || ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.risk_id === rw.risk_id
-                                  ? {
-                                      ...r,
-                                      res_result: e.target.value,
-                                    }
-                                  : r
-                              )
+                          )
+                        }
+                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <textarea
+                        value={rw.res_result || ""}
+                        onChange={(e) =>
+                          setData((prev) =>
+                            prev.map((r) =>
+                              r.risk_id === rw.risk_id
+                                ? {
+                                    ...r,
+                                    res_result: e.target.value,
+                                  }
+                                : r
                             )
-                          }
-                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                        />
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <select
-                          value={rw.res_fault_level ?? ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.risk_id === rw.risk_id
-                                  ? {
-                                      ...r,
-                                      res_fault_level:
-                                        e.target.value === "" ? 0 : Number(e.target.value),
-                                    }
-                                  : r
-                              )
+                          )
+                        }
+                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <select
+                        value={rw.res_fault_level ?? ""}
+                        onChange={(e) =>
+                          setData((prev) =>
+                            prev.map((r) =>
+                              r.risk_id === rw.risk_id
+                                ? {
+                                    ...r,
+                                    res_fault_level:
+                                      e.target.value === "" ? 0 : Number(e.target.value),
+                                  }
+                                : r
                             )
-                          }
-                          className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                        >
-                          <option value="">Сонгох</option>
-                          <option value="1">Алдаа</option>
-                          <option value="2">Зөрчил</option>
-                          <option value="3">Үгүй</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="mb-2">
-            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              Б: Батламж мэдэгдлийн түвшний материаллаг буруу илэрхийллийн эрсдэлийн үнэлгээ
-            </span>
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="bg-gray-50 dark:bg-gray-800">
-                  <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    №
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Тодорхойлсон эрсдэл
-                  </th>
-                  <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    АГАДҮТ-ын дэд анги
-                  </th>
-                  <th className="border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
-                    Холбогдох батламж мэдэгдэл
-                  </th>
-                  <th className="border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
-                    Хяналтын сорил, бие даасан горим
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
-                    Гүйцэтгэх горим, сорил
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
-                    Түүврээс шалгасан зүйлийн нөхцөл байдал
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
-                    Горим, сорилын үр дүн
-                  </th>
-                  <th className="w-1/12 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
-                    Тухайн үр дүнг алдаа зөрчилд тооцох эсэх
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data
-                  .filter((row) => row.risk_type_id === 2 && row.risk_is_important === 1)
-                  .map((row, index) => (
-                    <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
-                      <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                        {index + 1}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <textarea
-                          readOnly
-                          value={row.risk_content ?? ""}
-                          className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                        />
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        {row.risk_group_name}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        {row.risk_sub_group_name}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        {row.resp_sub_rtype_id === 1
-                          ? "Хяналтын сорил"
-                          : row.resp_sub_rtype_id === 2
-                            ? "Шинжилгээний горим"
-                            : row.resp_sub_rtype_id === 3
-                              ? "Нарийвчилсан сорил"
-                              : ""}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        {row.resp_response}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <textarea
-                          value={row.res_situation || ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.risk_id === row.risk_id
-                                  ? {
-                                      ...r,
-                                      res_situation: e.target.value,
-                                    }
-                                  : r
-                              )
-                            )
-                          }
-                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                        />
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <textarea
-                          value={row.res_result || ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.risk_id === row.risk_id
-                                  ? {
-                                      ...r,
-                                      res_result: e.target.value,
-                                    }
-                                  : r
-                              )
-                            )
-                          }
-                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                        />
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <select
-                          value={row.res_fault_level ?? ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.risk_id === row.risk_id
-                                  ? {
-                                      ...r,
-                                      res_fault_level:
-                                        e.target.value === "" ? 0 : Number(e.target.value),
-                                    }
-                                  : r
-                              )
-                            )
-                          }
-                          className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                        >
-                          <option value="">Сонгох</option>
-                          <option value="1">Алдаа</option>
-                          <option value="2">Зөрчил</option>
-                          <option value="3">Үгүй</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+                          )
+                        }
+                        className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                      >
+                        <option value="">Сонгох</option>
+                        <option value="1">Алдаа</option>
+                        <option value="2">Зөрчил</option>
+                        <option value="3">Үгүй</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
 
-          <div className="mb-2">
-            <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-              В: Ач холбогдолтой биш эрсдэлийн үнэлгээ
-            </span>
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="bg-gray-50 dark:bg-gray-800">
-                  <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    №
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Тодорхойлсон эрсдэл
-                  </th>
-                  <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Хамгийн энгийн бие даасан горим
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Гүйцэтгэх горим, сорил
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    Нөхцөл байдал
-                  </th>
-                  <th className="w-1/6 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
-                    Горим, сорилын үр дүн
-                  </th>
-                  <th className="w-1/12 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
-                    Тухайн үр дүнг алдаа зөрчилд тооцох эсэх
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data
-                  .filter((row) => row.risk_type_id === 2 && row.risk_is_important === 0)
-                  .map((row, index) => (
-                    <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
-                      <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                        {index + 1}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <textarea
-                          readOnly
-                          value={row.risk_content ?? ""}
-                          className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                        />
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        {row.resp_simple_type}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        {row.resp_response}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <textarea
-                          value={row.res_situation || ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.risk_id === row.risk_id
-                                  ? {
-                                      ...r,
-                                      res_situation: e.target.value,
-                                    }
-                                  : r
-                              )
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            Б: Батламж мэдэгдлийн түвшний материаллаг буруу илэрхийллийн эрсдэлийн үнэлгээ
+          </h2>
+          <table className="w-full border-collapse text-sm mb-2">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-800">
+                <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  №
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Тодорхойлсон эрсдэл
+                </th>
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  АГАДҮТ-ын дэд анги
+                </th>
+                <th className="border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
+                  Холбогдох батламж мэдэгдэл
+                </th>
+                <th className="border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
+                  Хяналтын сорил, бие даасан горим
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
+                  Гүйцэтгэх горим, сорил
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
+                  Түүврээс шалгасан зүйлийн нөхцөл байдал
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
+                  Горим, сорилын үр дүн
+                </th>
+                <th className="w-1/12 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
+                  Тухайн үр дүнг алдаа зөрчилд тооцох эсэх
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data
+                .filter((row) => row.risk_type_id === 2 && row.risk_is_important === 1)
+                .map((row, index) => (
+                  <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
+                    <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {index + 1}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <textarea
+                        readOnly
+                        value={row.risk_content ?? ""}
+                        className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      {row.risk_group_name}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      {row.risk_sub_group_name}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      {row.resp_sub_rtype_id === 1
+                        ? "Хяналтын сорил"
+                        : row.resp_sub_rtype_id === 2
+                          ? "Шинжилгээний горим"
+                          : row.resp_sub_rtype_id === 3
+                            ? "Нарийвчилсан сорил"
+                            : ""}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      {row.resp_response}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <textarea
+                        value={row.res_situation || ""}
+                        onChange={(e) =>
+                          setData((prev) =>
+                            prev.map((r) =>
+                              r.risk_id === row.risk_id
+                                ? {
+                                    ...r,
+                                    res_situation: e.target.value,
+                                  }
+                                : r
                             )
-                          }
-                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                        />
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <textarea
-                          value={row.res_result || ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.risk_id === row.risk_id
-                                  ? {
-                                      ...r,
-                                      res_result: e.target.value,
-                                    }
-                                  : r
-                              )
+                          )
+                        }
+                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <textarea
+                        value={row.res_result || ""}
+                        onChange={(e) =>
+                          setData((prev) =>
+                            prev.map((r) =>
+                              r.risk_id === row.risk_id
+                                ? {
+                                    ...r,
+                                    res_result: e.target.value,
+                                  }
+                                : r
                             )
-                          }
-                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                        />
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                        <select
-                          value={row.res_fault_level ?? ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.risk_id === row.risk_id
-                                  ? {
-                                      ...r,
-                                      res_fault_level:
-                                        e.target.value === "" ? 0 : Number(e.target.value),
-                                    }
-                                  : r
-                              )
+                          )
+                        }
+                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <select
+                        value={row.res_fault_level ?? ""}
+                        onChange={(e) =>
+                          setData((prev) =>
+                            prev.map((r) =>
+                              r.risk_id === row.risk_id
+                                ? {
+                                    ...r,
+                                    res_fault_level:
+                                      e.target.value === "" ? 0 : Number(e.target.value),
+                                  }
+                                : r
                             )
-                          }
-                          className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                        >
-                          <option value="">Сонгох</option>
-                          <option value="1">Алдаа</option>
-                          <option value="2">Зөрчил</option>
-                          <option value="3">Үгүй</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
+                          )
+                        }
+                        className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                      >
+                        <option value="">Сонгох</option>
+                        <option value="1">Алдаа</option>
+                        <option value="2">Зөрчил</option>
+                        <option value="3">Үгүй</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            В: Ач холбогдолтой биш эрсдэлийн үнэлгээ
+          </h2>
+          <table className="w-full border-collapse text-sm mb-2">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-800">
+                <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  №
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Тодорхойлсон эрсдэл
+                </th>
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Хамгийн энгийн бие даасан горим
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Гүйцэтгэх горим, сорил
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Нөхцөл байдал
+                </th>
+                <th className="w-1/6 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
+                  Горим, сорилын үр дүн
+                </th>
+                <th className="w-1/12 border border-gray-200 p-2 text-gray-800 dark:border-gray-700 dark:text-gray-100 text-center">
+                  Тухайн үр дүнг алдаа зөрчилд тооцох эсэх
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data
+                .filter((row) => row.risk_type_id === 2 && row.risk_is_important === 0)
+                .map((row, index) => (
+                  <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
+                    <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {index + 1}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <textarea
+                        readOnly
+                        value={row.risk_content ?? ""}
+                        className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      {row.resp_simple_type}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      {row.resp_response}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <textarea
+                        value={row.res_situation || ""}
+                        onChange={(e) =>
+                          setData((prev) =>
+                            prev.map((r) =>
+                              r.risk_id === row.risk_id
+                                ? {
+                                    ...r,
+                                    res_situation: e.target.value,
+                                  }
+                                : r
+                            )
+                          )
+                        }
+                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <textarea
+                        value={row.res_result || ""}
+                        onChange={(e) =>
+                          setData((prev) =>
+                            prev.map((r) =>
+                              r.risk_id === row.risk_id
+                                ? {
+                                    ...r,
+                                    res_result: e.target.value,
+                                  }
+                                : r
+                            )
+                          )
+                        }
+                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      />
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                      <select
+                        value={row.res_fault_level ?? ""}
+                        onChange={(e) =>
+                          setData((prev) =>
+                            prev.map((r) =>
+                              r.risk_id === row.risk_id
+                                ? {
+                                    ...r,
+                                    res_fault_level:
+                                      e.target.value === "" ? 0 : Number(e.target.value),
+                                  }
+                                : r
+                            )
+                          )
+                        }
+                        className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                      >
+                        <option value="">Сонгох</option>
+                        <option value="1">Алдаа</option>
+                        <option value="2">Зөрчил</option>
+                        <option value="3">Үгүй</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
 
           <FormActionSection auditId={auditId} formId={formListId} />
         </>

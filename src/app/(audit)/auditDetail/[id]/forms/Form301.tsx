@@ -416,7 +416,7 @@ export default function Form301({ auditId, formListId }: Props) {
                     <th className="border px-3 py-2 text-left">Төлөв</th>
                     <th className="border px-3 py-2 text-left">Огноо</th>
                     <th className="border px-3 py-2 text-center">Ач холбогдолтой эсэх</th>
-                    <th className="border px-3 py-2 text-center">Үйлдэл</th>
+                    <th className="border px-3 py-2 text-center no-print">Үйлдэл</th>
                   </tr>
                 </thead>
 
@@ -447,7 +447,7 @@ export default function Form301({ auditId, formListId }: Props) {
                             <td className="border px-3 py-2">
                               {row.risk_is_important === 1 ? "Тийм" : "Үгүй"}
                             </td>
-                            <td className="border px-3 py-2">
+                            <td className="border px-3 py-2 no-print">
                               <div className="flex items-center justify-center">
                                 <a
                                   className="flex w-full cursor-pointer justify-center text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300"
@@ -996,7 +996,7 @@ export default function Form301({ auditId, formListId }: Props) {
                     <section>
                       <div className="mb-4">
                         <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                          1. Эрсдэл
+                          Эрсдлийн бүртгэл
                         </h4>
                       </div>
 
@@ -1143,7 +1143,7 @@ export default function Form301({ auditId, formListId }: Props) {
                     <section>
                       <div className="mb-4">
                         <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                          2. Үнэлгээ
+                          Эрсдэлийн ерөнхий үнэлгээ
                         </h4>
                       </div>
                       {isType1 && (
@@ -1350,7 +1350,7 @@ export default function Form301({ auditId, formListId }: Props) {
                     <section>
                       <div className="mb-4">
                         <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                          3. Хариу
+                          Үнэлсэн эрсдэл хариу өгөх
                         </h4>
                       </div>
                       {isType1 && (

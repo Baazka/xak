@@ -5,10 +5,11 @@ import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
-import { Delete, DeleteIcon, Edit } from "lucide-react";
+import { Delete, DeleteIcon, Edit, MessageCircle, Printer } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import TimePicker from "@/components/form/TimePicker";
 import { usePrint } from "@/hooks/usePrint";
+import { useHelpDesk } from "@/context/HelpDeskContext";
 
 type Props = {
   auditId: number;
@@ -40,12 +41,13 @@ export default function Form106({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [meetingFiles, setMeetingFiles] = useState<UploadedFileItem[]>([]);
   const [originalMeetingFileId, setOriginalMeetingFileId] = useState<number | null>(null);
+  const { openHelp } = useHelpDesk();
+  const { handlePrint } = usePrint();
 
   const [loading, setLoading] = useState(true);
   const [dialogSaving, setDialogSaving] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
-  const { handlePrint } = usePrint();
 
   const resetDialog = () => {
     setDraftRow(null);
@@ -226,139 +228,142 @@ export default function Form106({ auditId, formListId }: Props) {
       {loading ? (
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
-        <div className="space-y-6">
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-            <div className="flex items-center justify-between border-b bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-800">
-              <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Уулзалтын мэдээлэл
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  resetDialog();
-                  setDraftRow({
-                    meeting_id: 0,
-                    meeting_type_id: 0,
-                    meeting_date: "",
-                    meeting_time: "",
-                    meeting_place: "",
-                    meeting_scope: "",
-                    meeting_file_id: null,
-                  });
-                  setOriginalMeetingFileId(null);
-                  setOpenDialog(true);
-                }}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-              >
-                + Нэмэх
-              </button>
-              <button
-                type="button"
-                onClick={() => handlePrint("portrait")}
-                className="rounded-md bg-slate-700 px-4 py-2 text-white hover:bg-slate-800"
-              >
-                Хэвлэх
-              </button>
-            </div>
+        <>
+          <div className="flex items-center justify-end gap-2 mb-2">
+            <button
+              type="button"
+              onClick={() => {
+                resetDialog();
+                setDraftRow({
+                  meeting_id: 0,
+                  meeting_type_id: 0,
+                  meeting_date: "",
+                  meeting_time: "",
+                  meeting_place: "",
+                  meeting_scope: "",
+                  meeting_file_id: null,
+                });
+                setOriginalMeetingFileId(null);
+                setOpenDialog(true);
+              }}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              + Нэмэх
+            </button>
+            <button
+              type="button"
+              onClick={() => openHelp({ audId: auditId, formId: formListId })}
+              className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+              title="Тусламж"
+            >
+              <MessageCircle className="w-4 h-4" />
+            </button>
 
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="bg-gray-100 dark:bg-gray-800/80">
-                    <th className="w-10 border border-gray-200 px-3 py-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      №
-                    </th>
-                    <th className="w-60 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Хурлын төрөл
-                    </th>
-                    <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Огноо
-                    </th>
-                    <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Цаг
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Байршил
-                    </th>
-                    <th className="border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Цар хүрээ
-                    </th>
-                    <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 no-print">
-                      Хавсралт
-                    </th>
-                    <th className="w-10 border border-gray-200 px-3 py-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 no-print">
-                      Үйлдэл
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {meetingList.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={8}
-                        className="border border-gray-200 px-3 py-6 text-center text-gray-500 dark:border-gray-700 dark:text-gray-400"
-                      >
-                        Мэдээлэл байхгүй байна
-                      </td>
-                    </tr>
-                  ) : (
-                    meetingList.map((row, index) => (
-                      <tr
-                        key={row.meeting_id}
-                        className="bg-white hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800/60"
-                      >
-                        <td className="border border-gray-200 px-3 py-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                          {index + 1}
-                        </td>
-                        <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                          {row.meeting_type_name}
-                        </td>
-                        <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                          {row.meeting_date}
-                        </td>
-                        <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                          {row.meeting_time}
-                        </td>
-                        <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                          {row.meeting_place}
-                        </td>
-                        <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                          {row.meeting_scope}
-                        </td>
-                        <td className="border border-gray-200 px-3 py-2 dark:border-gray-700 no-print">
-                          {row.meeting_file_id ? (
-                            <a
-                              href={`/api/files/download/${row.meeting_file_id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline dark:text-blue-400"
-                            >
-                              Хавсралт үзэх
-                            </a>
-                          ) : null}
-                        </td>
-                        <td className="w-10 border border-gray-200 px-3 py-2 text-center dark:border-gray-700 no-print">
-                          <div className="flex items-center justify-center gap-2">
-                            <a
-                              href="#"
-                              onClick={() => handleEditMeeting(row)}
-                              className="flex w-full cursor-pointer justify-center text-yellow-500 dark:text-yellow-400"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </a>
-                            <DeleteConfirmDialog
-                              onConfirm={() => handleDeleteMeeting(row.meeting_id)}
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <button
+              type="button"
+              onClick={() => handlePrint("portrait")}
+              className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
+              title="Хэвлэх"
+            >
+              <Printer className="w-4 h-4" />
+            </button>
           </div>
+
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-gray-100 dark:bg-gray-800/80">
+                <th className="w-10 border border-gray-200 px-3 py-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  №
+                </th>
+                <th className="w-60 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Хурлын төрөл
+                </th>
+                <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Огноо
+                </th>
+                <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Цаг
+                </th>
+                <th className="border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Байршил
+                </th>
+                <th className="border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                  Цар хүрээ
+                </th>
+                <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 no-print">
+                  Хавсралт
+                </th>
+                <th className="w-10 border border-gray-200 px-3 py-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 no-print">
+                  Үйлдэл
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {meetingList.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="border border-gray-200 px-3 py-6 text-center text-gray-500 dark:border-gray-700 dark:text-gray-400"
+                  >
+                    Мэдээлэл байхгүй байна
+                  </td>
+                </tr>
+              ) : (
+                meetingList.map((row, index) => (
+                  <tr
+                    key={row.meeting_id}
+                    className="bg-white hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800/60"
+                  >
+                    <td className="border border-gray-200 px-3 py-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {index + 1}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {row.meeting_type_name}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {row.meeting_date}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {row.meeting_time}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {row.meeting_place}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {row.meeting_scope}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 dark:border-gray-700 no-print">
+                      {row.meeting_file_id ? (
+                        <a
+                          href={`/api/files/download/${row.meeting_file_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline dark:text-blue-400"
+                        >
+                          Хавсралт үзэх
+                        </a>
+                      ) : null}
+                    </td>
+                    <td className="w-10 border border-gray-200 px-3 py-2 text-center dark:border-gray-700 no-print">
+                      <div className="flex items-center justify-center gap-2">
+                        <a
+                          href="#"
+                          onClick={() => handleEditMeeting(row)}
+                          className="flex w-full cursor-pointer justify-center text-yellow-500 dark:text-yellow-400"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </a>
+                        <DeleteConfirmDialog
+                          onConfirm={() => handleDeleteMeeting(row.meeting_id)}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
 
           {openDialog && (
             <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
@@ -525,7 +530,7 @@ export default function Form106({ auditId, formListId }: Props) {
           )}
 
           <FormActionSection auditId={auditId} formId={formListId} />
-        </div>
+        </>
       )}
     </>
   );

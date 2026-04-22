@@ -57,7 +57,9 @@ export default function AuditConfirm({ formId }: Props) {
       ) : (
         <div className="mt-6">
           <div className="mb-4 flex items-center gap-3">
-            <h3 className="shrink-0 text-gray-800 dark:text-gray-100">Баталгаажуулалт</h3>
+            <h3 className="shrink-0 text-gray-800 dark:text-gray-100 text-sm font-semibold">
+              Баталгаажуулалт
+            </h3>
             <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
           </div>
 
