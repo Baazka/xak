@@ -4,6 +4,9 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Fragment, useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { useToast } from "@/context/ToastContext";
+import { MessageCircle, Printer } from "lucide-react";
+import { useHelpDesk } from "@/context/HelpDeskContext";
+import { usePrint } from "@/hooks/usePrint";
 
 type Props = {
   auditId: number;
@@ -46,6 +49,8 @@ export default function Form308({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { openHelp } = useHelpDesk();
+  const { handlePrint } = usePrint();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -112,7 +117,7 @@ export default function Form308({ auditId, formListId }: Props) {
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
-          <div className="m-2 flex justify-end">
+          <div className="flex items-center justify-end gap-2 mb-2">
             <button
               type="button"
               onClick={handleSave}
@@ -123,6 +128,23 @@ export default function Form308({ auditId, formListId }: Props) {
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
               )}
               {saving ? "Хадгалж байна..." : "Хадгалах"}
+            </button>
+            <button
+              type="button"
+              onClick={() => openHelp({ audId: auditId, formId: formListId })}
+              className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+              title="Тусламж"
+            >
+              <MessageCircle className="w-4 h-4" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handlePrint("portrait")}
+              className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
+              title="Хэвлэх"
+            >
+              <Printer className="w-4 h-4" />
             </button>
           </div>
 

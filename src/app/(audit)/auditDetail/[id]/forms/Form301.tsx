@@ -4,11 +4,13 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { useToast } from "@/context/ToastContext";
-import { Delete, Edit } from "lucide-react";
+import { Delete, Edit, MessageCircle, Printer } from "lucide-react";
 import { RiskCDtype, RiskGroup, RiskSubGroup, RiskType } from "../components/AuditRisk";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import DatePicker from "@/components/form/date-picker";
 import { RMainType } from "./Form207";
+import { useHelpDesk } from "@/context/HelpDeskContext";
+import { usePrint } from "@/hooks/usePrint";
 
 type Props = {
   auditId: number;
@@ -69,6 +71,8 @@ export default function Form301({ auditId, formListId }: Props) {
   const [riskSubGroupList, setRiskSubGroupList] = useState<RiskSubGroup[]>([]);
   const [riskCDTypeList, setRiskCDTypeList] = useState<RiskCDtype[]>([]);
   const [rMainType, setRMainType] = useState<RMainType[]>([]);
+  const { openHelp } = useHelpDesk();
+  const { handlePrint } = usePrint();
 
   const [loading, setLoading] = useState(true);
   const [dialogSaving, setDialogSaving] = useState(false);
@@ -347,13 +351,11 @@ export default function Form301({ auditId, formListId }: Props) {
                         key={tab.key}
                         type="button"
                         onClick={() => setActiveTab(tab.key)}
-                        className={` whitespace-nowrap px-4 py-2 text-sm font-medium transition-all duration-200
-            ${
-              isActive
-                ? "text-blue-600 dark:text-blue-400"
-                : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"
-            }
-          `}
+                        className={`px-4 py-2 text-sm whitespace-nowrap border-b-2 ${
+                          isActive
+                            ? "border-blue-600 text-blue-600 font-semibold dark:border-blue-400 dark:text-blue-400"
+                            : "border-transparent text-gray-500 dark:text-gray-400"
+                        }`}
                       >
                         {tab.label}
                         <span
@@ -367,17 +369,36 @@ export default function Form301({ auditId, formListId }: Props) {
                 </div>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                resetDialog();
-                setDraftRow({});
-                setOpenDialog(true);
-              }}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
-            >
-              + Нэмэх
-            </button>
+            <div className="flex items-center justify-end gap-2 mb-2">
+              <button
+                type="button"
+                onClick={() => {
+                  resetDialog();
+                  setDraftRow({});
+                  setOpenDialog(true);
+                }}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+              >
+                + Нэмэх
+              </button>
+              <button
+                type="button"
+                onClick={() => openHelp({ audId: auditId, formId: formListId })}
+                className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+                title="Тусламж"
+              >
+                <MessageCircle className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handlePrint("portrait")}
+                className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
+                title="Хэвлэх"
+              >
+                <Printer className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
