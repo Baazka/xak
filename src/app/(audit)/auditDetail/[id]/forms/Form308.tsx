@@ -1,12 +1,13 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { useToast } from "@/context/ToastContext";
 import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import ExpandableDataTable, { Column } from "@/components/tables/ExpandableTable";
 
 type Props = {
   auditId: number;
@@ -111,6 +112,157 @@ export default function Form308({ auditId, formListId }: Props) {
     }
   };
 
+  const updateRow = (riskId: number, patch: Partial<TableRow>) => {
+    setData((prev) => prev.map((row) => (row.risk_id === riskId ? { ...row, ...patch } : row)));
+  };
+
+  const importantRows = useMemo(
+    () => data.filter((row) => row.risk_type_id === 2 && row.risk_is_important === 1),
+    [data]
+  );
+
+  const normalRows = useMemo(
+    () => data.filter((row) => !(row.risk_type_id === 2 && row.risk_is_important === 1)),
+    [data]
+  );
+
+  const columns: Column<TableRow>[] = [
+    {
+      key: "no",
+      title: "№",
+      width: "60px",
+      className: "text-center",
+      render: (_row, index) => index + 1,
+    },
+    {
+      key: "risk_content",
+      title: "Тодорхойлсон эрсдэл",
+      width: "26%",
+      render: (row) => (
+        <div className="whitespace-pre-wrap break-words text-sm">{row.risk_content || "-"}</div>
+      ),
+    },
+    {
+      key: "rf_effect",
+      title: "Үр дагавар",
+      width: "20%",
+      render: (row) => (
+        <div className="whitespace-pre-wrap break-words text-sm">{row.rf_effect || "-"}</div>
+      ),
+    },
+    {
+      key: "rf_amount",
+      title: "Мөнгөн дүн",
+      width: "120px",
+      render: (row) => <div className="text-right">{row.rf_amount ?? ""}</div>,
+    },
+    {
+      key: "fs_solution_id",
+      title: "Гаргасан шийдэл",
+      width: "180px",
+      render: (row) => row.fs_solution_name || "-",
+    },
+    {
+      key: "fs_type_id",
+      title: "Алдаа, зөрчлийн ангилал",
+      width: "160px",
+      render: (row) => row.fs_type_name || "-",
+    },
+  ];
+
+  const renderExpanded = (row: TableRow) => (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="space-y-3">
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
+            Стандартын заалт
+          </label>
+          <textarea
+            readOnly
+            value={row.rf_standard_clause || ""}
+            className="min-h-[88px] w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
+            Хууль тогтоомжийн заалт
+          </label>
+          <textarea
+            readOnly
+            value={row.rf_law_clause || ""}
+            className="min-h-[88px] w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
+            Аудитын байгууллагын тогтоосон акт, албан шаардлага, зөвлөмжийн товч утга
+          </label>
+          <textarea
+            value={row.fs_subject || ""}
+            onChange={(e) => updateRow(row.risk_id, { fs_subject: e.target.value })}
+            className="min-h-[110px] w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
+            Гаргасан шийдэл
+          </label>
+          <select
+            value={row.fs_solution_id ?? ""}
+            onChange={(e) =>
+              updateRow(row.risk_id, {
+                fs_solution_id: e.target.value === "" ? 0 : Number(e.target.value),
+              })
+            }
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+          >
+            <option value="">Сонгох</option>
+            <option value="1">Зөвлөмж</option>
+            <option value="2">Албан шаардлага</option>
+            <option value="3">Төлбөрийн акт</option>
+            <option value="4">Хариуцлага тооцох</option>
+            <option value="5">Хуулийн байгууллагад шилжүүлэх</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
+            Шийдлийн заалт
+          </label>
+          <textarea
+            value={row.fs_solution_clause || ""}
+            onChange={(e) => updateRow(row.risk_id, { fs_solution_clause: e.target.value })}
+            className="min-h-[110px] w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
+            Алдаа, зөрчлийн ангилал
+          </label>
+          <select
+            value={row.fs_type_id ?? ""}
+            onChange={(e) =>
+              updateRow(row.risk_id, {
+                fs_type_id: e.target.value === "" ? 0 : Number(e.target.value),
+              })
+            }
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+          >
+            <option value="">Сонгох</option>
+            <option value="1">Орлого 1</option>
+            <option value="2">Орлого 2</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       {loading ? (
@@ -151,346 +303,22 @@ export default function Form308({ auditId, formListId }: Props) {
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Эрсдэлтэй АГАДҮТ-н түвшинд хэрэгжүүлэх түүврийн сорилын алдааг үнэлэх
           </h2>
-          <table className="w-full border-collapse text-sm mb-2">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-gray-800">
-                <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  №
-                </th>
-                <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Тодорхойлсон эрсдэл
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Үр дагавар
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Мөнгөн дүн
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Стандартын заалт
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Хууль тогтоомжийн заалт
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Аудитын байгууллагын тогтоосон акт, албан шаардлага, зөвлөмжийн товч утга
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Гаргасан шийдэл
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Шийдлийн заалт
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Алдаа, зөрчлийн ангилал
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data
-                .filter((row) => row.risk_type_id === 2 && row.risk_is_important === 1)
-                .map((row, index) => (
-                  <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
-                    <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                      {index + 1}
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <textarea
-                        readOnly
-                        value={row.risk_content ?? ""}
-                        className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <textarea
-                        readOnly
-                        value={row.rf_effect || ""}
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
-                        readOnly
-                        type="number"
-                        value={row.rf_amount || ""}
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
-                        readOnly
-                        value={row.rf_standard_clause || ""}
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
-                        readOnly
-                        value={row.rf_law_clause || ""}
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <textarea
-                        value={row.fs_subject || ""}
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.map((r) =>
-                              r.risk_id === row.risk_id
-                                ? {
-                                    ...r,
-                                    fs_subject: e.target.value,
-                                  }
-                                : r
-                            )
-                          )
-                        }
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <select
-                        value={row.fs_solution_id ?? ""}
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.map((r) =>
-                              r.risk_id === row.risk_id
-                                ? {
-                                    ...r,
-                                    fs_solution_id:
-                                      e.target.value === "" ? 0 : Number(e.target.value),
-                                  }
-                                : r
-                            )
-                          )
-                        }
-                        className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                      >
-                        <option value="">Сонгох</option>
-                        <option value="1">Зөвлөмж</option>
-                        <option value="2">Албан шаардлага</option>
-                        <option value="3">Төлбөрийн акт</option>
-                        <option value="4">Хариуцлага тооцох</option>
-                        <option value="5">Хуулийн байгууллагад шилжүүлэх</option>
-                      </select>
-                    </td>
-
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <textarea
-                        value={row.fs_solution_clause || ""}
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.map((r) =>
-                              r.risk_id === row.risk_id
-                                ? {
-                                    ...r,
-                                    fs_solution_clause: e.target.value,
-                                  }
-                                : r
-                            )
-                          )
-                        }
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <select
-                        value={row.fs_type_id ?? ""}
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.map((r) =>
-                              r.risk_id === row.risk_id
-                                ? {
-                                    ...r,
-                                    fs_type_id: e.target.value === "" ? 0 : Number(e.target.value),
-                                  }
-                                : r
-                            )
-                          )
-                        }
-                        className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                      >
-                        <option value="">Сонгох</option>
-                        <option value="1">Орлого 1</option>
-                        <option value="2">Орлого 2</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+          <ExpandableDataTable
+            data={importantRows}
+            columns={columns}
+            getRowId={(row) => row.risk_id}
+            renderExpanded={renderExpanded}
+          />
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Санхүүгийн тайлангийн түвшинд болон ач холбогдолтой биш эрсдэлүүдэд хэрэгжүүлэх горим,
             сорилын үр дүн үнэлэх
           </h2>
-          <table className="w-full border-collapse text-sm mb-2">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-gray-800">
-                <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  №
-                </th>
-                <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Тодорхойлсон эрсдэл
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Үр дагавар
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Мөнгөн дүн
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Стандартын заалт
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Хууль тогтоомжийн заалт
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Аудитын байгууллагын тогтоосон акт, албан шаардлага, зөвлөмжийн товч утга
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Гаргасан шийдэл
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Шийдлийн заалт
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Алдаа, зөрчлийн ангилал
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data
-                .filter((row) => !(row.risk_type_id === 2 && row.risk_is_important === 1))
-                .map((row, index) => (
-                  <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
-                    <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                      {index + 1}
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <textarea
-                        readOnly
-                        value={row.risk_content ?? ""}
-                        className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <textarea
-                        readOnly
-                        value={row.rf_effect || ""}
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
-                        readOnly
-                        type="number"
-                        value={row.rf_amount || ""}
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
-                        readOnly
-                        value={row.rf_standard_clause || ""}
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
-                        readOnly
-                        value={row.rf_law_clause || ""}
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <textarea
-                        value={row.fs_subject || ""}
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.map((r) =>
-                              r.risk_id === row.risk_id
-                                ? {
-                                    ...r,
-                                    fs_subject: e.target.value,
-                                  }
-                                : r
-                            )
-                          )
-                        }
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <select
-                        value={row.fs_solution_id ?? ""}
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.map((r) =>
-                              r.risk_id === row.risk_id
-                                ? {
-                                    ...r,
-                                    fs_solution_id:
-                                      e.target.value === "" ? 0 : Number(e.target.value),
-                                  }
-                                : r
-                            )
-                          )
-                        }
-                        className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                      >
-                        <option value="">Сонгох</option>
-                        <option value="1">Зөвлөмж</option>
-                        <option value="2">Албан шаардлага</option>
-                        <option value="3">Төлбөрийн акт</option>
-                        <option value="4">Хариуцлага тооцох</option>
-                        <option value="5">Хуулийн байгууллагад шилжүүлэх</option>
-                      </select>
-                    </td>
-
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <textarea
-                        value={row.fs_solution_clause || ""}
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.map((r) =>
-                              r.risk_id === row.risk_id
-                                ? {
-                                    ...r,
-                                    fs_solution_clause: e.target.value,
-                                  }
-                                : r
-                            )
-                          )
-                        }
-                        className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <select
-                        value={row.fs_type_id ?? ""}
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.map((r) =>
-                              r.risk_id === row.risk_id
-                                ? {
-                                    ...r,
-                                    fs_type_id: e.target.value === "" ? 0 : Number(e.target.value),
-                                  }
-                                : r
-                            )
-                          )
-                        }
-                        className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                      >
-                        <option value="">Сонгох</option>
-                        <option value="1">Орлого 1</option>
-                        <option value="2">Орлого 2</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+          <ExpandableDataTable
+            data={normalRows}
+            columns={columns}
+            getRowId={(row) => row.risk_id}
+            renderExpanded={renderExpanded}
+          />
 
           <FormActionSection auditId={auditId} formId={formListId} />
         </>
