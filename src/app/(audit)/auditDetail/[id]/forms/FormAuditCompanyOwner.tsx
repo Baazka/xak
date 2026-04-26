@@ -332,7 +332,7 @@ export default function FormAuditCompanyOwner({ auditId }: Props) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             aud_id: auditId,
-            op_raw_data,
+            operations: op_raw_data,
           }),
         }),
       ]);
