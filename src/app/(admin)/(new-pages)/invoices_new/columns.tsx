@@ -75,6 +75,7 @@ export const columns = (actions: ColumnActions): ColumnDef<InvoiceList>[] => [
                   custom: (
                     <DeleteConfirmDialog
                       loading={deleting}
+                      showText={true}
                       onConfirm={() => actions.onRemove(id)}
                     />
                   ),

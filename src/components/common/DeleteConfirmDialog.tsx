@@ -15,15 +15,24 @@ import { Trash2 } from "lucide-react";
 
 type Props = {
   loading?: boolean;
+  showText?: boolean;
   onConfirm: () => void;
 };
 
-export default function DeleteConfirmDialog({ loading, onConfirm }: Props) {
+export default function DeleteConfirmDialog({ loading, showText, onConfirm }: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <a className="flex w-full justify-center gap-3 text-red-500 cursor-pointer" href="#">
+        <a
+          className={`${
+            showText
+              ? "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-gray-50 text-red-500 focus:text-red-600 dark:hover:bg-white/5"
+              : "flex w-full justify-center gap-3 text-red-500 cursor-pointer"
+          }`}
+          href="#"
+        >
           <Trash2 className="h-4 w-4" />
+          {showText && "Устгах"}
         </a>
       </AlertDialogTrigger>
 

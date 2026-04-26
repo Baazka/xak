@@ -73,7 +73,11 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrgNew>[] => [
               {
                 key: "delete",
                 custom: (
-                  <DeleteConfirmDialog loading={deleting} onConfirm={() => actions.onRemove(id)} />
+                  <DeleteConfirmDialog
+                    loading={deleting}
+                    showText={true}
+                    onConfirm={() => actions.onRemove(id)}
+                  />
                 ),
               },
             ]
