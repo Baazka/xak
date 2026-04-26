@@ -14,7 +14,8 @@ export default function InvoiceCard(InvoiceCardProps: InvoiceCardProps) {
           <span className="text-sm text-gray-500 dark:text-gray-400">Дансны үлдэгдэл</span>
           <div className="mt-2 flex items-end gap-3">
             <h4 className="text-title-xs sm:text-title-sm font-bold text-gray-800 dark:text-white/90">
-              {InvoiceCardProps.balance.toLocaleString("en-US")} ₮
+              {InvoiceCardProps.balance ? InvoiceCardProps.balance.toLocaleString("en-US") : "0.00"}{" "}
+              ₮
             </h4>
           </div>
         </div>
@@ -22,7 +23,7 @@ export default function InvoiceCard(InvoiceCardProps: InvoiceCardProps) {
           <span className="text-sm text-gray-500 dark:text-gray-400">Нийт нэхэмжлэхийн тоо</span>
           <div className="mt-2 flex items-end gap-3">
             <h4 className="text-title-xs sm:text-title-sm font-bold text-gray-800 dark:text-white/90">
-              {InvoiceCardProps.invTotal}
+              {InvoiceCardProps.invTotal || "0"}
             </h4>
           </div>
         </div>
@@ -31,7 +32,7 @@ export default function InvoiceCard(InvoiceCardProps: InvoiceCardProps) {
             <span className="text-sm text-gray-500 dark:text-gray-400">Нийт аудитын эрх</span>
             <div className="mt-2 flex items-end gap-3">
               <h4 className="text-title-xs sm:text-title-sm font-bold text-gray-800 dark:text-white/90">
-                {InvoiceCardProps.audTotal}
+                {InvoiceCardProps.audTotal || "0"}
               </h4>
             </div>
           </div>
@@ -40,7 +41,7 @@ export default function InvoiceCard(InvoiceCardProps: InvoiceCardProps) {
           <span className="text-sm text-gray-500 dark:text-gray-400">Төлөгдөөгүй нэхэмжлэх</span>
           <div className="mt-2 flex items-end gap-3">
             <h4 className="text-title-xs sm:text-title-sm font-bold text-gray-800 dark:text-white/90">
-              {InvoiceCardProps.unpaidTotal}
+              {InvoiceCardProps.unpaidTotal || "0"}
             </h4>
           </div>
         </div>
@@ -48,7 +49,10 @@ export default function InvoiceCard(InvoiceCardProps: InvoiceCardProps) {
           <span className="text-sm text-gray-500 dark:text-gray-400">Төлөгдөөгүй дүн</span>
           <div className="mt-2 flex items-end gap-3">
             <h4 className="text-title-xs sm:text-title-sm font-bold text-gray-800 dark:text-white/90">
-              {InvoiceCardProps.unpaidAmount.toLocaleString("en-US")} ₮
+              {InvoiceCardProps.unpaidAmount
+                ? InvoiceCardProps.unpaidAmount.toLocaleString("en-US")
+                : "0.00"}{" "}
+              ₮
             </h4>
           </div>
         </div>

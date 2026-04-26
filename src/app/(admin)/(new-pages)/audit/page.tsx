@@ -46,7 +46,7 @@ export default function Audit() {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const sortBy = useMemo(() => sorting[0]?.id ?? "aud_id", [sorting]);
-  const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
+  const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "desc"), [sorting]);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     aud_year: false, // default hide

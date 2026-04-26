@@ -17,6 +17,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const audCompId = body.audCompId;
   const orgId = user.org_id;
   const userId = user.id;
+  const audFileId = body.aud_file_id;
 
   if (!audYear || !audName || !audBeginDate || !audEndDate || !audCompId) {
     return NextResponse.json({ error: "Мэдээлэл дутуу байна." }, { status: 422 });
@@ -56,10 +57,10 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     // 1st step: insert audit_data
     const audDataRes = await client.query(
-      `INSERT INTO audit_data (aud_code, aud_org_id, aud_comp_id, aud_type_id, aud_year, aud_name, aud_begin_date, aud_end_date, aud_status_id, created_by, created_date)
-           VALUES ($1, $2, $3, 1, $4, $5, $6, $7, 1, $8, current_timestamp)
+      `INSERT INTO audit_data (aud_code, aud_org_id, aud_comp_id, aud_type_id, aud_year, aud_name, aud_begin_date, aud_end_date, aud_status_id, aud_contract_file_id, created_by, created_date)
+           VALUES ($1, $2, $3, 1, $4, $5, $6, $7, 1, $8, $9, current_timestamp)
            RETURNING aud_id`,
-      [audCode, orgId, audCompId, audYear, audName, audBeginDate, audEndDate, userId]
+      [audCode, orgId, audCompId, audYear, audName, audBeginDate, audEndDate, audFileId, userId]
     );
     const NewAudId = audDataRes.rows[0].aud_id;
 

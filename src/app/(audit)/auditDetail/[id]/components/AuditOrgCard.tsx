@@ -22,7 +22,7 @@ export type HeaderData = {
   aud_status_id: number;
   aud_status_name: string;
   aud_status_code: string;
-  aud_file_id: number;
+  aud_contract_file_id: number;
 
   org_regno: string;
   org_legal_name: string;
@@ -84,7 +84,7 @@ export default function AuditOrgCard({
     aud_begin_date: "",
     aud_end_date: "",
     aud_code: "",
-    aud_file_id: null as number | null,
+    aud_contract_file_id: null as number | null,
   });
 
   const [teamStepValues, setTeamStepValues] = useState<StepTwoData>({
@@ -117,6 +117,7 @@ export default function AuditOrgCard({
 
       const data = await res.json();
       const dataUser = await resUser.json();
+      console.log("team data ------>", data);
 
       const userList: UserItem[] = dataUser.users ?? [];
 
@@ -142,7 +143,7 @@ export default function AuditOrgCard({
               aud_year: Number(basicForm.aud_year),
               aud_begin_date: basicForm.aud_begin_date || null,
               aud_end_date: basicForm.aud_end_date || null,
-              aud_file_id: basicForm.aud_file_id,
+              aud_contract_file_id: basicForm.aud_contract_file_id,
             }
           : {
               type: "team",
@@ -206,7 +207,7 @@ export default function AuditOrgCard({
       aud_begin_date: headerData.aud_begin_date ?? "",
       aud_end_date: headerData.aud_end_date ?? "",
       aud_code: headerData.aud_code ?? "",
-      aud_file_id: headerData.aud_file_id ?? null,
+      aud_contract_file_id: headerData.aud_contract_file_id ?? null,
     });
   }, [headerData]);
 
@@ -376,7 +377,7 @@ export default function AuditOrgCard({
                   <div className="grid grid-cols-[130px_1fr] items-start">
                     <p className="text-gray-500 dark:text-gray-400">Аудитын гэрээ:</p>
                     <a
-                      href={`/api/files/download/${headerData?.aud_file_id}`}
+                      href={`/api/files/download/${headerData?.aud_contract_file_id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline dark:text-blue-400"

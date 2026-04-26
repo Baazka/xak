@@ -5,6 +5,7 @@ import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Delete, Edit } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   auditId: number;
@@ -60,6 +61,7 @@ export default function AuditRisk({ auditId, formListId }: Props) {
   const [dialogSaving, setDialogSaving] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
+  const { toast } = useToast();
 
   const resetDialog = () => {
     setDraftRow(null);
@@ -130,6 +132,7 @@ export default function AuditRisk({ auditId, formListId }: Props) {
       resetDialog();
       setOpenDialog(false);
       await loadTableData();
+      toast("success", "Амжилттай хадгалагдлаа");
     } catch (error) {
       console.error(error);
 
@@ -169,6 +172,7 @@ export default function AuditRisk({ auditId, formListId }: Props) {
       }
 
       await loadTableData();
+      toast("success", "Амжилттай устгагдлаа");
     } catch (error) {
       console.error(error);
       alert("Мөр устгахад алдаа гарлаа");

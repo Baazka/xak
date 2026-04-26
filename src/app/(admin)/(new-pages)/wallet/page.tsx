@@ -71,7 +71,7 @@ export default function WalletPage() {
 
       setData(json.data);
       setTotal(json.total);
-      setBalance(json.balance.toLocaleString("en-US"));
+      if (json.balance) setBalance(json.balance.toLocaleString("en-US"));
     } catch (err: any) {
       toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
     } finally {

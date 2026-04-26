@@ -552,7 +552,7 @@ export default function Form205({ auditId, formListId }: Props) {
                   <td className="border border-gray-200 bg-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
                   <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     <select
-                      value={supVal}
+                      value={supVal || ""}
                       onChange={(e) => setSupVal(e.target.value)}
                       className="rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                     >

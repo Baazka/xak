@@ -23,7 +23,7 @@ export default function QWalletCards({ balance, handledepo }: Props) {
 
               <div className="flex items-end justify-between mt-3">
                 <h4 className="font-bold text-gray-800 text-title-sm dark:text-white/90">
-                  {balance} ₮
+                  {balance || "0.00"} ₮
                 </h4>
               </div>
             </div>

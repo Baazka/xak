@@ -34,7 +34,8 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         ao.org_head_email,
         ao.org_acc_name,
         ao.org_acc_phone,
-        ao.org_acc_email
+        ao.org_acc_email,
+        a.aud_contract_file_id
         from audit_data a
         join ref_audit_status s on a.aud_status_id = s.status_id
         join audit_organization ao on a.aud_id = ao.aud_id
@@ -56,7 +57,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         join audit_team t on a.aud_id = t.team_aud_id
         join reg_users_new u on t.team_user_id = u.user_id
         join ref_user_role r on t.team_role_id = r.role_id
-        where a.aud_id = $1`,
+        where a.aud_id = $1 and t.is_active = 1`,
         [audId]
       ),
     ]);

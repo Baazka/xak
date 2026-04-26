@@ -57,21 +57,27 @@ export default function InviteOtpModal({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-1000">
       <div className="bg-white w-full max-w-md rounded shadow p-6">
-        <h2 className="text-lg font-semibold mb-4">Invite / OTP</h2>
+        <h2 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-700">
+          Invite / OTP
+        </h2>
 
         {error && <div className="text-red-600 text-sm mb-3">{error}</div>}
 
-        <div className="mb-3">
+        <div className="mb-3 text-gray-700 dark:text-gray-700">
           <label className="text-sm">Имэйл</label>
           <input
-            className="border p-2 w-full"
+            className="w-full rounded border border-gray-700 bg-white px-3 py-2 text-gray-700 outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-white dark:text-gray-700 dark:focus:border-blue-400"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
         <div className="flex justify-end gap-3">
-          <button className="px-4 py-2 border rounded" onClick={onClose} disabled={loading}>
+          <button
+            className="px-4 py-2 border rounded bg-blue-600 text-white"
+            onClick={onClose}
+            disabled={loading}
+          >
             Болих
           </button>
           <button

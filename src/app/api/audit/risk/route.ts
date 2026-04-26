@@ -44,10 +44,11 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         join ref_risk_source rs on r.risk_source_id = rs.source_id
         join ref_risk_status st on r.risk_status_id = st.status_id
         join ref_risk_type rt on r.risk_type_id = rt.type_id
-        join ref_risk_group rg on r.risk_group_id = rg.group_id
-        join ref_risk_sub_group rsg on r.risk_sub_group_id = rsg.sub_group_id
-        join ref_risk_cd_type rcd on r.risk_cd_type_id = rcd.cd_type_id
-        where r.risk_aud_id = $1 ${sourceFilter}
+        left join ref_risk_group rg on r.risk_group_id = rg.group_id
+        left join ref_risk_sub_group rsg on r.risk_sub_group_id = rsg.sub_group_id
+        left join ref_risk_cd_type rcd on r.risk_cd_type_id = rcd.cd_type_id
+        where r.risk_status_id != 99 and r.risk_aud_id = $1 ${sourceFilter}
+        order by r.risk_id desc
     `,
       [audId]
     );
@@ -78,17 +79,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const riskCdTypeId = body.risk_cd_type_id;
   const riskContent = body.risk_content;
 
-  if (
-    !riskAudId ||
-    !riskSourceId ||
-    !riskDate ||
-    !riskStatusId ||
-    !riskTypeId ||
-    !riskGroupId ||
-    !riskSubGroupId ||
-    !riskCdTypeId ||
-    !riskContent
-  ) {
+  if (!riskAudId || !riskSourceId || !riskDate || !riskStatusId || !riskTypeId || !riskContent) {
     return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
   }
 
@@ -101,24 +92,15 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
       await client.query(
         `
           UPDATE audit_risks
-          set risk_content = $2,
-              risk_type_id = $3,
-              risk_group_id = $4,
-              risk_sub_group_id = $5,
-              risk_cd_type_id = $6,
-              risk_status_id = $7
-          where risk_id = $8
+          set risk_content = $1,
+              risk_type_id = $2,
+              risk_group_id = $3,
+              risk_sub_group_id = $4,
+              risk_cd_type_id = $5,
+              risk_status_id = $6
+          where risk_id = $7
         `,
-        [
-          riskContent,
-          riskTypeId,
-          riskGroupId,
-          riskSubGroupId,
-          riskCdTypeId,
-          riskStatusId,
-          riskContent,
-          riskId,
-        ]
+        [riskContent, riskTypeId, riskGroupId, riskSubGroupId, riskCdTypeId, riskStatusId, riskId]
       );
       // Insert audit_risk_actions
       await client.query(
@@ -154,6 +136,49 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     await client.query("COMMIT");
     return NextResponse.json({ message: "Risk saved successfully" }, { status: 201 });
+  } catch (err: any) {
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("Audit risk update error:", err);
+
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } finally {
+    client.release();
+  }
+});
+
+export const DELETE = withAuth(async (req: NextRequest, user: JwtPayload) => {
+  //requirePermission(user.permissions, ["user.create"]);
+
+  const body = await req.json();
+  const userId = user.id;
+  // Check Insert or Update
+  const riskId = body.risk_id;
+
+  if (!riskId) {
+    return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
+  }
+
+  const client = await db.connect();
+  try {
+    await client.query("BEGIN");
+
+    // SOFT DELETE
+    await client.query(
+      `
+          UPDATE audit_risks
+          set risk_status_id = 99
+          where risk_id = $1
+        `,
+      [riskId]
+    );
+    // Insert audit_risk_actions
+    await client.query(
+      `INSERT INTO audit_risk_actions (ra_risk_id, ra_status_id, ra_date, ra_user_id) VALUES ($1, 99, current_timestamp, $2)`,
+      [riskId, userId]
+    );
+
+    await client.query("COMMIT");
+    return NextResponse.json({ message: "Risk deleted successfully" }, { status: 201 });
   } catch (err: any) {
     await client.query("ROLLBACK").catch(() => {});
     console.error("Audit risk update error:", err);
