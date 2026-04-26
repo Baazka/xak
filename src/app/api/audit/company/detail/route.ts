@@ -64,7 +64,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     det_lastname: string;
     det_firstname: string;
     det_date: Date;
-  }[] = body.details; // expect array of {det_id, det_type_id, det_category, det_country, det_lastname, det_firstname, det_date}
+  }[] = body.detail_raw_data; // expect array of {det_id, det_type_id, det_category, det_country, det_lastname, det_firstname, det_date}
 
   try {
     for (const detailData of detailRawData) {
