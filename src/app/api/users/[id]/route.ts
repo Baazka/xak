@@ -4,6 +4,10 @@ import db from "@/lib/db";
 import { withAuth } from "@/lib/withAuth";
 import { requirePermission } from "@/lib/requirePermission";
 import { JwtPayload } from "@/lib/jwtPayload";
+import bcrypt from "bcryptjs";
+import { sendOtpEmail } from "@/lib/mailer";
+
+const genOtp6 = () => String(Math.floor(100000 + Math.random() * 900000));
 
 /* GET → edit */
 export const GET = withAuth<{ id: string }>(async (req: NextRequest, user: JwtPayload, context) => {
@@ -32,8 +36,15 @@ export const PUT = withAuth<{ id: string }>(async (req: NextRequest, user: JwtPa
   //requirePermission(user.permissions, ["user.update"]);
   const updatedUser = user.id;
   const { id } = await context.params;
-  const { user_register_no, user_firstname, user_phone, user_email, role_id, is_role_change } =
-    await req.json();
+  const {
+    user_register_no,
+    user_firstname,
+    user_phone,
+    user_email,
+    role_id,
+    is_role_change,
+    is_mail_change,
+  } = await req.json();
 
   const result = await db.query(
     `
@@ -95,6 +106,30 @@ export const PUT = withAuth<{ id: string }>(async (req: NextRequest, user: JwtPa
     } finally {
       client.release();
     }
+  }
+
+  if (is_mail_change === 1) {
+    // OTP gen
+    const otp = genOtp6();
+    const expiresMinutes = 15;
+    const hashpw = bcrypt.hashSync(otp, bcrypt.genSaltSync(10));
+
+    const client = await db.connect();
+
+    await client.query(
+      `
+    UPDATE reg_users_new
+    SET reset_token_hash=$1,
+        reset_token_expire=current_timestamp + ($2 || ' minutes')::interval,
+        user_otp = $3
+    WHERE user_id=$4
+    `,
+      [hashpw, String(expiresMinutes), otp, id]
+    );
+
+    client.release();
+
+    await sendOtpEmail(user_email, otp, expiresMinutes);
   }
 
   return NextResponse.json({ success: true });

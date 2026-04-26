@@ -9,8 +9,9 @@ const ReactQuill = dynamic(() => import("react-quill-new"), {
 
 type QuillEditorProps = {
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   placeholder?: string;
+  readonly?: boolean;
 };
 
 const modules = {
@@ -29,6 +30,7 @@ export default function QuillEditor({
   value,
   onChange,
   placeholder = "Дэлгэрэнгүй бичих...",
+  readonly,
 }: QuillEditorProps) {
   return (
     <div className="quill-wrapper rounded-xl border border-gray-300 bg-white overflow-hidden">
@@ -39,6 +41,7 @@ export default function QuillEditor({
         modules={modules}
         formats={formats}
         placeholder={placeholder}
+        readOnly={readonly}
       />
     </div>
   );

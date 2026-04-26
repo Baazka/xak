@@ -126,6 +126,22 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
         setError(data?.error || data?.message || "Хадгалахад алдаа гарлаа");
         return;
       }
+      // CREATE NOTIFICATION
+      const notiRes = await fetchWithAuth("/api/notifications/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          noti_type_id: 3,
+          title: "Тусламж " + taskTitle,
+          content: taskContent,
+          target_type_code: "ROLE",
+          roleId: 2,
+        }),
+      });
+      if (!notiRes.ok) {
+        setError(data?.error || data?.message || "Мэдэгдэл үүсгэхэд алдаа гарлаа");
+        return;
+      }
 
       onOpenChange(false);
       onSaved?.();

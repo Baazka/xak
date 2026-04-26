@@ -1,0 +1,328 @@
+"use client";
+
+import * as React from "react";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { formatDate } from "@/lib/formatDate";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
+import { useParams, useRouter } from "next/navigation";
+import QuillEditor from "@/components/editor/QuillEditor";
+import { useToast } from "@/context/ToastContext";
+
+type Props = {
+  taskId: number;
+};
+
+type TaskDetail = {
+  task_id: number;
+  task_org_id?: number;
+  org_legal_name?: string;
+  user_role_name?: string;
+  user_firstname?: string;
+  user_email?: string;
+  user_phone?: string;
+  task_code?: string;
+  task_date?: string;
+  task_status_id?: number;
+  task_status_name?: string;
+  task_priority_id?: number;
+  task_priority_name?: string;
+  task_title?: string;
+  task_content?: string;
+  task_audit_id?: number;
+  task_form_id?: number;
+  task_created_by?: number;
+};
+
+type TaskComment = {
+  comment_id: number;
+  comment_task_id: number;
+  comment_date: string;
+  created_by: number;
+  user_firstname: string;
+  user_phone: string;
+  user_email: string;
+  comment_text: string;
+};
+
+export default function TaskDetailPage() {
+  const [data, setData] = React.useState<TaskDetail | null>(null);
+  const [taskComment, setTaskComment] = React.useState<TaskComment[]>([]);
+  const [metaLoading, setMetaLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const { id } = useParams();
+
+  const [commentText, setCommentText] = React.useState("");
+  const [saving, setSaving] = React.useState(false);
+  const [deletingId, setDeletingId] = React.useState<number | null>(null);
+  const { toast } = useToast();
+
+  const task_id = id;
+
+  const loadData = async () => {
+    try {
+      setMetaLoading(true);
+
+      const res = await fetchWithAuth(`/api/helpdesk/${task_id}`, {
+        method: "GET",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to load data");
+      }
+
+      const datares = await res.json();
+
+      setData(datares.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setMetaLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    loadData();
+    loadTaskCommentData();
+  }, [id]);
+
+  const loadTaskCommentData = async () => {
+    try {
+      setLoading(true);
+
+      const resComment = await fetchWithAuth(`/api/helpdesk/comments?task_id=${task_id}`);
+      const commentResult = await resComment.json();
+
+      setTaskComment(Array.isArray(commentResult?.taskComment) ? commentResult.taskComment : []);
+    } catch (err) {
+      console.error(err);
+      setTaskComment([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (commentId: number) => {
+    const ok = window.confirm("Энэ тайлбарыг устгах уу?");
+    if (!ok) return;
+
+    try {
+      setDeletingId(commentId);
+
+      const res = await fetchWithAuth(`/api/helpdesk/comments`, {
+        method: "DELETE",
+        body: JSON.stringify({ comment_id: commentId }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Устгахад алдаа гарлаа");
+      }
+
+      setTaskComment((prev) => prev.filter((item) => item.comment_id !== commentId));
+    } catch (err) {
+      console.error(err);
+      alert("Устгахад алдаа гарлаа");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleSave = async () => {
+    const text = commentText.trim();
+
+    if (!text) {
+      toast("error", "Тайлбар оруулна уу");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      const res = await fetchWithAuth(`/api/helpdesk/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          comment_task_id: task_id,
+          comment_id: null,
+          comment_text: commentText,
+          comment_created_by: data?.task_created_by,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Хадгалахад алдаа гарлаа");
+      }
+
+      toast("success", "Тайлбар нэмэгдлээ");
+
+      setCommentText("");
+      await loadTaskCommentData();
+    } catch (err) {
+      console.error(err);
+      alert("Хадгалахад алдаа гарлаа");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="p-2">
+        <PageBreadcrumb pageTitle="Тусламжийн дэлгэрэнгүй" />
+
+        <div className="mt-4 mb-4">
+          <Link href="/helpdesk">
+            <Button variant="outline">Буцах</Button>
+          </Link>
+        </div>
+
+        {!data ? (
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+            <div className="text-sm text-red-500">Мэдээлэл олдсонгүй.</div>
+          </div>
+        ) : (
+          <>
+            <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+              <div className="border-b border-gray-200 mb-3">
+                <div>
+                  <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                    Код: {data.task_code}
+                  </h1>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 border-b border-gray-200 pb-4 dark:border-gray-800">
+                <div>
+                  <label className="mb-1 block text-sm">Аудитын байгууллага:</label>
+                  <input
+                    className="w-full rounded border px-3 py-2 bg-gray-700/10"
+                    value={data.org_legal_name}
+                    disabled
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm">Эрхийн түвшин:</label>
+                  <input
+                    className="w-full rounded border px-3 py-2 bg-gray-700/10"
+                    value={data.user_role_name}
+                    disabled
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm">Хэрэглэгчийн нэр:</label>
+                  <input
+                    className="w-full rounded border px-3 py-2 bg-gray-700/10"
+                    value={data.user_firstname}
+                    disabled
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm">Хэрэглэгчийн утас, мэйл хаяг:</label>
+                  <input
+                    className="w-full rounded border px-3 py-2 bg-gray-700/10"
+                    value={data.user_phone + " | " + data.user_email}
+                    disabled
+                  />
+                </div>
+              </div>
+              <div className="mt-4 grid gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm">Агуулга:</label>
+                    <input
+                      className="w-full rounded border px-3 py-2"
+                      value={data.task_title}
+                      disabled
+                    />
+                  </div>
+                  <div className="">
+                    <div>
+                      <label className="mb-1 block text-sm">Асуудлын түвшин:</label>
+                      <input
+                        className="w-full rounded border px-3 py-2"
+                        value={data.task_priority_name}
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm">Тайлбар:</label>
+
+                  <QuillEditor value={data.task_content ?? ""} readonly={true} />
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+              <div className="mb-4 flex items-center gap-3">
+                <h3 className="shrink-0 text-gray-800 dark:text-gray-100 text-sm font-semibold">
+                  Тайлбар
+                </h3>
+                <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+              </div>
+              {taskComment.length === 0 ? (
+                <div className="rounded border border-dashed border-gray-300 bg-gray-50 px-3 py-4 text-center text-xs text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400">
+                  Мэдээлэл алга
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  {taskComment.map((item) => (
+                    <div
+                      key={item.comment_id}
+                      className="group rounded border border-gray-200 bg-white px-3 py-2 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                    >
+                      <div className="flex items-center justify-between text-[12px]">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-800 dark:text-gray-100">
+                            {item.user_firstname}
+                          </span>
+                          <span className="text-gray-400 dark:text-gray-500">
+                            {item.comment_date}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(item.comment_id)}
+                          disabled={deletingId === item.comment_id}
+                          className="opacity-0 text-red-500 transition group-hover:opacity-100 hover:text-red-600 disabled:opacity-50 dark:text-red-400 dark:hover:text-red-300"
+                        >
+                          {deletingId === item.comment_id ? "..." : "✕"}
+                        </button>
+                      </div>
+
+                      <div className="mt-1 text-sm leading-snug text-gray-700 dark:text-gray-300">
+                        {item.comment_text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="mb-3 mt-3 flex items-center gap-2">
+                <textarea
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  placeholder="Тайлбар..."
+                  className="flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-blue-400"
+                />
+
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="h-9 shrink-0 rounded bg-blue-600 px-3 text-xs text-white hover:bg-blue-700 disabled:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+                >
+                  {saving ? "..." : "Тайлбар нэмэх"}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
+}

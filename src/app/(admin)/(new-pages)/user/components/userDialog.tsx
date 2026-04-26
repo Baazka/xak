@@ -119,6 +119,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
       if (isEdit) {
         const id = initialUser?.user_id;
         const isRoleChange = userRoleId === initialUser?.role_id ? 0 : 1;
+        const isMailChange = user_email === initialUser?.user_email ? 0 : 1;
         if (!id) {
           setError("Засах хэрэглэгч сонгогдоогүй байна.");
           return;
@@ -135,6 +136,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
             user_email: em,
             role_id: userRoleId,
             is_role_change: isRoleChange,
+            is_mail_change: isMailChange,
           }),
         });
       } else {

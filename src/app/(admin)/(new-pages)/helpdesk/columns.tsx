@@ -5,6 +5,7 @@ import RowActionsMenu from "@/components/tables/RowActionsMenu";
 import { Pencil, Mail } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import Badge from "@/components/ui/badge/Badge";
+import Link from "next/link";
 
 type ColumnActions = {
   page: number;
@@ -26,7 +27,18 @@ export const columnsAdmin = (actions: ColumnActions): ColumnDef<TaskForAdmin>[] 
   },
   { accessorKey: "org_register_no", header: "ХАК регистр", enableHiding: false },
   { accessorKey: "org_legal_name", header: "ХАК нэр", enableHiding: false },
-  { accessorKey: "task_code", header: "Тусламжийн код", enableHiding: false },
+  {
+    id: "view",
+    header: "Тусламжийн код",
+    cell: ({ row }) => {
+      return (
+        <Link href={`/helpdesk/${row.original.task_id}`}>
+          <p className="text-blue-600 hover:underline">{row.original.task_code}</p>
+        </Link>
+      );
+    },
+    enableHiding: false,
+  },
   { accessorKey: "task_date", header: "Огноо" },
   { accessorKey: "task_status_label", header: "Төлөв" },
   {
@@ -68,7 +80,18 @@ export const columns = (actions: ColumnActions): ColumnDef<Task>[] => [
     enableSorting: false,
     enableHiding: false,
   },
-  { accessorKey: "task_code", header: "Тусламжийн код", enableHiding: false },
+  {
+    id: "view",
+    header: "Тусламжийн код",
+    cell: ({ row }) => {
+      return (
+        <Link href={`/helpdesk/${row.original.task_id}`}>
+          <p className="text-blue-600 hover:underline">{row.original.task_code}</p>
+        </Link>
+      );
+    },
+    enableHiding: false,
+  },
   { accessorKey: "task_date", header: "Огноо" },
   { accessorKey: "task_status_label", header: "Төлөв" },
   {

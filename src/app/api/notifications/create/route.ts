@@ -141,17 +141,17 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         recipientUserIds: userIds,
       });
     } else if (targetTypeCode === "ROLE") {
-      const roleUsersRes = await client.query(
-        `
-    SELECT DISTINCT ur.role_id, ur.user_id
-    FROM reg_user_roles_new ur
-    JOIN reg_users_new u ON u.user_id = ur.user_id
-    WHERE ur.is_active = 1
-      AND u.user_status_id = 1
-      AND ur.role_id = $1
-    `,
-        [roleId]
-      );
+      let qry = `SELECT DISTINCT ur.role_id, ur.user_id
+        FROM reg_user_roles_new ur
+        JOIN reg_users_new u ON u.user_id = ur.user_id
+        WHERE ur.is_active = 1
+          AND u.user_status_id = 1`;
+      if (roleId === 2) {
+        qry += ` AND ur.role_id in (1, 2)`;
+      } else {
+        qry += ` AND ur.role_id = ${roleId}`;
+      }
+      const roleUsersRes = await client.query(qry);
 
       const recipientUserIds = [
         ...new Set(
