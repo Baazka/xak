@@ -118,9 +118,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     // UPDATE AUDIT_CORE_INFO
     for (const info of coreInfoData) {
       const { info_id, info_ind_id, info_ind_value } = info;
-      if (!info_ind_value) {
-        return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 401 });
-      }
+
       await client.query(
         `
           UPDATE audit_core_info
