@@ -46,7 +46,7 @@ export default function User() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [reloadKey, setReloadKey] = useState(0);
 
-  const sortBy = useMemo(() => sorting[0]?.id ?? "id", [sorting]);
+  const sortBy = useMemo(() => sorting[0]?.id ?? "user_id", [sorting]);
   const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     // default hide

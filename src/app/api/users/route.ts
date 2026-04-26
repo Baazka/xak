@@ -68,7 +68,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     JOIN reg_user_roles_new ur on ru.user_id = ur.user_id and ur.is_active = 1
     JOIN ref_user_role rur on ur.role_id = rur.role_id 
     ${whereClause}
-    ORDER BY ${sortBy} ${sortOrder}
+    ORDER BY ${sortBy} DESC
     LIMIT $${params.length + 1}
     OFFSET $${params.length + 2}
   `;

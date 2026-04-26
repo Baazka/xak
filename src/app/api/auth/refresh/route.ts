@@ -86,16 +86,16 @@ export async function POST() {
     JOIN ref_user_level ul on ru.user_level_id = ul.level_id
     JOIN reg_user_roles_new ur on ru.user_id = ur.user_id and ur.is_active = 1
     JOIN ref_user_role rur on ur.role_id = rur.role_id 
-    WHERE user_id=$1`,
+    WHERE ru.user_id=$1`,
     [session.user_id]
   );
   const user = users[0];
 
   const { rows: roles } = await db.query(
     `
-    SELECT r.id, r.code
+    SELECT r.role_id, r.role_code, r.role_label, r.role_text, r.role_level
     FROM reg_user_roles_new ur
-    JOIN ref_user_role r ON r.id = ur.role_id
+    JOIN ref_user_role r ON r.role_id = ur.role_id
     WHERE ur.user_id = $1
     `,
     [user.id]

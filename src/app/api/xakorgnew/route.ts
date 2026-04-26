@@ -28,7 +28,7 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
 
     const sortByRaw = sp.get("sortBy") || "org_id";
     const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "org_id";
-    const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
+    const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "asc" ? "ASC" : "DESC";
 
     const offset = (page - 1) * limit;
 
@@ -51,7 +51,7 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
         to_char(created_date, 'YYYY.MM.DD') as created_date
       FROM reg_aud_org
       ${whereClause}
-      ORDER BY ${sortBy} ${sortOrder}
+      ORDER BY ${sortBy} DESC
       LIMIT $${params.length + 1}
       OFFSET $${params.length + 2}
     `;
