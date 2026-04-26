@@ -123,9 +123,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     // UPDATE AUDIT_FINSTATES
     for (const fs of finStateData) {
       const { fs_id, fs_ind_id, fs_val1, fs_val2 } = fs;
-      if (!fs_val1 || !fs_val2) {
-        return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 401 });
-      }
+
       await client.query(
         `
           UPDATE audit_finstates
