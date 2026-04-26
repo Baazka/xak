@@ -28,7 +28,7 @@ export async function GET(req: NextRequest, { params }: RouteContext<"/api/files
     }
 
     const normalizedPath = String(file.file_path).replace(/^\/+/, "");
-    const absPath = path.join(process.cwd(), normalizedPath);
+    const absPath = path.join(process.cwd(), normalizedPath, file.file_enc_name);
 
     const fileBuffer = await fs.readFile(absPath);
 
