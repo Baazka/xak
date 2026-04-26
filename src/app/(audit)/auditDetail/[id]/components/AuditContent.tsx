@@ -1,5 +1,8 @@
 "use client";
 
+import type { FormItem } from "../AuditClient";
+import FormAuditCompany from "../forms/FormAuditCompany";
+import FormAuditCompanyOwner from "../forms/FormAuditCompanyOwner";
 import Form104 from "../forms/Form104";
 import Form105 from "../forms/Form105";
 import Form106 from "../forms/Form106";
@@ -7,15 +10,20 @@ import Form201 from "../forms/Form201";
 import Form202 from "../forms/Form202";
 import Form203 from "../forms/Form203";
 import Form204 from "../forms/Form204";
-import FormAuditCompany from "../forms/FormAuditCompany";
-import FormAuditCompanyOwner from "../forms/FormAuditCompanyOwner";
-import type { FormItem } from "../AuditClient";
 import Form205 from "../forms/Form205";
 import Form206 from "../forms/Form206";
 import Form207 from "../forms/Form207";
 import Form208 from "../forms/Form208";
 import Form209 from "../forms/Form209";
+import Form301 from "../forms/Form301";
 import Form302 from "../forms/Form302";
+import Form303 from "../forms/Form303";
+import Form304 from "../forms/Form304";
+import Form305 from "../forms/Form305";
+import Form306 from "../forms/Form306";
+import Form307 from "../forms/Form307";
+import Form308 from "../forms/Form308";
+import Form401 from "../forms/Form401";
 
 type AuditContentProps = {
   activeForm: FormItem | null;
@@ -75,6 +83,30 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
           break;
         case "302":
           content = <Form302 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "301":
+          content = <Form301 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "303":
+          content = <Form303 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "304":
+          content = <Form304 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "305":
+          content = <Form305 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "306":
+          content = <Form306 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "307":
+          content = <Form307 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "308":
+          content = <Form308 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "401":
+          content = <Form401 auditId={auditData.auditId} formListId={active.form_id} />;
           break;
         default:
           content = <div className="text-gray-700 dark:text-gray-300">Маягт олдсонгүй</div>;

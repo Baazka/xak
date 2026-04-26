@@ -34,7 +34,7 @@ type TableRow = {
   risk_is_important: number;
 };
 
-type RMainType = {
+export type RMainType = {
   main_type_id: number;
   main_type_label: string;
 };

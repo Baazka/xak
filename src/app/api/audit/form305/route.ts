@@ -44,7 +44,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         SELECT r.risk_id, $1 FROM audit_risks r 
         JOIN audit_risk_important i ON r.risk_id = i.risk_id
         JOIN audit_risk_result rr ON r.risk_id = rr.risk_id
-        WHERE r.risk_aud_id = $2 and rr.res_fault_level in (1,2) NOT EXISTS (SELECT rf.risk_id FROM audit_risk_fault rf WHERE rf.risk_id = r.risk_id)`,
+        WHERE r.risk_aud_id = $2 and rr.res_fault_level in (1,2) AND NOT EXISTS (SELECT rf.risk_id FROM audit_risk_fault rf WHERE rf.risk_id = r.risk_id)`,
       [formId, audId]
     );
 
@@ -97,7 +97,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         from audit_risks r
         join audit_risk_fault rf on r.risk_id = rf.risk_id
         join audit_risk_result res on r.risk_id = res.risk_id
-        join audit_risk_important ri on rr.risk_id = ri.risk_id
+        join audit_risk_important ri on r.risk_id = ri.risk_id
         join ref_risk_type t on r.risk_type_id = t.type_id
         left join ref_risk_group g on r.risk_group_id = g.group_id
         left join ref_risk_sub_group sg on r.risk_sub_group_id = sg.sub_group_id
