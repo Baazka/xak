@@ -111,13 +111,14 @@ export default function AuditComment({ formId }: Props) {
 
   return (
     <>
-      {" "}
       {loading ? (
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <div className="mt-6">
           <div className="mb-4 flex items-center gap-3">
-            <h3 className="shrink-0 text-gray-800 dark:text-gray-100">Хяналт</h3>
+            <h3 className="shrink-0 text-gray-800 dark:text-gray-100 text-sm font-semibold">
+              Хяналт
+            </h3>
             <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
           </div>
 

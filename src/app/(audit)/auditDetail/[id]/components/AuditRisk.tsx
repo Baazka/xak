@@ -227,7 +227,7 @@ export default function AuditRisk({ auditId, formListId }: Props) {
                     <th className="border border-gray-200 px-3 py-2 text-left dark:border-gray-700">
                       Огноо
                     </th>
-                    <th className="w-24 border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                    <th className="w-24 border border-gray-200 px-3 py-2 text-center dark:border-gray-700 no-print">
                       Үйлдэл
                     </th>
                   </tr>
@@ -267,7 +267,7 @@ export default function AuditRisk({ auditId, formListId }: Props) {
                         <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
                           {row.risk_date}
                         </td>
-                        <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
+                        <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700 no-print">
                           <div className="flex items-center justify-center">
                             <a
                               className="flex w-full cursor-pointer justify-center text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300"

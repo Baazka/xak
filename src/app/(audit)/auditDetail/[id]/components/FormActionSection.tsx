@@ -104,7 +104,9 @@ export default function FormActionSection({ auditId, formId }: Props) {
       ) : (
         <div className="mt-4 space-y-4">
           <div>
-            <div className="mb-2 font-medium text-gray-800 dark:text-gray-100">Тайлбар</div>
+            <div className="mb-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
+              Тайлбар
+            </div>
 
             <textarea
               className="mt-1 min-h-[120px] w-full rounded border border-gray-300 bg-white p-2 text-gray-900 outline-none focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400"

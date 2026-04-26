@@ -39,7 +39,7 @@ export default function HelpDeskProvider({ children }: { children: React.ReactNo
     <HelpDeskContext.Provider value={{ openHelp, closeHelp }}>
       {children}
 
-      <button
+      {/* <button
         type="button"
         onClick={() => openHelp()}
         className="
@@ -50,7 +50,7 @@ export default function HelpDeskProvider({ children }: { children: React.ReactNo
         title="Тусламж"
       >
         <MessageCircle className="w-5 h-5" />
-      </button>
+      </button> */}
 
       <HelpdeskDialog open={open} onOpenChange={setOpen} audId={audId} formId={formId} />
     </HelpDeskContext.Provider>

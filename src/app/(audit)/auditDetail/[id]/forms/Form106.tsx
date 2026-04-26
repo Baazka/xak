@@ -5,10 +5,11 @@ import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
-import { Delete, DeleteIcon, Edit } from "lucide-react";
+import { Delete, DeleteIcon, Edit, MessageCircle, Printer } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import TimePicker from "@/components/form/TimePicker";
 import { usePrint } from "@/hooks/usePrint";
+import { useHelpDesk } from "@/context/HelpDeskContext";
 
 type Props = {
   auditId: number;
@@ -40,12 +41,13 @@ export default function Form106({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [meetingFiles, setMeetingFiles] = useState<UploadedFileItem[]>([]);
   const [originalMeetingFileId, setOriginalMeetingFileId] = useState<number | null>(null);
+  const { openHelp } = useHelpDesk();
+  const { handlePrint } = usePrint();
 
   const [loading, setLoading] = useState(true);
   const [dialogSaving, setDialogSaving] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
-  const { handlePrint } = usePrint();
 
   const resetDialog = () => {
     setDraftRow(null);
@@ -221,47 +223,52 @@ export default function Form106({ auditId, formListId }: Props) {
     }
   };
 
-  if (loading) {
-    return <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>;
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        <div className="flex items-center justify-between border-b bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-800">
-          <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Уулзалтын мэдээлэл
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              resetDialog();
-              setDraftRow({
-                meeting_id: 0,
-                meeting_type_id: 0,
-                meeting_date: "",
-                meeting_time: "",
-                meeting_place: "",
-                meeting_scope: "",
-                meeting_file_id: null,
-              });
-              setOriginalMeetingFileId(null);
-              setOpenDialog(true);
-            }}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            + Нэмэх
-          </button>
-          <button
-            type="button"
-            onClick={() => handlePrint("portrait")}
-            className="rounded-md bg-slate-700 px-4 py-2 text-white hover:bg-slate-800"
-          >
-            Хэвлэх
-          </button>
-        </div>
+    <>
+      {loading ? (
+        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+      ) : (
+        <>
+          <div className="flex items-center justify-end gap-2 mb-2">
+            <button
+              type="button"
+              onClick={() => {
+                resetDialog();
+                setDraftRow({
+                  meeting_id: 0,
+                  meeting_type_id: 0,
+                  meeting_date: "",
+                  meeting_time: "",
+                  meeting_place: "",
+                  meeting_scope: "",
+                  meeting_file_id: null,
+                });
+                setOriginalMeetingFileId(null);
+                setOpenDialog(true);
+              }}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              + Нэмэх
+            </button>
+            <button
+              type="button"
+              onClick={() => openHelp({ audId: auditId, formId: formListId })}
+              className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+              title="Тусламж"
+            >
+              <MessageCircle className="w-4 h-4" />
+            </button>
 
-        <div className="overflow-x-auto">
+            <button
+              type="button"
+              onClick={() => handlePrint("portrait")}
+              className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
+              title="Хэвлэх"
+            >
+              <Printer className="w-4 h-4" />
+            </button>
+          </div>
+
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="bg-gray-100 dark:bg-gray-800/80">
@@ -357,174 +364,174 @@ export default function Form106({ auditId, formListId }: Props) {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
 
-      {openDialog && (
-        <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-xl bg-white shadow-xl dark:bg-gray-900">
-            <div className="flex items-center justify-between border-b px-4 py-3 dark:border-gray-800">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                {draftRow?.meeting_id ? "Уулзалтын мэдээлэл засах" : "Уулзалтын бүртгэл"}
-              </h3>
-              <button
-                type="button"
-                onClick={() => {
-                  resetDialog();
-                  setOpenDialog(false);
-                }}
-                className="text-lg text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
-              >
-                ×
-              </button>
+          {openDialog && (
+            <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
+              <div className="w-full max-w-lg rounded-xl bg-white shadow-xl dark:bg-gray-900">
+                <div className="flex items-center justify-between border-b px-4 py-3 dark:border-gray-800">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {draftRow?.meeting_id ? "Уулзалтын мэдээлэл засах" : "Уулзалтын бүртгэл"}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetDialog();
+                      setOpenDialog(false);
+                    }}
+                    className="text-lg text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="space-y-4 px-4 py-4">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
+                      Уулзалтын төрөл
+                    </label>
+                    <select
+                      value={draftRow?.meeting_type_id ?? ""}
+                      onChange={(e) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          meeting_type_id: Number(e.target.value),
+                        }))
+                      }
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                    >
+                      <option value="">Сонгох</option>
+                      {meetingTypeList.map((item) => (
+                        <option key={item.type_id} value={item.type_id}>
+                          {item.type_label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
+                      Огноо
+                    </label>
+                    <DatePicker
+                      id="meeting-date"
+                      defaultDate={draftRow?.meeting_date ?? ""}
+                      onChange={(value: Date[]) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          meeting_date: value?.[0]?.toISOString().slice(0, 10) ?? "",
+                        }))
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
+                      Цаг
+                    </label>
+                    <TimePicker
+                      id="meeting_time"
+                      value={draftRow?.meeting_time ?? ""}
+                      onChange={(val) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          meeting_time: val,
+                        }))
+                      }
+                      size="md"
+                      minuteStep={5}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
+                      Байршил
+                    </label>
+                    <textarea
+                      value={draftRow?.meeting_place ?? ""}
+                      onChange={(e) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          meeting_place: e.target.value,
+                        }))
+                      }
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
+                      Цар хүрээ
+                    </label>
+                    <textarea
+                      value={draftRow?.meeting_scope ?? ""}
+                      onChange={(e) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          meeting_scope: e.target.value,
+                        }))
+                      }
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
+                      Хавсралт
+                    </label>
+                    <FileUpload
+                      key={`${draftRow?.meeting_id ?? 0}-${draftRow?.meeting_file_id ?? 0}`}
+                      accept=".pdf,.doc,.docx"
+                      multiple={false}
+                      auditId={auditId}
+                      value={meetingFiles}
+                      onChange={(files) => {
+                        setMeetingFiles(files);
+
+                        if (!files.length) {
+                          setDraftRow((prev) => ({
+                            ...prev!,
+                            meeting_file_id: null,
+                          }));
+                        }
+                      }}
+                      onUploaded={(fileIds) =>
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          meeting_file_id: fileIds[0] ?? null,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 border-t px-4 py-3 dark:border-gray-800">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetDialog();
+                      setOpenDialog(false);
+                    }}
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                  >
+                    Болих
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleDialogSave}
+                    disabled={dialogSaving}
+                    className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-700"
+                  >
+                    {dialogSaving ? "Хадгалж байна..." : "Хадгалах"}
+                  </button>
+                </div>
+              </div>
             </div>
+          )}
 
-            <div className="space-y-4 px-4 py-4">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
-                  Уулзалтын төрөл
-                </label>
-                <select
-                  value={draftRow?.meeting_type_id ?? ""}
-                  onChange={(e) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      meeting_type_id: Number(e.target.value),
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                >
-                  <option value="">Сонгох</option>
-                  {meetingTypeList.map((item) => (
-                    <option key={item.type_id} value={item.type_id}>
-                      {item.type_label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
-                  Огноо
-                </label>
-                <DatePicker
-                  id="meeting-date"
-                  defaultDate={draftRow?.meeting_date ?? ""}
-                  onChange={(value: Date[]) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      meeting_date: value?.[0]?.toISOString().slice(0, 10) ?? "",
-                    }))
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
-                  Цаг
-                </label>
-                <TimePicker
-                  id="meeting_time"
-                  value={draftRow?.meeting_time ?? ""}
-                  onChange={(val) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      meeting_time: val,
-                    }))
-                  }
-                  size="md"
-                  minuteStep={5}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
-                  Байршил
-                </label>
-                <textarea
-                  value={draftRow?.meeting_place ?? ""}
-                  onChange={(e) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      meeting_place: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
-                  Цар хүрээ
-                </label>
-                <textarea
-                  value={draftRow?.meeting_scope ?? ""}
-                  onChange={(e) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      meeting_scope: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
-                  Хавсралт
-                </label>
-                <FileUpload
-                  key={`${draftRow?.meeting_id ?? 0}-${draftRow?.meeting_file_id ?? 0}`}
-                  accept=".pdf,.doc,.docx"
-                  multiple={false}
-                  auditId={auditId}
-                  value={meetingFiles}
-                  onChange={(files) => {
-                    setMeetingFiles(files);
-
-                    if (!files.length) {
-                      setDraftRow((prev) => ({
-                        ...prev!,
-                        meeting_file_id: null,
-                      }));
-                    }
-                  }}
-                  onUploaded={(fileIds) =>
-                    setDraftRow((prev) => ({
-                      ...prev!,
-                      meeting_file_id: fileIds[0] ?? null,
-                    }))
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 border-t px-4 py-3 dark:border-gray-800">
-              <button
-                type="button"
-                onClick={() => {
-                  resetDialog();
-                  setOpenDialog(false);
-                }}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200"
-              >
-                Болих
-              </button>
-
-              <button
-                type="button"
-                onClick={handleDialogSave}
-                disabled={dialogSaving}
-                className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-700"
-              >
-                {dialogSaving ? "Хадгалж байна..." : "Хадгалах"}
-              </button>
-            </div>
-          </div>
-        </div>
+          <FormActionSection auditId={auditId} formId={formListId} />
+        </>
       )}
-
-      <FormActionSection auditId={auditId} formId={formListId} />
-    </div>
+    </>
   );
 }

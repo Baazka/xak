@@ -40,12 +40,12 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     const formId = formResLast.rows[0].form_id;
 
     const isDataExist = await client.query(
-      `SELECT 1 FROM audit_conclusion WHERE conc_form_id = $1 LIMIT 1`,
+      `SELECT 1 FROM audit_conclusion WHERE con_form_id = $1 LIMIT 1`,
       [formId]
     );
 
     if (!isDataExist.rows[0]) {
-      await client.query(`INSERT INTO audit_conclusion (conc_form_id) VALUES ($1)`, [formId]);
+      await client.query(`INSERT INTO audit_conclusion (con_form_id) VALUES ($1)`, [formId]);
     }
 
     const formDataRes = await client.query(
@@ -90,11 +90,11 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     const infoRes = await client.query(
       `
       select 
-        af.form_aud_id,
+        --af.form_aud_id,
         c.con_form_id,
         a.corp_val,
         a.corp_exec_val,
-        b.materual_count,
+        b.material_count,
         b.not_material_count,
         b.other_count,
         b.aldaa_count,
