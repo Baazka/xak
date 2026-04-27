@@ -128,7 +128,7 @@ export default function Form104({ auditId, formListId }: Props) {
 
   return (
     <>
-      <div className="m-2 flex items-center justify-between gap-4">
+      <div className="sticky top-0 z-20 m-2 flex items-center justify-between gap-4 border-b border-gray-200 bg-white py-2 dark:border-gray-800 dark:bg-gray-900">
         <div className="flex items-center gap-2">
           <label className="whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">Баг:</label>
 

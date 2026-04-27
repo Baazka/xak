@@ -140,7 +140,7 @@ export default function Form203({ auditId, formListId }: Props) {
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
-          <div className="mb-2 flex items-center justify-end gap-2">
+          <div className="sticky top-0 z-10 mb-2 flex items-center justify-end gap-2 bg-white py-2 dark:bg-gray-900">
             <button
               type="button"
               onClick={handleSave}
