@@ -11,6 +11,7 @@ import DatePicker from "@/components/form/date-picker";
 import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
 import type { StepTwoData } from "@/components/audit/StepTwo";
 import StepTwo from "@/components/audit/StepTwo";
+import YearStepper from "@/components/form/YearStepper";
 
 export type HeaderData = {
   aud_id: number;
@@ -222,6 +223,9 @@ export default function AuditOrgCard({
     });
   }, [teamData]);
 
+  const handleAudYearChange = (field: string, value: string) => {
+    setBasicForm((prev) => ({ ...prev, [field]: value }));
+  };
   const handleTeamStepChange = <K extends keyof StepTwoData>(field: K, value: StepTwoData[K]) => {
     setTeamStepValues((prev) => ({
       ...prev,
@@ -460,17 +464,15 @@ export default function AuditOrgCard({
                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
               />
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-400">
                   Аудитын жил
                 </label>
-                <input
-                  type="number"
+                <YearStepper
                   value={basicForm.aud_year}
-                  onChange={(e) => setBasicForm((prev) => ({ ...prev, aud_year: e.target.value }))}
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  lessYear={5}
+                  onChange={(value) => handleAudYearChange("aud_year", value)}
                 />
               </div>
 

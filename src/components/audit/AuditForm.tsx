@@ -502,7 +502,7 @@ export default function AuditForm() {
           ))}
         </div>
       </div>
-      <div className="overflow-y-auto max-h-[60vh] pr-2">
+      <div className="overflow-y-auto max-h-[70vh] pr-2">
         {step === 1 && (
           <StepOne
             values={{
