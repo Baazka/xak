@@ -33,7 +33,7 @@ export default function QuillEditor({
   readonly,
 }: QuillEditorProps) {
   return (
-    <div className="quill-wrapper rounded-xl border border-gray-300 bg-white overflow-hidden">
+    <div className="quill-wrapper rounded-xl border border-gray-300 bg-white overflow-hidden dark:border-gray-700 dark:bg-gray-900">
       <ReactQuill
         theme="snow"
         value={value}

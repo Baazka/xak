@@ -2,15 +2,16 @@
 
 import { useEffect, useState, useTransition } from "react";
 
-import StepOne from "./StepOne";
-import StepTwo from "./StepTwo";
-import StepThree from "./StepThree";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useRouter } from "next/navigation";
 import LoadingScreen from "../ui/LoadingScreen";
 import Alert from "../ui/alert/Alert";
 import AuditCompany from "./forms/AuditCompany";
 import AuditCompanyOwner from "./forms/AuditCompanyOwner";
+import { FormErrors, ValidationSchema, validateForm } from "@/utils/validation";
+import StepOne, { StepOneData } from "./StepOne";
+import StepTwo, { StepTwoData } from "./StepTwo";
+import StepThree, { StepThreeData } from "./StepThree";
 const currentYear = new Date().getFullYear();
 
 type OperationRow = {
@@ -128,6 +129,24 @@ type UserItem = {
   user_email: string;
 };
 
+const stepOneSchema: ValidationSchema<StepOneData> = {
+  aud_name: { required: true, label: "Аудитын нэр" },
+  aud_year: { required: true, label: "Аудитын жил" },
+  aud_begin_date: { required: true, label: "Эхлэх хугацаа" },
+  aud_end_date: { required: true, label: "Дуусах хугацаа" },
+};
+
+const stepTwoSchema: ValidationSchema<StepTwoData> = {
+  usertype3: { required: true, label: "Батлах хэрэглэгч" },
+  usertype4: { required: true, label: "Чанарын хяналт" },
+  usertype5: { required: true, label: "Ахлах аудитор" },
+  usertype6: { required: true, label: "Аудитор" },
+};
+
+const stepThreeSchema: ValidationSchema<StepThreeData> = {
+  payment_method: { required: true, label: "Төлбөрийн хэлбэр" },
+  aud_file_id: { required: true, label: "Гэрээний файл" },
+};
 export default function AuditForm() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -137,6 +156,12 @@ export default function AuditForm() {
   const [loading, setLoading] = useState(false);
 
   const [userID, setUserIDs] = useState<UserItem[]>([]);
+
+  const [stepOneErrors, setStepOneErrors] = useState<FormErrors<StepOneData>>({});
+
+  const [stepTwoErrors, setStepTwoErrors] = useState<FormErrors<StepTwoData>>({});
+
+  const [stepThreeErrors, setStepThreeErrors] = useState<FormErrors<StepThreeData>>({});
 
   const [alert, setAlert] = useState<{
     show: boolean;
@@ -203,15 +228,6 @@ export default function AuditForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const updateStepOneField = <
-    K extends keyof Pick<FormDataType, "aud_name" | "aud_year" | "aud_begin_date" | "aud_end_date">,
-  >(
-    field: K,
-    value: any
-  ) => {
-    updateField(field, value);
-  };
-
   const updateAuditCompanyField = <
     K extends keyof Pick<
       FormDataType,
@@ -242,22 +258,49 @@ export default function AuditForm() {
     updateField(field, value);
   };
 
-  const updateStepTwoField = <
-    K extends keyof Pick<FormDataType, "usertype3" | "usertype4" | "usertype5" | "usertype6">,
-  >(
-    field: K,
-    value: any
-  ) => {
-    updateField(field, value);
+  const updateStepOneField = <K extends keyof StepOneData>(field: K, value: StepOneData[K]) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    if (stepOneErrors[field]) {
+      setStepOneErrors((prev) => ({
+        ...prev,
+        [field]: undefined,
+      }));
+    }
   };
 
-  const updateStepThreeField = <
-    K extends keyof Pick<FormDataType, "payment_method" | "aud_file_id">,
-  >(
+  const updateStepTwoField = <K extends keyof StepTwoData>(field: K, value: StepTwoData[K]) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    if (stepTwoErrors[field]) {
+      setStepTwoErrors((prev) => ({
+        ...prev,
+        [field]: undefined,
+      }));
+    }
+  };
+
+  const updateStepThreeField = <K extends keyof StepThreeData>(
     field: K,
-    value: any
+    value: StepThreeData[K]
   ) => {
-    updateField(field, value);
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    if (stepThreeErrors[field]) {
+      setStepThreeErrors((prev) => ({
+        ...prev,
+        [field]: undefined,
+      }));
+    }
   };
 
   const userOptions = userID.map((item) => ({
@@ -275,64 +318,59 @@ export default function AuditForm() {
   ];
 
   const nextStep = () => {
-    if (step === 1) {
-      if (
-        !formData.aud_name ||
-        !formData.aud_begin_date ||
-        !formData.aud_end_date ||
-        !formData.aud_year
-      ) {
-        setMessage("Бүх талбарыг бөглөнө үү");
-        return;
-      }
-    }
-
-    if (step === 2) {
-      if (
-        !formData.org_regno ||
-        !formData.org_legal_name ||
-        !formData.org_founded_date
-        // ||
-        // !formData.org_certno ||
-        // !formData.org_type ||
-        // !formData.org_main_operation ||
-        // !formData.org_is_special ||
-        // !formData.org_shareholder ||
-        // !formData.org_founder ||
-        // !formData.org_asset ||
-        // !formData.org_address ||
-        // !formData.org_phone ||
-        // !formData.org_email ||
-        // !formData.org_head_name ||
-        // !formData.org_head_phone ||
-        // !formData.org_head_email ||
-        // !formData.org_acc_name ||
-        // !formData.org_acc_phone ||
-        // !formData.org_acc_email
-      ) {
-        setMessage("Бүх талбарыг бөглөнө үү");
-        return;
-      }
-    }
-    if (step === 4) {
-      if (
-        !formData.usertype3 ||
-        !formData.usertype4 ||
-        !formData.usertype5 ||
-        !formData.usertype6
-      ) {
-        setMessage("Бүх талбарыг бөглөнө үү");
-        return;
-      }
-    }
-    if (step === 5) {
-      if (!formData.payment_method) {
-        setMessage("Бүх талбарыг бөглөнө үү");
-        return;
-      }
-    }
-
     setMessage("");
+    if (step === 1) {
+      const values: StepOneData = {
+        aud_name: formData.aud_name,
+        aud_year: formData.aud_year,
+        aud_begin_date: formData.aud_begin_date,
+        aud_end_date: formData.aud_end_date,
+      };
+
+      const errors = validateForm(values, stepOneSchema);
+
+      if (
+        values.aud_begin_date &&
+        values.aud_end_date &&
+        values.aud_begin_date > values.aud_end_date
+      ) {
+        errors.aud_end_date = "Дуусах хугацаа эхлэх хугацаанаас бага байж болохгүй";
+      }
+
+      setStepOneErrors(errors);
+      if (Object.keys(errors).length > 0) return;
+    }
+
+    if (step === 4) {
+      const values: StepTwoData = {
+        usertype3: formData.usertype3,
+        usertype4: formData.usertype4,
+        usertype5: formData.usertype5,
+        usertype6: formData.usertype6,
+      };
+
+      const errors = validateForm(values, stepTwoSchema);
+
+      if (!values.usertype6.length) {
+        errors.usertype6 = "Аудитор сонгоно уу";
+      }
+
+      setStepTwoErrors(errors);
+      if (Object.keys(errors).length > 0) return;
+    }
+
+    if (step === 5) {
+      const values: StepThreeData = {
+        payment_method: formData.payment_method,
+        aud_file_id: formData.aud_file_id,
+      };
+
+      const errors = validateForm(values, stepThreeSchema);
+      setStepThreeErrors(errors);
+
+      if (Object.keys(errors).length > 0) return;
+    }
+
     setStep((prev) => prev + 1);
   };
 
@@ -344,7 +382,21 @@ export default function AuditForm() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setAlert({ show: false, variant: "error", title: "", message: "" });
+
     if (loading) return;
+
+    const finalErrors = validateForm(
+      {
+        payment_method: formData.payment_method,
+        aud_file_id: formData.aud_file_id,
+      },
+      stepThreeSchema
+    );
+
+    setStepThreeErrors(finalErrors);
+
+    if (Object.keys(finalErrors).length > 0) return;
+
     setLoading(true);
 
     try {
@@ -408,7 +460,7 @@ export default function AuditForm() {
         ].filter(Boolean),
       };
 
-      const res = await fetch("/api/auditadd", {
+      const res = await fetchWithAuth("/api/auditadd", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -511,6 +563,7 @@ export default function AuditForm() {
               aud_begin_date: formData.aud_begin_date,
               aud_end_date: formData.aud_end_date,
             }}
+            errors={stepOneErrors}
             onChange={updateStepOneField}
           />
         )}
@@ -567,6 +620,7 @@ export default function AuditForm() {
               usertype5: formData.usertype5,
               usertype6: formData.usertype6,
             }}
+            errors={stepTwoErrors}
             userOptions={userOptions}
             onChange={updateStepTwoField}
           />
@@ -577,6 +631,7 @@ export default function AuditForm() {
               payment_method: formData.payment_method,
               aud_file_id: formData.aud_file_id,
             }}
+            errors={stepThreeErrors}
             onChange={updateStepThreeField}
           />
         )}

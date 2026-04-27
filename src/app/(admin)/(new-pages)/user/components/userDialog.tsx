@@ -3,7 +3,7 @@
 import * as React from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import type { User } from "../types";
-import { M_PLUS_1 } from "next/font/google";
+import { FormErrors, ValidationSchema, validateForm } from "@/utils/validation";
 
 type Props = {
   open: boolean;
@@ -31,6 +31,32 @@ type userRoleType = {
   role_text: string;
 };
 
+type UserFormData = {
+  user_firstname: string;
+  regno: string;
+  user_phone: string;
+  user_email: string;
+  userRoleId: number | "";
+};
+
+const userSchema: ValidationSchema<UserFormData> = {
+  user_firstname: { required: true, label: "Овог нэр" },
+  //regno: { required: true, label: "Регистрийн дугаар" },
+  user_phone: {
+    required: true,
+    label: "Утас",
+    pattern: /^[0-9]{8}$/,
+    message: "Утасны дугаар 8 оронтой байх ёстой",
+  },
+  user_email: {
+    required: true,
+    label: "Мэйл хаяг",
+    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    message: "Мэйл хаяг буруу байна",
+  },
+  userRoleId: { required: true, label: "Хэрэглэгчийн эрхийн түвшин" },
+};
+
 export default function UserDialog({ open, onOpenChange, mode, initialUser, onSaved }: Props) {
   const isEdit = mode === "edit";
 
@@ -50,6 +76,23 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [metaLoading, setMetaLoading] = React.useState(false);
+  const [errors, setErrors] = React.useState<FormErrors<UserFormData>>({});
+
+  const inputClass = "w-full rounded border px-3 py-2";
+  const normalClass = "border-gray-300";
+  const errorClass = "border-red-500";
+
+  const getInputClass = (field: keyof UserFormData) =>
+    `${inputClass} ${errors[field] ? errorClass : normalClass}`;
+
+  const clearError = (field: keyof UserFormData) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const renderError = (field: keyof UserFormData) =>
+    errors[field] ? <p className="mt-1 text-xs text-red-500">{errors[field]}</p> : null;
 
   React.useEffect(() => {
     const loadMeta = async () => {
@@ -80,6 +123,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
 
   React.useEffect(() => {
     if (!open) return;
+    setErrors({});
 
     if (isEdit && initialUser) {
       setRegno(initialUser.user_register_no ?? "");
@@ -104,13 +148,18 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
 
     setError(null);
 
-    const uname = user_firstname.trim();
-    const em = user_email.trim().toLowerCase();
+    const formData: UserFormData = {
+      user_firstname,
+      regno,
+      user_phone,
+      user_email,
+      userRoleId,
+    };
 
-    if (!uname || !em) {
-      setError("Нэр, имэйлээ бөглөнө үү.");
-      return;
-    }
+    const validationErrors = validateForm(formData, userSchema);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) return;
 
     setLoading(true);
     try {
@@ -131,9 +180,9 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             user_register_no: regno,
-            user_firstname: uname,
+            user_firstname: user_firstname,
             user_phone: user_phone,
-            user_email: em,
+            user_email: user_email,
             role_id: userRoleId,
             is_role_change: isRoleChange,
             is_mail_change: isMailChange,
@@ -146,9 +195,9 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             user_register_no: regno,
-            user_firstname: uname,
+            user_firstname: user_firstname,
             user_phone: user_phone,
-            user_email: em,
+            user_email: user_email,
             role_id: userRoleId,
           }),
         });
@@ -196,20 +245,26 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
           <div>
             <label className="mb-1 block text-sm">Овог нэр:</label>
             <input
-              className="w-full rounded border px-3 py-2"
+              className={getInputClass("user_firstname")}
               value={user_firstname}
-              onChange={(e) => setUser_firstname(e.target.value)}
+              onChange={(e) => {
+                setUser_firstname(e.target.value);
+                clearError("user_firstname");
+              }}
               placeholder="хэрэглэгчийн нэр"
               autoFocus
             />
+            {renderError("user_firstname")}
           </div>
 
           <div>
             <label className="mb-1 block text-sm">Регистрийн дугаар:</label>
             <input
-              className="w-full rounded border px-3 py-2"
+              className={getInputClass("regno")}
               value={regno}
-              onChange={(e) => setRegno(e.target.value)}
+              onChange={(e) => {
+                setRegno(e.target.value);
+              }}
               placeholder="РД:"
             />
           </div>
@@ -217,29 +272,35 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
           <div>
             <label className="mb-1 block text-sm">Утас:</label>
             <input
-              className="w-full rounded border px-3 py-2"
+              className={getInputClass("user_phone")}
               value={user_phone}
               onChange={(e) => setUser_phone(e.target.value)}
               placeholder="99998888"
             />
+            {renderError("user_phone")}
           </div>
 
           <div>
             <label className="mb-1 block text-sm">Мэйл хаяг:</label>
             <input
-              className="w-full rounded border px-3 py-2"
+              className={getInputClass("user_email")}
               value={user_email}
               onChange={(e) => setUser_email(e.target.value)}
               placeholder="email@example.com"
             />
+            {renderError("user_email")}
           </div>
 
           <div>
             <label className="mb-1 block text-sm">Хэрэглэгчийн эрхийн түвшин:</label>
             <select
               value={userRoleId}
-              onChange={(e) => setUserRoleId(Number(e.target.value))}
-              className="w-full rounded-lg border px-3 py-2"
+              onChange={(e) => {
+                const value = e.target.value;
+                setUserRoleId(value === "" ? "" : Number(value));
+                clearError("userRoleId");
+              }}
+              className={getInputClass("userRoleId")}
             >
               <option value="">Сонгоно уу</option>
               {RoleList.map((rl) => (
@@ -248,6 +309,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
                 </option>
               ))}
             </select>
+            {renderError("userRoleId")}
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

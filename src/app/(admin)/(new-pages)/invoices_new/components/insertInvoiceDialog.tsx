@@ -5,6 +5,8 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import type { InvoiceList } from "../types";
 import Select from "react-select";
 import { useToast } from "@/context/ToastContext";
+import { FormErrors, ValidationSchema, validateForm } from "@/utils/validation";
+import NumberStepper from "@/components/form/NumberStepper";
 
 type Props = {
   open: boolean;
@@ -36,6 +38,20 @@ type orgList = {
   label: string;
 };
 
+type InvoiceFormData = {
+  org_id: number | "";
+  inv_type_id: number | "";
+  inv_aud_count: number | "";
+  inv_aud_amount: number | "";
+};
+
+const invoiceSchema: ValidationSchema<InvoiceFormData> = {
+  org_id: { required: true, label: "Байгууллага" },
+  inv_type_id: { required: true, label: "Нэхэмжлэхийн төрөл" },
+  inv_aud_count: { required: true, label: "Аудитын эрхийн тоо" },
+  inv_aud_amount: { required: true, label: "Нэхэмжлэлийн нийт дүн" },
+};
+
 export default function insertInvoiceDialog({
   open,
   onOpenChange,
@@ -56,6 +72,23 @@ export default function insertInvoiceDialog({
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [metaLoading, setMetaLoading] = React.useState(false);
+  const [errors, setErrors] = React.useState<FormErrors<InvoiceFormData>>({});
+
+  const inputClass = "w-full rounded border px-3 py-2";
+  const normalClass = "border-gray-300";
+  const errorClass = "border-red-500";
+
+  const getInputClass = (field: keyof InvoiceFormData) =>
+    `${inputClass} ${errors[field] ? errorClass : normalClass}`;
+
+  const clearError = (field: keyof InvoiceFormData) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const renderError = (field: keyof InvoiceFormData) =>
+    errors[field] ? <p className="mt-1 text-xs text-red-500">{errors[field]}</p> : null;
 
   React.useEffect(() => {
     const loadMeta = async () => {
@@ -121,12 +154,27 @@ export default function insertInvoiceDialog({
       setInvAmount("");
     }
     setError(null);
+    setErrors({});
     setLoading(false);
-  }, [open, isEdit, initialInvoice]);
+  }, [open, isEdit, initialInvoice, realorg]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (loading) return;
+
+    const formData: InvoiceFormData = {
+      org_id: orgId,
+      inv_type_id: invTypeId,
+      inv_aud_count: audCount,
+      inv_aud_amount: invAmount,
+    };
+
+    const validationErrors = validateForm(formData, invoiceSchema);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
 
     setError(null);
     setLoading(true);
@@ -186,11 +234,6 @@ export default function insertInvoiceDialog({
     <div dangerouslySetInnerHTML={{ __html: label }} />
   );
 
-  const handleOrgChange = (selectedorg: any) => {
-    setSelectedVal(selectedorg);
-    setOrgId(selectedorg.value);
-  };
-
   if (!open) return null;
 
   return (
@@ -221,14 +264,18 @@ export default function insertInvoiceDialog({
             <label className="mb-1 block text-sm">Нэхэмжлэхийн төрөл:</label>
             <select
               value={invTypeId}
-              onChange={(e) => setInvTypeId(Number(e.target.value))}
-              className="w-full rounded-lg border px-3 py-2"
-              data-hs-select='{"hasSearch": true}'
+              onChange={(e) => {
+                const value = e.target.value;
+                setInvTypeId(value === "" ? "" : Number(value));
+                clearError("inv_type_id");
+              }}
+              className={getInputClass("inv_type_id")}
             >
               <option value="">Сонгоно уу</option>
               <option value="2">Онцгой санал</option>
               <option value="3">Урамшуулал</option>
             </select>
+            {renderError("inv_type_id")}
           </div>
 
           <div>
@@ -237,31 +284,43 @@ export default function insertInvoiceDialog({
               className="basic-single"
               options={realorg}
               value={selectedVal}
-              onChange={handleOrgChange}
+              onChange={(selectedorg: any) => {
+                setSelectedVal(selectedorg);
+                setOrgId(selectedorg?.value ?? "");
+                clearError("org_id");
+              }}
               placeholder="нэр эсвэл регистр"
               isSearchable={true}
               isClearable={true}
               formatOptionLabel={formatOptionLabel}
             />
+            {renderError("org_id")}
           </div>
 
           <div>
             <label className="mb-1 block text-sm">Аудитын эрхийн тоо:</label>
-
-            <input
-              className="w-full rounded border px-3 py-2"
+            <NumberStepper
               value={audCount}
-              onChange={(e) => setAudCount(Number(e.target.value))}
+              onChange={(val) => {
+                setAudCount(val);
+                clearError("inv_aud_count");
+              }}
+              min={0}
+              error={errors.inv_aud_count}
             />
           </div>
 
           <div>
             <label className="mb-1 block text-sm">Нэхэмжлэлийн нийт дүн:</label>
             <input
-              className="w-full rounded border px-3 py-2"
+              className={getInputClass("inv_aud_amount")}
               value={invAmount}
-              onChange={(e) => setInvAmount(Number(e.target.value))}
+              onChange={(e) => {
+                setInvAmount(e.target.value === "" ? "" : Number(e.target.value));
+                clearError("inv_aud_amount");
+              }}
             />
+            {renderError("inv_aud_amount")}
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

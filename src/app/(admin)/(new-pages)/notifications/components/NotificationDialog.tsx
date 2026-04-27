@@ -13,7 +13,9 @@ import Button from "@/components/ui/button/Button";
 import QuillEditor from "@/components/editor/QuillEditor";
 import OrgMultiSelect from "./OrgMultiSelect";
 import UserMultiSelect from "./UserMultiSelect";
+import { FormErrors, ValidationSchema, validateForm } from "@/utils/validation";
 import { useToast } from "@/context/ToastContext";
+
 
 type NotificationType = {
   type_id: number;
@@ -53,6 +55,23 @@ type NotificationDialogProps = {
   onCreated?: () => void;
 };
 
+type NotificationFormData = {
+  title: string;
+  contentText: string;
+  notificationTypeId: number | "";
+  targetTypeCode: string;
+  selectedOrgIds: number[];
+  selectedUserIds: number[];
+  selectedRoleId: string;
+};
+
+const notificationSchema: ValidationSchema<NotificationFormData> = {
+  title: { required: true, label: "Гарчиг" },
+  contentText: { required: true, label: "Агуулга" },
+  notificationTypeId: { required: true, label: "Мэдэгдлийн төрөл" },
+  targetTypeCode: { required: true, label: "Хүлээн авагчийн төрөл" },
+};
+
 export default function NotificationDialog({ onCreated }: NotificationDialogProps) {
   const toast = useToast();
 
@@ -79,6 +98,22 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
   const [loading, setLoading] = useState(false);
   const [metaLoading, setMetaLoading] = useState(false);
 
+  const [errors, setErrors] = useState<FormErrors<NotificationFormData>>({});
+
+  const clearError = (field: keyof NotificationFormData) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const renderError = (field: keyof NotificationFormData) =>
+    errors[field] ? <p className="mt-1 text-xs text-red-500">{errors[field]}</p> : null;
+
+  const getPlainText = (html: string) =>
+    html
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, "")
+      .trim();
   useEffect(() => {
     const loadMeta = async () => {
       try {
@@ -130,6 +165,7 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
       setSelectedOrgIds([]);
       setSelectedUserIds([]);
       setSelectedRoleId("");
+      setErrors({});
       return;
     }
 
@@ -149,35 +185,33 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
   }, [targetTypeCode, roles]);
 
   const handleSubmit = async () => {
-    const plainContent = content.replace(/<[^>]*>/g, "").trim();
+    const formData: NotificationFormData = {
+      title,
+      contentText: getPlainText(content),
+      notificationTypeId,
+      targetTypeCode,
+      selectedOrgIds,
+      selectedUserIds,
+      selectedRoleId,
+    };
 
-    if (!title.trim() || !plainContent || !notificationTypeId || !targetTypeCode) {
-      toast.warning("Шаардлагатай талбаруудыг бөглөнө үү", {
-        title: "Анхаар",
-      });
-      return;
-    }
+    const validationErrors = validateForm(formData, notificationSchema);
 
     if (targetTypeCode === "XAK" && selectedOrgIds.length === 0) {
-      toast.warning("Байгууллага сонгоно уу", {
-        title: "Анхаар",
-      });
-      return;
+      validationErrors.selectedOrgIds = "Байгууллага сонгоно уу";
     }
 
     if (targetTypeCode === "USER" && selectedUserIds.length === 0) {
-      toast.warning("Хэрэглэгч сонгоно уу", {
-        title: "Анхаар",
-      });
-      return;
+      validationErrors.selectedUserIds = "Хэрэглэгч сонгоно уу";
     }
 
     if (targetTypeCode === "ROLE" && !selectedRoleId) {
-      toast.warning("Эрх сонгоно уу", {
-        title: "Анхаар",
-      });
-      return;
+      validationErrors.selectedRoleId = "Эрх сонгоно уу";
     }
+
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) return;
 
     setLoading(true);
 
@@ -236,7 +270,7 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="z-[1000] !w-[90vw] !max-w-[90vw]">
+      <DialogContent className="z-[1000] !w-[70vw] !max-w-[70vw]">
         <DialogHeader>
           <DialogTitle>Мэдэгдэл үүсгэх</DialogTitle>
         </DialogHeader>
@@ -247,14 +281,25 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
               <label className="block text-sm font-medium text-gray-700">Гарчиг</label>
               <input
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  clearError("title");
+                }}
                 className="w-full rounded-lg border px-3 py-2"
               />
+              {renderError("title")}
             </div>
 
             <div className="space-y-1">
               <label className="block text-sm font-medium text-gray-700">Агуулга</label>
-              <QuillEditor value={content} onChange={setContent} />
+              <QuillEditor
+                value={content}
+                onChange={(val) => {
+                  setContent(val);
+                  clearError("contentText");
+                }}
+              />
+              {renderError("contentText")}
             </div>
           </div>
 
@@ -263,10 +308,13 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
               <label className="block text-sm font-medium text-gray-700">Мэдэгдлийн төрөл</label>
               <select
                 value={notificationTypeId}
-                onChange={(e) =>
-                  setNotificationTypeId(e.target.value ? Number(e.target.value) : "")
-                }
-                className="w-full rounded-lg border px-3 py-2"
+                onChange={(e) => {
+                  setNotificationTypeId(e.target.value ? Number(e.target.value) : "");
+                  clearError("notificationTypeId");
+                }}
+                className={`w-full rounded-lg border px-3 py-2 ${
+                  errors.notificationTypeId ? "border-red-500" : ""
+                }`}
                 disabled={metaLoading}
               >
                 <option value="">Сонгох</option>
@@ -276,14 +324,20 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
                   </option>
                 ))}
               </select>
+              {renderError("notificationTypeId")}
             </div>
 
             <div className="space-y-1">
               <label className="block text-sm font-medium text-gray-700">Хэрэглэгчийн төрөл</label>
               <select
                 value={targetTypeCode}
-                onChange={(e) => setTargetTypeCode(e.target.value)}
-                className="w-full rounded-lg border px-3 py-2"
+                onChange={(e) => {
+                  setTargetTypeCode(e.target.value);
+                  clearError("targetTypeCode");
+                }}
+                className={`w-full rounded-lg border px-3 py-2 ${
+                  errors.targetTypeCode ? "border-red-500" : ""
+                }`}
                 disabled={metaLoading}
               >
                 <option value="">Сонгох</option>
@@ -293,6 +347,7 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
                   </option>
                 ))}
               </select>
+              {renderError("targetTypeCode")}
             </div>
 
             {targetTypeCode === "XAK" && (
@@ -301,9 +356,13 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
                 <OrgMultiSelect
                   orgs={orgs}
                   value={selectedOrgIds}
-                  onChange={setSelectedOrgIds}
+                  onChange={(ids) => {
+                    setSelectedOrgIds(ids);
+                    clearError("selectedOrgIds");
+                  }}
                   disabled={metaLoading}
                 />
+                {renderError("selectedOrgIds")}
               </div>
             )}
 
@@ -312,7 +371,10 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
                 <label className="block text-sm font-medium text-gray-700">Эрх</label>
                 <select
                   value={selectedRoleId}
-                  onChange={(e) => setSelectedRoleId(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedRoleId(e.target.value);
+                    clearError("selectedRoleId");
+                  }}
                   className="w-full rounded-lg border px-3 py-2"
                 >
                   <option value="">Сонгох</option>
@@ -322,6 +384,7 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
                     </option>
                   ))}
                 </select>
+                {renderError("selectedRoleId")}
               </div>
             )}
 
@@ -331,9 +394,13 @@ export default function NotificationDialog({ onCreated }: NotificationDialogProp
                 <UserMultiSelect
                   users={users}
                   value={selectedUserIds}
-                  onChange={setSelectedUserIds}
+                  onChange={(ids) => {
+                    setSelectedUserIds(ids);
+                    clearError("selectedUserIds");
+                  }}
                   disabled={metaLoading}
                 />
+                {renderError("selectedUserIds")}
               </div>
             )}
 
