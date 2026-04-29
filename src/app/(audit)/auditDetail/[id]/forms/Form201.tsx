@@ -165,7 +165,9 @@ export default function Form201({ auditId, formListId }: Props) {
               </button>
             ))}
           </div>
-
+          <div className="hidden print:block text-sm font-semibold text-gray-800 dark:text-gray-100">
+            {activeTab}
+          </div>
           <div className="space-y-3 rounded">
             <table className="w-full text-sm text-gray-800 dark:text-gray-200">
               <thead className="bg-gray-100 dark:bg-gray-800">

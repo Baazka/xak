@@ -400,7 +400,11 @@ export default function Form301({ auditId, formListId }: Props) {
               </button>
             </div>
           </div>
-
+          <div className="hidden print:block text-sm font-semibold text-gray-800 dark:text-gray-100">
+            {tabs.map((tab) => {
+              return activeTab === tab.key ? tab.label : "";
+            })}
+          </div>
           <div className="overflow-x-auto">
             {activeTab === "risk" && (
               <table className="w-full text-sm text-gray-800 dark:text-gray-200">
