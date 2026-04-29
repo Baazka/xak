@@ -6,7 +6,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useRouter } from "next/navigation";
 import LoadingScreen from "../ui/LoadingScreen";
 import Alert from "../ui/alert/Alert";
-import AuditCompany from "./forms/AuditCompany";
+import AuditCompany, { AuditCompanyFormData } from "./forms/AuditCompany";
 import AuditCompanyOwner from "./forms/AuditCompanyOwner";
 import { FormErrors, ValidationSchema, validateForm } from "@/utils/validation";
 import StepOne, { StepOneData } from "./StepOne";
@@ -136,6 +136,11 @@ const stepOneSchema: ValidationSchema<StepOneData> = {
   aud_end_date: { required: true, label: "Дуусах хугацаа" },
 };
 
+const auditCompanySchema: ValidationSchema<AuditCompanyFormData> = {
+  org_regno: { required: true, label: "Регистр" },
+  org_legal_name: { required: true, label: "Байгууллагын нэр" },
+};
+
 const stepTwoSchema: ValidationSchema<StepTwoData> = {
   usertype3: { required: true, label: "Батлах хэрэглэгч" },
   usertype4: { required: true, label: "Чанарын хяналт" },
@@ -158,6 +163,10 @@ export default function AuditForm() {
   const [userID, setUserIDs] = useState<UserItem[]>([]);
 
   const [stepOneErrors, setStepOneErrors] = useState<FormErrors<StepOneData>>({});
+
+  const [auditCompanyErrors, setAuditCompanyErrors] = useState<FormErrors<AuditCompanyFormData>>(
+    {}
+  );
 
   const [stepTwoErrors, setStepTwoErrors] = useState<FormErrors<StepTwoData>>({});
 
@@ -224,39 +233,39 @@ export default function AuditForm() {
     },
   ]);
 
-  const updateField = <K extends keyof FormDataType>(field: K, value: FormDataType[K]) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  // const updateField = <K extends keyof FormDataType>(field: K, value: FormDataType[K]) => {
+  //   setFormData((prev) => ({ ...prev, [field]: value }));
+  // };
 
-  const updateAuditCompanyField = <
-    K extends keyof Pick<
-      FormDataType,
-      | "org_regno"
-      | "org_legal_name"
-      | "org_founded_date"
-      | "org_certno"
-      | "org_type"
-      | "org_main_operation"
-      | "org_is_special"
-      | "org_shareholder"
-      | "org_founder"
-      | "org_asset"
-      | "org_address"
-      | "org_phone"
-      | "org_email"
-      | "org_head_name"
-      | "org_head_phone"
-      | "org_head_email"
-      | "org_acc_name"
-      | "org_acc_phone"
-      | "org_acc_email"
-    >,
-  >(
-    field: K,
-    value: any
-  ) => {
-    updateField(field, value);
-  };
+  // const updateAuditCompanyField = <
+  //   K extends keyof Pick<
+  //     FormDataType,
+  //     | "org_regno"
+  //     | "org_legal_name"
+  //     | "org_founded_date"
+  //     | "org_certno"
+  //     | "org_type"
+  //     | "org_main_operation"
+  //     | "org_is_special"
+  //     | "org_shareholder"
+  //     | "org_founder"
+  //     | "org_asset"
+  //     | "org_address"
+  //     | "org_phone"
+  //     | "org_email"
+  //     | "org_head_name"
+  //     | "org_head_phone"
+  //     | "org_head_email"
+  //     | "org_acc_name"
+  //     | "org_acc_phone"
+  //     | "org_acc_email"
+  //   >,
+  // >(
+  //   field: K,
+  //   value: any
+  // ) => {
+  //   updateField(field, value);
+  // };
 
   const updateStepOneField = <K extends keyof StepOneData>(field: K, value: StepOneData[K]) => {
     setFormData((prev) => ({
@@ -266,6 +275,23 @@ export default function AuditForm() {
 
     if (stepOneErrors[field]) {
       setStepOneErrors((prev) => ({
+        ...prev,
+        [field]: undefined,
+      }));
+    }
+  };
+
+  const updateAuditCompanyField = <K extends keyof AuditCompanyFormData>(
+    field: K,
+    value: AuditCompanyFormData[K]
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    if (auditCompanyErrors[field]) {
+      setAuditCompanyErrors((prev) => ({
         ...prev,
         [field]: undefined,
       }));
@@ -338,6 +364,39 @@ export default function AuditForm() {
       }
 
       setStepOneErrors(errors);
+      if (Object.keys(errors).length > 0) return;
+    }
+
+    if (step === 2) {
+      const values: AuditCompanyFormData = {
+        org_regno: formData.org_regno,
+        org_legal_name: formData.org_legal_name,
+        org_founded_date: formData.org_founded_date,
+        org_certno: formData.org_certno,
+        org_type: formData.org_type,
+        org_main_operation: formData.org_main_operation,
+        org_is_special: formData.org_is_special,
+        org_shareholder: formData.org_shareholder,
+        org_founder: formData.org_founder,
+        org_asset: formData.org_asset,
+        org_address: formData.org_address,
+        org_phone: formData.org_phone,
+        org_email: formData.org_email,
+        org_head_name: formData.org_head_name,
+        org_head_phone: formData.org_head_phone,
+        org_head_email: formData.org_head_email,
+        org_acc_name: formData.org_acc_name,
+        org_acc_phone: formData.org_acc_phone,
+        org_acc_email: formData.org_acc_email,
+      };
+
+      const errors = validateForm(values, auditCompanySchema);
+
+      if (values.org_regno && values.org_regno.length !== 7) {
+        errors.org_regno = "Регистр 7 оронтой байх ёстой";
+      }
+
+      setAuditCompanyErrors(errors);
       if (Object.keys(errors).length > 0) return;
     }
 
@@ -591,6 +650,7 @@ export default function AuditForm() {
               org_acc_phone: formData.org_acc_phone,
               org_acc_email: formData.org_acc_email,
             }}
+            errors={auditCompanyErrors}
             onChange={updateAuditCompanyField}
           />
         )}

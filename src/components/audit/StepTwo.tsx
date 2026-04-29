@@ -40,50 +40,6 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
   const getSelectClass = (field: keyof StepTwoData) =>
     errors[field] ? "rounded-lg border border-red-500" : "";
 
-  const selectStyles = {
-    control: (base: any, state: any) => ({
-      ...base,
-      backgroundColor: isDark ? "#111827" : "#ffffff",
-      borderColor:
-        errors.usertype3 || errors.usertype4 || errors.usertype5
-          ? "#ef4444"
-          : state.isFocused
-            ? "#3b82f6"
-            : isDark
-              ? "#374151"
-              : "#d1d5db",
-      color: isDark ? "#f9fafb" : "#111827",
-      boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
-    }),
-    menuPortal: (base: any) => ({
-      ...base,
-      zIndex: 9999,
-    }),
-    menu: (base: any) => ({
-      ...base,
-      zIndex: 9999,
-      backgroundColor: isDark ? "#111827" : "#ffffff",
-      color: isDark ? "#f9fafb" : "#111827",
-    }),
-    option: (base: any, state: any) => ({
-      ...base,
-      backgroundColor: state.isFocused ? (isDark ? "#1f2937" : "#f3f4f6") : "transparent",
-      color: isDark ? "#f9fafb" : "#111827",
-    }),
-    singleValue: (base: any) => ({
-      ...base,
-      color: isDark ? "#f9fafb" : "#111827",
-    }),
-    input: (base: any) => ({
-      ...base,
-      color: isDark ? "#f9fafb" : "#111827",
-    }),
-    placeholder: (base: any) => ({
-      ...base,
-      color: isDark ? "#9ca3af" : "#6b7280",
-    }),
-  };
-
   const selectedApprover = userOptions.find((opt) => opt.value === values.usertype3) ?? null;
 
   const selectedQualityReviewer = userOptions.find((opt) => opt.value === values.usertype4) ?? null;
@@ -106,6 +62,56 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
     </div>
   );
 
+  const makeSelectStyles = (field: keyof StepTwoData) => ({
+    control: (base: any, state: any) => ({
+      ...base,
+      minHeight: "38px",
+      backgroundColor: isDark ? "#111827" : "#ffffff",
+      borderWidth: "1px",
+      borderColor: errors[field]
+        ? "#ef4444"
+        : state.isFocused
+          ? "#3b82f6"
+          : isDark
+            ? "#374151"
+            : "#d1d5db",
+      boxShadow: errors[field]
+        ? "0 0 0 1px #ef4444"
+        : state.isFocused
+          ? "0 0 0 1px #3b82f6"
+          : "none",
+      "&:hover": {
+        borderColor: errors[field] ? "#ef4444" : "#3b82f6",
+      },
+    }),
+    menuPortal: (base: any) => ({
+      ...base,
+      zIndex: 9999,
+    }),
+    menu: (base: any) => ({
+      ...base,
+      zIndex: 9999,
+      backgroundColor: isDark ? "#111827" : "#ffffff",
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isFocused ? (isDark ? "#1f2937" : "#f3f4f6") : "transparent",
+      color: isDark ? "#f9fafb" : "#111827",
+    }),
+    singleValue: (base: any) => ({
+      ...base,
+      color: isDark ? "#f9fafb" : "#111827",
+    }),
+    input: (base: any) => ({
+      ...base,
+      color: isDark ? "#f9fafb" : "#111827",
+    }),
+    placeholder: (base: any) => ({
+      ...base,
+      color: isDark ? "#9ca3af" : "#6b7280",
+    }),
+  });
+
   const handleUserApproverChange = (selected: SingleValue<UserOption>) => {
     onChange("usertype3", selected?.value ?? 0);
   };
@@ -122,7 +128,7 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <div className="space-y-2">
         <label className="block text-sm font-medium">Батлах хэрэглэгч</label>
-        <div className={getSelectClass("usertype3")}>
+        <div>
           <Select<UserOption, false>
             options={userOptions}
             value={selectedApprover}
@@ -130,7 +136,7 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
             placeholder="Нэрээр нь хайх..."
             isSearchable
             isClearable
-            styles={selectStyles}
+            styles={makeSelectStyles("usertype3")}
             menuPortalTarget={document.body}
             formatOptionLabel={formatOptionLabel}
           />
@@ -140,7 +146,7 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
 
       <div className="space-y-2">
         <label className="block text-sm font-medium">Чанарын хяналт</label>
-        <div className={getSelectClass("usertype4")}>
+        <div>
           <Select<UserOption, false>
             options={userOptions}
             value={selectedQualityReviewer}
@@ -148,7 +154,7 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
             placeholder="Нэрээр нь хайх..."
             isSearchable
             isClearable
-            styles={selectStyles}
+            styles={makeSelectStyles("usertype4")}
             menuPortalTarget={document.body}
             formatOptionLabel={formatOptionLabel}
           />
@@ -158,7 +164,7 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
 
       <div className="space-y-2">
         <label className="block text-sm font-medium">Ахлах аудитор</label>
-        <div className={getSelectClass("usertype5")}>
+        <div>
           <Select<UserOption, false>
             options={userOptions}
             value={selectedSeniorAuditor}
@@ -166,7 +172,7 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
             placeholder="Нэрээр нь хайх..."
             isSearchable
             isClearable
-            styles={selectStyles}
+            styles={makeSelectStyles("usertype5")}
             menuPortalTarget={document.body}
             formatOptionLabel={formatOptionLabel}
           />
