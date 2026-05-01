@@ -7,6 +7,7 @@ import { useToast } from "@/context/ToastContext";
 import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import { F303_DATA_MAP1, F303_DATA_MAP2 } from "@/utils/constSelect";
 
 type Props = {
   auditId: number;
@@ -481,9 +482,11 @@ export default function Form303({ auditId, formListId }: Props) {
                       className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                     >
                       <option value="">Сонгох</option>
-                      <option value="1">Найдвартай</option>
-                      <option value="2">Дунд зэрэг</option>
-                      <option value="3">Найдваргүй</option>
+                      {Object.entries(F303_DATA_MAP1).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
                     </select>
                   </td>
                 </tr>
@@ -669,8 +672,11 @@ export default function Form303({ auditId, formListId }: Props) {
                       className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                     >
                       <option value="">Сонгох</option>
-                      <option value="1">Статистик</option>
-                      <option value="2">Статистикийн бус</option>
+                      {Object.entries(F303_DATA_MAP2).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
                     </select>
                   </td>
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">

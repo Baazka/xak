@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import DatePicker from "@/components/form/date-picker";
 import LoadingScreen from "@/components/ui/LoadingScreen";
-type AuditCompanyFormData = {
+import { FormErrors } from "@/utils/validation";
+
+export type AuditCompanyFormData = {
   // Ерөнхий мэдээлэл
   org_regno: string;
   org_legal_name: string;
@@ -31,13 +33,14 @@ type AuditCompanyFormData = {
 };
 type Props = {
   values: AuditCompanyFormData;
+  errors?: FormErrors<AuditCompanyFormData>;
   onChange: <K extends keyof AuditCompanyFormData>(
     field: K,
     value: AuditCompanyFormData[K]
   ) => void;
 };
 
-export default function AuditCompany({ values, onChange }: Props) {
+export default function AuditCompany({ values, errors = {}, onChange }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleGetOpenData = async (org_regno: string) => {
@@ -65,6 +68,10 @@ export default function AuditCompany({ values, onChange }: Props) {
       setLoading(false);
     }
   };
+
+  const renderError = (field: keyof AuditCompanyFormData) =>
+    errors[field] ? <p className="mt-1 text-xs text-red-500">{errors[field]}</p> : null;
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -83,7 +90,9 @@ export default function AuditCompany({ values, onChange }: Props) {
                 const onlyNumbers = e.target.value.replace(/\D/g, "").slice(0, 7);
                 onChange("org_regno", onlyNumbers);
               }}
-              className="w-full rounded-lg border px-3 py-2 pr-20"
+              className={`w-full rounded-lg border px-3 py-2 pr-20 ${
+                errors.org_regno ? "border-red-500" : "border-gray-300"
+              }`}
             />
 
             <button
@@ -95,6 +104,7 @@ export default function AuditCompany({ values, onChange }: Props) {
               Шалгах
             </button>
           </div>
+          {renderError("org_regno")}
         </div>
 
         <div className="space-y-2">
@@ -102,8 +112,11 @@ export default function AuditCompany({ values, onChange }: Props) {
           <input
             value={values.org_legal_name}
             onChange={(e) => onChange("org_legal_name", e.target.value)}
-            className="w-full rounded-lg border px-3 py-2"
+            className={`w-full rounded-lg border px-3 py-2 ${
+              errors.org_legal_name ? "border-red-500" : "border-gray-300"
+            }`}
           />
+          {renderError("org_legal_name")}
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium">Байгуулагдсан огноо</label>

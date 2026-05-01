@@ -7,6 +7,7 @@ import { useToast } from "@/context/ToastContext";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import { MessageCircle, Printer } from "lucide-react";
+import { F306_DATA_MAP1, F306_DATA_MAP2, F306_DATA_MAP3 } from "@/utils/constSelect";
 
 type Props = {
   auditId: number;
@@ -233,10 +234,11 @@ export default function Form306({ auditId, formListId }: Props) {
                         className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                       >
                         <option value="">Сонгох</option>
-                        <option value="1">Математик тооцоололтой холбоотой</option>
-                        <option value="2">НББ-ийн бодлогыг буруу хэрэгжүүлсэнтэй холбоотой</option>
-                        <option value="3">Мэдээллийг тусгахгүй орхигдуулсантай холбоотой</option>
-                        <option value="4">Буруу тусган илэрхийлсэнтэй холбоотой</option>
+                        {Object.entries(F306_DATA_MAP1).map(([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
                       </select>
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
@@ -258,12 +260,11 @@ export default function Form306({ auditId, formListId }: Props) {
                         className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                       >
                         <option value="">Сонгох</option>
-                        <option value="1">Санхүүгийн байдлын тайлан</option>
-                        <option value="2">Санхүүгийн үр дүнгийн тайлан</option>
-                        <option value="3">Мөнгөн гүйлгээний тайлан</option>
-                        <option value="4">Өмчийн өөрчлөлтийн тайлан</option>
-                        <option value="5">Нэмэлт санхүүжилтийн тайлан</option>
-                        <option value="6">Төсвийн гүйцэтгэлийн тайлан</option>
+                        {Object.entries(F306_DATA_MAP2).map(([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
                       </select>
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
@@ -285,16 +286,11 @@ export default function Form306({ auditId, formListId }: Props) {
                         className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                       >
                         <option value="">Сонгох</option>
-                        <option value="1">Орлого</option>
-                        <option value="2">Зардал</option>
-                        <option value="3">Цэвэр хөрөнгө/Өмч</option>
-                        <option value="4">Авлага</option>
-                        <option value="5">Бараа материал</option>
-                        <option value="6">Мөнгөн хөрөнгө</option>
-                        <option value="7">Үндсэн хөрөнгө</option>
-                        <option value="8">Өр төлбөр</option>
-                        <option value="9">Урьдчилж гарсан зардал</option>
-                        <option value="10">Нөөцийн бараа</option>
+                        {Object.entries(F306_DATA_MAP3).map(([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
                       </select>
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">

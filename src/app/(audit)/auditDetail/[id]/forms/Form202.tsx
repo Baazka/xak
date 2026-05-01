@@ -7,6 +7,7 @@ import { formatCurrency } from "@/lib/formatCurrency";
 import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import { useToast } from "@/context/ToastContext";
 type Props = {
   auditId: number;
   formListId: number;
@@ -34,6 +35,7 @@ export default function Form202({ auditId, formListId }: Props) {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
+  const { toast } = useToast();
 
   useEffect(() => {
     async function loadTableData() {
@@ -123,10 +125,10 @@ export default function Form202({ auditId, formListId }: Props) {
         throw new Error("Хадгалахад алдаа гарлаа");
       }
 
-      alert("Амжилттай хадгаллаа");
+      toast("success", "Амжилттай хадгаллаа");
     } catch (error) {
       console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
+      toast("error", "Хадгалахад алдаа гарлаа");
     } finally {
       setSaving(false);
     }
@@ -185,7 +187,9 @@ export default function Form202({ auditId, formListId }: Props) {
               </button>
             ))}
           </div>
-
+          <div className="hidden print:block text-sm font-semibold text-gray-800 dark:text-gray-100">
+            {activeTab}
+          </div>
           <div className="space-y-3 rounded">
             <table className="w-full text-sm text-gray-800 dark:text-gray-200">
               <thead className="bg-gray-100 dark:bg-gray-800">

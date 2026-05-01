@@ -7,6 +7,7 @@ import AuditRisk from "../components/AuditRisk";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import { MessageCircle, Printer } from "lucide-react";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   auditId: number;
@@ -41,6 +42,7 @@ export default function Form204({ auditId, formListId }: Props) {
   const [saving, setSaving] = useState(false);
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
+  const { toast } = useToast();
 
   const onChange = (id: number, value: boolean) => {
     setData((prev) =>
@@ -101,10 +103,10 @@ export default function Form204({ auditId, formListId }: Props) {
         throw new Error("Хадгалахад алдаа гарлаа");
       }
 
-      alert("Амжилттай хадгаллаа");
+      toast("success", "Амжилттай хадгаллаа");
     } catch (error) {
       console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
+      toast("error", "Хадгалахад алдаа гарлаа");
     } finally {
       setSaving(false);
     }

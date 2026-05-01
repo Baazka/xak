@@ -11,6 +11,9 @@ import DatePicker from "@/components/form/date-picker";
 import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
 import type { StepTwoData } from "@/components/audit/StepTwo";
 import StepTwo from "@/components/audit/StepTwo";
+import YearStepper from "@/components/form/YearStepper";
+import { validateForm, FormErrors, ValidationSchema } from "@/utils/validation";
+import { useToast } from "@/context/ToastContext";
 
 export type HeaderData = {
   aud_id: number;
@@ -75,6 +78,9 @@ export default function AuditOrgCard({
   const [openTeamModal, setOpenTeamModal] = useState(false);
   const [files, setFiles] = useState<UploadedFileItem[]>([]);
   const [userID, setUserIDs] = useState<UserItem[]>([]);
+  const [basicErrors, setBasicErrors] = useState<FormErrors<typeof basicForm>>({});
+  const [teamErrors, setTeamErrors] = useState<FormErrors<StepTwoData>>({});
+  const { toast } = useToast();
 
   const [savingType, setSavingType] = useState<"basic" | "team" | null>(null);
 
@@ -99,6 +105,19 @@ export default function AuditOrgCard({
     label: `${item.user_firstname} (${item.user_phone})`,
     regNo: item.user_email,
   }));
+
+  const basicSchema: ValidationSchema<typeof basicForm> = {
+    aud_name: { required: true, label: "Аудитын нэр" },
+    aud_year: { required: true, label: "Аудитын жил" },
+    aud_begin_date: { required: true, label: "Эхлэх хугацаа" },
+    aud_end_date: { required: true, label: "Дуусах хугацаа" },
+  };
+
+  const teamSchema: ValidationSchema<StepTwoData> = {
+    usertype3: { required: true, label: "Ахлах аудитор" },
+    usertype4: { required: true, label: "Аудитор" },
+    usertype5: { required: true, label: "Хянагч" },
+  };
 
   const loadMeta = async () => {
     try {
@@ -131,6 +150,22 @@ export default function AuditOrgCard({
     }
   };
   const handleSave = async (type: "basic" | "team") => {
+    const errors =
+      type === "basic"
+        ? validateForm(basicForm, basicSchema)
+        : validateForm(teamStepValues, teamSchema);
+
+    if (Object.keys(errors).length > 0) {
+      if (type === "basic") {
+        setBasicErrors(errors as FormErrors<typeof basicForm>);
+      } else {
+        setTeamErrors(errors as FormErrors<StepTwoData>);
+      }
+      return;
+    }
+
+    setBasicErrors({});
+    setTeamErrors({});
     try {
       setSavingType(type);
 
@@ -185,10 +220,10 @@ export default function AuditOrgCard({
         setOpenTeamModal(false);
       }
 
-      alert("Амжилттай хадгаллаа");
+      toast("success", "Амжилттай хадгаллаа");
     } catch (error) {
       console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
+      toast("error", "Хадгалахад алдаа гарлаа");
     } finally {
       setSavingType(null);
     }
@@ -222,6 +257,9 @@ export default function AuditOrgCard({
     });
   }, [teamData]);
 
+  const handleAudYearChange = (field: string, value: string) => {
+    setBasicForm((prev) => ({ ...prev, [field]: value }));
+  };
   const handleTeamStepChange = <K extends keyof StepTwoData>(field: K, value: StepTwoData[K]) => {
     setTeamStepValues((prev) => ({
       ...prev,
@@ -443,7 +481,21 @@ export default function AuditOrgCard({
         <LoadingScreen show={loading} />
       </div>
       <Dialog open={openBasicInfoModal} onOpenChange={setOpenBasicInfoModal}>
-        <DialogContent className="z-[1000] sm:max-w-[600px] dark:border-gray-800 dark:bg-gray-900">
+        <DialogContent
+          className="z-[1000] sm:max-w-[600px] dark:border-gray-800 dark:bg-gray-900"
+          onPointerDownOutside={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest(".flatpickr-calendar")) {
+              e.preventDefault();
+            }
+          }}
+          onInteractOutside={(e) => {
+            const target = e.target as HTMLElement;
+            if (target.closest(".flatpickr-calendar")) {
+              e.preventDefault();
+            }
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="dark:text-gray-100">Аудитын үндсэн мэдээлэл засах</DialogTitle>
           </DialogHeader>
@@ -456,21 +508,29 @@ export default function AuditOrgCard({
               <input
                 type="text"
                 value={basicForm.aud_name}
-                onChange={(e) => setBasicForm((prev) => ({ ...prev, aud_name: e.target.value }))}
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                onChange={(e) => {
+                  setBasicForm((prev) => ({ ...prev, aud_name: e.target.value }));
+                  setBasicErrors((prev) => ({ ...prev, aud_name: "" }));
+                }}
+                className={`rounded-lg border px-3 py-2 text-sm outline-none dark:bg-gray-800 dark:text-gray-100 ${
+                  basicErrors.aud_name
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-gray-300 focus:border-blue-500 dark:border-gray-700"
+                }`}
               />
+              {basicErrors.aud_name && (
+                <p className="text-xs text-red-500">{basicErrors.aud_name}</p>
+              )}
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-400">
                   Аудитын жил
                 </label>
-                <input
-                  type="number"
+                <YearStepper
                   value={basicForm.aud_year}
-                  onChange={(e) => setBasicForm((prev) => ({ ...prev, aud_year: e.target.value }))}
-                  className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  lessYear={5}
+                  onChange={(value) => handleAudYearChange("aud_year", value)}
                 />
               </div>
 
@@ -490,33 +550,35 @@ export default function AuditOrgCard({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <DatePicker
-                  id="aud_begin_date"
+                  id="basic_aud_begin_date"
                   label="Эхлэх хугацаа"
-                  defaultDate={basicForm.aud_begin_date}
+                  value={basicForm.aud_begin_date ?? ""}
                   onChange={(selectedDates) => {
-                    if (selectedDates?.[0]) {
-                      setBasicForm((prev) => ({
-                        ...prev,
-                        aud_begin_date: selectedDates[0].toISOString().slice(0, 10),
-                      }));
-                    }
+                    const d = selectedDates[0];
+
+                    setBasicForm((prev) => ({
+                      ...prev,
+                      aud_begin_date: d ? d.toISOString().slice(0, 10) : "",
+                    }));
                   }}
-                  size="lg"
                 />
               </div>
 
               <div className="grid gap-2">
                 <DatePicker
-                  id="aud_end_date"
+                  id="basic_aud_end_date"
                   label="Дуусах хугацаа"
-                  defaultDate={basicForm.aud_end_date}
+                  value={basicForm.aud_end_date ?? ""}
+                  minDate={basicForm.aud_begin_date ?? undefined}
                   onChange={(selectedDates) => {
-                    if (selectedDates?.[0]) {
-                      setBasicForm((prev) => ({
-                        ...prev,
-                        aud_end_date: selectedDates[0].toISOString().slice(0, 10),
-                      }));
-                    }
+                    const date = selectedDates?.[0];
+
+                    setBasicForm((prev) => ({
+                      ...prev,
+                      aud_end_date: date ? date.toISOString().slice(0, 10) : "",
+                    }));
+
+                    setBasicErrors((prev) => ({ ...prev, aud_end_date: "" }));
                   }}
                   size="lg"
                 />
@@ -573,7 +635,11 @@ export default function AuditOrgCard({
             <StepTwo
               values={teamStepValues}
               userOptions={userOptions}
-              onChange={handleTeamStepChange}
+              errors={teamErrors}
+              onChange={(field, value) => {
+                handleTeamStepChange(field, value);
+                setTeamErrors((prev) => ({ ...prev, [field]: "" }));
+              }}
             />
           </div>
 

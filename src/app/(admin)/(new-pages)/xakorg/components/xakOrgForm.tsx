@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { FormErrors, validateForm, ValidationSchema } from "@/utils/validation";
 
-type XakOrgFormData = {
+export type XakOrgFormData = {
   org_register_no: string;
   org_legal_name: string;
   org_phone: string;
@@ -16,192 +17,214 @@ type XakOrgFormData = {
 
 type Props = {
   id?: string;
-  initialData?: XakOrgFormData;
+  initialData?: Partial<XakOrgFormData>;
   onSubmit?: (data: XakOrgFormData) => Promise<void>;
   loading?: boolean;
 };
 
+const emptyForm: XakOrgFormData = {
+  org_register_no: "",
+  org_legal_name: "",
+  org_phone: "",
+  org_email: "",
+  org_address: "",
+  org_head_name: "",
+  org_head_phone: "",
+  org_head_email: "",
+};
+
+const validationSchema: ValidationSchema<XakOrgFormData> = {
+  org_register_no: {
+    required: true,
+    label: "ХАК регистрын дугаар",
+  },
+  org_legal_name: {
+    required: true,
+    label: "Хуулийн этгээдийн нэр",
+  },
+  org_phone: {
+    required: true,
+    label: "Утас",
+    pattern: /^[0-9]{8}$/,
+    message: "Утасны дугаар 8 оронтой байх ёстой",
+  },
+  org_email: {
+    required: true,
+    label: "Имэйл",
+    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    message: "Имэйл хаяг буруу байна",
+  },
+  org_address: {
+    required: true,
+    label: "Хаяг",
+  },
+  org_head_name: {
+    required: true,
+    label: "Удирдлагын нэр",
+  },
+  org_head_phone: {
+    required: true,
+    label: "Удирдлагын утас",
+    pattern: /^[0-9]{8}$/,
+    message: "Утасны дугаар 8 оронтой байх ёстой",
+  },
+  org_head_email: {
+    required: true,
+    label: "Удирдлагын имэйл",
+    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    message: "Имэйл хаяг буруу байна",
+  },
+};
+
 export default function XakOrgForm({ initialData, onSubmit, loading = false }: Props) {
   const [form, setForm] = useState<XakOrgFormData>({
-    org_register_no: initialData?.org_register_no ?? "",
-    org_legal_name: initialData?.org_legal_name ?? "",
-    org_phone: initialData?.org_phone ?? "",
-    org_email: initialData?.org_email ?? "",
-    org_address: initialData?.org_address ?? "",
-    org_head_name: initialData?.org_head_name ?? "",
-    org_head_phone: initialData?.org_head_phone ?? "",
-    org_head_email: initialData?.org_head_email ?? "",
+    ...emptyForm,
+    ...initialData,
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const inputClass = `
-w-full rounded-lg border px-3 py-2 text-sm
-focus:outline-none focus:ring-1
-dark:bg-gray-900 dark:text-white
-`;
+  const [errors, setErrors] = useState<FormErrors<XakOrgFormData>>({});
 
-  const normalClass = `
-border-gray-300 focus:border-brand-500 focus:ring-brand-500
-dark:border-gray-700
-`;
+  const inputClass =
+    "w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-1 dark:bg-gray-900 dark:text-white";
 
-  const errorClass = `
-border-red-500 focus:border-red-500 focus:ring-red-500
-`;
+  const normalClass =
+    "border-gray-300 focus:border-brand-500 focus:ring-brand-500 dark:border-gray-700";
+
+  const errorClass = "border-red-500 focus:border-red-500 focus:ring-red-500";
+
+  const getInputClass = (field: keyof XakOrgFormData) =>
+    `${inputClass} ${errors[field] ? errorClass : normalClass}`;
+
+  const handleChange = (field: keyof XakOrgFormData, value: string) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    if (errors[field]) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: undefined,
+      }));
+    }
+  };
+
+  const renderError = (field: keyof XakOrgFormData) =>
+    errors[field] ? <p className="mt-1 text-xs text-red-500">{errors[field]}</p> : null;
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (loading) return;
+
+    const validationErrors = validateForm(form, validationSchema);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      const firstErrorField = Object.keys(validationErrors)[0];
+
+      document.querySelector(`[name="${firstErrorField}"]`)?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      return;
+    }
+
+    await onSubmit?.(form);
+  };
+
   return (
-    <form
-      className="space-y-6"
-      onSubmit={async (e) => {
-        e.preventDefault();
-
-        if (loading) return;
-
-        const newErrors: any = {};
-
-        if (!form.org_register_no.trim()) {
-          newErrors.org_register_no = "ХАК регистрын дугаар заавал бөглөх";
-        }
-        if (!form.org_legal_name.trim()) {
-          newErrors.org_legal_name = "ХАК нэр заавал бөглөх";
-        }
-        if (!form.org_phone.trim()) {
-          newErrors.org_phone = "ХАК утас заавал бөглөх";
-        }
-        if (!form.org_address.trim()) {
-          newErrors.org_address = "ХАК хаяг заавал бөглөх";
-        }
-        if (!form.org_email.trim()) {
-          newErrors.org_email = "ХАК мэйл заавал бөглөх";
-        }
-        if (!form.org_head_name.trim()) {
-          newErrors.org_head_name = "Удирдлага нэр заавал бөглөх";
-        }
-        if (!form.org_head_phone.trim()) {
-          newErrors.org_head_phone = "Удирдлага утас заавал бөглөх";
-        }
-        if (!form.org_head_email.trim()) {
-          newErrors.org_head_email = "Удирдлага мэйл заавал бөглөх";
-        }
-
-        setErrors(newErrors);
-
-        if (Object.keys(newErrors).length > 0) return;
-        await onSubmit?.(form);
-      }}
-    >
+    <form className="space-y-6" onSubmit={handleSubmit}>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium">ХАК регистрын дугаар</label>
           <input
-            className={`${inputClass} ${errors.org_register_no ? errorClass : normalClass}`}
+            name="org_register_no"
             value={form.org_register_no}
-            onChange={(e) => {
-              setForm({ ...form, org_register_no: e.target.value });
-              setErrors((prev) => ({ ...prev, org_register_no: "" }));
-            }}
+            onChange={(e) => handleChange("org_register_no", e.target.value)}
+            className={getInputClass("org_register_no")}
           />
-          {errors.org_register_no && (
-            <p className="mt-1 text-xs text-red-500">{errors.org_register_no}</p>
-          )}
+          {renderError("org_register_no")}
         </div>
 
         <div>
           <label className="mb-1 block text-sm font-medium">ХАК нэр</label>
           <input
-            className={`${inputClass} ${errors.org_legal_name ? errorClass : normalClass}`}
+            name="org_legal_name"
             value={form.org_legal_name}
-            onChange={(e) => {
-              setForm({ ...form, org_legal_name: e.target.value });
-              setErrors((prev) => ({ ...prev, org_legal_name: "" }));
-            }}
+            onChange={(e) => handleChange("org_legal_name", e.target.value)}
+            className={getInputClass("org_legal_name")}
           />
-          {errors.org_legal_name && (
-            <p className="mt-1 text-xs text-red-500">{errors.org_legal_name}</p>
-          )}
+          {renderError("org_legal_name")}
         </div>
 
         <div>
           <label className="mb-1 block text-sm font-medium">ХАК утас</label>
           <input
-            className={`${inputClass} ${errors.org_phone ? errorClass : normalClass}`}
-            value={form.org_phone ?? ""}
-            onChange={(e) => {
-              setForm({ ...form, org_phone: e.target.value });
-              setErrors((prev) => ({ ...prev, org_phone: "" }));
-            }}
+            name="org_phone"
+            value={form.org_phone}
+            onChange={(e) => handleChange("org_phone", e.target.value)}
+            className={getInputClass("org_phone")}
           />
-          {errors.org_phone && <p className="mt-1 text-xs text-red-500">{errors.org_phone}</p>}
+          {renderError("org_phone")}
         </div>
 
         <div>
           <label className="mb-1 block text-sm font-medium">ХАК мэйл</label>
           <input
-            className={`${inputClass} ${errors.org_email ? errorClass : normalClass}`}
-            value={form.org_email ?? ""}
-            onChange={(e) => {
-              setForm({ ...form, org_email: e.target.value });
-              setErrors((prev) => ({ ...prev, org_email: "" }));
-            }}
+            name="org_email"
+            value={form.org_email}
+            onChange={(e) => handleChange("org_email", e.target.value)}
+            className={getInputClass("org_email")}
           />
-          {errors.org_email && <p className="mt-1 text-xs text-red-500">{errors.org_email}</p>}
+          {renderError("org_email")}
         </div>
 
         <div className="md:col-span-2">
           <label className="mb-1 block text-sm font-medium">ХАК хаяг</label>
           <textarea
-            className={`${inputClass} ${errors.org_address ? errorClass : normalClass}`}
-            value={form.org_address ?? ""}
-            onChange={(e) => {
-              setForm({ ...form, org_address: e.target.value });
-              setErrors((prev) => ({ ...prev, org_address: "" }));
-            }}
+            name="org_address"
+            value={form.org_address}
+            onChange={(e) => handleChange("org_address", e.target.value)}
+            className={`${getInputClass("org_address")} min-h-24`}
           />
-          {errors.org_address && <p className="mt-1 text-xs text-red-500">{errors.org_address}</p>}
+          {renderError("org_address")}
         </div>
       </div>
+
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div>
           <label className="mb-1 block text-sm font-medium">Удирдлага нэр</label>
           <input
-            className={`${inputClass} ${errors.org_head_name ? errorClass : normalClass}`}
-            value={form.org_head_name ?? ""}
-            onChange={(e) => {
-              setForm({ ...form, org_head_name: e.target.value });
-              setErrors((prev) => ({ ...prev, org_head_name: "" }));
-            }}
+            name="org_head_name"
+            value={form.org_head_name}
+            onChange={(e) => handleChange("org_head_name", e.target.value)}
+            className={getInputClass("org_head_name")}
           />
-          {errors.org_head_name && (
-            <p className="mt-1 text-xs text-red-500">{errors.org_head_name}</p>
-          )}
+          {renderError("org_head_name")}
         </div>
 
         <div>
           <label className="mb-1 block text-sm font-medium">Удирдлага утас</label>
           <input
-            className={`${inputClass} ${errors.org_head_phone ? errorClass : normalClass}`}
-            value={form.org_head_phone ?? ""}
-            onChange={(e) => {
-              setForm({ ...form, org_head_phone: e.target.value });
-              setErrors((prev) => ({ ...prev, org_head_phone: "" }));
-            }}
+            name="org_head_phone"
+            value={form.org_head_phone}
+            onChange={(e) => handleChange("org_head_phone", e.target.value)}
+            className={getInputClass("org_head_phone")}
           />
-          {errors.org_head_phone && (
-            <p className="mt-1 text-xs text-red-500">{errors.org_head_phone}</p>
-          )}
+          {renderError("org_head_phone")}
         </div>
+
         <div>
           <label className="mb-1 block text-sm font-medium">Удирдлага мэйл</label>
           <input
-            className={`${inputClass} ${errors.org_head_email ? errorClass : normalClass}`}
-            value={form.org_head_email ?? ""}
-            onChange={(e) => {
-              setForm({ ...form, org_head_email: e.target.value });
-              setErrors((prev) => ({ ...prev, org_head_email: "" }));
-            }}
+            name="org_head_email"
+            value={form.org_head_email}
+            onChange={(e) => handleChange("org_head_email", e.target.value)}
+            className={getInputClass("org_head_email")}
           />
-          {errors.org_head_email && (
-            <p className="mt-1 text-xs text-red-500">{errors.org_head_email}</p>
-          )}
+          {renderError("org_head_email")}
         </div>
       </div>
 

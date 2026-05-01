@@ -1,117 +1,82 @@
 import DatePicker from "@/components/form/date-picker";
+import YearStepper from "../form/YearStepper";
+import { FormErrors } from "@/utils/validation";
 
-type StepOneData = {
+export type StepOneData = {
   aud_name: string;
   aud_year: string;
-  aud_begin_date: Date;
-  aud_end_date: Date;
+  aud_begin_date: Date | null;
+  aud_end_date: Date | null;
 };
 
 type Props = {
   values: StepOneData;
+  errors?: FormErrors<StepOneData>;
   onChange: <K extends keyof StepOneData>(field: K, value: StepOneData[K]) => void;
 };
 
-export default function StepOne({ values, onChange }: Props) {
-  const currentYear = new Date().getFullYear();
-  const MIN_YEAR = currentYear - 5;
-  const safeYear =
-    values.aud_year === "" || values.aud_year == null ? currentYear : Number(values.aud_year);
+export default function StepOne({ values, errors = {}, onChange }: Props) {
+  const inputClass = (field: keyof StepOneData) =>
+    `w-full rounded-lg border px-3 py-2 outline-none transition focus:ring-1 ${
+      errors[field]
+        ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+        : "border-gray-300 focus:border-brand-500 focus:ring-brand-500"
+    }`;
+
+  const renderError = (field: keyof StepOneData) =>
+    errors[field] ? <p className="mt-1 text-xs text-red-500">{errors[field]}</p> : null;
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <div className="space-y-2">
         <label className="block text-sm font-medium">Аудитын нэр</label>
         <input
+          name="aud_name"
           type="text"
-          value={values.aud_name}
+          value={values.aud_name ?? ""}
           onChange={(e) => onChange("aud_name", e.target.value)}
-          className="w-full rounded-lg border px-3 py-2"
+          className={inputClass("aud_name")}
           placeholder="Аудитын нэр"
         />
+        {renderError("aud_name")}
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium">Жил</label>
-
-        <div className="relative flex max-w-[9rem] items-center rounded-base shadow-xs">
-          <button
-            type="button"
-            onClick={() => {
-              const next = Math.max(MIN_YEAR, safeYear - 1);
-              onChange("aud_year", String(next));
-            }}
-            className="box-border h-10 rounded-s-base border border-default-medium bg-neutral-secondary-medium px-3 disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={safeYear <= MIN_YEAR}
-          >
-            −
-          </button>
-
-          <input
-            type="number"
-            min={MIN_YEAR}
-            max={currentYear}
-            value={safeYear}
-            onChange={(e) => {
-              const raw = e.target.value;
-
-              if (raw === "") {
-                onChange("aud_year", "");
-                return;
-              }
-
-              let next = Number(raw);
-
-              if (Number.isNaN(next)) next = currentYear;
-              if (next < MIN_YEAR) next = MIN_YEAR;
-              if (next > currentYear) next = currentYear;
-
-              onChange("aud_year", String(next));
-            }}
-            className="h-10 w-full border-y border-default-medium text-center focus:outline-none"
-            readOnly
+        <label className="block text-sm font-medium">Аудитын жил</label>
+        <div className={errors.aud_year ? "rounded-lg border border-red-500" : ""}>
+          <YearStepper
+            value={values.aud_year}
+            lessYear={5}
+            onChange={(value) => onChange("aud_year", value)}
           />
-
-          <button
-            type="button"
-            onClick={() => {
-              const next = Math.min(currentYear, safeYear + 1);
-              onChange("aud_year", String(next));
-            }}
-            className="box-border h-10 rounded-e-base border border-default-medium bg-neutral-secondary-medium px-3 disabled:cursor-not-allowed disabled:opacity-50"
-            disabled={safeYear >= currentYear}
-          >
-            +
-          </button>
         </div>
+        {renderError("aud_year")}
       </div>
 
-      <div className="space-y-2 overflow-visible ">
+      <div className="space-y-2 overflow-visible">
         <DatePicker
           id="aud_begin_date"
           label="Эхлэх хугацаа"
-          defaultDate={values.aud_begin_date}
+          defaultDate={values.aud_begin_date ?? undefined}
           onChange={(selectedDates) => {
-            if (selectedDates?.[0]) {
-              onChange("aud_begin_date", selectedDates[0]);
-            }
+            onChange("aud_begin_date", selectedDates?.[0] ?? null);
           }}
           size="lg"
         />
+        {renderError("aud_begin_date")}
       </div>
 
       <div className="space-y-2 overflow-visible">
         <DatePicker
           id="aud_end_date"
           label="Дуусах хугацаа"
-          defaultDate={values.aud_end_date}
+          defaultDate={values.aud_end_date ?? undefined}
           onChange={(selectedDates) => {
-            if (selectedDates?.[0]) {
-              onChange("aud_end_date", selectedDates[0]);
-            }
+            onChange("aud_end_date", selectedDates?.[0] ?? null);
           }}
           size="lg"
         />
+        {renderError("aud_end_date")}
       </div>
     </div>
   );

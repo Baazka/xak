@@ -6,6 +6,7 @@ import FormActionSection from "../components/FormActionSection";
 import { usePrint } from "@/hooks/usePrint";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { MessageCircle, Printer } from "lucide-react";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   auditId: number;
@@ -36,6 +37,7 @@ export default function Form104({ auditId, formListId }: Props) {
   const [saving, setSaving] = useState(false);
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
+  const { toast } = useToast();
 
   const onChange = (id: number, value: boolean) => {
     setData((prev) => prev.map((row) => (row.ind_id === id ? { ...row, noti_value: value } : row)));
@@ -106,10 +108,10 @@ export default function Form104({ auditId, formListId }: Props) {
         throw new Error("Хадгалахад алдаа гарлаа");
       }
 
-      alert("Амжилттай хадгаллаа");
+      toast("success", "Амжилттай хадгаллаа");
     } catch (error) {
       console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
+      toast("error", "Хадгалахад алдаа гарлаа");
     } finally {
       setSaving(false);
     }
@@ -128,7 +130,7 @@ export default function Form104({ auditId, formListId }: Props) {
 
   return (
     <>
-      <div className="m-2 flex items-center justify-between gap-4">
+      <div className="sticky top-0 z-20 m-2 flex items-center justify-between gap-4 border-b border-gray-200 bg-white py-2 dark:border-gray-800 dark:bg-gray-900">
         <div className="flex items-center gap-2">
           <label className="whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">Баг:</label>
 

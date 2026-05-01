@@ -7,6 +7,7 @@ import { useToast } from "@/context/ToastContext";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import { MessageCircle, Printer } from "lucide-react";
+import { F207_DATA_MAP2, F304_DATA_MAP1 } from "@/utils/constSelect";
 
 type Props = {
   auditId: number;
@@ -246,9 +247,11 @@ export default function Form304({ auditId, formListId }: Props) {
                         className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                       >
                         <option value="">Сонгох</option>
-                        <option value="1">Алдаа</option>
-                        <option value="2">Зөрчил</option>
-                        <option value="3">Үгүй</option>
+                        {Object.entries(F304_DATA_MAP1).map(([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
                       </select>
                     </td>
                   </tr>
@@ -313,13 +316,8 @@ export default function Form304({ auditId, formListId }: Props) {
                       {row.risk_sub_group_name}
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      {row.resp_sub_rtype_id === 1
-                        ? "Хяналтын сорил"
-                        : row.resp_sub_rtype_id === 2
-                          ? "Шинжилгээний горим"
-                          : row.resp_sub_rtype_id === 3
-                            ? "Нарийвчилсан сорил"
-                            : ""}
+                      {F207_DATA_MAP2[String(row.resp_rtype_id)]?.[String(row.resp_sub_rtype_id)] ??
+                        "-"}
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
                       {row.resp_response}
@@ -379,9 +377,11 @@ export default function Form304({ auditId, formListId }: Props) {
                         className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                       >
                         <option value="">Сонгох</option>
-                        <option value="1">Алдаа</option>
-                        <option value="2">Зөрчил</option>
-                        <option value="3">Үгүй</option>
+                        {Object.entries(F304_DATA_MAP1).map(([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
                       </select>
                     </td>
                   </tr>
@@ -494,9 +494,11 @@ export default function Form304({ auditId, formListId }: Props) {
                         className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                       >
                         <option value="">Сонгох</option>
-                        <option value="1">Алдаа</option>
-                        <option value="2">Зөрчил</option>
-                        <option value="3">Үгүй</option>
+                        {Object.entries(F304_DATA_MAP1).map(([value, label]) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
                       </select>
                     </td>
                   </tr>

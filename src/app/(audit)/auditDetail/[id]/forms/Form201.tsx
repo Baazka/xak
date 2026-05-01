@@ -1,12 +1,13 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import AuditRisk from "../components/AuditRisk";
 import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   auditId: number;
@@ -29,6 +30,8 @@ export default function Form201({ auditId, formListId }: Props) {
   const [saving, setSaving] = useState(false);
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<string>("");
 
   useEffect(() => {
     async function loadTableData() {
@@ -52,14 +55,6 @@ export default function Form201({ auditId, formListId }: Props) {
 
     loadTableData();
   }, [auditId]);
-
-  const [activeTab, setActiveTab] = useState<string>("");
-
-  useEffect(() => {
-    if (Object.keys(groupedData).length > 0) {
-      setActiveTab(Object.keys(groupedData)[0]);
-    }
-  }, [data]);
 
   const handleSave = async () => {
     try {
@@ -88,25 +83,36 @@ export default function Form201({ auditId, formListId }: Props) {
         throw new Error("Хадгалахад алдаа гарлаа");
       }
 
-      alert("Амжилттай хадгаллаа");
+      toast("success", "Амжилттай хадгаллаа");
     } catch (error) {
       console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
+      toast("error", "Хадгалахад алдаа гарлаа");
     } finally {
       setSaving(false);
     }
   };
 
-  const groupedData = (Array.isArray(data) ? data : []).reduce(
-    (acc, row) => {
-      if (!acc[row.ind_group_label]) {
-        acc[row.ind_group_label] = [];
-      }
-      acc[row.ind_group_label].push(row);
-      return acc;
-    },
-    {} as Record<string, TableRow[]>
-  );
+  const groupedData = useMemo(() => {
+    return (Array.isArray(data) ? data : []).reduce(
+      (acc, row) => {
+        const key = row.ind_group_label ?? "null";
+
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(row);
+
+        return acc;
+      },
+      {} as Record<string, TableRow[]>
+    );
+  }, [data]);
+
+  const groupKeys = useMemo(() => Object.keys(groupedData), [groupedData]);
+
+  useEffect(() => {
+    if (!activeTab && groupKeys.length > 0) {
+      setActiveTab(groupKeys[0]);
+    }
+  }, [activeTab, groupKeys]);
 
   return (
     <>
@@ -146,9 +152,10 @@ export default function Form201({ auditId, formListId }: Props) {
           </div>
 
           <div className="mb-3 flex gap-2 overflow-x-auto border-b border-gray-200 dark:border-gray-700">
-            {Object.keys(groupedData).map((group) => (
+            {groupKeys.map((group) => (
               <button
                 key={group}
+                type="button"
                 onClick={() => setActiveTab(group)}
                 className={`whitespace-nowrap border-b-2 px-4 py-2 text-sm ${
                   activeTab === group
@@ -160,7 +167,9 @@ export default function Form201({ auditId, formListId }: Props) {
               </button>
             ))}
           </div>
-
+          <div className="hidden print:block text-sm font-semibold text-gray-800 dark:text-gray-100">
+            {activeTab}
+          </div>
           <div className="space-y-3 rounded">
             <table className="w-full text-sm text-gray-800 dark:text-gray-200">
               <thead className="bg-gray-100 dark:bg-gray-800">

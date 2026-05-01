@@ -7,6 +7,7 @@ import { useToast } from "@/context/ToastContext";
 import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import { F205_DATA_MAP1, F205_DATA_MAP2, F205_DATA_MAP3 } from "@/utils/constSelect";
 
 type Props = {
   auditId: number;
@@ -348,8 +349,11 @@ export default function Form205({ auditId, formListId }: Props) {
                           className="flex rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                         >
                           <option value={0}>Сонгох</option>
-                          <option value={1}>Уламжлалт эрсдэл</option>
-                          <option value={2}>Хяналтын эрсдэл</option>
+                          {Object.entries(F205_DATA_MAP1).map(([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ))}
                         </select>
                       </td>
                       <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
@@ -367,9 +371,11 @@ export default function Form205({ auditId, formListId }: Props) {
                           className="rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                         >
                           <option value={0}>Сонгох</option>
-                          <option value={0.3}>0.3 - Бага</option>
-                          <option value={0.6}>0.6 - Дунд</option>
-                          <option value={0.9}>0.9 - Их</option>
+                          {Object.entries(F205_DATA_MAP2).map(([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ))}
                         </select>
                       </td>
                       <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
@@ -387,9 +393,11 @@ export default function Form205({ auditId, formListId }: Props) {
                           className="rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                         >
                           <option value={0}>Сонгох</option>
-                          <option value={0.3}>0.3 - Бага</option>
-                          <option value={0.6}>0.6 - Дунд</option>
-                          <option value={0.9}>0.9 - Их</option>
+                          {Object.entries(F205_DATA_MAP2).map(([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ))}
                         </select>
                       </td>
                       <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
@@ -557,21 +565,11 @@ export default function Form205({ auditId, formListId }: Props) {
                       className="rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                     >
                       <option value="">Сонгох</option>
-                      <option value="85">85%</option>
-                      <option value="86">86%</option>
-                      <option value="87">87%</option>
-                      <option value="88">88%</option>
-                      <option value="89">89%</option>
-                      <option value="90">90%</option>
-                      <option value="91">91%</option>
-                      <option value="92">92%</option>
-                      <option value="93">93%</option>
-                      <option value="94">94%</option>
-                      <option value="95">95%</option>
-                      <option value="96">96%</option>
-                      <option value="97">97%</option>
-                      <option value="98">98%</option>
-                      <option value="99">99%</option>
+                      {Object.entries(F205_DATA_MAP3).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
                     </select>
                   </td>
                   <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">

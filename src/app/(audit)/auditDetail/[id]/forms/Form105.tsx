@@ -7,6 +7,14 @@ import AuditRisk from "../components/AuditRisk";
 import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import {
+  CR105_RATE_MAP1,
+  CR105_RATE_MAP2,
+  CR105_RATE_MAP3,
+  CR105_RATE_MAP4,
+  CR105_RATE_MAP5,
+} from "@/utils/constSelect";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   auditId: number;
@@ -30,6 +38,7 @@ export default function Form105({ auditId, formListId }: Props) {
   const [saving, setSaving] = useState(false);
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
+  const { toast } = useToast();
 
   const onRadioChange = (cr_id: number, value: string) => {
     setData((prev) =>
@@ -91,10 +100,10 @@ export default function Form105({ auditId, formListId }: Props) {
         throw new Error("Хадгалахад алдаа гарлаа");
       }
 
-      alert("Амжилттай хадгаллаа");
+      toast("success", "Амжилттай хадгаллаа");
     } catch (error) {
       console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
+      toast("error", "Хадгалахад алдаа гарлаа");
     } finally {
       setSaving(false);
     }
@@ -203,9 +212,11 @@ export default function Form105({ auditId, formListId }: Props) {
                             className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
-                            <option value="1">СТОУС</option>
-                            <option value="2">ЖДААН-ийн СТОУС</option>
-                            <option value="3">УСНББОУС</option>
+                            {Object.entries(CR105_RATE_MAP1).map(([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ))}
                           </select>
                         ) : row.cr_ind_id === 23 ? (
                           <select
@@ -214,9 +225,11 @@ export default function Form105({ auditId, formListId }: Props) {
                             className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
-                            <option value="1">Аккруэл суурь</option>
-                            <option value="2">Тохируулсан аккруэл суурь</option>
-                            <option value="3">Тохируулсан мөнгөн суурь</option>
+                            {Object.entries(CR105_RATE_MAP2).map(([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ))}
                           </select>
                         ) : row.cr_ind_id === 24 ? (
                           <select
@@ -225,8 +238,11 @@ export default function Form105({ auditId, formListId }: Props) {
                             className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
-                            <option value="1">Нийтлэг зорилготой</option>
-                            <option value="2">Тусгай зорилготой</option>
+                            {Object.entries(CR105_RATE_MAP3).map(([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ))}
                           </select>
                         ) : row.cr_ind_id === 25 ? (
                           <select
@@ -235,10 +251,11 @@ export default function Form105({ auditId, formListId }: Props) {
                             className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
-                            <option value="1">Хувьцаа эзэмшигчид, ТУЗ</option>
-                            <option value="2">Төрийн байгууллага</option>
-                            <option value="3">Зээлдүүлэгч/Донор байгууллага</option>
-                            <option value="4">Бусад</option>
+                            {Object.entries(CR105_RATE_MAP4).map(([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ))}
                           </select>
                         ) : row.cr_ind_id === 26 ? (
                           <select
@@ -247,8 +264,11 @@ export default function Form105({ auditId, formListId }: Props) {
                             className="w-full rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                           >
                             <option value="">Сонгох</option>
-                            <option value="1">Үнэн зөв толилуулгын</option>
-                            <option value="2">Нийцлийн</option>
+                            {Object.entries(CR105_RATE_MAP5).map(([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ))}
                           </select>
                         ) : (
                           <div className="flex items-center justify-center gap-4 text-gray-700 dark:text-gray-200">

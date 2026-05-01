@@ -1,12 +1,13 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import AuditRisk from "../components/AuditRisk";
 import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   auditId: number;
@@ -17,7 +18,7 @@ type TableRow = {
   info_id: number;
   info_form_id: number;
   info_ind_id: number;
-  ind_group_label: string;
+  ind_group_label: string | null;
   ind_label: string;
   info_ind_value: string | null;
 };
@@ -27,8 +28,13 @@ export default function Form203({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("");
+
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
+  const { toast } = useToast();
+
+  const FORCE_FIRST_TAB_IND_IDS = [87, 88, 89, 90, 91];
 
   useEffect(() => {
     async function loadTableData() {
@@ -38,12 +44,17 @@ export default function Form203({ auditId, formListId }: Props) {
         const res = await fetchWithAuth(
           `/api/audit/form201_203?aud_id=${auditId}&form_list_id=${formListId}`
         );
+
         const result = await res.json();
+        const rows = Array.isArray(result.data) ? result.data : [];
 
-        setData(Array.isArray(result.data) ? result.data : []);
-        console.log(result.data, "result203");
-
+        setData(rows);
         setFormId(result.form_id ?? 0);
+
+        setActiveTab((prev) => {
+          if (prev) return prev;
+          return rows.find((row) => row.ind_group_label)?.ind_group_label ?? "Бусад";
+        });
       } catch (err) {
         console.error(err);
       } finally {
@@ -52,15 +63,28 @@ export default function Form203({ auditId, formListId }: Props) {
     }
 
     loadTableData();
-  }, [auditId]);
+  }, [auditId, formListId]);
 
-  const [activeTab, setActiveTab] = useState<string>("");
+  const SPECIAL_TAB_KEY = "Хяналтын үйл ажиллагаа";
+  const groupedData = useMemo(() => {
+    const rows = Array.isArray(data) ? data : [];
 
-  useEffect(() => {
-    if (Object.keys(groupedData).length > 0) {
-      setActiveTab(Object.keys(groupedData)[0]);
-    }
+    return rows.reduce(
+      (acc, row) => {
+        const isSpecial = FORCE_FIRST_TAB_IND_IDS.includes(Number(row.info_ind_id));
+
+        const key = isSpecial ? SPECIAL_TAB_KEY : (row.ind_group_label ?? "Бусад");
+
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(row);
+
+        return acc;
+      },
+      {} as Record<string, TableRow[]>
+    );
   }, [data]);
+
+  const groupKeys = useMemo(() => Object.keys(groupedData), [groupedData]);
 
   const handleSave = async () => {
     try {
@@ -85,29 +109,16 @@ export default function Form203({ auditId, formListId }: Props) {
         }),
       });
 
-      if (!res.ok) {
-        throw new Error("Хадгалахад алдаа гарлаа");
-      }
+      if (!res.ok) throw new Error("Хадгалахад алдаа гарлаа");
 
-      alert("Амжилттай хадгаллаа");
+      toast("success", "Амжилттай хадгаллаа");
     } catch (error) {
       console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
+      toast("error", "Хадгалахад алдаа гарлаа");
     } finally {
       setSaving(false);
     }
   };
-
-  const groupedData = (Array.isArray(data) ? data : []).reduce(
-    (acc, row) => {
-      if (!acc[row.ind_group_label]) {
-        acc[row.ind_group_label] = [];
-      }
-      acc[row.ind_group_label].push(row);
-      return acc;
-    },
-    {} as Record<string, TableRow[]>
-  );
 
   return (
     <>
@@ -115,7 +126,7 @@ export default function Form203({ auditId, formListId }: Props) {
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
-          <div className="flex items-center justify-end gap-2 mb-2">
+          <div className="sticky top-0 z-10 mb-2 flex items-center justify-end gap-2 bg-white py-2 dark:bg-gray-900">
             <button
               type="button"
               onClick={handleSave}
@@ -127,13 +138,14 @@ export default function Form203({ auditId, formListId }: Props) {
               )}
               {saving ? "Хадгалж байна..." : "Хадгалах"}
             </button>
+
             <button
               type="button"
               onClick={() => openHelp({ audId: auditId, formId: formListId })}
               className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
               title="Тусламж"
             >
-              <MessageCircle className="w-4 h-4" />
+              <MessageCircle className="h-4 w-4" />
             </button>
 
             <button
@@ -142,18 +154,19 @@ export default function Form203({ auditId, formListId }: Props) {
               className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
               title="Хэвлэх"
             >
-              <Printer className="w-4 h-4" />
+              <Printer className="h-4 w-4" />
             </button>
           </div>
 
           <div className="mb-3 flex gap-2 overflow-x-auto border-b border-gray-200 dark:border-gray-700">
-            {Object.keys(groupedData).map((group) => (
+            {groupKeys.map((group) => (
               <button
                 key={group}
+                type="button"
                 onClick={() => setActiveTab(group)}
-                className={`px-4 py-2 text-sm whitespace-nowrap border-b-2 ${
+                className={`whitespace-nowrap border-b-2 px-4 py-2 text-sm ${
                   activeTab === group
-                    ? "border-blue-600 text-blue-600 font-semibold dark:border-blue-400 dark:text-blue-400"
+                    ? "border-blue-600 font-semibold text-blue-600 dark:border-blue-400 dark:text-blue-400"
                     : "border-transparent text-gray-500 dark:text-gray-400"
                 }`}
               >
@@ -161,7 +174,9 @@ export default function Form203({ auditId, formListId }: Props) {
               </button>
             ))}
           </div>
-
+          <div className="hidden print:block text-sm font-semibold text-gray-800 dark:text-gray-100">
+            {activeTab}
+          </div>
           <div className="space-y-3 rounded">
             <table className="w-full text-sm text-gray-800 dark:text-gray-200">
               <thead className="bg-gray-100 dark:bg-gray-800">
@@ -179,44 +194,82 @@ export default function Form203({ auditId, formListId }: Props) {
               </thead>
 
               <tbody>
-                {groupedData[activeTab]?.length ? (
-                  groupedData[activeTab].map((row, index) => (
-                    <tr key={row.info_id} className="bg-white dark:bg-gray-900">
-                      <td className="border border-gray-200 p-2 text-center dark:border-gray-700">
-                        {index + 1}
-                      </td>
+                {activeTab === SPECIAL_TAB_KEY
+                  ? Object.entries(
+                      (groupedData[activeTab] ?? []).reduce(
+                        (acc, row) => {
+                          const key = row.ind_group_label ?? "Бусад";
 
-                      <td className="border border-gray-200 p-2 dark:border-gray-700">
-                        {row.ind_label}
-                      </td>
+                          if (!acc[key]) acc[key] = [];
+                          acc[key].push(row);
 
-                      <td className="border border-gray-200 p-2 dark:border-gray-700">
-                        <textarea
-                          value={row.info_ind_value ?? ""}
-                          onChange={(e) =>
-                            setData((prev) =>
-                              prev.map((r) =>
-                                r.info_id === row.info_id
-                                  ? {
-                                      ...r,
-                                      info_ind_value: e.target.value,
-                                    }
-                                  : r
+                          return acc;
+                        },
+                        {} as Record<string, TableRow[]>
+                      )
+                    ).map(([groupLabel, rows]) => (
+                      <Fragment key={groupLabel}>
+                        <tr>
+                          <td
+                            colSpan={3}
+                            className="border border-gray-200 p-2 dark:border-gray-700"
+                          >
+                            {groupLabel}
+                          </td>
+                        </tr>
+
+                        {rows.map((row, index) => (
+                          <tr key={row.info_id}>
+                            <td className="border border-gray-200 p-2 text-center dark:border-gray-700">
+                              {index + 1}
+                            </td>
+                            <td className="border border-gray-200 p-2 dark:border-gray-700">
+                              {row.ind_label}
+                            </td>
+                            <td className="border border-gray-200 p-2 dark:border-gray-700">
+                              <textarea
+                                value={row.info_ind_value ?? ""}
+                                onChange={(e) =>
+                                  setData((prev) =>
+                                    prev.map((r) =>
+                                      r.info_id === row.info_id
+                                        ? { ...r, info_ind_value: e.target.value }
+                                        : r
+                                    )
+                                  )
+                                }
+                                className="w-full rounded border border-gray-300 bg-white p-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:ring-blue-400"
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </Fragment>
+                    ))
+                  : (groupedData[activeTab] ?? []).map((row, index) => (
+                      <tr key={row.info_id}>
+                        <td className="border border-gray-200 p-2 text-center dark:border-gray-700">
+                          {index + 1}
+                        </td>
+                        <td className="border border-gray-200 p-2 dark:border-gray-700">
+                          {row.ind_label}
+                        </td>
+                        <td className="border border-gray-200 p-2 dark:border-gray-700">
+                          <textarea
+                            value={row.info_ind_value ?? ""}
+                            onChange={(e) =>
+                              setData((prev) =>
+                                prev.map((r) =>
+                                  r.info_id === row.info_id
+                                    ? { ...r, info_ind_value: e.target.value }
+                                    : r
+                                )
                               )
-                            )
-                          }
-                          className="w-full rounded border border-gray-300 bg-white p-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:ring-blue-400"
-                        />
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={3} className="p-6 text-center text-gray-500 dark:text-gray-400">
-                      Өгөгдөл байхгүй
-                    </td>
-                  </tr>
-                )}
+                            }
+                            className="w-full rounded border border-gray-300 bg-white p-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:ring-blue-400"
+                          />
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
