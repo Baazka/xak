@@ -302,7 +302,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
               }}
               className={getInputClass("userRoleId")}
             >
-              <option value="">Сонгоно уу</option>
+              <option value="">Сонгох</option>
               {RoleList.map((rl) => (
                 <option key={rl.role_code} value={rl.role_id}>
                   {rl.role_text}

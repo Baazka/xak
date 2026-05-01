@@ -7,6 +7,7 @@ import AuditRisk from "../components/AuditRisk";
 import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   auditId: number;
@@ -31,6 +32,7 @@ export default function Form203({ auditId, formListId }: Props) {
 
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
+  const { toast } = useToast();
 
   const FORCE_FIRST_TAB_IND_IDS = [87, 88, 89, 90, 91];
 
@@ -84,22 +86,6 @@ export default function Form203({ auditId, formListId }: Props) {
 
   const groupKeys = useMemo(() => Object.keys(groupedData), [groupedData]);
 
-  const activeRows = groupedData[activeTab] ?? [];
-
-  const activeRowsByOriginalGroup = useMemo(() => {
-    return activeRows.reduce(
-      (acc, row) => {
-        const key = row.ind_group_label ?? "Бусад";
-
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(row);
-
-        return acc;
-      },
-      {} as Record<string, TableRow[]>
-    );
-  }, [activeRows]);
-
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -125,10 +111,10 @@ export default function Form203({ auditId, formListId }: Props) {
 
       if (!res.ok) throw new Error("Хадгалахад алдаа гарлаа");
 
-      alert("Амжилттай хадгаллаа");
+      toast("success", "Амжилттай хадгаллаа");
     } catch (error) {
       console.error(error);
-      alert("Хадгалахад алдаа гарлаа");
+      toast("error", "Хадгалахад алдаа гарлаа");
     } finally {
       setSaving(false);
     }

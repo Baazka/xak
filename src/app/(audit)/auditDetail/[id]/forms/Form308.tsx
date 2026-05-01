@@ -8,6 +8,7 @@ import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import ExpandableDataTable, { Column } from "@/components/tables/ExpandableTable";
+import { F308_DATA_MAP1, F308_DATA_MAP2 } from "@/utils/constSelect";
 
 type Props = {
   auditId: number;
@@ -222,11 +223,11 @@ export default function Form308({ auditId, formListId }: Props) {
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
           >
             <option value="">Сонгох</option>
-            <option value="1">Зөвлөмж</option>
-            <option value="2">Албан шаардлага</option>
-            <option value="3">Төлбөрийн акт</option>
-            <option value="4">Хариуцлага тооцох</option>
-            <option value="5">Хуулийн байгууллагад шилжүүлэх</option>
+            {Object.entries(F308_DATA_MAP1).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -255,8 +256,13 @@ export default function Form308({ auditId, formListId }: Props) {
             className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
           >
             <option value="">Сонгох</option>
-            <option value="1">Орлого 1</option>
-            <option value="2">Орлого 2</option>
+            {Object.entries(F308_DATA_MAP2[String(row.fs_solution_id)] ?? {}).map(
+              ([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              )
+            )}
           </select>
         </div>
       </div>

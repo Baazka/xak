@@ -271,7 +271,7 @@ export default function insertInvoiceDialog({
               }}
               className={getInputClass("inv_type_id")}
             >
-              <option value="">Сонгоно уу</option>
+              <option value="">Сонгох</option>
               <option value="2">Онцгой санал</option>
               <option value="3">Урамшуулал</option>
             </select>

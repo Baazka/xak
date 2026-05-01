@@ -7,6 +7,7 @@ import { useToast } from "@/context/ToastContext";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import { MessageCircle, Printer } from "lucide-react";
+import { F307_DATA_MAP1 } from "@/utils/constSelect";
 
 type Props = {
   auditId: number;
@@ -169,13 +170,11 @@ export default function Form307({ auditId, formListId }: Props) {
                       className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                     >
                       <option value="">Сонгох</option>
-                      <option value="1">Шалгалт</option>
-                      <option value="2">Ажиглалт</option>
-                      <option value="3">Хөндлөнгийн тулган баталгаажуулалт</option>
-                      <option value="4">Дахин тооцоолол</option>
-                      <option value="5">Дахин гүйцэтгэл</option>
-                      <option value="6">Шинжилгээний горимууд</option>
-                      <option value="7">Асуулга</option>
+                      {Object.entries(F307_DATA_MAP1).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
                     </select>
                   </td>
                   <td className=" border border-gray-200 p-2 dark:border-gray-700">

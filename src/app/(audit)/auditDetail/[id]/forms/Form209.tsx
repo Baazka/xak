@@ -9,6 +9,7 @@ import { Edit, MessageCircle, Printer } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   auditId: number;
@@ -49,6 +50,7 @@ export default function Form209({ auditId, formListId }: Props) {
   const [openDialog, setOpenDialog] = useState(false);
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
+  const { toast } = useToast();
 
   const resetDialog = () => {
     setDraftRow(null);
@@ -70,7 +72,7 @@ export default function Form209({ auditId, formListId }: Props) {
       setPlanTypeList(resultMeta.plan_type || []);
     } catch (err) {
       console.error(err);
-      alert("Мэдээлэл дуудах үед алдаа гарлаа");
+      toast("error", "Мэдээлэл дуудах үед алдаа гарлаа");
     } finally {
       setLoading(false);
     }
@@ -82,7 +84,7 @@ export default function Form209({ auditId, formListId }: Props) {
 
   const handleDialogSave = async () => {
     if (!draftRow?.plan_type_id || !draftRow?.plan_date) {
-      alert("Төрөл болон огноо оруулна уу");
+      toast("error", "Төрөл болон огноо оруулна уу");
       return;
     }
 
@@ -143,7 +145,7 @@ export default function Form209({ auditId, formListId }: Props) {
         }
       }
 
-      alert(error instanceof Error ? error.message : "Мэдээлэл хадгалах үед алдаа гарлаа");
+      toast("error", error instanceof Error ? error.message : "Мэдээлэл хадгалах үед алдаа гарлаа");
     } finally {
       setDialogSaving(false);
     }
@@ -211,11 +213,11 @@ export default function Form209({ auditId, formListId }: Props) {
       await loadTableData();
 
       if (fileDeleteFailed) {
-        alert("Мөр устсан, гэхдээ хавсаргасан файл устгаж чадсангүй");
+        toast("error", "Мөр устсан, гэхдээ хавсаргасан файл устгаж чадсангүй");
       }
     } catch (error) {
       console.error(error);
-      alert("Мөр устгахад алдаа гарлаа");
+      toast("error", "Мөр устгахад алдаа гарлаа");
     }
   };
 

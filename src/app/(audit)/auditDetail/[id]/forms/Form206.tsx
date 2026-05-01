@@ -7,6 +7,7 @@ import { useToast } from "@/context/ToastContext";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import { MessageCircle, Printer } from "lucide-react";
+import { F206_DATA_MAP1, F206_DATA_MAP2, F206_DATA_MAP3 } from "@/utils/constSelect";
 
 type Props = {
   auditId: number;
@@ -149,10 +150,11 @@ export default function Form206({ auditId, formListId }: Props) {
               className="ml-2 rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
             >
               <option value="">Сонгох</option>
-              <option value="0.5">0.5%</option>
-              <option value="1.0">1.0%</option>
-              <option value="1.5">1.5%</option>
-              <option value="2.0">2.0%</option>
+              {Object.entries(F206_DATA_MAP1).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -354,11 +356,11 @@ export default function Form206({ auditId, formListId }: Props) {
                 className="ml-2 rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
               >
                 <option value="">Сонгох</option>
-                <option value="1">Нийт орлого</option>
-                <option value="2">Нийт зардал</option>
-                <option value="3">Нийт хөрөнгө</option>
-                <option value="4">Цэвэр хөрөнгө</option>
-                <option value="5">Бусад</option>
+                {Object.entries(F206_DATA_MAP2).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-0.5">
@@ -399,11 +401,11 @@ export default function Form206({ auditId, formListId }: Props) {
                 className="ml-2 rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
               >
                 <option value="">Сонгох</option>
-                <option value="60">60%</option>
-                <option value="65">65%</option>
-                <option value="70">70%</option>
-                <option value="75">75%</option>
-                <option value="80">80%</option>
+                {Object.entries(F206_DATA_MAP3).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-0.5">

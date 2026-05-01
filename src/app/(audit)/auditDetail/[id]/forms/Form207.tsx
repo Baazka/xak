@@ -7,6 +7,7 @@ import { useToast } from "@/context/ToastContext";
 import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import { F207_DATA_MAP1, F207_DATA_MAP2 } from "@/utils/constSelect";
 
 type Props = {
   auditId: number;
@@ -222,7 +223,7 @@ export default function Form207({ auditId, formListId }: Props) {
                             }
                             className="whitespace-normal w-full rounded border border-gray-300 p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                           >
-                            <option value="">Сонгоно уу</option>
+                            <option value="">Сонгох</option>
                             {rMainType.map((item) => (
                               <option key={item.main_type_id} value={item.main_type_id}>
                                 {item.main_type_label}
@@ -393,8 +394,11 @@ export default function Form207({ auditId, formListId }: Props) {
                             className="w-full p-1 min-h-38px rounded border border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                           >
                             <option value={0}>Сонгоно уу</option>
-                            <option value={1}>Хяналтад найдах</option>
-                            <option value={2}>Биет горим хэрэгжүүлэх</option>
+                            {Object.entries(F207_DATA_MAP1).map(([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ))}
                           </select>
                         </td>
                         <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
@@ -412,12 +416,12 @@ export default function Form207({ auditId, formListId }: Props) {
                             className="w-full p-1 min-h-38px rounded border border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                           >
                             <option value={0}>Сонгоно уу</option>
-                            {row.resp_rtype_id === 1 && <option value={1}>Хяналтын сорил</option>}
-                            {row.resp_rtype_id === 2 && (
-                              <option value={2}>Шинжилгээний горим</option>
-                            )}
-                            {row.resp_rtype_id === 2 && (
-                              <option value={3}>Нарийвчилсан сорил</option>
+                            {Object.entries(F207_DATA_MAP2[String(row.resp_rtype_id)] ?? {}).map(
+                              ([value, label]) => (
+                                <option key={value} value={value}>
+                                  {label}
+                                </option>
+                              )
                             )}
                           </select>
                         </td>

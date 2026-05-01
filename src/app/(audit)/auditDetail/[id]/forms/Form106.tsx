@@ -10,6 +10,7 @@ import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import TimePicker from "@/components/form/TimePicker";
 import { usePrint } from "@/hooks/usePrint";
 import { useHelpDesk } from "@/context/HelpDeskContext";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   auditId: number;
@@ -43,6 +44,7 @@ export default function Form106({ auditId, formListId }: Props) {
   const [originalMeetingFileId, setOriginalMeetingFileId] = useState<number | null>(null);
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
+  const { toast } = useToast();
 
   const [loading, setLoading] = useState(true);
   const [dialogSaving, setDialogSaving] = useState(false);
@@ -71,7 +73,7 @@ export default function Form106({ auditId, formListId }: Props) {
       setMeetingTypeList(resultMeta.meeting_type || []);
     } catch (err) {
       console.error(err);
-      alert("Мэдээлэл дуудах үед алдаа гарлаа");
+      toast("error", "Мэдээлэл дуудах үед алдаа гарлаа");
     } finally {
       setLoading(false);
     }
@@ -83,7 +85,7 @@ export default function Form106({ auditId, formListId }: Props) {
 
   const handleDialogSave = async () => {
     if (!draftRow?.meeting_type_id || !draftRow?.meeting_date) {
-      alert("Төрөл болон огноо оруулна уу");
+      toast("info", "Төрөл болон огноо оруулна уу");
       return;
     }
 
@@ -145,7 +147,7 @@ export default function Form106({ auditId, formListId }: Props) {
         }
       }
 
-      alert(error instanceof Error ? error.message : "Мэдээлэл хадгалах үед алдаа гарлаа");
+      toast("error", error instanceof Error ? error.message : "Мэдээлэл хадгалах үед алдаа гарлаа");
     } finally {
       setDialogSaving(false);
     }
@@ -215,11 +217,11 @@ export default function Form106({ auditId, formListId }: Props) {
       await loadTableData();
 
       if (fileDeleteFailed) {
-        alert("Мөр устсан, гэхдээ хавсаргасан файл устгаж чадсангүй");
+        toast("error", "Мөр устсан, гэхдээ хавсаргасан файл устгаж чадсангүй");
       }
     } catch (error) {
       console.error(error);
-      alert("Мөр устгахад алдаа гарлаа");
+      toast("error", "Мөр устгахад алдаа гарлаа");
     }
   };
 

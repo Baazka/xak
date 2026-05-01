@@ -11,6 +11,12 @@ import DatePicker from "@/components/form/date-picker";
 import { RMainType } from "./Form207";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
+import {
+  F205_DATA_MAP1,
+  F205_DATA_MAP2,
+  F207_DATA_MAP1,
+  F207_DATA_MAP2,
+} from "@/utils/constSelect";
 
 type Props = {
   auditId: number;
@@ -208,7 +214,7 @@ export default function Form301({ auditId, formListId }: Props) {
 
   const handleDialogSave = async () => {
     if (!draftRow?.risk_content) {
-      alert("Эрсдэл оруулна уу");
+      toast("error", "Эрсдэл оруулна уу");
       return;
     }
 
@@ -262,7 +268,7 @@ export default function Form301({ auditId, formListId }: Props) {
     } catch (error) {
       console.error(error);
 
-      alert(error instanceof Error ? error.message : "Мэдээлэл хадгалах үед алдаа гарлаа");
+      toast("error", error instanceof Error ? error.message : "Мэдээлэл хадгалах үед алдаа гарлаа");
     } finally {
       setDialogSaving(false);
     }
@@ -320,7 +326,7 @@ export default function Form301({ auditId, formListId }: Props) {
       await loadTableData();
     } catch (error) {
       console.error(error);
-      alert("Мөр устгахад алдаа гарлаа");
+      toast("error", "Мөр устгахад алдаа гарлаа");
     }
   };
 
@@ -1235,8 +1241,11 @@ export default function Form301({ auditId, formListId }: Props) {
                               className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value="">Сонгох</option>
-                              <option value={1}>Уламжлалт</option>
-                              <option value={2}>Хяналтын</option>
+                              {Object.entries(F205_DATA_MAP1).map(([value, label]) => (
+                                <option key={value} value={value}>
+                                  {label}
+                                </option>
+                              ))}
                             </select>
                           </div>
                           <div>
@@ -1251,9 +1260,11 @@ export default function Form301({ auditId, formListId }: Props) {
                               className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value={0}>Сонгох</option>
-                              <option value={0.3}>0.3 - Бага</option>
-                              <option value={0.6}>0.6 - Дунд</option>
-                              <option value={0.9}>0.9 - Их</option>
+                              {Object.entries(F205_DATA_MAP2).map(([value, label]) => (
+                                <option key={value} value={value}>
+                                  {label}
+                                </option>
+                              ))}
                             </select>
                           </div>
                           <div>
@@ -1268,9 +1279,12 @@ export default function Form301({ auditId, formListId }: Props) {
                               className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value={0}>Сонгох</option>
-                              <option value={0.3}>0.3 - Бага</option>
-                              <option value={0.6}>0.6 - Дунд</option>
-                              <option value={0.9}>0.9 - Их</option>
+
+                              {Object.entries(F205_DATA_MAP2).map(([value, label]) => (
+                                <option key={value} value={value}>
+                                  {label}
+                                </option>
+                              ))}
                             </select>
                           </div>
                           <div>
@@ -1425,8 +1439,11 @@ export default function Form301({ auditId, formListId }: Props) {
                               className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value={0}>Сонгох</option>
-                              <option value={1}>Хяналтад найдах</option>
-                              <option value={2}>Биет горим хэрэгжүүлэх</option>
+                              {Object.entries(F207_DATA_MAP1).map(([value, label]) => (
+                                <option key={value} value={value}>
+                                  {label}
+                                </option>
+                              ))}
                             </select>
                           </div>
                           <div>
@@ -1441,15 +1458,13 @@ export default function Form301({ auditId, formListId }: Props) {
                               className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value={0}>Сонгоно уу</option>
-                              {Number(draftRow?.resp_rtype_id) === 1 && (
-                                <option value={1}>Хяналтын сорил</option>
-                              )}
-                              {Number(draftRow?.resp_rtype_id) === 2 && (
-                                <>
-                                  <option value={2}>Шинжилгээний горим</option>
-                                  <option value={3}>Нарийвчилсан сорил</option>
-                                </>
-                              )}
+                              {Object.entries(
+                                F207_DATA_MAP2[String(draftRow?.resp_rtype_id)] ?? {}
+                              ).map(([value, label]) => (
+                                <option key={value} value={value}>
+                                  {label}
+                                </option>
+                              ))}
                             </select>
                           </div>
                           <div>
