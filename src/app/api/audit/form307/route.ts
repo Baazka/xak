@@ -20,7 +20,9 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       `select form_id from audit_forms where form_aud_id = $1 and form_list_id = 19 limit 1`,
       [audId]
     );
-    if (!formRes.rows[0].form_id) {
+    console.log("formRes ", formRes.rows[0]);
+
+    if (!formRes.rows[0]) {
       const newFormRes = await client.query(
         `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id) VALUES ($1, 19, 1) RETURNING form_id`,
         [audId]
