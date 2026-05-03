@@ -154,10 +154,10 @@ export default function Form305({ auditId, formListId }: Props) {
                 <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   №
                 </th>
-                <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6  border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Тодорхойлсон эрсдэл
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Үр дагавар
                 </th>
                 <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
@@ -172,10 +172,10 @@ export default function Form305({ auditId, formListId }: Props) {
                 <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Залруулах боломжтой эсэх
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Стандартын заалт
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Хууль тогтоомжийн заалт
                 </th>
               </tr>
@@ -310,7 +310,7 @@ export default function Form305({ auditId, formListId }: Props) {
                       </select>
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         value={row.rf_standard_clause || ""}
                         onChange={(e) =>
                           setData((prev) =>
@@ -328,7 +328,7 @@ export default function Form305({ auditId, formListId }: Props) {
                       />
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         value={row.rf_law_clause || ""}
                         onChange={(e) =>
                           setData((prev) =>
@@ -359,17 +359,14 @@ export default function Form305({ auditId, formListId }: Props) {
                 <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   №
                 </th>
-                <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Тодорхойлсон эрсдэл
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Үр дагавар
                 </th>
                 <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Мөнгөн дүн
-                </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Алдааны төрөл
                 </th>
                 <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Материаллаг эсэх
@@ -377,10 +374,10 @@ export default function Form305({ auditId, formListId }: Props) {
                 <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Залруулах боломжтой эсэх
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Стандартын заалт
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Хууль тогтоомжийн заалт
                 </th>
               </tr>
@@ -439,31 +436,6 @@ export default function Form305({ auditId, formListId }: Props) {
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
                       <select
-                        value={row.rf_type_id ?? ""}
-                        onChange={(e) =>
-                          setData((prev) =>
-                            prev.map((r) =>
-                              r.risk_id === row.risk_id
-                                ? {
-                                    ...r,
-                                    rf_type_id: e.target.value === "" ? 0 : Number(e.target.value),
-                                  }
-                                : r
-                            )
-                          )
-                        }
-                        className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                      >
-                        <option value="">Сонгох</option>
-                        {Object.entries(F305_DATA_MAP2).map(([value, label]) => (
-                          <option key={value} value={value}>
-                            {label}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <select
                         value={row.rf_is_material ?? ""}
                         onChange={(e) =>
                           setData((prev) =>
@@ -515,7 +487,7 @@ export default function Form305({ auditId, formListId }: Props) {
                       </select>
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         value={row.rf_standard_clause || ""}
                         onChange={(e) =>
                           setData((prev) =>
@@ -533,7 +505,7 @@ export default function Form305({ auditId, formListId }: Props) {
                       />
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         value={row.rf_law_clause || ""}
                         onChange={(e) =>
                           setData((prev) =>

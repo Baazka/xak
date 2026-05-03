@@ -126,7 +126,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         `
           UPDATE audit_finish_procedure
           set fp_ind_value = $1, fp_type_id = $2
-          where fp_id = $3 and fp_ind_id = $3
+          where fp_id = $3 and fp_ind_id = $4
         `,
         [fp_ind_value, fp_type_id, fp_id, fp_ind_id]
       );

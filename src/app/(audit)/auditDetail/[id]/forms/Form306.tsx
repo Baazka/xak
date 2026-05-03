@@ -160,10 +160,10 @@ export default function Form306({ auditId, formListId }: Props) {
                 <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   №
                 </th>
-                <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6  border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Тодорхойлсон эрсдэл
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Үр дагавар
                 </th>
                 <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
@@ -178,10 +178,10 @@ export default function Form306({ auditId, formListId }: Props) {
                 <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Залруулга хийсэн тодруулга
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Стандартын заалт
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Хууль тогтоомжийн заалт
                 </th>
               </tr>
@@ -294,14 +294,14 @@ export default function Form306({ auditId, formListId }: Props) {
                       </select>
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         readOnly
                         value={row.rf_standard_clause || ""}
                         className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                       />
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         readOnly
                         value={row.rf_law_clause || ""}
                         className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
@@ -321,10 +321,10 @@ export default function Form306({ auditId, formListId }: Props) {
                 <th className="w-[30px] border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   №
                 </th>
-                <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6  border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Тодорхойлсон эрсдэл
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Үр дагавар
                 </th>
                 <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
@@ -336,10 +336,10 @@ export default function Form306({ auditId, formListId }: Props) {
                 <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Тайлбар
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Стандартын заалт
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="w-1/6 border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
                   Хууль тогтоомжийн заалт
                 </th>
               </tr>
@@ -375,7 +375,7 @@ export default function Form306({ auditId, formListId }: Props) {
                       />
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         value={row.fc_result || ""}
                         onChange={(e) =>
                           setData((prev) =>
@@ -393,7 +393,7 @@ export default function Form306({ auditId, formListId }: Props) {
                       />
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         value={row.fc_comment || ""}
                         onChange={(e) =>
                           setData((prev) =>
@@ -411,14 +411,14 @@ export default function Form306({ auditId, formListId }: Props) {
                       />
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         readOnly
                         value={row.rf_standard_clause || ""}
                         className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
                       />
                     </td>
                     <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                      <input
+                      <textarea
                         readOnly
                         value={row.rf_law_clause || ""}
                         className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"

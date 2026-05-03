@@ -77,6 +77,37 @@ export default function Form303({ auditId, formListId }: Props) {
     loadTableData();
   }, [auditId]);
 
+  const calcRestCount = (row: TableRow) =>
+    Number(row.col_list_count || 0) -
+    Number(row.col_heavy_count || 0) -
+    Number(row.col_abnormal_count || 0);
+
+  const calcRestAmount = (row: TableRow) =>
+    Number(row.col_list_amount || 0) -
+    Number(row.col_heavy_amount || 0) -
+    Number(row.col_abnormal_amount || 0);
+
+  const calcTotalCount = (row: TableRow) =>
+    (
+      (calcRestAmount(row) * Number(row.col_trust_level)) /
+      Number(row.rc_exec_amount || 1)
+    ).toFixed();
+
+  const calcTotalFCount = (row: TableRow) =>
+    Number(row.col_fault_count || 0) +
+    Number(row.col_heavy_fcount || 0) +
+    Number(row.col_abnormal_fcount || 0);
+
+  const calcTotalFAmount = (row: TableRow) =>
+    Number(row.col_fault_amount || 0) +
+    Number(row.col_heavy_famount || 0) +
+    Number(row.col_abnormal_famount || 0);
+  const calcFaultConvert = (row: TableRow) =>
+    (
+      (Number(row.col_list_amount) / Number(row.col_total_amount || 1)) *
+      calcTotalFAmount(row)
+    ).toFixed();
+
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -90,8 +121,9 @@ export default function Form303({ auditId, formListId }: Props) {
         col_abnormal_count: row.col_abnormal_count,
         col_abnormal_amount: row.col_abnormal_amount,
         col_abnormal_desc: row.col_abnormal_desc,
-        col_rest_count: row.col_rest_count,
-        col_rest_amount: row.col_rest_amount,
+        col_rest_count: calcRestCount(row),
+        col_rest_amount: calcRestAmount(row),
+
         col_trust_level: row.col_trust_level,
         col_total_count: row.col_total_count,
         col_total_amount: row.col_total_amount,
@@ -131,7 +163,6 @@ export default function Form303({ auditId, formListId }: Props) {
       setSaving(false);
     }
   };
-
   return (
     <>
       {loading ? (
@@ -292,9 +323,6 @@ export default function Form303({ auditId, formListId }: Props) {
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     {formatCurrency(row.rc_exec_amount)}
                   </td>
-                  {/*<td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.risk_sub_group_name}
-                  </td> */}
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     <input
                       type="number"
@@ -436,41 +464,17 @@ export default function Form303({ auditId, formListId }: Props) {
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     <input
                       type="number"
-                      value={row.col_rest_count || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_rest_count:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      value={calcRestCount(row)}
+                      readOnly
+                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                     />
                   </td>
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     <input
                       type="number"
-                      value={row.col_rest_amount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_rest_amount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      value={calcRestAmount(row)}
+                      readOnly
+                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                     />
                   </td>
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
@@ -489,7 +493,7 @@ export default function Form303({ auditId, formListId }: Props) {
                           )
                         )
                       }
-                      className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                     >
                       <option value="">Сонгох</option>
                       {Object.entries(F303_DATA_MAP1).map(([value, label]) => (
@@ -499,7 +503,14 @@ export default function Form303({ auditId, formListId }: Props) {
                       ))}
                     </select>
                   </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
+                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                    <input
+                      type="number"
+                      value={calcTotalCount(row)}
+                      readOnly
+                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -630,21 +641,9 @@ export default function Form303({ auditId, formListId }: Props) {
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     <input
                       type="number"
-                      value={row.col_total_count || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_total_count:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      value={calcTotalCount(row)}
+                      readOnly
+                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                     />
                   </td>
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
@@ -816,61 +815,25 @@ export default function Form303({ auditId, formListId }: Props) {
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     <input
                       type="number"
-                      value={row.col_total_fcount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_total_fcount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      value={calcTotalFCount(row)}
+                      readOnly
+                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                     />
                   </td>
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     <input
                       type="number"
-                      value={row.col_total_famount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_total_famount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      value={calcTotalFAmount(row)}
+                      readOnly
+                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                     />
                   </td>
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     <input
                       type="number"
-                      value={row.col_fault_convert || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_fault_convert:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      value={calcFaultConvert(row)}
+                      readOnly
+                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                     />
                   </td>
                 </tr>
