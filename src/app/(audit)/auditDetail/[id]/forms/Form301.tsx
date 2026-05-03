@@ -16,6 +16,7 @@ import {
   F205_DATA_MAP2,
   F207_DATA_MAP1,
   F207_DATA_MAP2,
+  YES_OR_NO_MAP,
 } from "@/utils/constSelect";
 
 type Props = {
@@ -71,6 +72,7 @@ export default function Form301({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey>("risk");
   const [draftRow, setDraftRow] = useState<Partial<TableRow> | null>(null);
+  const [supVal, setSupVal] = useState("");
 
   const [riskTypeList, setRiskTypeList] = useState<RiskType[]>([]);
   const [riskGroupList, setRiskGroupList] = useState<RiskGroup[]>([]);
@@ -180,6 +182,7 @@ export default function Form301({ auditId, formListId }: Props) {
 
       setData(Array.isArray(result.data) ? result.data : []);
       setFormId(result.form_id ?? 0);
+      setSupVal(result.supVal ?? "");
     } catch (err) {
       console.error(err);
     } finally {
@@ -458,19 +461,21 @@ export default function Form301({ auditId, formListId }: Props) {
                               {row.risk_is_important === 1 ? "Тийм" : "Үгүй"}
                             </td>
                             <td className="border px-3 py-2 no-print">
-                              <div className="flex items-center justify-center">
-                                <a
-                                  className="flex w-full cursor-pointer justify-center text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300"
-                                  onClick={() => handleEditRisk(row)}
-                                  href="#"
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </a>
+                              {row.risk_source_id === 4 && (
+                                <div className="flex items-center justify-center">
+                                  <a
+                                    className="flex w-full cursor-pointer justify-center text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-300"
+                                    onClick={() => handleEditRisk(row)}
+                                    href="#"
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </a>
 
-                                <DeleteConfirmDialog
-                                  onConfirm={() => handleDeleteRisk(row.risk_id)}
-                                />
-                              </div>
+                                  <DeleteConfirmDialog
+                                    onConfirm={() => handleDeleteRisk(row.risk_id)}
+                                  />
+                                </div>
+                              )}
                             </td>
                           </>
                         )}
@@ -515,10 +520,10 @@ export default function Form301({ auditId, formListId }: Props) {
                           .filter((row) => row.risk_type_id === 1)
                           .map((rw, index) => (
                             <tr key={rw.risk_id} className="bg-white dark:bg-gray-900">
-                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
                                 {index + 1}
                               </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200 flex items-center justify-center">
+                              <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
                                 <textarea
                                   readOnly
                                   value={rw.risk_content ?? ""}
@@ -526,17 +531,17 @@ export default function Form301({ auditId, formListId }: Props) {
                                 />
                               </td>
                               <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                                {rw.op_is_fraud === 1 ? "Тийм" : "Үгүй"}
+                                {YES_OR_NO_MAP[String(rw.op_is_fraud ?? "-")]}
                               </td>
-                              <td className="border border-gray-200 p-0.5 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200 flex items-center justify-center">
+                              <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
                                 <textarea
                                   readOnly
-                                  value={rw.op_fraud_reason || ""}
-                                  className="rounded border border-gray-300 w-full field-sizing-content p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                                  value={rw.op_fraud_reason ?? " "}
+                                  className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                                 />
                               </td>
                               <td className="border border-gray-200 px-3 py-2 text-center dark:border-gray-700">
-                                {rw.op_is_control === 1 ? "Тийм" : "Үгүй"}
+                                {YES_OR_NO_MAP[String(rw.op_is_control ?? "-")]}
                               </td>
                             </tr>
                           ))}
@@ -606,10 +611,25 @@ export default function Form301({ auditId, formListId }: Props) {
                                 className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                               />
                             </td>
-                            <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                            <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                            <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                            <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
+                            <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              {F205_DATA_MAP1[String(row.risk_type_id ?? "-")]}
+                            </td>
+                            <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              {F205_DATA_MAP2[String(row.op_inspection_rate ?? "-")]}
+                            </td>
+                            <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              {F205_DATA_MAP2[String(row.op_effect_rate ?? "-")]}
+                            </td>
+                            <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              {Number(row?.op_inspection_rate) > 0 &&
+                              Number(row?.op_effect_rate) > 0
+                                ? (
+                                    (Number(row?.op_inspection_rate) +
+                                      Number(row?.op_effect_rate)) /
+                                    2
+                                  ).toFixed(2)
+                                : "-"}
+                            </td>
                           </tr>
                         ))}
                       <tr className="bg-white dark:bg-gray-900">
@@ -625,7 +645,32 @@ export default function Form301({ auditId, formListId }: Props) {
                           colSpan={2}
                           className="border border-gray-200 bg-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"
                         ></td>
-                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
+                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                          <span className="text-gray-700 dark:text-gray-200 font-semibold">
+                            {(
+                              data
+                                .filter(
+                                  (row) =>
+                                    row.op_genre === 1 &&
+                                    row.risk_type_id === 2 &&
+                                    row.risk_is_important === 1
+                                )
+                                .reduce(
+                                  (acc, row) =>
+                                    acc +
+                                    (Number(row.op_effect_rate) + Number(row.op_inspection_rate)) /
+                                      2,
+                                  0
+                                ) /
+                              data.filter(
+                                (row) =>
+                                  row.op_genre === 1 &&
+                                  row.risk_type_id === 2 &&
+                                  row.risk_is_important === 1
+                              ).length
+                            ).toFixed(2)}
+                          </span>
+                        </td>
                       </tr>
                       <tr className="bg-white dark:bg-gray-900">
                         <td
@@ -640,7 +685,32 @@ export default function Form301({ auditId, formListId }: Props) {
                           colSpan={2}
                           className="border border-gray-200 bg-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"
                         ></td>
-                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
+                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                          <span className="text-gray-700 dark:text-gray-200 font-semibold">
+                            {(
+                              data
+                                .filter(
+                                  (row) =>
+                                    row.op_genre === 2 &&
+                                    row.risk_type_id === 2 &&
+                                    row.risk_is_important === 1
+                                )
+                                .reduce(
+                                  (acc, row) =>
+                                    acc +
+                                    (Number(row.op_effect_rate) + Number(row.op_inspection_rate)) /
+                                      2,
+                                  0
+                                ) /
+                              data.filter(
+                                (row) =>
+                                  row.op_genre === 2 &&
+                                  row.risk_type_id === 2 &&
+                                  row.risk_is_important === 1
+                              ).length
+                            ).toFixed(2)}
+                          </span>
+                        </td>
                       </tr>
                       <tr className="bg-white dark:bg-gray-900">
                         <td
@@ -655,7 +725,52 @@ export default function Form301({ auditId, formListId }: Props) {
                           colSpan={2}
                           className="border border-gray-200 bg-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"
                         ></td>
-                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
+                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                          <span className="text-gray-700 dark:text-gray-200 font-semibold">
+                            {(
+                              (data
+                                .filter(
+                                  (row) =>
+                                    row.op_genre === 1 &&
+                                    row.risk_type_id === 2 &&
+                                    row.risk_is_important === 1
+                                )
+                                .reduce(
+                                  (acc, row) =>
+                                    acc +
+                                    (Number(row.op_effect_rate) + Number(row.op_inspection_rate)) /
+                                      2,
+                                  0
+                                ) /
+                                data.filter(
+                                  (row) =>
+                                    row.op_genre === 1 &&
+                                    row.risk_type_id === 2 &&
+                                    row.risk_is_important === 1
+                                ).length) *
+                              (data
+                                .filter(
+                                  (row) =>
+                                    row.op_genre === 2 &&
+                                    row.risk_type_id === 2 &&
+                                    row.risk_is_important === 1
+                                )
+                                .reduce(
+                                  (acc, row) =>
+                                    acc +
+                                    (Number(row.op_effect_rate) + Number(row.op_inspection_rate)) /
+                                      2,
+                                  0
+                                ) /
+                                data.filter(
+                                  (row) =>
+                                    row.op_genre === 2 &&
+                                    row.risk_type_id === 2 &&
+                                    row.risk_is_important === 1
+                                ).length)
+                            ).toFixed(2)}
+                          </span>
+                        </td>
                       </tr>
                       <tr className="bg-white dark:bg-gray-900">
                         <td
@@ -667,8 +782,16 @@ export default function Form301({ auditId, formListId }: Props) {
                           </span>
                         </td>
                         <td className="border border-gray-200 bg-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
-                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
+                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                          {supVal + "%"}
+                        </td>
+                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                          <span className="text-gray-700 dark:text-gray-200 font-semibold">
+                            {supVal === ""
+                              ? (0).toFixed(2)
+                              : ((100 - Number(supVal)) / 100).toFixed(2)}
+                          </span>
+                        </td>
                       </tr>
                       <tr className="bg-white dark:bg-gray-900">
                         <td
@@ -683,7 +806,58 @@ export default function Form301({ auditId, formListId }: Props) {
                           colSpan={2}
                           className="border border-gray-200 bg-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200"
                         ></td>
-                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200 bg-green-100"></td>
+                        <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200 bg-green-100">
+                          <span className="text-gray-700 dark:text-gray-200 font-bold">
+                            {supVal === ""
+                              ? (0).toFixed(2)
+                              : (
+                                  (100 - Number(supVal)) /
+                                  100 /
+                                  ((data
+                                    .filter(
+                                      (row) =>
+                                        row.op_genre === 1 &&
+                                        row.risk_type_id === 2 &&
+                                        row.risk_is_important === 1
+                                    )
+                                    .reduce(
+                                      (acc, row) =>
+                                        acc +
+                                        (Number(row.op_effect_rate) +
+                                          Number(row.op_inspection_rate)) /
+                                          2,
+                                      0
+                                    ) /
+                                    data.filter(
+                                      (row) =>
+                                        row.op_genre === 1 &&
+                                        row.risk_type_id === 2 &&
+                                        row.risk_is_important === 1
+                                    ).length) *
+                                    (data
+                                      .filter(
+                                        (row) =>
+                                          row.op_genre === 2 &&
+                                          row.risk_type_id === 2 &&
+                                          row.risk_is_important === 1
+                                      )
+                                      .reduce(
+                                        (acc, row) =>
+                                          acc +
+                                          (Number(row.op_effect_rate) +
+                                            Number(row.op_inspection_rate)) /
+                                            2,
+                                        0
+                                      ) /
+                                      data.filter(
+                                        (row) =>
+                                          row.op_genre === 2 &&
+                                          row.risk_type_id === 2 &&
+                                          row.risk_is_important === 1
+                                      ).length))
+                                ).toFixed(2)}
+                          </span>
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -731,7 +905,7 @@ export default function Form301({ auditId, formListId }: Props) {
                                   className="rounded border border-gray-300 w-full field-sizing-content h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                                 />
                               </td>
-                              <td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 <span>
                                   {rwb.risk_group_name} - {rwb.risk_sub_group_name}
                                 </span>
@@ -813,17 +987,25 @@ export default function Form301({ auditId, formListId }: Props) {
                               <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 {index + 1}
                               </td>
-                              <td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 <textarea
                                   readOnly
                                   value={row.risk_content ?? ""}
                                   className=" w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                                 />
                               </td>
-                              <td>{row.resp_main_type_name}</td>
-                              <td>{row.resp_response}</td>
-                              <td>{row.resp_standard_clause}</td>
-                              <td>{row.resp_law_clause}</td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                {row.resp_main_type_name}
+                              </td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                {row.resp_response}
+                              </td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                {row.resp_standard_clause}
+                              </td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                {row.resp_law_clause}
+                              </td>
                             </tr>
                           ))}
                       </tbody>
@@ -908,29 +1090,53 @@ export default function Form301({ auditId, formListId }: Props) {
                               <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 {index + 1}
                               </td>
-                              <td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 <textarea
                                   readOnly
                                   value={row.risk_content ?? ""}
                                   className=" w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                                 />
                               </td>
-                              <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 <span className="text-gray-700 dark:text-gray-200 text-center">
                                   {row.risk_group_name} - {row.risk_sub_group_name}
                                 </span>
                               </td>
 
-                              <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 <span className="text-gray-700 dark:text-gray-200 text-center">
                                   {row.risk_cd_type_name}
                                 </span>
                               </td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                {F207_DATA_MAP1[String(row.resp_rtype_id ?? "-")]}
+                              </td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                {F207_DATA_MAP2[String(row.resp_rtype_id)]?.[
+                                  String(row.resp_sub_rtype_id)
+                                ] ?? "-"}
+                              </td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                <textarea
+                                  readOnly
+                                  value={row.resp_response ?? " "}
+                                  className=" w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                                />
+                              </td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                <textarea
+                                  readOnly
+                                  value={row.resp_standard_clause ?? " "}
+                                  className=" w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                                />
+                              </td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                <textarea
+                                  readOnly
+                                  value={row.resp_law_clause ?? " "}
+                                  className=" w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                                />
+                              </td>
                             </tr>
                           ))}
                       </tbody>
@@ -970,9 +1176,27 @@ export default function Form301({ auditId, formListId }: Props) {
                               <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
                                 {index + 1}
                               </td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                <textarea
+                                  readOnly
+                                  value={row.risk_content ?? ""}
+                                  className=" w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                                />
+                              </td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                <textarea
+                                  readOnly
+                                  value={row.resp_simple_type ?? ""}
+                                  className=" w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                                />
+                              </td>
+                              <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                                <textarea
+                                  readOnly
+                                  value={row.resp_response ?? ""}
+                                  className=" w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                                />
+                              </td>
                             </tr>
                           ))}
                       </tbody>
@@ -984,7 +1208,7 @@ export default function Form301({ auditId, formListId }: Props) {
           </div>
           {openDialog && (
             <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 px-4">
-              <div className="w-full max-w-6xl rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900">
+              <div className="w-full max-w-6xl rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-900">
                 <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700">
                   <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">
                     {draftRow?.risk_id ? "Эрсдэл засах" : "Эрсдлийн бүртгэл"}
@@ -1019,7 +1243,7 @@ export default function Form301({ auditId, formListId }: Props) {
                             value={draftRow?.risk_content ?? ""}
                             onChange={(e) => handleDraftChange("risk_content", e.target.value)}
                             rows={2}
-                            className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                           />
                         </div>
 
@@ -1048,7 +1272,7 @@ export default function Form301({ auditId, formListId }: Props) {
                             onChange={(e) =>
                               handleDraftChange("risk_type_id", Number(e.target.value))
                             }
-                            className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                           >
                             <option value="">Сонгох</option>
                             {riskTypeList.map((item) => (
@@ -1069,7 +1293,7 @@ export default function Form301({ auditId, formListId }: Props) {
                             onChange={(e) =>
                               handleDraftChange("risk_group_id", Number(e.target.value))
                             }
-                            className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
                           >
                             <option value="">Сонгох</option>
                             {riskGroupList.map((item) => (
@@ -1090,7 +1314,7 @@ export default function Form301({ auditId, formListId }: Props) {
                             onChange={(e) =>
                               handleDraftChange("risk_sub_group_id", Number(e.target.value))
                             }
-                            className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
                           >
                             <option value="">Сонгох</option>
                             {riskSubGroupList.map((item) => (
@@ -1111,7 +1335,7 @@ export default function Form301({ auditId, formListId }: Props) {
                             onChange={(e) =>
                               handleDraftChange("risk_cd_type_id", Number(e.target.value))
                             }
-                            className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
                           >
                             <option value="">Сонгох</option>
                             {riskCDTypeList.map((item) => (
@@ -1221,7 +1445,7 @@ export default function Form301({ auditId, formListId }: Props) {
                               value={draftRow?.op_fraud_reason ?? ""}
                               onChange={(e) => handleDraftChange("op_fraud_reason", e.target.value)}
                               rows={3}
-                              className="w-full rounded-xl border px-3 py-2"
+                              className="w-full rounded-lg border px-3 py-2"
                             />
                           </div>
                         </div>
@@ -1238,7 +1462,7 @@ export default function Form301({ auditId, formListId }: Props) {
                               onChange={(e) =>
                                 handleDraftChange("op_genre", Number(e.target.value))
                               }
-                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value="">Сонгох</option>
                               {Object.entries(F205_DATA_MAP1).map(([value, label]) => (
@@ -1257,7 +1481,7 @@ export default function Form301({ auditId, formListId }: Props) {
                               onChange={(e) =>
                                 handleDraftChange("op_inspection_rate", Number(e.target.value))
                               }
-                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value={0}>Сонгох</option>
                               {Object.entries(F205_DATA_MAP2).map(([value, label]) => (
@@ -1276,7 +1500,7 @@ export default function Form301({ auditId, formListId }: Props) {
                               onChange={(e) =>
                                 handleDraftChange("op_effect_rate", Number(e.target.value))
                               }
-                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value={0}>Сонгох</option>
 
@@ -1382,7 +1606,7 @@ export default function Form301({ auditId, formListId }: Props) {
                               onChange={(e) =>
                                 handleDraftChange("resp_main_type_id", Number(e.target.value))
                               }
-                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value="">Сонгох</option>
                               {rMainType.map((item) => (
@@ -1436,7 +1660,7 @@ export default function Form301({ auditId, formListId }: Props) {
                               onChange={(e) =>
                                 handleDraftChange("resp_rtype_id", Number(e.target.value))
                               }
-                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value={0}>Сонгох</option>
                               {Object.entries(F207_DATA_MAP1).map(([value, label]) => (
@@ -1455,7 +1679,7 @@ export default function Form301({ auditId, formListId }: Props) {
                               onChange={(e) =>
                                 handleDraftChange("resp_sub_rtype_id", Number(e.target.value))
                               }
-                              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                             >
                               <option value={0}>Сонгоно уу</option>
                               {Object.entries(
