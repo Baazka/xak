@@ -104,7 +104,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
             rc.col_total_fcount,
             rc.col_total_famount,
             rc.col_fault_convert,
-            ric.rc_exec_amount,
+            ric.rc_exec_amount
         from audit_risks r 
         join audit_risk_important i on r.risk_id = i.risk_id
         join ref_risk_group g on r.risk_group_id = g.group_id
