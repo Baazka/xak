@@ -103,12 +103,14 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
             rc.col_abnormal_famount,
             rc.col_total_fcount,
             rc.col_total_famount,
-            rc.col_fault_convert
+            rc.col_fault_convert,
+            ric.rc_exec_amount,
         from audit_risks r 
         join audit_risk_important i on r.risk_id = i.risk_id
         join ref_risk_group g on r.risk_group_id = g.group_id
         join ref_risk_sub_group sg on r.risk_sub_group_id = sg.sub_group_id
         left join audit_risk_collection rc on r.risk_id = rc.risk_id and rc.col_form_id = $2
+        left join audit_risk_corporality ric on r.risk_id = ric.risk_id
         where r.risk_type_id = 2 and i.risk_is_important = 1 and r.risk_aud_id = $1`,
       [audId, formId]
     );

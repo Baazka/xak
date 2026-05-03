@@ -20,7 +20,6 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       `select form_id from audit_forms where form_aud_id = $1 and form_list_id = 19 limit 1`,
       [audId]
     );
-    console.log("formRes ", formRes.rows[0]);
 
     if (!formRes.rows[0]) {
       const newFormRes = await client.query(
@@ -41,17 +40,22 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
       for (const row of indListRes.rows) {
         const indId = row.fp_ind_id;
-        const finishProcedureRes = await client.query(
+
+        await client.query(
           `INSERT INTO audit_finish_procedure (fp_form_id, fp_ind_id) VALUES ($1, $2) returning fp_id`,
           [formId, indId]
         );
-        row.fp_id = finishProcedureRes.rows[0].fp_id;
       }
+    }
+    const formLastRes = await client.query(
+      `SELECT form_id FROM audit_forms WHERE form_aud_id = $1 AND form_list_id = 19 ORDER BY form_id DESC LIMIT 1`,
+      [audId]
+    );
 
-      return NextResponse.json({ data: indListRes, form_id: formId }, { status: 200 });
-    } else {
-      const dataRes = await client.query(
-        `
+    const formId = formLastRes.rows[0].form_id;
+
+    const dataRes = await client.query(
+      `
       select 
             fp.fp_id,
             fp.fp_form_id,
@@ -64,14 +68,10 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         join ref_indicator i on fp.fp_ind_id = i.ind_id
         where af.form_id = $1
     `,
-        [formRes.rows[0].form_id]
-      );
+      [formId]
+    );
 
-      return NextResponse.json(
-        { data: dataRes.rows, form_id: formRes.rows[0].form_id },
-        { status: 200 }
-      );
-    }
+    return NextResponse.json({ data: dataRes.rows, form_id: formId }, { status: 200 });
   } catch (err) {
     console.error("DB Error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

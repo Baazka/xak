@@ -67,10 +67,6 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       [formId]
     );
 
-    if (!formRes.rows[0]) {
-      return NextResponse.json({ error: "Form not found" }, { status: 404 });
-    }
-
     const dataRes = await client.query(
       `
       select 
@@ -81,7 +77,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         c.con_base,
         c.con_file_id
         from audit_conclusion c
-        join ref_conclusion_type ct on c.con_type_id = ct.type_id
+        left join ref_conclusion_type ct on c.con_type_id = ct.type_id
         where c.con_form_id = $1
     `,
       [formId]
