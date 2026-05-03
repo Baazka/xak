@@ -28,9 +28,16 @@ type Props = {
   errors?: FormErrors<StepTwoData>;
   userOptions: UserOption[];
   onChange: <K extends keyof StepTwoData>(field: K, value: StepTwoData[K]) => void;
+  useMenuPortal?: boolean;
 };
 
-export default function StepTwo({ values, errors = {}, userOptions, onChange }: Props) {
+export default function StepTwo({
+  values,
+  errors = {},
+  userOptions,
+  onChange,
+  useMenuPortal = true,
+}: Props) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -137,8 +144,8 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
             isSearchable
             isClearable
             styles={makeSelectStyles("usertype3")}
-            menuPortalTarget={document.body}
             formatOptionLabel={formatOptionLabel}
+            menuPortalTarget={useMenuPortal ? document.body : undefined}
           />
         </div>
         {renderError("usertype3")}
@@ -155,8 +162,8 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
             isSearchable
             isClearable
             styles={makeSelectStyles("usertype4")}
-            menuPortalTarget={document.body}
             formatOptionLabel={formatOptionLabel}
+            menuPortalTarget={useMenuPortal ? document.body : undefined}
           />
         </div>
         {renderError("usertype4")}
@@ -173,8 +180,8 @@ export default function StepTwo({ values, errors = {}, userOptions, onChange }: 
             isSearchable
             isClearable
             styles={makeSelectStyles("usertype5")}
-            menuPortalTarget={document.body}
             formatOptionLabel={formatOptionLabel}
+            menuPortalTarget={useMenuPortal ? document.body : undefined}
           />
         </div>
         {renderError("usertype5")}

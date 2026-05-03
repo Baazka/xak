@@ -20,6 +20,7 @@ type PropsType = {
   value?: string;
   name?: string;
   size?: "sm" | "md" | "lg";
+  isStatic?: boolean;
 };
 
 export default function DatePicker({
@@ -34,6 +35,7 @@ export default function DatePicker({
   value,
   name,
   size = "md",
+  isStatic = false,
 }: PropsType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const fpRef = useRef<Instance | null>(null);
@@ -64,7 +66,8 @@ export default function DatePicker({
       altFormat: "Y-m-d",
       dateFormat: "Y-m-d",
       appendTo: document.body,
-      position: "auto",
+      position: "below",
+      static: isStatic,
       onReady: function (_, __, instance) {
         Object.values(sizeClassMap).forEach((cls) =>
           instance.calendarContainer.classList.remove(cls)
