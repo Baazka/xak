@@ -1,6 +1,6 @@
 export const YES_OR_NO_MAP: Record<string, string> = {
   "1": "Тийм",
-  "2": "Үгүй",
+  "0": "Үгүй",
 };
 
 export const CR105_RATE_MAP1: Record<string, string> = {
