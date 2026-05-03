@@ -8,6 +8,7 @@ import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import { F303_DATA_MAP1, F303_DATA_MAP2 } from "@/utils/constSelect";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 type Props = {
   auditId: number;
@@ -21,6 +22,7 @@ type TableRow = {
   risk_group_name: string;
   risk_sub_group_id: number;
   risk_sub_group_name: string;
+  rc_exec_amount: number;
   col_list_count: number;
   col_list_amount: number;
   col_heavy_count: number;
@@ -63,7 +65,6 @@ export default function Form303({ auditId, formListId }: Props) {
         const res = await fetchWithAuth(`/api/audit/form303?aud_id=${auditId}`);
         const result = await res.json();
 
-        console.log(result, "<====result303");
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
       } catch (err) {
@@ -177,6 +178,12 @@ export default function Form303({ auditId, formListId }: Props) {
                   rowSpan={2}
                   className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
+                  №
+                </th>
+                <th
+                  rowSpan={2}
+                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                >
                   Тодорхойлсон эрсдэл
                 </th>
                 <th
@@ -190,6 +197,12 @@ export default function Form303({ auditId, formListId }: Props) {
                   className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   АГАДҮТ-н дэд анги
+                </th>
+                <th
+                  rowSpan={2}
+                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                >
+                  Гүйцэтгэлийн материаллаг байдал
                 </th>
                 <th
                   colSpan={2}
@@ -225,12 +238,6 @@ export default function Form303({ auditId, formListId }: Props) {
                   rowSpan={2}
                   className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
-                  Ердийн бус зүйлийн шинж чанарын тайлбар
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
                   Хяналтын найдвартай байдал
                 </th>
                 <th
@@ -241,28 +248,28 @@ export default function Form303({ auditId, formListId }: Props) {
                 </th>
               </tr>
               <tr>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Дүн
                 </th>
               </tr>
@@ -283,8 +290,11 @@ export default function Form303({ auditId, formListId }: Props) {
                     {row.risk_sub_group_name}
                   </td>
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.risk_sub_group_name}
+                    {formatCurrency(row.rc_exec_amount)}
                   </td>
+                  {/*<td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                    {row.risk_sub_group_name}
+                  </td> */}
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     <input
                       type="number"
@@ -489,6 +499,7 @@ export default function Form303({ auditId, formListId }: Props) {
                       ))}
                     </select>
                   </td>
+                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200"></td>
                 </tr>
               ))}
             </tbody>
@@ -500,6 +511,12 @@ export default function Form303({ auditId, formListId }: Props) {
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-800">
+                <th
+                  rowSpan={2}
+                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                >
+                  №
+                </th>
                 <th
                   rowSpan={2}
                   className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
@@ -520,13 +537,13 @@ export default function Form303({ auditId, formListId }: Props) {
                 </th>
                 <th
                   rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
                 >
                   Тооцоолсон түүврийн хэмжээ
                 </th>
                 <th
                   rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
                 >
                   Тооцоолсон түүврийн үнэ цэнэ
                 </th>
@@ -569,28 +586,28 @@ export default function Form303({ auditId, formListId }: Props) {
                 </th>
               </tr>
               <tr>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100  w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
+                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Дүн
                 </th>
               </tr>
@@ -606,9 +623,6 @@ export default function Form303({ auditId, formListId }: Props) {
                   </td>
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     {row.risk_group_name}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.risk_sub_group_name}
                   </td>
                   <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
                     {row.risk_sub_group_name}

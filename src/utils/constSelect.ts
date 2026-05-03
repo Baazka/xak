@@ -93,8 +93,8 @@ export const F207_DATA_MAP2: Record<string, Record<string, string>> = {
 };
 
 export const F303_DATA_MAP1: Record<string, string> = {
-  "1": "Найдвартай",
-  "2": "Дунд зэрэг",
+  "0.9": "Найдвартай",
+  "1.6": "Дунд зэрэг",
   "3": "Найдваргүй",
 };
 export const F303_DATA_MAP2: Record<string, string> = {
