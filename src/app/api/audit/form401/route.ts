@@ -99,14 +99,18 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         b.uncorrected_amount
         from audit_conclusion c
         join audit_forms af on c.con_form_id = af.form_id
-        left join (select form_aud_id, corp_form_id, 
-        sum(case when corp_ind_id = 8 then round(corp_ind_value::numeric,2) else 0 end) corp_val,
-        sum(case when corp_ind_id = 10 then round(corp_ind_value::numeric,2) else 0 end) corp_exec_val 
-        from audit_forms
-        join audit_corporality on form_id = corp_form_id
-        where corp_form_id = (select form_id from audit_forms where form_aud_id = $1 and form_list_id in (9,13) order by form_list_id desc limit 1)
-        and corp_ind_id in (8, 10)
-        group by form_aud_id, corp_form_id
+        left join (select 
+        form_aud_id, form_id, form_list_id,
+        sum(case when form_list_id = 13 and info_ind_id = 114 and info_ind_value::integer = 11 then 1 else 0 end) f_order,
+        COALESCE(NULLIF(sum(case when form_list_id = 9 and corp_ind_id = 8 then corp_ind_value::numeric else 0 end),0), sum(case when form_list_id = 13 and info_ind_id = 112 then info_ind_value::numeric else 0 end)) corp_val,
+        COALESCE(NULLIF(sum(case when form_list_id = 9 and corp_ind_id = 10 then corp_ind_value::numeric else 0 end),0),sum(case when form_list_id = 13 and info_ind_id = 113 then info_ind_value::numeric else 0 end)) corp_exec_val		
+		    from audit_forms f 
+        left join audit_corporality co on f.form_id = co.corp_form_id
+        left join audit_core_info c on f.form_id = c.info_form_id
+        where form_aud_id = $1 and form_list_id in (9,13) 
+        group by form_aud_id, form_id, form_list_id
+        order by f_order desc, form_list_id asc
+        LIMIT 1
         ) a on a.form_aud_id = af.form_aud_id
         left join (select 
         form_aud_id,
