@@ -101,14 +101,14 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         join audit_risk_important ri on r.risk_id = ri.risk_id
         left join audit_risk_operation o on r.risk_id = o.risk_id
         left join audit_risk_response rr on r.risk_id = rr.risk_id
-        join ref_risk_response_main rm on rr.resp_main_type_id = rm.main_type_id
+        left join ref_risk_response_main rm on rr.resp_main_type_id = rm.main_type_id
         join ref_risk_source rs on r.risk_source_id = rs.source_id
         join ref_risk_status s on r.risk_status_id = s.status_id
         join ref_risk_type t on r.risk_type_id = t.type_id
         left join ref_risk_group g on r.risk_group_id = g.group_id
         left join ref_risk_sub_group sg on r.risk_sub_group_id = sg.sub_group_id
         left join ref_risk_cd_type cd on r.risk_cd_type_id = cd.cd_type_id
-        where r.risk_aud_id = $1
+        where r.risk_aud_id = $1 and r.risk_status_id != 99
     `,
       [audId]
     );
@@ -200,17 +200,18 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     // INSERT AUDIT_RISK_IMPORTANT
     await client.query(
-      `INSERT INTO audit_risk_important (risk_id, risk_is_important) VALUES ($1, $2)`,
-      [newRiskId, riskData.risk_is_important]
+      `INSERT INTO audit_risk_important (risk_id, risk_form_id, risk_is_important) VALUES ($1, $2, $3)`,
+      [newRiskId, formId, riskData.risk_is_important]
     );
 
     // INSERT AUDIT_RISK_OPERATION
     if (riskData.op_is_fraud || riskData.op_genre || riskData.op_is_material) {
       await client.query(
-        `INSERT INTO audit_risk_operation (risk_id, op_is_fraud, op_fraud_reason, op_is_control, op_genre, op_inspection_rate, op_effect_rate, op_is_material, op_is_impact) 
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        `INSERT INTO audit_risk_operation (risk_id, of_form_id, op_is_fraud, op_fraud_reason, op_is_control, op_genre, op_inspection_rate, op_effect_rate, op_is_material, op_is_impact) 
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
         [
           newRiskId,
+          formId,
           riskData.op_is_fraud,
           riskData.op_fraud_reason,
           riskData.op_is_control,
@@ -226,10 +227,11 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     // INSERT AUDIT_RISK_RESPONSE
     if (riskData.resp_response) {
       await client.query(
-        `INSERT INTO audit_risk_response (risk_id, resp_main_type_id, resp_rtype_id, resp_sub_rtype_id, resp_simple_type, resp_response, resp_standard_clause, resp_law_clause) 
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        `INSERT INTO audit_risk_response (risk_id, resp_form_id, resp_main_type_id, resp_rtype_id, resp_sub_rtype_id, resp_simple_type, resp_response, resp_standard_clause, resp_law_clause) 
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
         [
           newRiskId,
+          formId,
           riskData.resp_main_type_id,
           riskData.resp_rtype_id,
           riskData.resp_sub_rtype_id,

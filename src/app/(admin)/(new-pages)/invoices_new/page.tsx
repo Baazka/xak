@@ -67,6 +67,30 @@ export default function XakorgListPage() {
   const [cardUnpaid, setCardUnpaid] = useState<number | 0>(0);
   const [cardUnpaidAmt, setCardUnpaidAmt] = useState<number | 0>(0);
 
+  const loadMeta = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetchWithAuth("/api/invoices_new/card", {
+        method: "GET",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to load metadata");
+      }
+      const data = await res.json();
+      setCardBalance(data.balance);
+      setCardInvTotal(data.invTotal);
+      setCardAud(data.audTotal);
+      setCardUnpaid(data.unpaidTotal);
+      setCardUnpaidAmt(data.unpaidAmount);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Debounce search input -> real search
   useEffect(() => {
     const t = setTimeout(() => {
@@ -77,30 +101,6 @@ export default function XakorgListPage() {
   }, [searchInput]);
 
   useEffect(() => {
-    const loadMeta = async () => {
-      try {
-        setLoading(true);
-
-        const res = await fetchWithAuth("/api/invoices_new/card", {
-          method: "GET",
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to load metadata");
-        }
-        const data = await res.json();
-        setCardBalance(data.balance);
-        setCardInvTotal(data.invTotal);
-        setCardAud(data.audTotal);
-        setCardUnpaid(data.unpaidTotal);
-        setCardUnpaidAmt(data.unpaidAmount);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadMeta();
   }, []);
 
@@ -144,6 +144,7 @@ export default function XakorgListPage() {
     }
 
     run();
+    loadMeta();
     return () => controller.abort();
   }, [page, limit, search, sortBy, sortOrder, reloadKey, toast]);
 
