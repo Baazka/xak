@@ -11,6 +11,13 @@ type Props = {
 };
 
 type TableRow = {
+  info_id: number;
+  info_form_id: number;
+  info_ind_id: number;
+  info_ind_label: string;
+  info_ind_value: string | null;
+};
+type PrevRow = {
   corp_id: number;
   corp_form_id: number;
   corp_ind_id: number;
@@ -37,9 +44,15 @@ type RiskType = {
   resp_standard_clause: string;
   resp_law_clause: string;
   risk_is_important: number;
+  rc_population: number;
+  rc_corp_rate: number;
+  rc_corp_amount: number;
+  rc_exec_percent: number;
+  rc_exec_amount: number;
 };
 
 export default function Form302({ auditId, formListId }: Props) {
+  const [prevdata, setPrevdata] = useState<PrevRow[]>([]);
   const [data, setData] = useState<TableRow[]>([]);
   const [riskData, setRiskData] = useState<RiskType[]>([]);
   const [formId, setFormId] = useState(0);
@@ -57,15 +70,9 @@ export default function Form302({ auditId, formListId }: Props) {
         const res = await fetchWithAuth(`/api/audit/form302?aud_id=${auditId}`);
         const result = await res.json();
 
-        console.log("rslt", result);
+        setPrevdata(Array.isArray(result.prevData) ? result.prevData : []);
 
-        if (result.data.length === 0) {
-          setData(Array.isArray(result.prevData) ? result.prevData : []);
-          setIsChange(false);
-        } else {
-          setData(Array.isArray(result.data) ? result.data : []);
-          setIsChange(true);
-        }
+        setData(Array.isArray(result.data) ? result.data : []);
 
         setRiskData(Array.isArray(result.riskData) ? result.riskData : []);
 
@@ -84,7 +91,23 @@ export default function Form302({ auditId, formListId }: Props) {
     try {
       setSaving(true);
 
-      const corpData = data;
+      const infoData = data;
+
+      const prevRate = Number(
+        prevdata.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ?? ""
+      );
+      const prevPercent = Number(
+        prevdata.filter((row) => row.corp_ind_id === 9)[0].corp_ind_value ?? ""
+      );
+
+      const riskDt = riskData.map((r) => ({
+        risk_id: r.risk_id,
+        rc_population: r.rc_population,
+        rc_corp_rate: r.rc_corp_rate > 0 ? r.rc_corp_rate : prevRate,
+        rc_corp_amount: r.rc_corp_amount,
+        rc_exec_percent: r.rc_exec_percent > 0 ? r.rc_exec_percent : prevPercent,
+        rc_exec_amount: r.rc_exec_amount,
+      }));
 
       const res = await fetchWithAuth(`/api/audit/form302/`, {
         method: "POST",
@@ -92,8 +115,9 @@ export default function Form302({ auditId, formListId }: Props) {
         body: JSON.stringify({
           aud_id: auditId,
           form_id: formId,
-          status_id: 1,
-          corpData,
+          form_status_id: 1,
+          infoData,
+          riskData: riskDt,
         }),
       });
 
@@ -108,6 +132,107 @@ export default function Form302({ auditId, formListId }: Props) {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCol = (value: number, riskId: number) => {
+    const prevRate = Number(
+      prevdata.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ?? ""
+    );
+    const prevPercent = Number(
+      prevdata.filter((row) => row.corp_ind_id === 9)[0].corp_ind_value ?? ""
+    );
+
+    setRiskData((prev) =>
+      prev.map((r) =>
+        r.risk_id === riskId
+          ? {
+              ...r,
+              rc_population: Number(value),
+              rc_corp_rate: r.rc_corp_rate ? r.rc_corp_rate : prevRate,
+              rc_exec_percent: r.rc_exec_percent ? r.rc_exec_percent : prevPercent,
+            }
+          : r
+      )
+    );
+    setRiskData((prev) =>
+      prev.map((r) =>
+        r.risk_id === riskId
+          ? {
+              ...r,
+              rc_corp_amount: (Number(value) / 100) * r.rc_corp_rate,
+              rc_exec_amount: (((Number(value) / 100) * r.rc_corp_rate) / 100) * r.rc_exec_percent,
+            }
+          : r
+      )
+    );
+  };
+  const handleRate = (value: any, riskId: number) => {
+    const prevPercent = Number(
+      prevdata.filter((row) => row.corp_ind_id === 9)[0].corp_ind_value ?? ""
+    );
+
+    setRiskData((prev) =>
+      prev.map((r) =>
+        r.risk_id === riskId
+          ? {
+              ...r,
+              rc_corp_rate: value,
+              rc_exec_percent: r.rc_exec_percent ? r.rc_exec_percent : prevPercent,
+            }
+          : r
+      )
+    );
+    setRiskData((prev) =>
+      prev.map((r) =>
+        r.risk_id === riskId
+          ? {
+              ...r,
+              rc_corp_amount:
+                Number(r.rc_population) > 0 ? (Number(r.rc_population) / 100) * Number(value) : 0,
+              rc_exec_amount:
+                Number(r.rc_population) > 0
+                  ? (((Number(r.rc_population) / 100) * Number(value)) / 100) *
+                    Number(r.rc_exec_percent)
+                  : 0,
+            }
+          : r
+      )
+    );
+  };
+  const handlePercent = (value: any, riskId: number) => {
+    const prevRate = Number(
+      prevdata.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ?? ""
+    );
+
+    setRiskData((prev) =>
+      prev.map((r) =>
+        r.risk_id === riskId
+          ? {
+              ...r,
+              rc_corp_rate: r.rc_corp_rate ? r.rc_corp_rate : prevRate,
+              rc_exec_percent: value,
+            }
+          : r
+      )
+    );
+    setRiskData((prev) =>
+      prev.map((r) =>
+        r.risk_id === riskId
+          ? {
+              ...r,
+              rc_corp_amount:
+                Number(r.rc_population) > 0
+                  ? (Number(r.rc_population) / 100) * Number(r.rc_corp_rate)
+                  : 0,
+              rc_exec_amount:
+                Number(r.rc_population) > 0
+                  ? (((Number(r.rc_population) / 100) * Number(r.rc_corp_rate)) / 100) *
+                    Number(value)
+                  : 0,
+            }
+          : r
+      )
+    );
   };
 
   return (
@@ -136,10 +261,10 @@ export default function Form302({ auditId, formListId }: Props) {
                   Сонгосон материаллаг байдал:{" "}
                 </span>
                 <select
-                  value={data.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ?? ""}
-                  disabled={!isChange}
+                  value={prevdata.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ?? ""}
+                  disabled={true}
                   onChange={(e) =>
-                    setData((prev) =>
+                    setPrevdata((prev) =>
                       prev.map((row) =>
                         row.corp_ind_id === 6 ? { ...row, corp_ind_value: e.target.value } : row
                       )
@@ -159,30 +284,30 @@ export default function Form302({ auditId, formListId }: Props) {
                   Сонгосон материаллаг байдлын суурь:
                 </span>
                 <select
-                  value={data.filter((row) => row.corp_ind_id === 7)[0].corp_ind_value ?? ""}
-                  disabled={!isChange}
+                  value={prevdata.filter((row) => row.corp_ind_id === 7)[0].corp_ind_value ?? ""}
+                  disabled={true}
                   onChange={(e) => {
                     const val1 = Number(
-                      data.filter((row) => row.corp_ind_id === 1)[0].corp_ind_value ?? 0
+                      prevdata.filter((row) => row.corp_ind_id === 1)[0].corp_ind_value ?? 0
                     );
                     const val2 = Number(
-                      data.filter((row) => row.corp_ind_id === 2)[0].corp_ind_value ?? 0
+                      prevdata.filter((row) => row.corp_ind_id === 2)[0].corp_ind_value ?? 0
                     );
                     const val3 = Number(
-                      data.filter((row) => row.corp_ind_id === 3)[0].corp_ind_value ?? 0
+                      prevdata.filter((row) => row.corp_ind_id === 3)[0].corp_ind_value ?? 0
                     );
                     const val4 = Number(
-                      data.filter((row) => row.corp_ind_id === 4)[0].corp_ind_value ?? 0
+                      prevdata.filter((row) => row.corp_ind_id === 4)[0].corp_ind_value ?? 0
                     );
                     const val5 = Number(
-                      data.filter((row) => row.corp_ind_id === 5)[0].corp_ind_value ?? 0
+                      prevdata.filter((row) => row.corp_ind_id === 5)[0].corp_ind_value ?? 0
                     );
                     const rate = Number(
-                      data.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ?? 0
+                      prevdata.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ?? 0
                     );
                     switch (e.target.value) {
                       case "1":
-                        setData((prev) =>
+                        setPrevdata((prev) =>
                           prev.map((row) =>
                             row.corp_ind_id === 7
                               ? { ...row, corp_ind_value: e.target.value }
@@ -199,7 +324,7 @@ export default function Form302({ auditId, formListId }: Props) {
                         );
                         break;
                       case "2":
-                        setData((prev) =>
+                        setPrevdata((prev) =>
                           prev.map((row) =>
                             row.corp_ind_id === 7
                               ? { ...row, corp_ind_value: e.target.value }
@@ -216,7 +341,7 @@ export default function Form302({ auditId, formListId }: Props) {
                         );
                         break;
                       case "3":
-                        setData((prev) =>
+                        setPrevdata((prev) =>
                           prev.map((row) =>
                             row.corp_ind_id === 7
                               ? { ...row, corp_ind_value: e.target.value }
@@ -233,7 +358,7 @@ export default function Form302({ auditId, formListId }: Props) {
                         );
                         break;
                       case "4":
-                        setData((prev) =>
+                        setPrevdata((prev) =>
                           prev.map((row) =>
                             row.corp_ind_id === 7
                               ? { ...row, corp_ind_value: e.target.value }
@@ -250,7 +375,7 @@ export default function Form302({ auditId, formListId }: Props) {
                         );
                         break;
                       default:
-                        setData((prev) =>
+                        setPrevdata((prev) =>
                           prev.map((row) =>
                             row.corp_ind_id === 7 ? { ...row, corp_ind_value: e.target.value } : row
                           )
@@ -276,7 +401,7 @@ export default function Form302({ auditId, formListId }: Props) {
                 </span>
                 <span className="ml-2 text-sm font-semibold bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                   {Number(
-                    data.filter((row) => row.corp_ind_id === 8)[0].corp_ind_value
+                    prevdata.filter((row) => row.corp_ind_id === 8)[0].corp_ind_value
                   ).toLocaleString("en-US", {
                     maximumFractionDigits: 2,
                     minimumFractionDigits: 2,
@@ -288,14 +413,15 @@ export default function Form302({ auditId, formListId }: Props) {
                   Гүйцэтгэлийн материаллаг байдал тооцох хувь:
                 </span>
                 <select
-                  value={data.filter((row) => row.corp_ind_id === 9)[0].corp_ind_value ?? ""}
-                  disabled={!isChange}
+                  value={prevdata.filter((row) => row.corp_ind_id === 9)[0].corp_ind_value ?? ""}
+                  disabled={true}
                   onChange={(e) => {
                     const val8 =
-                      Number(data.filter((row) => row.corp_ind_id === 8)[0].corp_ind_value ?? 0) ??
-                      0;
+                      Number(
+                        prevdata.filter((row) => row.corp_ind_id === 8)[0].corp_ind_value ?? 0
+                      ) ?? 0;
                     const percent = Number(e.target.value);
-                    setData((prev) =>
+                    setPrevdata((prev) =>
                       prev.map((row) =>
                         row.corp_ind_id === 9
                           ? { ...row, corp_ind_value: e.target.value }
@@ -325,7 +451,7 @@ export default function Form302({ auditId, formListId }: Props) {
                 </span>
                 <span className="ml-2 text-sm font-semibold bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                   {Number(
-                    data.filter((row) => row.corp_ind_id === 10)[0].corp_ind_value
+                    prevdata.filter((row) => row.corp_ind_id === 10)[0].corp_ind_value
                   ).toLocaleString("en-US", {
                     maximumFractionDigits: 2,
                     minimumFractionDigits: 2,
@@ -336,53 +462,76 @@ export default function Form302({ auditId, formListId }: Props) {
             <div className="grid gap-3">
               <div className="flex items-center ">
                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  Материаллаг байдлын шинэчлэн тогтоох эсэх: {isChange ? "Тийм" : "Үгүй"}
+                  Материаллаг байдлыг шинэчлэн тогтоох эсэх:
                 </span>
                 <input
                   type="checkbox"
-                  checked={isChange}
-                  onChange={() => setIsChange(!isChange)}
+                  checked={data.filter((row) => row.info_ind_id === 114)[0].info_ind_value === "1"}
+                  onChange={() =>
+                    setData((prev) =>
+                      prev.map((row) =>
+                        row.info_ind_id === 114
+                          ? {
+                              ...row,
+                              info_ind_value:
+                                prev.filter((row) => row.info_ind_id === 114)[0].info_ind_value ===
+                                "1"
+                                  ? "0"
+                                  : "1",
+                            }
+                          : row
+                      )
+                    )
+                  }
                   className="ml-2"
                 />
               </div>
-              {isChange && (
-                <div>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    Дахин тооцсон материаллаг байдал:
-                  </span>
-                  <input
-                    type="number"
-                    value={data.filter((row) => row.corp_ind_id === 11)[0].corp_ind_value ?? ""}
-                    onChange={(e) =>
-                      setData((prev) =>
-                        prev.map((row) =>
-                          row.corp_ind_id === 11 ? { ...row, corp_ind_value: e.target.value } : row
-                        )
+
+              <div className="w-full grid grid-cols-2 items-center">
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  Дахин тооцсон материаллаг байдал:
+                </span>
+                <input
+                  type="number"
+                  value={
+                    data.filter((row) => row.info_ind_id === 114)[0].info_ind_value === "1"
+                      ? (data.filter((row) => row.info_ind_id === 112)[0].info_ind_value ?? "")
+                      : ""
+                  }
+                  disabled={data.filter((row) => row.info_ind_id === 114)[0].info_ind_value !== "1"}
+                  onChange={(e) =>
+                    setData((prev) =>
+                      prev.map((row) =>
+                        row.info_ind_id === 112 ? { ...row, info_ind_value: e.target.value } : row
                       )
-                    }
-                    className="ml-2 rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 disabled:bg-gray-200"
-                  />
-                </div>
-              )}
-              {isChange && (
-                <div>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    Дахин тооцсон гүйцэтгэлийн материаллаг байдал:
-                  </span>
-                  <input
-                    type="number"
-                    value={data.filter((row) => row.corp_ind_id === 11)[0].corp_ind_value ?? ""}
-                    onChange={(e) =>
-                      setData((prev) =>
-                        prev.map((row) =>
-                          row.corp_ind_id === 11 ? { ...row, corp_ind_value: e.target.value } : row
-                        )
+                    )
+                  }
+                  className="ml-2 rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 disabled:bg-gray-200"
+                />
+              </div>
+
+              <div className="w-full grid grid-cols-2 items-center ">
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  Дахин тооцсон гүйцэтгэлийн материаллаг байдал:
+                </span>
+                <input
+                  type="number"
+                  value={
+                    data.filter((row) => row.info_ind_id === 114)[0].info_ind_value === "1"
+                      ? (data.filter((row) => row.info_ind_id === 113)[0].info_ind_value ?? "")
+                      : ""
+                  }
+                  disabled={data.filter((row) => row.info_ind_id === 114)[0].info_ind_value !== "1"}
+                  onChange={(e) =>
+                    setData((prev) =>
+                      prev.map((row) =>
+                        row.info_ind_id === 113 ? { ...row, info_ind_value: e.target.value } : row
                       )
-                    }
-                    className="ml-2 rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 disabled:bg-gray-200"
-                  />
-                </div>
-              )}
+                    )
+                  }
+                  className="ml-2 rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 disabled:bg-gray-200"
+                />
+              </div>
             </div>
           </div>
           <div>
@@ -420,12 +569,13 @@ export default function Form302({ auditId, formListId }: Props) {
                     2.0%
                   </th>
                   <th className="w-1/5 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                    {(data.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ?? "...") + "%"}
+                    {(prevdata.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ?? "...") +
+                      "%"}
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {data
+                {prevdata
                   .filter((row) => row.corp_ind_id < 6)
                   .map((row, index) => (
                     <tr key={row.corp_id} className="bg-white dark:bg-gray-900">
@@ -439,10 +589,10 @@ export default function Form302({ auditId, formListId }: Props) {
                         <input
                           type="text"
                           placeholder="0.00"
-                          disabled={!isChange}
+                          disabled={true}
                           value={row.corp_ind_value || ""}
                           onChange={(e) =>
-                            setData((prev) =>
+                            setPrevdata((prev) =>
                               prev.map((r) =>
                                 r.corp_id === row.corp_id
                                   ? { ...r, corp_ind_value: e.target.value }
@@ -473,7 +623,9 @@ export default function Form302({ auditId, formListId }: Props) {
                         <span className="text-gray-700 dark:text-gray-200 pr-2">
                           {Number(
                             (Number(row.corp_ind_value) / 100) *
-                              Number(data.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value)
+                              Number(
+                                prevdata.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value
+                              )
                           ).toLocaleString("en-US", {
                             maximumFractionDigits: 2,
                             minimumFractionDigits: 2,
@@ -530,8 +682,80 @@ export default function Form302({ auditId, formListId }: Props) {
                       <textarea
                         readOnly
                         value={row.risk_content ?? ""}
-                        className="rounded border border-gray-300 w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                        className="rounded bg-gray-200 border border-gray-300 w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
                       />
+                    </td>
+                    <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      <textarea
+                        readOnly
+                        value={row.risk_group_name + " - " + row.risk_sub_group_name}
+                        className="rounded bg-gray-200 border border-gray-300 w-full field-sizing-content flex items-center justify-center h-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                      />
+                    </td>
+                    <td className="border border-gray-200 p-0.5 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      <input
+                        type="number"
+                        value={row.rc_population ?? 0}
+                        onChange={(e) => handleCol(Number(e.target.value), row.risk_id)}
+                        className="rounded border border-gray-300 w-full p-1 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                      />
+                    </td>
+                    <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      <select
+                        value={
+                          Number(row.rc_corp_rate) > 0
+                            ? row.rc_corp_rate
+                            : Number(
+                                prevdata.filter((row) => row.corp_ind_id === 6)[0].corp_ind_value ??
+                                  ""
+                              )
+                        }
+                        onChange={(e) => handleRate(e.target.value, row.risk_id)}
+                        className="ml-2 rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 disabled:bg-gray-200"
+                      >
+                        <option value="">Сонгох</option>
+                        <option value="0.5">0.5%</option>
+                        <option value="1">1.0%</option>
+                        <option value="1.5">1.5%</option>
+                        <option value="2">2.0%</option>
+                      </select>
+                    </td>
+                    <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      <span className="text-gray-700 dark:text-gray-200 pr-2">
+                        {Number(row.rc_corp_amount).toLocaleString("en-US", {
+                          maximumFractionDigits: 2,
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
+                    </td>
+                    <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      <select
+                        value={
+                          row.rc_exec_percent
+                            ? row.rc_exec_percent
+                            : (prevdata.filter((row) => row.corp_ind_id === 9)[0].corp_ind_value ??
+                              "")
+                        }
+                        onChange={(e) => {
+                          handlePercent(e.target.value, row.risk_id);
+                        }}
+                        className="ml-2 rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 disabled:bg-gray-200"
+                      >
+                        <option value="">Сонгох</option>
+                        <option value="60">60%</option>
+                        <option value="65">65%</option>
+                        <option value="70">70%</option>
+                        <option value="75">75%</option>
+                        <option value="80">80%</option>
+                      </select>
+                    </td>
+                    <td className="border border-gray-200 p-0.5 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      <span className="text-gray-700 dark:text-gray-200 pr-2">
+                        {Number(row.rc_exec_amount).toLocaleString("en-US", {
+                          maximumFractionDigits: 2,
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
                     </td>
                   </tr>
                 ))}
