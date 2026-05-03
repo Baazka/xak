@@ -39,6 +39,13 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     );
     const formId = formResLast.rows[0].form_id;
 
+    const form205Res = await client.query(
+      `select form_sup_value from audit_forms where form_aud_id = $1 and form_list_id = 10 limit 1`,
+      [audId]
+    );
+
+    const supVal = form205Res.rows[0].form_sup_value;
+
     const formDataRes = await client.query(
       `
         select 
@@ -118,6 +125,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         formData: formDataRes.rows[0],
         data: dataRes.rows,
         form_id: formId,
+        supVal: supVal,
       },
       { status: 200 }
     );
