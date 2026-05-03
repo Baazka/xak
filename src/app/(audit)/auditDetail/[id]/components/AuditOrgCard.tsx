@@ -481,21 +481,7 @@ export default function AuditOrgCard({
         <LoadingScreen show={loading} />
       </div>
       <Dialog open={openBasicInfoModal} onOpenChange={setOpenBasicInfoModal}>
-        <DialogContent
-          className="z-[1000] sm:max-w-[600px] dark:border-gray-800 dark:bg-gray-900"
-          onPointerDownOutside={(e) => {
-            const target = e.target as HTMLElement;
-            if (target.closest(".flatpickr-calendar")) {
-              e.preventDefault();
-            }
-          }}
-          onInteractOutside={(e) => {
-            const target = e.target as HTMLElement;
-            if (target.closest(".flatpickr-calendar")) {
-              e.preventDefault();
-            }
-          }}
-        >
+        <DialogContent className="z-[1000] sm:max-w-[600px] dark:border-gray-800 dark:bg-gray-900">
           <DialogHeader>
             <DialogTitle className="dark:text-gray-100">Аудитын үндсэн мэдээлэл засах</DialogTitle>
           </DialogHeader>
@@ -561,6 +547,8 @@ export default function AuditOrgCard({
                       aud_begin_date: d ? d.toISOString().slice(0, 10) : "",
                     }));
                   }}
+                  size="md"
+                  isStatic={true}
                 />
               </div>
 
@@ -580,7 +568,8 @@ export default function AuditOrgCard({
 
                     setBasicErrors((prev) => ({ ...prev, aud_end_date: "" }));
                   }}
-                  size="lg"
+                  size="md"
+                  isStatic={true}
                 />
               </div>
 
@@ -640,6 +629,7 @@ export default function AuditOrgCard({
                 handleTeamStepChange(field, value);
                 setTeamErrors((prev) => ({ ...prev, [field]: "" }));
               }}
+              useMenuPortal={false}
             />
           </div>
 
