@@ -118,6 +118,8 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const taskTitle = String(body?.task_title ?? "").trim();
   const taskContent = String(body?.task_content ?? "").trim();
   const taskPriorityId = Number(body?.task_priority_id ?? null);
+  const auditId = Number(body?.aud_id ?? null);
+  const formId = Number(body?.form_id ?? null);
 
   if (!taskTitle || !taskContent) {
     return NextResponse.json({ error: "Хүсэлтийн мэдээлэл бүрэн оруулна уу" }, { status: 400 });
@@ -134,10 +136,10 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     // reg_task insert
     const taskRes = await client.query(
-      `INSERT INTO reg_task (task_org_id, task_code, task_date, task_status_id, task_priority_id, task_title, task_content, task_created_by)
-           VALUES ($1, $2, current_timestamp, 1, $3, $4, $5, $6)
+      `INSERT INTO reg_task (task_org_id, task_code, task_date, task_status_id, task_priority_id, task_title, task_content, task_audit_id, task_form_id, task_created_by)
+           VALUES ($1, $2, current_timestamp, 1, $3, $4, $5, $6, $7, $8)
            RETURNING task_id`,
-      [orgId, taskCode, taskPriorityId, taskTitle, taskContent, createdUser]
+      [orgId, taskCode, taskPriorityId, taskTitle, taskContent, auditId, formId, createdUser]
     );
     const taskNewId = taskRes.rows[0].task_id;
 
@@ -149,7 +151,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     );
 
     await client.query("COMMIT");
-    return NextResponse.json({ task_id: taskNewId }, { status: 201 });
+    return NextResponse.json({ task_id: taskNewId, task_code: taskCode }, { status: 201 });
   } catch (err: any) {
     await client.query("ROLLBACK").catch(() => {});
     console.error("Create task error:", err);

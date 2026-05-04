@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useAuth } from "@/context/AuthContext";
 import QuillEditor from "@/components/editor/QuillEditor";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   open: boolean;
@@ -27,6 +28,7 @@ export default function HelpdeskDialog({
   onSaved,
 }: Props) {
   const { user } = useAuth();
+  const { toast } = useToast();
 
   const [taskTitle, setTaskTitle] = React.useState("");
   const [taskContent, setTaskContent] = React.useState("");
@@ -118,8 +120,26 @@ export default function HelpdeskDialog({
         return;
       }
 
+      // CREATE NOTIFICATION
+      const notiRes = await fetchWithAuth("/api/notifications/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          noti_type_id: 3,
+          title: data?.task_code + " дугаартай тусламжийн хүсэлт үүслээ",
+          content:
+            user.org_legal_name +
+            " ХАК-аас " +
+            data?.task_code +
+            " дугаартай хүсэлт үүсгэсэн байна.",
+          target_type_code: "ROLE",
+          roleId: 2,
+        }),
+      });
+
       onOpenChange(false);
       onSaved?.();
+      toast("success", "Тусламж амжилттай илгээгдлээ");
     } catch (err: any) {
       setError(err?.message || "Сүлжээний алдаа");
     } finally {
@@ -154,9 +174,6 @@ export default function HelpdeskDialog({
         </div>
 
         <form onSubmit={onSubmit} className="space-y-4">
-          <div>
-            auditID: {audId} formID: {formId}
-          </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
