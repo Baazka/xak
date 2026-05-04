@@ -59,3 +59,47 @@ export const GET = withAuth(async (_req: NextRequest, user: JwtPayload, ctx: any
     client.release();
   }
 });
+
+export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
+  const body = (await req.json().catch(() => null)) as {
+    task_id: number;
+    task_status_id: number;
+  };
+
+  if (!body) {
+    return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
+  }
+
+  const taskId = body.task_id;
+  const statusId = body.task_status_id;
+
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+    // UPDATE reg_task
+    await client.query(
+      `
+        UPDATE reg_task
+        set task_status_id = $1, task_updated_by = $2, task_updated_date = current_timestamp
+        where task_id = $3
+      `,
+      [statusId, user.id, taskId]
+    );
+    // INSERT log_task_status
+    await client.query(
+      `INSERT INTO log_task_status (task_id, task_status_id, action_by, action_date) VALUES ($1, $2, $3, current_timestamp)`,
+      [taskId, statusId, user.id]
+    );
+
+    await client.query("COMMIT");
+    return NextResponse.json({ message: "Reg Task updated successfully" }, { status: 201 });
+  } catch (err: any) {
+    await client.query("ROLLBACK").catch(() => {});
+    console.error("Reg Task update error:", err);
+
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } finally {
+    client.release();
+  }
+});
