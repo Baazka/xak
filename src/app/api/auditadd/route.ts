@@ -107,30 +107,8 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
     // Insert audit_organization
     await client.query(
-      `INSERT INTO audit_organization (aud_id, org_regno, org_legal_name, org_founded_date, org_certno, org_main_operation, org_type, org_is_special, org_shareholder, org_founder, org_asset, org_address, org_phone, org_email, org_head_name, org_head_phone, org_head_email, org_acc_name, org_acc_phone, org_acc_email, created_by, created_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, current_timestamp)`,
-      [
-        NewAudId,
-        compData.org_regno,
-        compData.org_legal_name,
-        compData.org_founded_date,
-        compData.org_certno,
-        compData.org_main_operation,
-        compData.org_type,
-        compData.org_is_special,
-        compData.org_shareholder,
-        compData.org_founder,
-        compData.org_asset,
-        compData.org_address,
-        compData.org_phone,
-        compData.org_email,
-        compData.org_head_name,
-        compData.org_head_phone,
-        compData.org_head_email,
-        compData.org_acc_name,
-        compData.org_acc_phone,
-        compData.org_acc_email,
-        userId,
-      ]
+      `INSERT INTO audit_organization (aud_id, created_by, created_date) VALUES ($1, $2, current_timestamp)`,
+      [NewAudId, userId]
     );
     // Insert form audit_org_operation
     const orgRes = await client.query(
