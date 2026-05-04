@@ -422,14 +422,14 @@ export default function Form301({ auditId, formListId }: Props) {
                     <th className="w-10 border px-3 py-2 text-center">№</th>
                     <th className="border px-3 py-2 text-left">Тодорхойлсон эрсдэл</th>
                     <th className="border px-3 py-2 text-left">Эрсдэлийн ангилал</th>
-                    <th className="border px-3 py-2 text-left">АГАДҮТ</th>
-                    <th className="border px-3 py-2 text-left">Дэд анги</th>
+                    <th className="border px-3 py-2 text-left">Нөлөөлж буй АГАДҮТ</th>
+                    <th className="border px-3 py-2 text-left">АГАДҮТ-н дэд анги</th>
                     <th className="border px-3 py-2 text-left">Батламж мэдэгдэл</th>
                     <th className="border px-3 py-2 text-left">Эх үүсвэр</th>
                     <th className="border px-3 py-2 text-left">Төлөв</th>
                     <th className="border px-3 py-2 text-left">Огноо</th>
-                    <th className="border px-3 py-2 text-center">Ач холбогдолтой эсэх</th>
-                    <th className="border px-3 py-2 text-center no-print">Үйлдэл</th>
+                    <th className="w-10 border px-3 py-2 text-center">Ач холбогдолтой эсэх</th>
+                    <th className="w-10 border px-3 py-2 text-center no-print">Үйлдэл</th>
                   </tr>
                 </thead>
 

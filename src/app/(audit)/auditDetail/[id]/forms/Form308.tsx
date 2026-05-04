@@ -8,7 +8,13 @@ import { MessageCircle, Printer } from "lucide-react";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import ExpandableDataTable, { Column } from "@/components/tables/ExpandableTable";
-import { F308_DATA_MAP1, F308_DATA_MAP2 } from "@/utils/constSelect";
+import {
+  F304_DATA_MAP1,
+  F305_DATA_MAP1,
+  F308_DATA_MAP1,
+  F308_DATA_MAP2,
+} from "@/utils/constSelect";
+import { formatCurrency } from "@/lib/formatCurrency";
 
 type Props = {
   auditId: number;
@@ -113,8 +119,10 @@ export default function Form308({ auditId, formListId }: Props) {
     }
   };
 
-  const updateRow = (riskId: number, patch: Partial<TableRow>) => {
-    setData((prev) => prev.map((row) => (row.risk_id === riskId ? { ...row, ...patch } : row)));
+  const updateRow = <K extends keyof TableRow>(riskId: number, field: K, value: TableRow[K]) => {
+    setData((prev) =>
+      prev.map((row) => (row.risk_id === riskId ? { ...row, [field]: value } : row))
+    );
   };
 
   const importantRows = useMemo(
@@ -127,145 +135,190 @@ export default function Form308({ auditId, formListId }: Props) {
     [data]
   );
 
-  const columns: Column<TableRow>[] = [
+  const columns308A: Column<TableRow>[] = [
     {
       key: "no",
       title: "№",
-      width: "60px",
+      width: "50px",
       className: "text-center",
       render: (_row, index) => index + 1,
     },
     {
       key: "risk_content",
       title: "Тодорхойлсон эрсдэл",
-      width: "26%",
-      render: (row) => (
-        <div className="whitespace-pre-wrap break-words text-sm">{row.risk_content || "-"}</div>
-      ),
+      width: "20%",
+    },
+    {
+      key: "risk_group_name",
+      title: "Нөлөөлж буй АГАДҮТ",
+    },
+    {
+      key: "risk_sub_group_name",
+      title: "АГАДҮТ-н дэд анги",
     },
     {
       key: "rf_effect",
       title: "Үр дагавар",
-      width: "20%",
-      render: (row) => (
-        <div className="whitespace-pre-wrap break-words text-sm">{row.rf_effect || "-"}</div>
-      ),
+    },
+    {
+      key: "res_result",
+      title: "Товч утга",
+    },
+    {
+      key: "res_fault_level",
+      title: "Тухайн үр дүнг алдаа зөрчилд тооцох эсэх",
+      render: (row) => {
+        return F304_DATA_MAP1[String(row.res_fault_level ?? "-")] ?? "-";
+      },
+      className: "w-[50px]",
     },
     {
       key: "rf_amount",
       title: "Мөнгөн дүн",
-      width: "120px",
-      render: (row) => <div className="text-right">{row.rf_amount ?? ""}</div>,
+      render: (row) => {
+        return formatCurrency(row.rf_amount) ?? "-";
+      },
     },
     {
-      key: "fs_solution_id",
-      title: "Гаргасан шийдэл",
-      width: "180px",
-      render: (row) => row.fs_solution_name || "-",
+      key: "rf_is_material",
+      title: "Материаллаг эсэх",
+      render: (row) => {
+        return F305_DATA_MAP1[String(row.rf_is_material ?? "-")] ?? "-";
+      },
     },
     {
-      key: "fs_type_id",
-      title: "Алдаа, зөрчлийн ангилал",
-      width: "160px",
-      render: (row) => row.fs_type_name || "-",
+      key: "rf_standard_clause",
+      title: "Стандартын заалт",
+    },
+    {
+      key: "rf_law_clause",
+      title: "Хууль тогтоомжийн заалт",
+    },
+  ];
+
+  const columns308B: Column<TableRow>[] = [
+    {
+      key: "no",
+      title: "№",
+      width: "50px",
+      className: "text-center",
+      render: (_row, index) => index + 1,
+    },
+    {
+      key: "risk_content",
+      title: "Тодорхойлсон эрсдэл",
+      width: "20%",
+    },
+    {
+      key: "rf_effect",
+      title: "Үр дагавар",
+    },
+    {
+      key: "res_result",
+      title: "Товч утга",
+    },
+    {
+      key: "res_fault_level",
+      title: "Тухайн үр дүнг алдаа зөрчилд тооцох эсэх",
+      render: (row) => {
+        return F304_DATA_MAP1[String(row.res_fault_level ?? "-")] ?? "-";
+      },
+      className: "w-[50px]",
+    },
+    {
+      key: "rf_amount",
+      title: "Мөнгөн дүн",
+      render: (row) => {
+        return formatCurrency(row.rf_amount) ?? "-";
+      },
+    },
+    {
+      key: "rf_is_material",
+      title: "Материаллаг эсэх",
+      render: (row) => {
+        return F305_DATA_MAP1[String(row.rf_is_material ?? "-")] ?? "-";
+      },
+    },
+    {
+      key: "rf_standard_clause",
+      title: "Стандартын заалт",
+    },
+    {
+      key: "rf_law_clause",
+      title: "Хууль тогтоомжийн заалт",
     },
   ];
 
   const renderExpanded = (row: TableRow) => (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <div className="space-y-3">
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
-            Стандартын заалт
-          </label>
-          <textarea
-            readOnly
-            value={row.rf_standard_clause || ""}
-            className="min-h-[88px] w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
-            Хууль тогтоомжийн заалт
-          </label>
-          <textarea
-            readOnly
-            value={row.rf_law_clause || ""}
-            className="min-h-[88px] w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
-            Аудитын байгууллагын тогтоосон акт, албан шаардлага, зөвлөмжийн товч утга
-          </label>
-          <textarea
-            value={row.fs_subject || ""}
-            onChange={(e) => updateRow(row.risk_id, { fs_subject: e.target.value })}
-            className="min-h-[110px] w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
-            Гаргасан шийдэл
-          </label>
-          <select
-            value={row.fs_solution_id ?? ""}
-            onChange={(e) =>
-              updateRow(row.risk_id, {
-                fs_solution_id: e.target.value === "" ? 0 : Number(e.target.value),
-              })
-            }
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-          >
-            <option value="">Сонгох</option>
-            {Object.entries(F308_DATA_MAP1).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
-            Шийдлийн заалт
-          </label>
-          <textarea
-            value={row.fs_solution_clause || ""}
-            onChange={(e) => updateRow(row.risk_id, { fs_solution_clause: e.target.value })}
-            className="min-h-[110px] w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-          />
-        </div>
-
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-gray-600 dark:text-gray-300">
-            Алдаа, зөрчлийн ангилал
-          </label>
-          <select
-            value={row.fs_type_id ?? ""}
-            onChange={(e) =>
-              updateRow(row.risk_id, {
-                fs_type_id: e.target.value === "" ? 0 : Number(e.target.value),
-              })
-            }
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-          >
-            <option value="">Сонгох</option>
-            {Object.entries(F308_DATA_MAP2[String(row.fs_solution_id)] ?? {}).map(
-              ([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              )
-            )}
-          </select>
-        </div>
-      </div>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse text-xs">
+        <thead>
+          <tr className="bg-gray-50 dark:bg-gray-800">
+            <th className="w-2/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+              Аудитын байгууллагын тогтоосон акт, албан шаардлага, зөвлөмжийн товч утга
+            </th>
+            <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+              Гаргасан шийдэл
+            </th>
+            <th className="w-2/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+              Шийдлийн заалт
+            </th>
+            <th className="w-1/6 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
+              Алдаа, зөрчлийн ангилал
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
+            <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+              <textarea
+                rows={1}
+                value={row.fs_subject || ""}
+                onChange={(e) => updateRow(row.risk_id, "fs_subject", e.target.value)}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+              />
+            </td>
+            <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+              <select
+                value={row.fs_solution_id ?? ""}
+                onChange={(e) => updateRow(row.risk_id, "fs_solution_id", Number(e.target.value))}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2  text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+              >
+                <option value="">Сонгох</option>
+                {Object.entries(F308_DATA_MAP1).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </td>
+            <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+              <textarea
+                rows={1}
+                value={row.fs_solution_clause || ""}
+                onChange={(e) => updateRow(row.risk_id, "fs_solution_clause", e.target.value)}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+              />
+            </td>
+            <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+              <select
+                value={row.fs_type_id ?? ""}
+                onChange={(e) => updateRow(row.risk_id, "fs_type_id", Number(e.target.value))}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+              >
+                <option value="">Сонгох</option>
+                {Object.entries(F308_DATA_MAP2[String(row.fs_solution_id)] ?? {}).map(
+                  ([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  )
+                )}
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 
@@ -311,7 +364,7 @@ export default function Form308({ auditId, formListId }: Props) {
           </h2>
           <ExpandableDataTable
             data={importantRows}
-            columns={columns}
+            columns={columns308A}
             getRowId={(row) => row.risk_id}
             renderExpanded={renderExpanded}
           />
@@ -321,7 +374,7 @@ export default function Form308({ auditId, formListId }: Props) {
           </h2>
           <ExpandableDataTable
             data={normalRows}
-            columns={columns}
+            columns={columns308B}
             getRowId={(row) => row.risk_id}
             renderExpanded={renderExpanded}
           />
