@@ -1,7 +1,7 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { useToast } from "@/context/ToastContext";
 import { MessageCircle, Printer } from "lucide-react";
@@ -9,6 +9,7 @@ import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import { F303_DATA_MAP1, F303_DATA_MAP2 } from "@/utils/constSelect";
 import { formatCurrency } from "@/lib/formatCurrency";
+import ExpandableDataTable, { Column } from "@/components/tables/ExpandableTable";
 
 type Props = {
   auditId: number;
@@ -57,6 +58,12 @@ export default function Form303({ auditId, formListId }: Props) {
   const { handlePrint } = usePrint();
   const { toast } = useToast();
 
+  const updateRow = <K extends keyof TableRow>(riskId: number, field: K, value: TableRow[K]) => {
+    setData((prev) =>
+      prev.map((row) => (row.risk_id === riskId ? { ...row, [field]: value } : row))
+    );
+  };
+
   useEffect(() => {
     async function loadTableData() {
       try {
@@ -102,6 +109,7 @@ export default function Form303({ auditId, formListId }: Props) {
     Number(row.col_fault_amount || 0) +
     Number(row.col_heavy_famount || 0) +
     Number(row.col_abnormal_famount || 0);
+
   const calcFaultConvert = (row: TableRow) =>
     (
       (Number(row.col_list_amount) / Number(row.col_total_amount || 1)) *
@@ -163,6 +171,66 @@ export default function Form303({ auditId, formListId }: Props) {
       setSaving(false);
     }
   };
+
+  const columns303: Column<TableRow>[] = [
+    {
+      key: "no",
+      title: "№",
+      width: "50px",
+      className: "text-center",
+      render: (_row, index) => index + 1,
+    },
+    {
+      key: "risk_content",
+      title: "Тодорхойлсон эрсдэл",
+      width: "50%",
+    },
+    {
+      key: "risk_group_name",
+      title: "Нөлөөлж буй АГАДҮТ",
+    },
+    {
+      key: "risk_sub_group_name",
+      title: "АГАДҮТ-н дэд анги",
+    },
+    {
+      key: "rc_exec_amount",
+      title: "Гүйцэтгэлийн материаллаг байдал",
+      headerClassName: "w-[100px]",
+      className: "text-right",
+      render: (row) => formatCurrency(row.rc_exec_amount),
+    },
+  ];
+
+  const columns303B: Column<TableRow>[] = [
+    {
+      key: "no",
+      title: "№",
+      width: "50px",
+      className: "text-center",
+      render: (_row, index) => index + 1,
+    },
+    {
+      key: "risk_content",
+      title: "Тодорхойлсон эрсдэл",
+      width: "50%",
+    },
+    {
+      key: "risk_group_name",
+      title: "Нөлөөлж буй АГАДҮТ",
+    },
+    {
+      key: "risk_sub_group_name",
+      title: "АГАДҮТ-н дэд анги",
+    },
+    {
+      key: "rc_exec_amount",
+      title: "Тооцоолсон түүврийн хэмжээ",
+      headerClassName: "w-[100px]",
+      className: "text-right",
+      render: (row) => calcTotalCount(row),
+    },
+  ];
   return (
     <>
       {loading ? (
@@ -192,7 +260,9 @@ export default function Form303({ auditId, formListId }: Props) {
 
             <button
               type="button"
-              onClick={() => handlePrint("portrait")}
+              onClick={() => {
+                handlePrint("portrait");
+              }}
               className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
               title="Хэвлэх"
             >
@@ -202,644 +272,524 @@ export default function Form303({ auditId, formListId }: Props) {
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Эрсдэлтэй АГАДҮТ-н түвшинд хэрэгжүүлэх түүврийн хэмжээг тодорхойлох
           </h2>
-          <table className="w-full border-collapse text-sm  mb-2">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-gray-800">
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  №
-                </th>
-                <th
-                  rowSpan={2}
-                  className="w-1/9 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 "
-                >
-                  Тодорхойлсон эрсдэл
-                </th>
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Нөлөөлж буй АГАДҮТ
-                </th>
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  АГАДҮТ-н дэд анги
-                </th>
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
-                >
-                  Гүйцэтгэлийн материаллаг байдал
-                </th>
-                <th
-                  colSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  А. Данс
-                </th>
-                <th
-                  colSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  В. Дангаараа нөлөө бүхий зүйлс
-                </th>
-                <th
-                  colSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Ердийн бус зүйлс
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Ердийн бус зүйлийн шинж чанарын тайлбар
-                </th>
-                <th
-                  colSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  D. Эх олонлогоос үлдсэн
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Хяналтын найдвартай байдал
-                </th>
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
-                >
-                  Тооцоолсон түүврийн хэмжээ
-                </th>
-              </tr>
-              <tr>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
-                  Тоо
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
-                  Дүн
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
-                  Тоо
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
-                  Дүн
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
-                  Тоо
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
-                  Дүн
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
-                  Тоо
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
-                  Дүн
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, index) => (
-                <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
-                  <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {index + 1}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.risk_content}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.risk_group_name}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.risk_sub_group_name}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {formatCurrency(row.rc_exec_amount)}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_list_count || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_list_count:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_list_amount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_list_amount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_heavy_count || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_heavy_count:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_heavy_amount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_heavy_amount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_abnormal_count || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_abnormal_count:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_abnormal_amount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_abnormal_amount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <textarea
-                      value={row.col_abnormal_desc || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_abnormal_desc: e.target.value,
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={calcRestCount(row)}
-                      readOnly
-                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={calcRestAmount(row)}
-                      readOnly
-                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <select
-                      value={row.col_trust_level ?? ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_trust_level:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                    >
-                      <option value="">Сонгох</option>
-                      {Object.entries(F303_DATA_MAP1).map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={calcTotalCount(row)}
-                      readOnly
-                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ExpandableDataTable
+            data={data}
+            columns={columns303}
+            getRowId={(row) => row.risk_id}
+            renderExpanded={(row) => (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-xs">
+                  <thead>
+                    <tr>
+                      <th
+                        colSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        А. Данс
+                      </th>
+                      <th
+                        colSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        В. Дангаараа нөлөө бүхий зүйлс
+                      </th>
+                      <th
+                        colSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        Ердийн бус зүйлс
+                      </th>
+                      <th
+                        rowSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        Ердийн бус зүйлийн шинж чанарын тайлбар
+                      </th>
+                      <th
+                        colSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        D. Эх олонлогоос үлдсэн
+                      </th>
+                      <th
+                        rowSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        Хяналтын найдвартай байдал
+                      </th>
+                      <th
+                        rowSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
+                      >
+                        Тооцоолсон түүврийн хэмжээ
+                      </th>
+                    </tr>
+                    <tr className="bg-gray-100 dark:bg-gray-800">
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                        Тоо
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
+                        Дүн
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                        Тоо
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
+                        Дүн
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                        Тоо
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
+                        Дүн
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                        Тоо
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
+                        Дүн
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td className="border p-2">
+                        <input
+                          type="number"
+                          value={row.col_list_count || ""}
+                          onChange={(e) =>
+                            updateRow(
+                              row.risk_id,
+                              "col_list_count",
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                          className="w-full rounded border p-1 dark:bg-gray-900"
+                        />
+                      </td>
+
+                      <td className="border p-2">
+                        <input
+                          type="number"
+                          value={row.col_list_amount || ""}
+                          onChange={(e) =>
+                            updateRow(
+                              row.risk_id,
+                              "col_list_amount",
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                          className="w-full rounded border p-1 dark:bg-gray-900"
+                        />
+                      </td>
+
+                      <td className="border p-2">
+                        <input
+                          type="number"
+                          value={row.col_heavy_count || ""}
+                          onChange={(e) =>
+                            updateRow(
+                              row.risk_id,
+                              "col_heavy_count",
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                          className="w-full rounded border p-1 dark:bg-gray-900"
+                        />
+                      </td>
+
+                      <td className="border p-2">
+                        <input
+                          type="number"
+                          value={row.col_heavy_amount || ""}
+                          onChange={(e) =>
+                            updateRow(
+                              row.risk_id,
+                              "col_heavy_amount",
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                          className="w-full rounded border p-1 dark:bg-gray-900"
+                        />
+                      </td>
+
+                      <td className="border p-2">
+                        <input
+                          type="number"
+                          value={row.col_abnormal_count || ""}
+                          onChange={(e) =>
+                            updateRow(
+                              row.risk_id,
+                              "col_abnormal_count",
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                          className="w-full rounded border p-1 dark:bg-gray-900"
+                        />
+                      </td>
+
+                      <td className="border p-2">
+                        <input
+                          type="number"
+                          value={row.col_abnormal_amount || ""}
+                          onChange={(e) =>
+                            updateRow(
+                              row.risk_id,
+                              "col_abnormal_amount",
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                          className="w-full rounded border p-1 dark:bg-gray-900"
+                        />
+                      </td>
+
+                      <td className="border p-2">
+                        <textarea
+                          value={row.col_abnormal_desc || ""}
+                          onChange={(e) =>
+                            updateRow(row.risk_id, "col_abnormal_desc", e.target.value)
+                          }
+                          className="w-full rounded border p-1 dark:bg-gray-900"
+                        />
+                      </td>
+
+                      <td className="border p-2">
+                        <input
+                          type="number"
+                          value={calcRestCount(row)}
+                          readOnly
+                          className="w-full rounded border bg-gray-100 p-1 dark:bg-gray-800"
+                        />
+                      </td>
+
+                      <td className="border p-2">
+                        <input
+                          type="number"
+                          value={calcRestAmount(row)}
+                          readOnly
+                          className="w-full rounded border bg-gray-100 p-1 dark:bg-gray-800"
+                        />
+                      </td>
+
+                      <td className="border p-2">
+                        <select
+                          value={row.col_trust_level ?? ""}
+                          onChange={(e) =>
+                            updateRow(
+                              row.risk_id,
+                              "col_trust_level",
+                              e.target.value === "" ? 0 : Number(e.target.value)
+                            )
+                          }
+                          className="w-full rounded border p-1 dark:bg-gray-900"
+                        >
+                          <option value="">Сонгох</option>
+                          {Object.entries(F303_DATA_MAP1).map(([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+
+                      <td className="border p-2">
+                        <input
+                          type="number"
+                          value={calcTotalCount(row)}
+                          readOnly
+                          className="w-full rounded border bg-gray-100 p-1 dark:bg-gray-800"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+          />
 
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Эрсдэлтэй АГАДҮТ-н түвшинд хэрэгжүүлэх түүврийн сорилын үр дүн
           </h2>
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-gray-800">
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  №
-                </th>
-                <th
-                  rowSpan={2}
-                  className="w-1/9  border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Тодорхойлсон эрсдэл
-                </th>
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Нөлөөлж буй АГАДҮТ
-                </th>
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  АГАДҮТ-н дэд анги
-                </th>
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
-                >
-                  Тооцоолсон түүврийн хэмжээ
-                </th>
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]"
-                >
-                  Тооцоолсон түүврийн үнэ цэнэ
-                </th>
-                <th
-                  rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Сонголт хийсэн арга
-                </th>
-                <th
-                  colSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Түүврийн алдаа
-                </th>
-                <th
-                  colSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Дангаараа нөлөө бүхий зүйлсийн алдаа
-                </th>
-                <th
-                  colSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Ердийн бус зүйлсийн алдаа
-                </th>
-                <th
-                  colSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
-                >
-                  Нийт алдаа
-                </th>
 
-                <th
-                  rowSpan={2}
-                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
-                >
-                  Харьцуулан шилжүүлсэн алдааны дүн
-                </th>
-              </tr>
-              <tr>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100  w-[80px]">
-                  Тоо
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
-                  Дүн
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
-                  Тоо
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
-                  Дүн
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
-                  Тоо
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
-                  Дүн
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
-                  Тоо
-                </th>
-                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
-                  Дүн
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, index) => (
-                <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
-                  <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {index + 1}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.risk_content}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.risk_group_name}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    {row.risk_sub_group_name}
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={calcTotalCount(row)}
-                      readOnly
-                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_total_amount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_total_amount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <select
-                      value={row.col_choose_type ?? ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_choose_type:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
-                    >
-                      <option value="">Сонгох</option>
-                      {Object.entries(F303_DATA_MAP2).map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_fault_count || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_fault_count:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_fault_amount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_fault_amount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_heavy_fcount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_heavy_fcount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_heavy_famount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_heavy_famount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_abnormal_fcount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_abnormal_fcount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={row.col_abnormal_famount || ""}
-                      onChange={(e) =>
-                        setData((prev) =>
-                          prev.map((r) =>
-                            r.risk_id === row.risk_id
-                              ? {
-                                  ...r,
-                                  col_abnormal_famount:
-                                    e.target.value === "" ? 0 : Number(e.target.value),
-                                }
-                              : r
-                          )
-                        )
-                      }
-                      className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={calcTotalFCount(row)}
-                      readOnly
-                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={calcTotalFAmount(row)}
-                      readOnly
-                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                    />
-                  </td>
-                  <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                    <input
-                      type="number"
-                      value={calcFaultConvert(row)}
-                      readOnly
-                      className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ExpandableDataTable
+            data={data}
+            columns={columns303B}
+            getRowId={(row) => row.risk_id}
+            renderExpanded={(row) => (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-gray-50 dark:bg-gray-800">
+                      <th
+                        rowSpan={2}
+                        className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]"
+                      >
+                        Тооцоолсон түүврийн үнэ цэнэ
+                      </th>
+                      <th
+                        rowSpan={2}
+                        className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        Сонголт хийсэн арга
+                      </th>
+                      <th
+                        colSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        Түүврийн алдаа
+                      </th>
+                      <th
+                        colSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        Дангаараа нөлөө бүхий зүйлсийн алдаа
+                      </th>
+                      <th
+                        colSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        Ердийн бус зүйлсийн алдаа
+                      </th>
+                      <th
+                        colSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        Нийт алдаа
+                      </th>
+
+                      <th
+                        rowSpan={2}
+                        className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
+                      >
+                        Харьцуулан шилжүүлсэн алдааны дүн
+                      </th>
+                    </tr>
+                    <tr>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100  w-[80px]">
+                        Тоо
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
+                        Дүн
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                        Тоо
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
+                        Дүн
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                        Тоо
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
+                        Дүн
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                        Тоо
+                      </th>
+                      <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
+                        Дүн
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr key={row.risk_id} className="bg-white dark:bg-gray-900">
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={row.col_total_amount || ""}
+                          onChange={(e) =>
+                            setData((prev) =>
+                              prev.map((r) =>
+                                r.risk_id === row.risk_id
+                                  ? {
+                                      ...r,
+                                      col_total_amount:
+                                        e.target.value === "" ? 0 : Number(e.target.value),
+                                    }
+                                  : r
+                              )
+                            )
+                          }
+                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <select
+                          value={row.col_choose_type ?? ""}
+                          onChange={(e) =>
+                            setData((prev) =>
+                              prev.map((r) =>
+                                r.risk_id === row.risk_id
+                                  ? {
+                                      ...r,
+                                      col_choose_type:
+                                        e.target.value === "" ? 0 : Number(e.target.value),
+                                    }
+                                  : r
+                              )
+                            )
+                          }
+                          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                        >
+                          <option value="">Сонгох</option>
+                          {Object.entries(F303_DATA_MAP2).map(([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={row.col_fault_count || ""}
+                          onChange={(e) =>
+                            setData((prev) =>
+                              prev.map((r) =>
+                                r.risk_id === row.risk_id
+                                  ? {
+                                      ...r,
+                                      col_fault_count:
+                                        e.target.value === "" ? 0 : Number(e.target.value),
+                                    }
+                                  : r
+                              )
+                            )
+                          }
+                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={row.col_fault_amount || ""}
+                          onChange={(e) =>
+                            setData((prev) =>
+                              prev.map((r) =>
+                                r.risk_id === row.risk_id
+                                  ? {
+                                      ...r,
+                                      col_fault_amount:
+                                        e.target.value === "" ? 0 : Number(e.target.value),
+                                    }
+                                  : r
+                              )
+                            )
+                          }
+                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={row.col_heavy_fcount || ""}
+                          onChange={(e) =>
+                            setData((prev) =>
+                              prev.map((r) =>
+                                r.risk_id === row.risk_id
+                                  ? {
+                                      ...r,
+                                      col_heavy_fcount:
+                                        e.target.value === "" ? 0 : Number(e.target.value),
+                                    }
+                                  : r
+                              )
+                            )
+                          }
+                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={row.col_heavy_famount || ""}
+                          onChange={(e) =>
+                            setData((prev) =>
+                              prev.map((r) =>
+                                r.risk_id === row.risk_id
+                                  ? {
+                                      ...r,
+                                      col_heavy_famount:
+                                        e.target.value === "" ? 0 : Number(e.target.value),
+                                    }
+                                  : r
+                              )
+                            )
+                          }
+                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={row.col_abnormal_fcount || ""}
+                          onChange={(e) =>
+                            setData((prev) =>
+                              prev.map((r) =>
+                                r.risk_id === row.risk_id
+                                  ? {
+                                      ...r,
+                                      col_abnormal_fcount:
+                                        e.target.value === "" ? 0 : Number(e.target.value),
+                                    }
+                                  : r
+                              )
+                            )
+                          }
+                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={row.col_abnormal_famount || ""}
+                          onChange={(e) =>
+                            setData((prev) =>
+                              prev.map((r) =>
+                                r.risk_id === row.risk_id
+                                  ? {
+                                      ...r,
+                                      col_abnormal_famount:
+                                        e.target.value === "" ? 0 : Number(e.target.value),
+                                    }
+                                  : r
+                              )
+                            )
+                          }
+                          className="w-full field-sizing-content rounded border border-gray-300 bg-white p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={calcTotalFCount(row)}
+                          readOnly
+                          className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={calcTotalFAmount(row)}
+                          readOnly
+                          className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-left text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                        <input
+                          type="number"
+                          value={calcFaultConvert(row)}
+                          readOnly
+                          className="w-full rounded border border-gray-300 bg-gray-100 p-1 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+          />
 
           <FormActionSection auditId={auditId} formId={formListId} />
         </>
