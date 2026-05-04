@@ -3,6 +3,8 @@
 import type { FormItem } from "../AuditClient";
 import FormAuditCompany from "../forms/FormAuditCompany";
 import FormAuditCompanyOwner from "../forms/FormAuditCompanyOwner";
+import Form101 from "../forms/Form101";
+import Form102 from "../forms/Form102";
 import Form104 from "../forms/Form104";
 import Form105 from "../forms/Form105";
 import Form106 from "../forms/Form106";
@@ -45,6 +47,12 @@ export default function AuditContent({ activeForm, forms, auditData }: AuditCont
       content = staticForms[(active.form_code || "").toUpperCase()];
     } else {
       switch (active.form_code) {
+        case "101":
+          content = <Form101 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
+        case "102":
+          content = <Form102 auditId={auditData.auditId} formListId={active.form_id} />;
+          break;
         case "104":
           content = <Form104 auditId={auditData.auditId} formListId={active.form_id} />;
           break;

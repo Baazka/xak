@@ -422,6 +422,19 @@ export default function AuditForm() {
       const values: StepThreeData = {
         payment_method: formData.payment_method,
         aud_file_id: formData.aud_file_id,
+        aud_name: formData.aud_name,
+        aud_year: formData.aud_year,
+        aud_begin_date: formData.aud_begin_date,
+        aud_end_date: formData.aud_end_date,
+        org_regno: formData.org_regno,
+        org_legal_name: formData.org_legal_name,
+        org_head_name: formData.org_head_name,
+        org_head_phone: formData.org_head_phone,
+        org_email: formData.org_email,
+        usertype3: formData.usertype3,
+        usertype4: formData.usertype4,
+        usertype5: formData.usertype5,
+        usertype6: formData.usertype6,
       };
 
       const errors = validateForm(values, stepThreeSchema);
@@ -690,9 +703,23 @@ export default function AuditForm() {
             values={{
               payment_method: formData.payment_method,
               aud_file_id: formData.aud_file_id,
+              aud_name: formData.aud_name,
+              aud_year: formData.aud_year,
+              aud_begin_date: formData.aud_begin_date,
+              aud_end_date: formData.aud_end_date,
+              org_regno: formData.org_regno,
+              org_legal_name: formData.org_legal_name,
+              org_head_name: formData.org_head_name,
+              org_head_phone: formData.org_head_phone,
+              org_email: formData.org_email,
+              usertype3: formData.usertype3,
+              usertype4: formData.usertype4,
+              usertype5: formData.usertype5,
+              usertype6: formData.usertype6,
             }}
             errors={stepThreeErrors}
             onChange={updateStepThreeField}
+            userOptions={userOptions}
           />
         )}
         {message && <p className="mt-4 text-sm text-red-500">{message}</p>}

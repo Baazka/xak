@@ -39,10 +39,29 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     ${whereClause2}
     `;
 
+  let whereClause3 = "";
+  if (user.user_level_id > 2) {
+    whereClause3 += ` AND INV_ORG_ID = ${user.org_id} `;
+  }
+
+  const ticketSql = `
+    select 
+	count(*)::int ticketTotal, 
+  sum(case when a.inva_aud_id is null then 1 else 0 end)::int ticket
+  from reg_invoices i
+	join reg_invoice_audit a on i.inv_id = a.inva_inv_id
+	where i.inv_status_id = 2
+  ${whereClause3}
+  `;
+
   const client = await db.connect();
 
   try {
-    const [tranRes, invRes] = await Promise.all([client.query(tranSql), client.query(invSql)]);
+    const [tranRes, invRes, ticketRes] = await Promise.all([
+      client.query(tranSql),
+      client.query(invSql),
+      client.query(ticketSql),
+    ]);
 
     return NextResponse.json({
       balance: tranRes.rows[0].balance,
@@ -51,6 +70,8 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       amountTotal: invRes.rows[0].amounttotal,
       unpaidTotal: invRes.rows[0].unpaidtotal,
       unpaidAmount: invRes.rows[0].unpaidamount,
+      ticketTotal: ticketRes.rows[0].ticketTotal,
+      ticket: ticketRes.rows[0].ticket,
     });
   } catch (err) {
     console.error("DB Error:", err);
