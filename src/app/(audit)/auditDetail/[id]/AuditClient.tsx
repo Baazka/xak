@@ -49,37 +49,14 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
     loadForms();
   }, []);
 
-  const staticForms: FormItem[] = [
-    {
-      form_id: -1,
-      form_name: "Маягт 01",
-      form_stage: "",
-      form_code: "M01",
-    },
-    {
-      form_id: -2,
-      form_name: "Маягт 02",
-      form_stage: "",
-      form_code: "M02",
-    },
-  ];
-
   const mergedForms = useMemo(() => {
-    return [...staticForms, ...forms];
+    return [...forms];
   }, [forms]);
 
-  const pinnedCodes = ["M01", "M02"];
-
-  const pinnedForms = staticForms;
-
   const groupedForms: GroupedForms[] = useMemo(() => {
-    const normalForms = forms.filter(
-      (form) => !pinnedCodes.includes((form.form_code || "").toUpperCase())
-    );
-
     const map = new Map<string, FormItem[]>();
 
-    for (const form of normalForms) {
+    for (const form of forms) {
       const stage = form.form_stage || "Бусад";
       if (!map.has(stage)) {
         map.set(stage, []);
@@ -95,8 +72,6 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
 
   const auditData = {
     auditId,
-    orgName: "Байгууллагын нэр",
-    regNo: "1234567",
   };
 
   return (
@@ -117,7 +92,6 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
       <div className="flex h-[74vh] gap-4">
         <div className="h-full shrink-0">
           <AuditSidebar
-            pinnedForms={pinnedForms}
             groupedForms={groupedForms}
             activeForm={activeForm}
             onChange={setActiveForm}

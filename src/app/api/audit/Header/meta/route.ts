@@ -27,18 +27,18 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         a.aud_status_id,
         s.status_label aud_status_name,
         s.status_code aud_status_code,
-        ao.org_regno,
-        ao.org_legal_name,
-        ao.org_head_name,
-        ao.org_head_phone,
-        ao.org_head_email,
-        ao.org_acc_name,
-        ao.org_acc_phone,
-        ao.org_acc_email,
+        ai.info_reg_no,
+        ai.info_legal_name,
+        ai.info_head_name,
+        ai.info_head_phone,
+        ai.info_head_email,
+        ai.info_acc_name,
+        ai.info_acc_phone,
+        ai.info_acc_email,
         a.aud_contract_file_id
         from audit_data a
         join ref_audit_status s on a.aud_status_id = s.status_id
-        join audit_organization ao on a.aud_id = ao.aud_id
+        join audit_org_info ai on a.aud_id = ai.info_aud_id
         where a.aud_id = $1
       `,
         [audId]

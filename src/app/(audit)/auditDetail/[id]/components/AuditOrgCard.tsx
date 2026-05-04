@@ -27,14 +27,14 @@ export type HeaderData = {
   aud_status_code: string;
   aud_contract_file_id: number;
 
-  org_regno: string;
-  org_legal_name: string;
-  org_head_name: string;
-  org_head_phone: string;
-  org_head_email: string;
-  org_acc_name: string;
-  org_acc_phone: string;
-  org_acc_email: string;
+  info_reg_no: string;
+  info_legal_name: string;
+  info_head_name: string;
+  info_head_phone: string;
+  info_head_email: string;
+  info_acc_name: string;
+  info_acc_phone: string;
+  info_acc_email: string;
 };
 
 type AuditOrgCardProps = {
@@ -327,46 +327,46 @@ export default function AuditOrgCard({
               <div className="grid grid-cols-[180px_1fr] gap-y-2 pl-4">
                 <p className="text-gray-500 dark:text-gray-400">Байгууллагын нэр:</p>
                 <span className="text-gray-900 dark:text-gray-100">
-                  {headerData?.org_legal_name ?? "-"}
+                  {headerData?.info_legal_name ?? "-"}
                 </span>
 
                 <p className="text-gray-500 dark:text-gray-400">Байгууллагын регистр:</p>
                 <span className="text-gray-900 dark:text-gray-100">
-                  {headerData?.org_regno ?? "-"}
+                  {headerData?.info_reg_no ?? "-"}
                 </span>
               </div>
 
               <div className="grid grid-cols-[180px_1fr] gap-y-2 border-l border-gray-300 pl-4 dark:border-gray-700">
                 <p className="text-gray-500 dark:text-gray-400">Удирдлагын нэр:</p>
                 <span className="text-gray-900 dark:text-gray-100">
-                  {headerData?.org_head_name ?? "-"}
+                  {headerData?.info_head_name ?? "-"}
                 </span>
 
                 <p className="text-gray-500 dark:text-gray-400">Удирдлагын утас:</p>
                 <span className="text-gray-900 dark:text-gray-100">
-                  {headerData?.org_head_phone ?? "-"}
+                  {headerData?.info_head_phone ?? "-"}
                 </span>
 
                 <p className="text-gray-500 dark:text-gray-400">Удирдлагын мэйл:</p>
                 <span className="text-gray-900 dark:text-gray-100">
-                  {headerData?.org_head_email ?? "-"}
+                  {headerData?.info_head_email ?? "-"}
                 </span>
               </div>
 
               <div className="grid grid-cols-[180px_1fr] gap-y-2 border-l border-gray-300 pl-4 dark:border-gray-700">
                 <p className="text-gray-500 dark:text-gray-400">Нягтлан бодогчийн нэр:</p>
                 <span className="text-gray-900 dark:text-gray-100">
-                  {headerData?.org_acc_name ?? "-"}
+                  {headerData?.info_acc_name ?? "-"}
                 </span>
 
                 <p className="text-gray-500 dark:text-gray-400">Нягтлан бодогчийн утас:</p>
                 <span className="text-gray-900 dark:text-gray-100">
-                  {headerData?.org_acc_phone ?? "-"}
+                  {headerData?.info_acc_phone ?? "-"}
                 </span>
 
                 <p className="text-gray-500 dark:text-gray-400">Нягтлан бодогчийн мэйл:</p>
                 <span className="text-gray-900 dark:text-gray-100">
-                  {headerData?.org_acc_email ?? "-"}
+                  {headerData?.info_acc_email ?? "-"}
                 </span>
               </div>
             </div>

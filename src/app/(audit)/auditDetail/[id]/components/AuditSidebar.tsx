@@ -5,17 +5,11 @@ import type { FormItem, GroupedForms } from "../AuditClient";
 import { useEffect, useRef } from "react";
 
 type AuditSidebarProps = {
-  pinnedForms: FormItem[];
   groupedForms: GroupedForms[];
   activeForm: FormItem | null;
   onChange: (form: FormItem) => void;
 };
-export default function AuditSidebar({
-  pinnedForms,
-  groupedForms,
-  activeForm,
-  onChange,
-}: AuditSidebarProps) {
+export default function AuditSidebar({ groupedForms, activeForm, onChange }: AuditSidebarProps) {
   const itemRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -57,40 +51,6 @@ export default function AuditSidebar({
           </div>
 
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-2">
-            {pinnedForms.length > 0 && (
-              <div className="mb-2 space-y-1 border-b border-gray-200 pb-2 dark:border-gray-800">
-                {pinnedForms.map((item) => {
-                  const isActive = activeForm?.form_id === item.form_id;
-                  return (
-                    <button
-                      key={item.form_id}
-                      ref={(el) => {
-                        itemRefs.current[item.form_id] = el;
-                      }}
-                      type="button"
-                      onClick={() => onChange(item)}
-                      title={item.form_name}
-                      className={`flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition ${
-                        isActive
-                          ? "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100"
-                          : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
-                      }`}
-                    >
-                      <FileText className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
-
-                      <span className="text-xs font-medium group-hover:hidden">
-                        {item.form_code}
-                      </span>
-
-                      <span className="hidden whitespace-nowrap text-sm group-hover:block">
-                        {item.form_name}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
             {groupedForms.map((group) => (
               <div key={group.stage} className="space-y-1">
                 <div className="px-2 pt-1">
