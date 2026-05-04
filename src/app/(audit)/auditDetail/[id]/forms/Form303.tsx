@@ -202,7 +202,7 @@ export default function Form303({ auditId, formListId }: Props) {
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Эрсдэлтэй АГАДҮТ-н түвшинд хэрэгжүүлэх түүврийн хэмжээг тодорхойлох
           </h2>
-          <table className="w-full border-collapse text-sm mb-2">
+          <table className="w-full border-collapse text-sm  mb-2">
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-800">
                 <th
@@ -213,7 +213,7 @@ export default function Form303({ auditId, formListId }: Props) {
                 </th>
                 <th
                   rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="w-1/9 border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 "
                 >
                   Тодорхойлсон эрсдэл
                 </th>
@@ -231,76 +231,76 @@ export default function Form303({ auditId, formListId }: Props) {
                 </th>
                 <th
                   rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
                 >
                   Гүйцэтгэлийн материаллаг байдал
                 </th>
                 <th
                   colSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   А. Данс
                 </th>
                 <th
                   colSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   В. Дангаараа нөлөө бүхий зүйлс
                 </th>
                 <th
                   colSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   Ердийн бус зүйлс
                 </th>
                 <th
                   rowSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   Ердийн бус зүйлийн шинж чанарын тайлбар
                 </th>
                 <th
                   colSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   D. Эх олонлогоос үлдсэн
                 </th>
                 <th
                   rowSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   Хяналтын найдвартай байдал
                 </th>
                 <th
                   rowSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
                 >
                   Тооцоолсон түүврийн хэмжээ
                 </th>
               </tr>
               <tr>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
                   Дүн
                 </th>
               </tr>
@@ -530,7 +530,7 @@ export default function Form303({ auditId, formListId }: Props) {
                 </th>
                 <th
                   rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="w-1/9  border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   Тодорхойлсон эрсдэл
                 </th>
@@ -554,7 +554,7 @@ export default function Form303({ auditId, formListId }: Props) {
                 </th>
                 <th
                   rowSpan={2}
-                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
+                  className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]"
                 >
                   Тооцоолсон түүврийн үнэ цэнэ
                 </th>
@@ -566,59 +566,59 @@ export default function Form303({ auditId, formListId }: Props) {
                 </th>
                 <th
                   colSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   Түүврийн алдаа
                 </th>
                 <th
                   colSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   Дангаараа нөлөө бүхий зүйлсийн алдаа
                 </th>
                 <th
                   colSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   Ердийн бус зүйлсийн алдаа
                 </th>
                 <th
                   colSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100"
                 >
                   Нийт алдаа
                 </th>
 
                 <th
                   rowSpan={2}
-                  className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]"
                 >
                   Харьцуулан шилжүүлсэн алдааны дүн
                 </th>
               </tr>
               <tr>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100  w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100  w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
                   Дүн
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
                   Тоо
                 </th>
-                <th className="border border-gray-200 p-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[80px]">
+                <th className="border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100 w-[150px]">
                   Дүн
                 </th>
               </tr>
@@ -682,7 +682,7 @@ export default function Form303({ auditId, formListId }: Props) {
                           )
                         )
                       }
-                      className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                     >
                       <option value="">Сонгох</option>
                       {Object.entries(F303_DATA_MAP2).map(([value, label]) => (
