@@ -10,6 +10,7 @@ import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import { useHelpDesk } from "@/context/HelpDeskContext";
 import { usePrint } from "@/hooks/usePrint";
 import { useToast } from "@/context/ToastContext";
+import { set } from "date-fns";
 
 type Props = {
   auditId: number;
@@ -43,6 +44,7 @@ export default function Form209({ auditId, formListId }: Props) {
 
   const [planFiles, setPlanFiles] = useState<UploadedFileItem[]>([]);
   const [originalPlanFileId, setOriginalPlanFileId] = useState<number | null>(null);
+  const [meetingFiles, setMeetingFiles] = useState<UploadedFileItem[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [dialogSaving, setDialogSaving] = useState(false);
@@ -54,6 +56,7 @@ export default function Form209({ auditId, formListId }: Props) {
 
   const resetDialog = () => {
     setDraftRow(null);
+    setMeetingFiles([]);
   };
 
   const loadTableData = useCallback(async () => {

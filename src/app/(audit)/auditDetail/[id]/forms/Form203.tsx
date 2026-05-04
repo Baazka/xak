@@ -53,7 +53,7 @@ export default function Form203({ auditId, formListId }: Props) {
 
         setActiveTab((prev) => {
           if (prev) return prev;
-          return rows.find((row) => row.ind_group_label)?.ind_group_label ?? "Бусад";
+          return rows.find((row: any) => row.ind_group_label)?.ind_group_label ?? "Бусад";
         });
       } catch (err) {
         console.error(err);
