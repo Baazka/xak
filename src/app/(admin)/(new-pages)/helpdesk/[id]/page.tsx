@@ -9,6 +9,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useParams, useRouter } from "next/navigation";
 import QuillEditor from "@/components/editor/QuillEditor";
 import { useToast } from "@/context/ToastContext";
+import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 
 type Props = {
   taskId: number;
@@ -52,11 +53,13 @@ export default function TaskDetailPage() {
   const [metaLoading, setMetaLoading] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const { id } = useParams();
+  const [loader, setLoader] = React.useState(0);
 
   const [commentText, setCommentText] = React.useState("");
   const [saving, setSaving] = React.useState(false);
   const [deletingId, setDeletingId] = React.useState<number | null>(null);
   const { toast } = useToast();
+  const [canceling, setCanceling] = React.useState(false);
 
   const task_id = id;
 
@@ -85,7 +88,7 @@ export default function TaskDetailPage() {
   React.useEffect(() => {
     loadData();
     loadTaskCommentData();
-  }, [id]);
+  }, [id, loader]);
 
   const loadTaskCommentData = async () => {
     try {
@@ -166,6 +169,73 @@ export default function TaskDetailPage() {
     }
   };
 
+  const getStatusLabel = (statusId: number) => {
+    switch (statusId) {
+      case 1:
+        return "Илгээсэн";
+      case 2:
+        return "Шийдвэрлэж буй";
+      case 3:
+        return "Хүсэлтийг шийдвэрлэсэн";
+      case 4:
+        return "Хүсэлтийг цуцалсан";
+    }
+  };
+
+  const handleProcess = async (statusId: number) => {
+    try {
+      setLoading(true);
+
+      const res = await fetchWithAuth(`/api/helpdesk/${task_id}`, {
+        method: "POST",
+        body: JSON.stringify({ task_id: task_id, task_status_id: statusId }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Хадгалахад алдаа гарлаа");
+      }
+
+      const statusLabel = getStatusLabel(statusId);
+
+      // CREATE NOTIFICATION
+      const notiRes = await fetchWithAuth("/api/notifications/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          noti_type_id: 3,
+          title: "Тусламж " + data?.task_code + " " + statusLabel,
+          content:
+            "Таны " +
+            data?.task_code +
+            " дугаартай хүсэлт " +
+            statusLabel +
+            " төлөвт шилжсэн байна.",
+          target_type_code: "USER",
+          userIds: [data?.task_created_by],
+        }),
+      });
+
+      setLoader(loader + 1);
+      switch (statusId) {
+        case 2:
+          toast("info", "Шийдвэрлэлт эхлүүллээ");
+          break;
+        case 3:
+          toast("success", "Хүсэлтийг шийдвэрлэлээ");
+          break;
+        case 4:
+          toast("error", "Хүсэлтийг цуцаллаа");
+          break;
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      alert("Хадгалахад алдаа гарлаа");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="p-2">
@@ -184,11 +254,42 @@ export default function TaskDetailPage() {
         ) : (
           <>
             <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-              <div className="border-b border-gray-200 mb-3">
-                <div>
+              <div className="border-b border-gray-200 mb-3 flex items-center justify-between p-2">
+                <div className="flex items-center justify-center">
                   <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                    Код: {data.task_code}
+                    Код: {data.task_code} |
+                    <span className="text-lg"> Үүсгэсэн огноо: ({data.task_date})</span> |
+                    <span className="text-lg"> Төлөв: </span>
+                    <span className="text-lg rounded-lg border bg-brand-100 p-1">
+                      {data.task_status_name}
+                    </span>
                   </h1>
+                </div>
+                <div>
+                  {data.task_status_id === 1 && (
+                    <Button
+                      onClick={() => handleProcess(2)}
+                      className="bg-brand-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-white transition hover:bg-brand-600"
+                    >
+                      Шийдвэрлэлт эхлүүлэх
+                    </Button>
+                  )}
+                  {data.task_status_id === 2 && (
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleProcess(3)}
+                        className="bg-emerald-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-white transition hover:bg-emerald-600"
+                      >
+                        Шийдвэрлэсэн
+                      </Button>
+                      <Button
+                        onClick={() => handleProcess(4)}
+                        className="bg-error-500 shadow-sm hover inline-flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-white transition hover:bg-error-600"
+                      >
+                        Цуцлах
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 border-b border-gray-200 pb-4 dark:border-gray-800">
@@ -323,6 +424,7 @@ export default function TaskDetailPage() {
           </>
         )}
       </div>
+      <DeleteConfirmDialog loading={canceling} showText={true} onConfirm={() => handleProcess(4)} />
     </>
   );
 }
