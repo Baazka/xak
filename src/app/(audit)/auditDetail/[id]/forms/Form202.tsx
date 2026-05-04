@@ -294,7 +294,7 @@ export default function Form202({ auditId, formListId }: Props) {
             </table>
           </div>
 
-          <FormActionSection auditId={auditId} formId={formListId} />
+          <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
         </>
       )}
     </>

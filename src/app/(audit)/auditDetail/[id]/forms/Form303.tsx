@@ -791,7 +791,7 @@ export default function Form303({ auditId, formListId }: Props) {
             )}
           />
 
-          <FormActionSection auditId={auditId} formId={formListId} />
+          <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
         </>
       )}
     </>

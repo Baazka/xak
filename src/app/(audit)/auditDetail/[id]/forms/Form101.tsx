@@ -4,6 +4,7 @@ import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
 import { useToast } from "@/context/ToastContext";
+import FormActionSection from "../components/FormActionSection";
 
 type Props = {
   auditId: number;
@@ -377,6 +378,8 @@ export default function Form101({ auditId, formListId }: Props) {
           />
         </div>
       </div>
+
+      <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
     </>
   );
 }

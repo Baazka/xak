@@ -23,9 +23,10 @@ type FormData = {
 type Props = {
   auditId: number;
   formId: number;
+  formListId: number;
 };
 
-export default function FormActionSection({ auditId, formId }: Props) {
+export default function FormActionSection({ auditId, formId, formListId }: Props) {
   const [formData, setFormData] = useState<FormData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -36,7 +37,7 @@ export default function FormActionSection({ auditId, formId }: Props) {
         setLoading(true);
 
         const res = await fetchWithAuth(
-          `/api/audit/audit_forms?aud_id=${auditId}&form_id=${formId}`
+          `/api/audit/audit_forms?aud_id=${auditId}&formlist_id=${formListId}`
         );
 
         if (!res.ok) {

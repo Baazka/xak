@@ -162,7 +162,7 @@ export default function Form208({ auditId, formListId }: Props) {
             </tbody>
           </table>
 
-          <FormActionSection auditId={auditId} formId={formListId} />
+          <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
         </>
       )}
     </>

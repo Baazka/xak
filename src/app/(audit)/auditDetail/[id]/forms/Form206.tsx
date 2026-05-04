@@ -492,7 +492,7 @@ export default function Form206({ auditId, formListId }: Props) {
             </div>
           </div>
 
-          <FormActionSection auditId={auditId} formId={formListId} />
+          <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
         </>
       )}
     </>

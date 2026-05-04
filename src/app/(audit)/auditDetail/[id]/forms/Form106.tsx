@@ -531,7 +531,7 @@ export default function Form106({ auditId, formListId }: Props) {
             </div>
           )}
 
-          <FormActionSection auditId={auditId} formId={formListId} />
+          <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
         </>
       )}
     </>

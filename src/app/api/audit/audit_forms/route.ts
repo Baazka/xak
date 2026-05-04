@@ -9,10 +9,10 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const sp = new URL(req.url).searchParams;
   const audId = sp.get("aud_id");
-  const formId = sp.get("form_id");
+  const formListId = sp.get("formlist_id");
   const userId = user.id;
 
-  if (!audId || !formId) {
+  if (!audId || !formListId) {
     return NextResponse.json({ error: "Audit ID and Form ID are required" }, { status: 400 });
   }
 
@@ -26,7 +26,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
        FROM audit_forms
        WHERE form_aud_id = $1 AND form_list_id = $2
        LIMIT 1`,
-      [audId, formId]
+      [audId, formListId]
     );
 
     if (formRes.rows[0]) {
@@ -36,7 +36,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id)
          VALUES ($1, $2, 1)
          RETURNING form_id`,
-        [audId, formId]
+        [audId, formListId]
       );
 
       lastFormId = newFormRes.rows[0].form_id;

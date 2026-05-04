@@ -379,7 +379,7 @@ export default function Form308({ auditId, formListId }: Props) {
             renderExpanded={renderExpanded}
           />
 
-          <FormActionSection auditId={auditId} formId={formListId} />
+          <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
         </>
       )}
     </>
