@@ -95,7 +95,6 @@ export default function AuditSidebar({ groupedForms, activeForm, onChange }: Aud
       <div className="group/sidebar h-full">
         <div className="absolute left-0 top-0 flex h-full min-h-0 w-24 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 group-hover/sidebar:w-84 dark:border-gray-800 dark:bg-gray-900">
           <div className="flex shrink-0 items-center justify-between gap-2 border-b border-gray-100 px-3 py-4 dark:border-gray-800">
-      
             <div className="flex items-center gap-3">
               <FolderOpen className="h-5 w-5 shrink-0 text-gray-600 dark:text-gray-300" />
 
@@ -171,13 +170,22 @@ export default function AuditSidebar({ groupedForms, activeForm, onChange }: Aud
 
                             <div className="hidden w-full items-start justify-between gap-2 group-hover/sidebar:flex">
                               <div className="flex-1 text-sm leading-tight">
-                                <span className="break-words">{item.form_name}</span>
+                                <span className="break-words">
+                                  <span className="mr-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                    {item.form_code}
+                                  </span>
+                                  {item.form_name}
+                                </span>
                               </div>
-
                               <div className="flex items-center gap-2 shrink-0">
-                                <div className="group/icon relative flex items-center gap-1 text-blue-600">
-                                  <MessageCircle className="h-4 w-4" />
-                                  <span className="text-xs font-medium">{item.form_code ?? 0}</span>
+                                <div className="group/icon relative flex items-center text-blue-600">
+                                  <MessageCircle className="h-5 w-5" />
+
+                                  {item.form_code > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white">
+                                      {item.form_code > 9 ? "9+" : (item.form_code ?? 0)}
+                                    </span>
+                                  )}
 
                                   <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
                                     Сэтгэгдэл
@@ -185,7 +193,7 @@ export default function AuditSidebar({ groupedForms, activeForm, onChange }: Aud
                                 </div>
 
                                 <div className="group/icon relative">
-                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                  <CheckCircle className="h-5 w-5 text-green-600" />
 
                                   <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
                                     Баталгаажсан
