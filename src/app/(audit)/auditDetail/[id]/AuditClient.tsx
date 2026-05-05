@@ -18,7 +18,13 @@ export type GroupedForms = {
   items: FormItem[];
 };
 
-export default function AuditDetailClient({ auditId }: { auditId: number }) {
+export default function AuditDetailClient({
+  auditId,
+  formId,
+}: {
+  auditId: number;
+  formId: number | undefined;
+}) {
   const [openOrg, setOpenOrg] = useState(false);
   const [openAudit, setOpenAudit] = useState(false);
   const [activeForm, setActiveForm] = useState<FormItem | null>(null);
@@ -31,9 +37,14 @@ export default function AuditDetailClient({ auditId }: { auditId: number }) {
         const data = await res.json();
         const rows: FormItem[] = Array.isArray(data?.data) ? data.data : [];
 
+        const resForm = await fetchWithAuth(
+          "/api/audit/audit_forms?aud_id=" + auditId + "&formlist_id=" + formId
+        );
+        const dataForm = await resForm.json();
+
         setForms(rows);
 
-        const defaultForm = rows.find((f) => f.form_code === "308");
+        const defaultForm = rows.find((f) => f.form_code === dataForm.formData.form_code);
         if (defaultForm) {
           setActiveForm(defaultForm);
         } else if (rows.length > 0) {

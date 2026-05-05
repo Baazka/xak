@@ -156,18 +156,18 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
 
   return (
     <div
-      className="fixed w-full inset-0 z-1000 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 dark:bg-black/70"
       onMouseDown={() => onOpenChange(false)}
     >
       <div
-        className="w-full max-w-3xl rounded-xl bg-white p-5 shadow-lg"
+        className="w-full max-w-3xl rounded-xl bg-white p-5 shadow-lg dark:bg-gray-900 dark:text-gray-100"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Шинэ хүсэлт үүсгэх</h2>
 
           <button
-            className="rounded px-2 py-1 hover:bg-gray-100"
+            className="rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800"
             onClick={() => onOpenChange(false)}
             type="button"
           >
@@ -180,7 +180,7 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
             <div>
               <label className="mb-1 block text-sm">Аудитын байгууллага:</label>
               <input
-                className="w-full rounded border px-3 py-2 bg-gray-700/10"
+                className="w-full rounded border border-gray-300 px-3 py-2 bg-gray-100 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                 value={displayName}
                 disabled
               />
@@ -189,7 +189,7 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
             <div>
               <label className="mb-1 block text-sm">Эрхийн түвшин:</label>
               <input
-                className="w-full rounded border px-3 py-2 bg-gray-700/10"
+                className="w-full rounded border border-gray-300 px-3 py-2 bg-gray-100 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                 value={displayUserRole}
                 disabled
               />
@@ -198,7 +198,7 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
             <div>
               <label className="mb-1 block text-sm">Хэрэглэгчийн нэр:</label>
               <input
-                className="w-full rounded border px-3 py-2 bg-gray-700/10"
+                className="w-full rounded border border-gray-300 px-3 py-2 bg-gray-100 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                 value={displayName}
                 disabled
               />
@@ -207,7 +207,7 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
             <div>
               <label className="mb-1 block text-sm">Хэрэглэгчийн мэйл хаяг:</label>
               <input
-                className="w-full rounded border px-3 py-2 bg-gray-700/10"
+                className="w-full rounded border border-gray-300 px-3 py-2 bg-gray-100 text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                 value={displayUserEmail}
                 disabled
               />
@@ -229,7 +229,7 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
               <select
                 value={taskPriorityId}
                 onChange={(e) => setTaskPriorityId(Number(e.target.value))}
-                className="w-full rounded-lg border px-3 py-2"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
               >
                 {priorityList.map((rl) => (
                   <option key={rl.priority_id} value={rl.priority_id}>
@@ -248,7 +248,7 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
           <div className="flex justify-end gap-2 pt-2">
             <button
               type="button"
-              className="rounded border px-4 py-2"
+              className="rounded border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
@@ -256,7 +256,7 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
             </button>
             <button
               type="submit"
-              className="rounded bg-black px-4 py-2 text-white disabled:opacity-60"
+              className="rounded bg-black px-4 py-2 text-white disabled:opacity-60 dark:bg-white dark:text-black"
               disabled={loading}
             >
               {loading ? "Хадгалж байна..." : "Хадгалах"}
