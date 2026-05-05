@@ -14,19 +14,29 @@ type FormData = {
   form_code: string;
   form_status_id: number;
   form_status_name: string;
-  from_status_code: string;
-  form_description: string;
-  form_sup_value: string;
-  form_file_id: number;
+  form_status_code: string;
+  form_description?: string | null;
+  form_sup_value?: string | null;
+  form_file_id?: number | null;
 };
 
 type Props = {
   auditId: number;
   formId: number;
   formListId: number;
+  changeDesc: (value: string) => void;
+  formDataProps: FormData;
+  formSave: () => void;
 };
 
-export default function FormActionSection({ auditId, formId, formListId }: Props) {
+export default function FormActionSection({
+  auditId,
+  formId,
+  formListId,
+  changeDesc,
+  formDataProps,
+  formSave,
+}: Props) {
   const [formData, setFormData] = useState<FormData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -106,21 +116,22 @@ export default function FormActionSection({ auditId, formId, formListId }: Props
         <div className="mt-4 space-y-4">
           <div>
             <div className="mb-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
-              Тайлбар
+              Тэмдэглэл
             </div>
 
             <textarea
               className="mt-1 min-h-[120px] w-full rounded border border-gray-300 bg-white p-2 text-gray-900 outline-none focus:border-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-blue-400"
-              value={formData?.form_description ?? ""}
+              value={formDataProps?.form_description ?? ""}
               onChange={(e) =>
-                setFormData((prev) => (prev ? { ...prev, form_description: e.target.value } : null))
+                //setFormData((prev) => (prev ? { ...prev, form_description: e.target.value } : null))
+                changeDesc(e.target.value)
               }
             />
 
             <div className="mt-2 flex justify-end">
               <button
                 type="button"
-                onClick={handleSaveDescription}
+                onClick={formSave}
                 disabled={saving}
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
               >

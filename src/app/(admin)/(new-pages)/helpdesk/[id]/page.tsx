@@ -424,7 +424,6 @@ export default function TaskDetailPage() {
           </>
         )}
       </div>
-      <DeleteConfirmDialog loading={canceling} showText={true} onConfirm={() => handleProcess(4)} />
     </>
   );
 }

@@ -56,6 +56,7 @@ import CallIcon from "./call-icon.svg";
 import BoxMoving from "./box-tapped.svg";
 import BoxTapped from "./box-icon.svg";
 import TruckDelivery from "./truck-delivery.svg";
+import SendIcon from "./send.svg";
 
 export {
   BoxTapped,
@@ -116,4 +117,5 @@ export {
   ChevronUpIcon,
   ChatIcon,
   MoreDotIcon,
+  SendIcon,
 };
