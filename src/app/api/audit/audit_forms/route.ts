@@ -12,6 +12,15 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const formListId = sp.get("formlist_id");
   const userId = user.id;
 
+  console.log("GET", audId, formListId);
+
+  if (!audId) {
+    return NextResponse.json({ error: "Audit ID is required" }, { status: 400 });
+  }
+  if (!formListId) {
+    return NextResponse.json({ error: "Form ID is required" }, { status: 400 });
+  }
+
   if (!audId || !formListId) {
     return NextResponse.json({ error: "Audit ID and Form ID are required" }, { status: 400 });
   }

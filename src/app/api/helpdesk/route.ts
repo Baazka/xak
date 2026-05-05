@@ -17,7 +17,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const sortByRaw = sp.get("sortBy") || "TASK_ID";
   const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "task_id";
-  const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
+  const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "DESC";
 
   const offset = (page - 1) * limit;
 
@@ -133,6 +133,8 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     const taskCodeRes = await client.query(`SELECT nextval('task_code_seq') AS seq`);
     const taskCodeSeq = taskCodeRes.rows[0].seq;
     const taskCode = `#T${String(taskCodeSeq).padStart(6, "0")}`;
+
+    console.log("dqwdq ", auditId, formId);
 
     // reg_task insert
     const taskRes = await client.query(
