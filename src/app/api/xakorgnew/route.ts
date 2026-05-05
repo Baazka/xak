@@ -6,7 +6,8 @@ import { requirePermission } from "@/lib/requirePermission";
 import { buildWhereClause, safeParseFilters } from "./_where";
 
 const SORTABLE_COLUMNS = new Set([
-  "org_id, org_register_no",
+  "org_id",
+  "org_register_no",
   "org_legal_name",
   "org_email",
   "org_head_email",
@@ -47,11 +48,12 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
         org_head_phone, 
         org_head_email, 
         org_status, 
+        (case when org_status = 'ACTIVE' then 'Идэвхтэй' when org_status = 'PENDING' then 'Шинэ' else 'Идэвхгүй' end) as org_status_name,
         created_by, 
         to_char(created_date, 'YYYY.MM.DD') as created_date
       FROM reg_aud_org
       ${whereClause}
-      ORDER BY ${sortBy} DESC
+      ORDER BY org_status desc, ${sortBy} DESC
       LIMIT $${params.length + 1}
       OFFSET $${params.length + 2}
     `;

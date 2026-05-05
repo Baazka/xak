@@ -1,19 +1,9 @@
 "use client";
-import { useState } from "react";
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { useToast } from "@/context/ToastContext";
+import { useEffect, useState } from "react";
 import { usePrint } from "@/hooks/usePrint";
 
-import {
-  ShootingStarIcon,
-  EyeIcon,
-  BoltIcon,
-  CheckCircleIcon,
-  CloseLineIcon,
-  ErrorIcon,
-} from "@/icons";
+import { ShootingStarIcon, EyeIcon, BoltIcon, CheckCircleIcon, ErrorIcon } from "@/icons";
 import { MessageCircle, Printer } from "lucide-react";
-import { he } from "date-fns/locale";
 
 type FormData = {
   form_id: number;
@@ -32,36 +22,37 @@ type FormData = {
 
 type Props = {
   auditId: number;
-  formId: number;
   formListId: number;
-  formDataProps: FormData;
-  saving: boolean;
   formSave: () => void;
-  processing: boolean;
-  reload: () => void;
-  helpOpen: () => void;
-  printOpen: () => void;
+  helpOpen?: () => void;
+  formData: FormData;
+  formProcess: (form_id: number, form_status_id: number) => void;
 };
 
-export default function AuditFormSave({
-  auditId,
-  formId,
-  formListId,
-  formDataProps,
-  saving,
-  formSave,
-  processing,
-  reload,
-  helpOpen,
-  printOpen,
-}: Props) {
+export default function AuditFormSave({ formSave, helpOpen, formData, formProcess }: Props) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmStatusId, setConfirmStatusId] = useState(0);
-  const { toast } = useToast();
   const { handlePrint } = usePrint();
+  const [saving, setSaving] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const saveForm = async () => {
-    formSave();
+    setSaving(true);
+    try {
+      await formSave();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleProcess = async () => {
+    setProcessing(true);
+    try {
+      await formProcess(formData.form_id, confirmStatusId);
+    } finally {
+      setProcessing(false);
+      setConfirmOpen(false);
+    }
   };
 
   const handleStatus = async (form_status_id: number) => {
@@ -69,51 +60,18 @@ export default function AuditFormSave({
     setConfirmStatusId(form_status_id);
   };
 
-  const confirmStatus = async (
-    form_id: number,
-    form_status_id: number,
-    form_description?: string | null,
-    form_sup_value?: number | null,
-    form_file_id?: number | null
-  ) => {
-    try {
-      const res = await fetchWithAuth(`/api/audit/audit_forms/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          form_id: form_id,
-          form_status_id: form_status_id,
-          form_description: form_description,
-          form_sup_value: form_sup_value,
-          form_file_id: form_file_id,
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Хадгалахад алдаа гарлаа");
-      }
-
-      toast("success", "Үйлдэл амжилттай хадгаллаа");
-    } catch (error) {
-      console.error(error);
-      toast("error", "Хадгалахад алдаа гарлаа");
-    } finally {
-      setConfirmOpen(false);
-    }
-    reload();
-  };
   return (
     <>
       <div className="fixed top-48 z-1 right-15 flex items-center justify-end gap-2 mb-2">
         <div>
           <button className="mr-4 rounded border p-2 bg-gray-200 border-gray-200">
-            Маягтын төлөв: {formDataProps?.form_status_name}
+            Маягтын төлөв: {formData?.form_status_name}
           </button>
         </div>
-        {formDataProps?.form_status_id === 5 && (
+        {formData.form_status_id === 5 && (
           <button
             type="button"
-            onClick={formSave}
+            onClick={saveForm}
             disabled={saving}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-linear-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
           >
@@ -123,7 +81,7 @@ export default function AuditFormSave({
             {saving ? "Хадгалж байна..." : "Хадгалах"}
           </button>
         )}
-        {formDataProps?.form_status_id === 1 && (
+        {formData.form_status_id === 1 && (
           <>
             <button
               type="button"
@@ -151,7 +109,7 @@ export default function AuditFormSave({
             </button>
           </>
         )}
-        {formDataProps?.form_status_id === 2 && (
+        {formData.form_status_id === 2 && (
           <>
             <button
               type="button"
@@ -180,7 +138,7 @@ export default function AuditFormSave({
             </button>
           </>
         )}
-        {formDataProps?.form_status_id === 3 && (
+        {formData.form_status_id === 3 && (
           <>
             <button
               type="button"
@@ -209,7 +167,7 @@ export default function AuditFormSave({
             </button>
           </>
         )}
-        {formDataProps?.form_status_id === 4 && (
+        {formData.form_status_id === 4 && (
           <button
             type="button"
             onClick={() => handleStatus(6)}
@@ -223,7 +181,7 @@ export default function AuditFormSave({
             {processing ? "Хадгалж байна..." : "Чанарын хяналт"}
           </button>
         )}
-        {formDataProps?.form_status_id === 6 && (
+        {formData.form_status_id === 6 && (
           <button
             type="button"
             onClick={() => handleStatus(7)}
@@ -237,7 +195,7 @@ export default function AuditFormSave({
             {processing ? "Архивлаж байна..." : "Архивлах"}
           </button>
         )}
-        {formDataProps?.form_status_id === 7 && (
+        {formData.form_status_id === 7 && (
           <button
             type="button"
             onClick={() => handleStatus(5)}
@@ -253,7 +211,7 @@ export default function AuditFormSave({
         )}
         <button
           type="button"
-          onClick={() => helpOpen()}
+          //onClick={() => helpOpen()}
           className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
           title="Тусламж"
         >
@@ -300,7 +258,7 @@ export default function AuditFormSave({
               <div className="flex items-center justify-center gap-8">
                 <button
                   type="button"
-                  onClick={() => confirmStatus(formId, confirmStatusId)}
+                  onClick={() => handleProcess()}
                   className="bg-blue-600 text-white px-5 h-10 rounded-lg transition hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
                 >
                   Тийм

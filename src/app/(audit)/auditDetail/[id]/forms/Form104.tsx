@@ -27,6 +27,21 @@ type TableRow = {
   noti_value: boolean | null;
 };
 
+type FormData = {
+  form_id: number;
+  form_aud_id: number;
+  form_list_id: number;
+  form_stage: string;
+  form_name: string;
+  form_code: string;
+  form_status_id: number;
+  form_status_name: string;
+  form_status_code: string;
+  form_description?: string | null;
+  form_sup_value?: string | null;
+  form_file_id?: number | null;
+};
+
 export default function Form104({ auditId, formListId }: Props) {
   const [bags, setBags] = useState<BagOption[]>([]);
   const [selectedBag, setSelectedBag] = useState("");
@@ -38,6 +53,20 @@ export default function Form104({ auditId, formListId }: Props) {
   const { openHelp } = useHelpDesk();
   const { handlePrint } = usePrint();
   const { toast } = useToast();
+
+  const [formData, setFormData] = useState<FormData>({
+    form_id: 0,
+    form_aud_id: 0,
+    form_list_id: 0,
+    form_stage: "",
+    form_name: "",
+    form_code: "",
+    form_status_id: 0,
+    form_status_name: "",
+    form_status_code: "",
+    form_description: null,
+    form_sup_value: null,
+  });
 
   const onChange = (id: number, value: boolean) => {
     setData((prev) => prev.map((row) => (row.ind_id === id ? { ...row, noti_value: value } : row)));
@@ -72,6 +101,7 @@ export default function Form104({ auditId, formListId }: Props) {
 
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
+        setFormData(result.formData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -81,6 +111,13 @@ export default function Form104({ auditId, formListId }: Props) {
 
     loadTableData();
   }, [selectedBag, auditId]);
+
+  const changeDesc = async (value: string) => {
+    setFormData({
+      ...formData,
+      form_description: value,
+    });
+  };
 
   const handleSave = async () => {
     try {
@@ -250,7 +287,13 @@ export default function Form104({ auditId, formListId }: Props) {
             ))}
           </table>
 
-          <FormActionSection auditId={auditId} formId={formListId} />
+          <FormActionSection
+            auditId={auditId}
+            formId={formId}
+            formListId={formListId}
+            changeDesc={changeDesc}
+            formDataProps={formData}
+          />
         </>
       )}
     </>

@@ -390,7 +390,7 @@ export default function Form308({ auditId, formListId }: Props) {
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
-          <AuditFormSave
+          {/* <AuditFormSave
             auditId={auditId}
             formId={formId}
             formListId={formListId}
@@ -401,7 +401,7 @@ export default function Form308({ auditId, formListId }: Props) {
             reload={reload}
             helpOpen={helpOpen}
             printOpen={printOpen}
-          />
+          /> */}
 
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Эрсдэлтэй АГАДҮТ-н түвшинд хэрэгжүүлэх түүврийн сорилын алдааг үнэлэх
@@ -422,13 +422,10 @@ export default function Form308({ auditId, formListId }: Props) {
             getRowId={(row) => row.risk_id}
             renderExpanded={renderExpanded}
           />
-          {formData?.form_description || "empty"}
           <FormActionSection
             auditId={auditId}
             formId={formId}
             formListId={formListId}
-            changeDesc={changeDesc}
-            formDataProps={formData}
             formSave={handleSave}
           />
         </>

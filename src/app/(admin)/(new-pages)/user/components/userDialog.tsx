@@ -4,6 +4,7 @@ import * as React from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import type { User } from "../types";
 import { FormErrors, ValidationSchema, validateForm } from "@/utils/validation";
+import { useToast } from "@/context/ToastContext";
 
 type Props = {
   open: boolean;
@@ -62,6 +63,7 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
 
   // const [username, setUsername] = React.useState("");
   // const [email, setEmail] = React.useState("");
+  const { toast } = useToast();
   // const [password, setPassword] = React.useState("");
   const [regno, setRegno] = React.useState("");
   const [user_firstname, setUser_firstname] = React.useState("");
@@ -211,6 +213,8 @@ export default function UserDialog({ open, onOpenChange, mode, initialUser, onSa
 
       onOpenChange(false);
       onSaved?.();
+
+      toast("success", isEdit ? "Амжилттай засагдлаа" : "Амжилттай нэмэгдлээ");
     } catch (err: any) {
       setError(err?.message || "Сүлжээний алдаа");
     } finally {

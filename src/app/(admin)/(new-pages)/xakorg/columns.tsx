@@ -2,13 +2,16 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { XakOrg, XakOrgNew } from "./types";
 import RowActionsMenu from "@/components/tables/RowActionsMenu";
-import { Pencil, Mail } from "lucide-react";
+import { Pencil, Mail, CheckCheck } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
+import Badge from "@/components/ui/badge/Badge";
+import { stat } from "fs";
 
 type ColumnActions = {
   onEdit: (id: number) => void;
   onRemove: (id: number) => void;
   onInvite: (org: XakOrgNew) => void;
+  onConfirm: (id: number) => void;
 
   canUpdate: boolean;
   canDelete: boolean;
@@ -37,7 +40,24 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrgNew>[] => [
   { accessorKey: "org_head_phone", header: "Удирдлага утас" },
   { accessorKey: "org_head_email", header: "Удирдлага мэйл" },
   { accessorKey: "created_date", header: "Бүртгэгдсэн" },
-  // { accessorKey: "org_status", header: "Төлөв" },
+  {
+    id: "org_status",
+    header: "Төлөв код",
+    cell: ({ row }) => {
+      const status = row.original.org_status;
+
+      return (
+        <div>
+          <Badge
+            size="sm"
+            color={status === "ACTIVE" ? "success" : status === "PENDING" ? "warning" : "error"}
+          >
+            {row.original.org_status_name}
+          </Badge>
+        </div>
+      );
+    },
+  },
   {
     id: "actions",
     enableSorting: false,
@@ -48,9 +68,10 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrgNew>[] => [
       const email = org.org_email?.trim();
       const name = org.org_legal_name;
       const deleting = actions.deleteLoadingId === id;
+      const status = org.org_status;
 
       const menuActions = [
-        ...(actions.canUpdate
+        ...(actions.canUpdate && status === "ACTIVE"
           ? [
               {
                 key: "edit",
@@ -61,13 +82,17 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrgNew>[] => [
             ]
           : []),
         // EMAIL ACTION
-        {
-          key: "invite",
-          label: org.org_email ? "Invite / OTP явуулах" : "E-mail байхгүй",
-          icon: <Mail className="h-4 w-4" />,
-          disabled: !org.org_email,
-          onClick: () => actions.onInvite(org),
-        },
+        ...(status === "ACTIVE"
+          ? [
+              {
+                key: "invite",
+                label: org.org_email ? "Invite / OTP явуулах" : "E-mail байхгүй",
+                icon: <Mail className="h-4 w-4" />,
+                disabled: !org.org_email,
+                onClick: () => actions.onInvite(org),
+              },
+            ]
+          : []),
         ...(actions.canDelete
           ? [
               {
@@ -79,6 +104,16 @@ export const columns = (actions: ColumnActions): ColumnDef<XakOrgNew>[] => [
                     onConfirm={() => actions.onRemove(id)}
                   />
                 ),
+              },
+            ]
+          : []),
+        ...(status === "PENDING"
+          ? [
+              {
+                key: "confirm",
+                label: "Баталгаажуулах",
+                icon: <CheckCheck className="h-4 w-4 text-gray-500 dark:text-gray-400" />,
+                onClick: () => actions.onConfirm(id),
               },
             ]
           : []),

@@ -150,20 +150,8 @@ export default function Form101({ auditId, formListId }: Props) {
 
   return (
     <>
-      <div className="flex items-center justify-between ">
-        <div>
-          <h2 className="col-span-full text-base font-semibold border-b pb-1">Ерөнхий мэдээлэл</h2>
-        </div>
-        <div>
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white disabled:bg-gray-400"
-          >
-            {saving ? "Хадгалж байна..." : "Хадгалах"}
-          </button>
-        </div>
+      <div className="mb-4">
+        <h2 className="col-span-full text-base font-semibold border-b pb-1">Ерөнхий мэдээлэл</h2>
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Ерөнхий мэдээлэл */}
@@ -379,7 +367,12 @@ export default function Form101({ auditId, formListId }: Props) {
         </div>
       </div>
 
-      <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
+      <FormActionSection
+        auditId={auditId}
+        formId={formId}
+        formListId={formListId}
+        formSave={handleSave}
+      />
     </>
   );
 }

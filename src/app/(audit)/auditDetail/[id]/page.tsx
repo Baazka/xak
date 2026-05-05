@@ -13,5 +13,5 @@ export default async function AuditDetailPage({
   const auditId = Number(id);
   const formListId = formId ? Number(formId) : undefined;
 
-  return <AuditDetailClient auditId={auditId} formId={formListId} />;
+  return <AuditDetailClient auditId={auditId} formListId={formListId} />;
 }

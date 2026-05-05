@@ -245,18 +245,28 @@ export default function SignInForm() {
                       Сануулах
                     </label>
                   </div>
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
-                  >
-                    Нууц үг мартсан уу?
-                  </Link>
+                  <div>
+                    <Link
+                      href="/register"
+                      className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                    >
+                      Бүртгүүлэх
+                    </Link>
+                    <span className="text-sm text-gray-500 dark:text-gray-400 mx-2">|</span>
+                    <Link
+                      href="/forgot-password"
+                      className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                    >
+                      Нууц үг сэргээх
+                    </Link>
+                  </div>
                 </div>
                 <div>
                   <Button className="w-full" type="submit">
                     Нэвтрэх
                   </Button>
                 </div>
+                <div></div>
               </div>
             </form>
 

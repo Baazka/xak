@@ -9,11 +9,12 @@ import Alert from "@/components/ui/alert/Alert";
 import Link from "next/link";
 import { useToast } from "@/context/ToastContext";
 
-export default function EditXakOrgClient({ id, initialData }: any) {
+export default function ConfirmXakOrg({ id, initialData }: any) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState<string | null>(null);
   const { toast } = useToast();
+  const [data, setData] = useState(initialData);
 
   const handleUpdate = async (data: any) => {
     if (loading) return;
@@ -25,18 +26,18 @@ export default function EditXakOrgClient({ id, initialData }: any) {
       const res = await fetchWithAuth(`/api/xakorgnew/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, method: "EDIT" }),
+        body: JSON.stringify({ ...data, method: "CONFIRM" }), // send method as CONFIRM to indicate confirmation action
       });
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || "Засах үед алдаа гарлаа");
+        throw new Error(err.message || "Баталгаажуулах үед алдаа гарлаа");
       }
 
-      toast("success", "Амжилттай засагдлаа");
+      toast("success", "Амжилттай баталгаажлаа");
       router.push("/xakorg");
     } catch (err: any) {
-      setAlert(err?.message || "Засах үед алдаа гарлаа");
+      setAlert(err?.message || "Баталгаажуулах үед алдаа гарлаа");
       toast("error", err?.message || "Алдаа гарлаа"); // optional
     } finally {
       setLoading(false);
@@ -61,7 +62,7 @@ export default function EditXakOrgClient({ id, initialData }: any) {
           initialData={initialData}
           onSubmit={handleUpdate}
           loading={loading}
-          method="EDIT"
+          method="CONFIRM"
         />
       </div>
     </div>

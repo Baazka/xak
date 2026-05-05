@@ -19,6 +19,7 @@ export type XakOrgNew = {
   org_head_phone: string;
   org_head_email?: string;
   org_status: string;
+  org_status_name: string;
   created_by?: number;
   created_date?: string;
 };

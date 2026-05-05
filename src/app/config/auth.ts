@@ -5,4 +5,5 @@ export const publicRoutes = [
   "/reset-password",
   "/verify-otp",
   "/set-password",
+  "/register",
 ];

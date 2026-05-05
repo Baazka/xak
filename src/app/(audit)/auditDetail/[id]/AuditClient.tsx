@@ -20,43 +20,45 @@ export type GroupedForms = {
 
 export default function AuditDetailClient({
   auditId,
-  formId,
+  formListId,
 }: {
   auditId: number;
-  formId: number | undefined;
+  formListId: number | undefined;
 }) {
   const [openOrg, setOpenOrg] = useState(false);
   const [openAudit, setOpenAudit] = useState(false);
   const [activeForm, setActiveForm] = useState<FormItem | null>(null);
   const [forms, setForms] = useState<FormItem[]>([]);
+  const [defaultForm, setDefaultForm] = useState<string | null>(null);
+  const loadForms = async () => {
+    try {
+      const res = await fetchWithAuth("/api/refs/audit_form");
+      const data = await res.json();
+      const rows: FormItem[] = Array.isArray(data?.data) ? data.data : [];
 
-  useEffect(() => {
-    const loadForms = async () => {
-      try {
-        const res = await fetchWithAuth("/api/refs/audit_form");
-        const data = await res.json();
-        const rows: FormItem[] = Array.isArray(data?.data) ? data.data : [];
-
+      if (formListId) {
         const resForm = await fetchWithAuth(
-          "/api/audit/audit_forms?aud_id=" + auditId + "&formlist_id=" + formId
+          "/api/audit/audit_forms?aud_id=" + auditId + "&formlist_id=" + formListId
         );
         const dataForm = await resForm.json();
-
-        setForms(rows);
-
-        const defaultForm = rows.find((f) => f.form_code === dataForm?.formData?.form_code);
-        if (defaultForm) {
-          setActiveForm(defaultForm);
-        } else if (rows.length > 0) {
-          setActiveForm(rows[0]);
-        }
-      } catch (err) {
-        console.error(err);
-        setForms([]);
-        setActiveForm(null);
+        setDefaultForm(dataForm?.formData?.form_code);
       }
-    };
+      setForms(rows);
 
+      const defaultFormItem = rows.find((f) => f.form_code === defaultForm);
+      if (defaultFormItem) {
+        setActiveForm(defaultFormItem);
+      } else if (rows.length > 0) {
+        setActiveForm(rows[0]);
+      }
+    } catch (err) {
+      console.error(err);
+      setForms([]);
+      setActiveForm(null);
+    }
+  };
+
+  useEffect(() => {
     loadForms();
   }, []);
 

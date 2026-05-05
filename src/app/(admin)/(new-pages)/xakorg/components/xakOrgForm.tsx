@@ -20,6 +20,7 @@ type Props = {
   initialData?: Partial<XakOrgFormData>;
   onSubmit?: (data: XakOrgFormData) => Promise<void>;
   loading?: boolean;
+  method?: string;
 };
 
 const emptyForm: XakOrgFormData = {
@@ -76,7 +77,7 @@ const validationSchema: ValidationSchema<XakOrgFormData> = {
   },
 };
 
-export default function XakOrgForm({ initialData, onSubmit, loading = false }: Props) {
+export default function XakOrgForm({ initialData, onSubmit, loading = false, method }: Props) {
   const [form, setForm] = useState<XakOrgFormData>({
     ...emptyForm,
     ...initialData,
@@ -230,7 +231,17 @@ export default function XakOrgForm({ initialData, onSubmit, loading = false }: P
 
       <div className="flex gap-3">
         <Button type="submit" disabled={loading}>
-          {loading ? "Хадгалж байна..." : "Хадгалах"}
+          {method === "CONFIRM"
+            ? loading
+              ? "Баталгаажуулж байна..."
+              : "Баталгаажуулах"
+            : method === "EDIT"
+              ? loading
+                ? "Засаж байна..."
+                : "Засах"
+              : loading
+                ? "Хадгалж байна..."
+                : "Хадгалах"}
         </Button>
       </div>
     </form>

@@ -51,7 +51,7 @@ export default function XakorgListPage() {
   const [reloadKey, setReloadKey] = useState(0);
 
   const sortBy = useMemo(() => sorting[0]?.id ?? "org_id", [sorting]);
-  const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "asc"), [sorting]);
+  const sortOrder = useMemo(() => (sorting[0]?.desc ? "desc" : "desc"), [sorting]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     // default hide
   });
@@ -101,6 +101,7 @@ export default function XakorgListPage() {
   }, [page, limit, search, sortBy, sortOrder, reloadKey, toast]);
 
   const handleEdit = (id: number) => router.push(`/xakorg/${id}/edit`);
+  const handleConfirm = (id: number) => router.push(`/xakorg/${id}/confirm`);
 
   const handleRemove = async (id: number) => {
     if (deleteLoadingId !== null) return;
@@ -195,6 +196,7 @@ export default function XakorgListPage() {
                 onEdit: handleEdit,
                 onRemove: handleRemove,
                 onInvite: onInvite,
+                onConfirm: handleConfirm,
                 canUpdate,
                 canDelete,
                 page,
