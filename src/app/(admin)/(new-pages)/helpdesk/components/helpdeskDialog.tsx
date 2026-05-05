@@ -2,10 +2,9 @@
 
 import * as React from "react";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import type { Task } from "../types";
-import { M_PLUS_1 } from "next/font/google";
 import { useAuth } from "@/context/AuthContext";
 import QuillEditor from "@/components/editor/QuillEditor";
+import { FormErrors, ValidationSchema, validateForm } from "@/utils/validation";
 
 type Props = {
   open: boolean;
@@ -17,6 +16,16 @@ type Props = {
 type taskPriorityType = {
   priority_id: number;
   priority_name: string;
+};
+
+type HelpdeskFormData = {
+  taskTitle: string;
+  taskContent: string;
+};
+
+const helpdeskSchema: ValidationSchema<HelpdeskFormData> = {
+  taskTitle: { required: true, label: "Агуулга" },
+  taskContent: { required: true, label: "Тайлбар" },
 };
 
 export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
@@ -37,19 +46,22 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
   const [taskContent, setTaskContent] = React.useState("");
   const [taskPriorityId, setTaskPriorityId] = React.useState<number | "">("");
 
-  const [regno, setRegno] = React.useState("");
-  const [user_firstname, setUser_firstname] = React.useState("");
-  const [user_email, setUser_email] = React.useState("");
-  const [user_phone, setUser_phone] = React.useState("");
-  const [user_id, setUserId] = React.useState(0);
-  const [roleId, setRoleId] = React.useState("");
-
   const [priorityList, setPriorityList] = React.useState<taskPriorityType[]>([]);
-  const [userRoleId, setUserRoleId] = React.useState<number | "">("");
 
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [metaLoading, setMetaLoading] = React.useState(false);
+
+  const [errors, setErrors] = React.useState<FormErrors<HelpdeskFormData>>({});
+
+  const clearError = (field: keyof HelpdeskFormData) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const renderError = (field: keyof HelpdeskFormData) =>
+    errors[field] ? <p className="mt-1 text-xs text-red-500">{errors[field]}</p> : null;
 
   React.useEffect(() => {
     const loadMeta = async () => {
@@ -96,19 +108,20 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
 
     setError(null);
 
-    const tTitle = taskTitle.trim();
-    const tContent = taskContent.trim().toLowerCase();
+    const formData: HelpdeskFormData = {
+      taskTitle,
+      taskContent,
+    };
 
-    if (!tTitle || !tContent) {
-      setError("Агуулга болон тайлбар хэсгийг бүрэн оруулна уу");
-      return;
-    }
+    const validationErrors = validateForm(formData, helpdeskSchema);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) return;
 
     setLoading(true);
     try {
       let res: Response;
 
-      // ✅ CREATE → POST /api/users
       res = await fetchWithAuth("/api/helpdesk", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -217,11 +230,16 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
           <div>
             <label className="mb-1 block text-sm">Агуулга:</label>
             <input
-              className="w-full rounded border px-3 py-2"
               value={taskTitle}
-              onChange={(e) => setTaskTitle(e.target.value)}
+              onChange={(e) => {
+                (setTaskTitle(e.target.value), clearError("taskTitle"));
+              }}
               placeholder="Ерөнхий агуулга"
+              className={`w-full rounded-lg border px-3 py-2 ${
+                errors.taskTitle ? "border-red-500" : ""
+              }`}
             />
+            {renderError("taskTitle")}
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
@@ -229,7 +247,7 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
               <select
                 value={taskPriorityId}
                 onChange={(e) => setTaskPriorityId(Number(e.target.value))}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                className="w-full rounded-lg border px-3 py-2 "
               >
                 {priorityList.map((rl) => (
                   <option key={rl.priority_id} value={rl.priority_id}>
@@ -242,7 +260,15 @@ export default function HelpdeskDialog({ open, onOpenChange, onSaved }: Props) {
           <div>
             <label className="mb-1 block text-sm">Тайлбар:</label>
 
-            <QuillEditor value={taskContent} onChange={setTaskContent} />
+            <QuillEditor
+              value={taskContent}
+              onChange={(value) => {
+                setTaskContent(value);
+                clearError("taskContent");
+              }}
+            />
+
+            {renderError("taskContent")}
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
