@@ -44,7 +44,7 @@ export default function AuditDetailClient({
 
         setForms(rows);
 
-        const defaultForm = rows.find((f) => f.form_code === dataForm.formData.form_code);
+        const defaultForm = rows.find((f) => f.form_code === dataForm?.formData?.form_code);
         if (defaultForm) {
           setActiveForm(defaultForm);
         } else if (rows.length > 0) {
