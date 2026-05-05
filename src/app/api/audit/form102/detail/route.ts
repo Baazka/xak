@@ -56,8 +56,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const formId = body.form_id;
   const client = await db.connect();
 
-  console.log("body ----> ", body);
-
   const detailRawData: {
     det_id: number;
     det_form_id: number;

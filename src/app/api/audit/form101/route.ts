@@ -101,7 +101,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   // Check Insert or Update
   const audId = body.aud_id;
   const formId = body.form_id;
-  const formStatusId = body.form_status_id;
 
   if (!audId || !formId) {
     return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
@@ -110,16 +109,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const client = await db.connect();
   try {
     await client.query("BEGIN");
-    // UPDATE audit_forms
-    await client.query(`UPDATE audit_forms SET form_status_id = $1 WHERE form_id = $2`, [
-      formStatusId,
-      formId,
-    ]);
-    // INSERT audit_form_actions
-    await client.query(
-      `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, $2, current_timestamp, $3)`,
-      [formId, formStatusId, userId]
-    );
     // UPDATE audit_org_info
     await client.query(
       `

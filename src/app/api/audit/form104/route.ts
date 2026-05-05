@@ -117,7 +117,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     for (const noti of notiData) {
       const { ind_id, noti_value } = noti;
       if (!noti_value) {
-        return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 401 });
+        return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 402 });
       }
       await client.query(
         `

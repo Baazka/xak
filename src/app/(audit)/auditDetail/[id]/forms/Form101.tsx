@@ -130,7 +130,7 @@ export default function Form101({ auditId, formListId }: Props) {
       const res = await fetch(`/api/audit/form101/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, aud_id: auditId, form_id: formId, form_status_id: 1 }),
+        body: JSON.stringify({ ...data, aud_id: auditId, form_id: formId }),
       });
 
       if (!res.ok) {

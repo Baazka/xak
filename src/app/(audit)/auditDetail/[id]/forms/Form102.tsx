@@ -814,7 +814,12 @@ export default function Form102({ auditId, formListId }: Props) {
           </div>
         </section>
       </div>
-      <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
+      <FormActionSection
+        auditId={auditId}
+        formId={formId}
+        formListId={formListId}
+        formSave={handleSaveAll}
+      />
     </>
   );
 }
