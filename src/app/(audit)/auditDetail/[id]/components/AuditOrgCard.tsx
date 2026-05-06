@@ -80,6 +80,7 @@ export default function AuditOrgCard({
   const [userID, setUserIDs] = useState<UserItem[]>([]);
   const [basicErrors, setBasicErrors] = useState<FormErrors<typeof basicForm>>({});
   const [teamErrors, setTeamErrors] = useState<FormErrors<StepTwoData>>({});
+  const [originalFileId, setOriginalFileId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const [savingType, setSavingType] = useState<"basic" | "team" | null>(null);
@@ -211,6 +212,13 @@ export default function AuditOrgCard({
       if (!res.ok) {
         throw new Error("Хадгалахад алдаа гарлаа");
       }
+      if (originalFileId && originalFileId !== basicForm.aud_contract_file_id) {
+        await fetchWithAuth(`/api/files/delete/${originalFileId}`, {
+          method: "DELETE",
+        });
+      }
+
+      setOriginalFileId(basicForm.aud_contract_file_id);
 
       await loadMeta();
 
@@ -228,6 +236,38 @@ export default function AuditOrgCard({
       setSavingType(null);
     }
   };
+
+  useEffect(() => {
+    if (basicForm.aud_contract_file_id) {
+      const fakeFile = new File([""], `Гэрээ-${basicForm.aud_contract_file_id}`);
+
+      setFiles([
+        {
+          file: fakeFile,
+          file_id: basicForm.aud_contract_file_id,
+          original_name: `Гэрээ-${basicForm.aud_contract_file_id}`,
+        },
+      ]);
+    } else {
+      setFiles([]);
+    }
+  }, [basicForm.aud_contract_file_id]);
+
+  useEffect(() => {
+    if (headerData?.aud_contract_file_id) {
+      setOriginalFileId(headerData.aud_contract_file_id);
+
+      const fakeFile = new File([""], `Гэрээ-${headerData.aud_contract_file_id}`);
+
+      setFiles([
+        {
+          file: fakeFile,
+          file_id: headerData.aud_contract_file_id,
+          original_name: `Гэрээ-${headerData.aud_contract_file_id}`,
+        },
+      ]);
+    }
+  }, [headerData]);
 
   useEffect(() => {
     loadMeta();
@@ -584,11 +624,29 @@ export default function AuditOrgCard({
                     setFiles(nextFiles);
 
                     if (!nextFiles.length) {
-                      setBasicForm((prev) => ({ ...prev, aud_file_id: null }));
+                      setBasicForm((prev) => ({
+                        ...prev,
+                        aud_contract_file_id: null,
+                      }));
                     }
                   }}
                   onUploaded={(fileIds) => {
-                    setBasicForm((prev) => ({ ...prev, aud_file_id: fileIds[0] ?? null }));
+                    setBasicForm((prev) => ({
+                      ...prev,
+                      aud_contract_file_id: fileIds[0] ?? null,
+                    }));
+                  }}
+                  onRemove={async (file) => {
+                    setBasicForm((prev) => ({
+                      ...prev,
+                      aud_contract_file_id: null,
+                    }));
+
+                    if (file.file_id) {
+                      await fetchWithAuth(`/api/files/delete/${file.file_id}`, {
+                        method: "DELETE",
+                      });
+                    }
                   }}
                 />
               </div>

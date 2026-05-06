@@ -172,15 +172,18 @@ export default function StepThree({ values, errors = {}, onChange, userOptions }
               multiple={false}
               auditId={9999999}
               value={files}
-              onChange={(nextFiles) => {
-                setFiles(nextFiles);
-
-                if (!nextFiles.length) {
-                  onChange("aud_file_id", null);
-                }
-              }}
+              onChange={setFiles}
               onUploaded={(fileIds) => {
                 onChange("aud_file_id", fileIds[0] ?? null);
+              }}
+              onRemove={async (file) => {
+                onChange("aud_file_id", null);
+
+                if (file.file_id) {
+                  await fetch(`/api/files/delete/${file.file_id}`, {
+                    method: "DELETE",
+                  });
+                }
               }}
             />
           </div>

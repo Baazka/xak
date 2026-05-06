@@ -122,13 +122,9 @@ export default function Form106({ auditId, formListId }: Props) {
       }
 
       if (isEditMode && previousFileId && previousFileId !== nextFileId) {
-        try {
-          await fetchWithAuth(`/api/files/delete/${previousFileId}`, {
-            method: "DELETE",
-          });
-        } catch (deleteErr) {
-          console.error("Хуучин файл устгаж чадсангүй", deleteErr);
-        }
+        await fetchWithAuth(`/api/files/delete/${previousFileId}`, {
+          method: "DELETE",
+        });
       }
 
       resetDialog();
@@ -489,6 +485,14 @@ export default function Form106({ auditId, formListId }: Props) {
                           meeting_file_id: fileIds[0] ?? null,
                         }))
                       }
+                      onRemove={async () => {
+                        setMeetingFiles([]);
+
+                        setDraftRow((prev) => ({
+                          ...prev!,
+                          meeting_file_id: null,
+                        }));
+                      }}
                     />
                   </div>
                 </div>
