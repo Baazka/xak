@@ -244,7 +244,7 @@ export default function Form401({ auditId, formListId }: Props) {
                     multiple={false}
                     auditId={auditId}
                     value={files}
-                    onChange={(f) => setFiles(f)}
+                    onChange={setFiles}
                     onUploaded={(fileIds) => {
                       setData((prev) => {
                         if (!prev) return prev;
@@ -254,6 +254,22 @@ export default function Form401({ auditId, formListId }: Props) {
                           con_file_id: fileIds[0] ?? null,
                         };
                       });
+                    }}
+                    onRemove={async (file) => {
+                      setData((prev) => {
+                        if (!prev) return prev;
+
+                        return {
+                          ...prev,
+                          con_file_id: null,
+                        };
+                      });
+
+                      if (file.file_id) {
+                        await fetch(`/api/files/delete/${file.file_id}`, {
+                          method: "DELETE",
+                        });
+                      }
                     }}
                   />
                 </div>

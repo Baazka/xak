@@ -1,24 +1,26 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export type UploadedFileItem = {
-  file: File;
+  file?: File;
   preview?: string;
   file_id?: number | null;
   original_name?: string;
   stored_name?: string;
   file_path?: string;
+  size?: number;
 };
 
 type Props = {
   label?: string;
   accept?: string;
   multiple?: boolean;
-  value: UploadedFileItem[];
+  value?: UploadedFileItem[];
   onChange: (files: UploadedFileItem[]) => void;
   onUploaded?: (fileIds: number[], uploadedFiles: UploadedFileItem[]) => void;
+  onRemove?: (removedFile: UploadedFileItem) => void;
   maxSizeMB?: number;
   auditId: number;
   uploadUrl?: string;
@@ -28,9 +30,10 @@ export default function FileUpload({
   label = "",
   accept = "*",
   multiple = true,
-  value,
+  value = [],
   onChange,
   onUploaded,
+  onRemove,
   maxSizeMB = 10,
   auditId,
   uploadUrl = "/api/files/upload",
@@ -38,13 +41,25 @@ export default function FileUpload({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  const files = value ?? [];
+
+  useEffect(() => {
+    return () => {
+      files.forEach((item) => {
+        if (item.preview) URL.revokeObjectURL(item.preview);
+      });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handlePick = () => {
-    if (uploading) return;
-    inputRef.current?.click();
+    if (!uploading) inputRef.current?.click();
   };
 
   const handleFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? []);
+    e.target.value = "";
+
     if (!selected.length) return;
 
     const maxBytes = maxSizeMB * 1024 * 1024;
@@ -57,14 +72,10 @@ export default function FileUpload({
       return true;
     });
 
-    if (!validFiles.length) {
-      e.target.value = "";
-      return;
-    }
+    if (!validFiles.length) return;
 
     if (!auditId) {
       alert("auditId байхгүй байна");
-      e.target.value = "";
       return;
     }
 
@@ -101,41 +112,53 @@ export default function FileUpload({
           original_name: saved?.original_name ?? file.name,
           stored_name: saved?.stored_name,
           file_path: saved?.file_path,
+          size: saved?.size ?? file.size,
         };
       });
 
-      const nextValue = multiple ? [...value, ...mapped] : mapped.slice(0, 1);
+      const nextValue = multiple ? [...files, ...mapped] : mapped.slice(0, 1);
+
+      if (!multiple) {
+        files.forEach((item) => {
+          if (item.preview) URL.revokeObjectURL(item.preview);
+        });
+      }
 
       onChange(nextValue);
 
-      if (onUploaded) {
-        onUploaded(
-          mapped.map((item) => item.file_id).filter((id): id is number => Number(id) > 0),
-          mapped
-        );
-      }
+      onUploaded?.(
+        mapped
+          .map((item) => item.file_id)
+          .filter((id): id is number => typeof id === "number" && id > 0),
+        mapped
+      );
     } catch (error) {
       console.error(error);
       alert(error instanceof Error ? error.message : "Файл хадгалах үед алдаа гарлаа");
     } finally {
       setUploading(false);
-      e.target.value = "";
     }
   };
 
   const removeFile = (index: number) => {
-    const target = value[index];
+    const target = files[index];
+    if (!target) return;
 
-    if (target?.preview) {
+    if (target.preview) {
       URL.revokeObjectURL(target.preview);
     }
 
-    onChange(value.filter((_, i) => i !== index));
+    onChange(files.filter((_, i) => i !== index));
+    onRemove?.(target);
   };
 
   return (
     <div className="space-y-3">
-      {label ? <label className="block text-sm font-medium">{label}</label> : null}
+      {label ? (
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </label>
+      ) : null}
 
       <input
         ref={inputRef}
@@ -150,43 +173,45 @@ export default function FileUpload({
         type="button"
         onClick={handlePick}
         disabled={uploading}
-        className="rounded-lg border px-4 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-10 items-center justify-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
       >
         {uploading ? "Файл хуулж байна..." : "Файл сонгох"}
       </button>
 
-      {value.length > 0 && (
+      {files.length > 0 && (
         <div className="space-y-2">
-          {value.map((item, index) => {
-            const actualFile = item?.file;
-            const preview = item?.preview;
+          {files.map((item, index) => {
+            const actualFile = item.file;
 
-            if (!actualFile) return null;
+            const fileName = item.original_name || actualFile?.name || "Хадгалсан файл";
+
+            const fileSize = actualFile?.size ?? item.size;
 
             return (
               <div
-                key={`${actualFile.name}-${index}`}
-                className="flex items-center justify-between rounded-lg border p-3"
+                key={`${item.file_id ?? fileName}-${index}`}
+                className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  {preview ? (
+                  {item.preview ? (
                     <img
-                      src={preview}
-                      alt={actualFile.name}
-                      className="h-12 w-12 rounded object-cover"
+                      src={item.preview}
+                      alt={fileName}
+                      className="h-11 w-11 shrink-0 rounded object-cover"
                     />
                   ) : (
-                    <div className="flex h-12 w-12 items-center justify-center rounded bg-gray-100 text-xs">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded bg-gray-100 text-xs font-semibold text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                       FILE
                     </div>
                   )}
 
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">
-                      {item.original_name || actualFile.name}
+                    <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-100">
+                      {fileName}
                     </p>
+
                     <p className="text-xs text-gray-500">
-                      {(actualFile.size / 1024 / 1024).toFixed(2)} MB
+                      {fileSize ? `${(fileSize / 1024 / 1024).toFixed(2)} MB` : "Хадгалсан файл"}
                     </p>
 
                     {item.file_id ? (
@@ -200,7 +225,7 @@ export default function FileUpload({
                 <button
                   type="button"
                   onClick={() => removeFile(index)}
-                  className="rounded-md px-3 py-1 text-sm text-red-600 hover:bg-red-50"
+                  className="shrink-0 rounded-md px-3 py-1 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
                 >
                   Устгах
                 </button>
