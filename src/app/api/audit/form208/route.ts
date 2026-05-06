@@ -102,38 +102,29 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const body = await req.json();
   const userId = user.id;
-  // Check Insert or Update
-  const audId = body.aud_id;
   const formId = body.form_id;
-  const statusId = body.status_id;
-  const formDescription = body.form_description;
   const formFileId = body.form_file_id;
 
   const strData: { str_id: number; str_ind_id: number; str_ind_value: string }[] = body.strData;
 
-  if (!statusId || !audId || !formId || !strData || !Array.isArray(strData)) {
+  if (!formId || !strData || !Array.isArray(strData)) {
     return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
   }
 
   const client = await db.connect();
   try {
     await client.query("BEGIN");
-    // UPDATE audit_forms
-    await client.query(
-      `
+
+    if (formFileId) {
+      await client.query(
+        `
         UPDATE audit_forms
-        set form_status_id = $1,
-            form_description = $2,
-            form_file_id = $3
-        where form_id = $4
+        set form_file_id = $1
+        where form_id = $2
       `,
-      [statusId, formDescription, formFileId, formId]
-    );
-    // INSERT audit_form_actions
-    await client.query(
-      `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, $2, current_timestamp, $3)`,
-      [formId, statusId, userId]
-    );
+        [formFileId, formId]
+      );
+    }
 
     // UPDATE AUDIT_STRATEGY
     for (const str of strData) {
@@ -143,9 +134,9 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         `
           UPDATE audit_strategy
           set str_ind_value = $1
-          where str_id = $2 and str_ind_id = $3
+          where str_id = $2 and str_ind_id = $3 and str_form_id = $4
         `,
-        [str_ind_value, str_id, str_ind_id]
+        [str_ind_value, str_id, str_ind_id, formId]
       );
     }
 

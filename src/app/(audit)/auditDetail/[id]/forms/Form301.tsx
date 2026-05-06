@@ -253,8 +253,6 @@ export default function Form301({ auditId, formListId }: Props) {
         body: JSON.stringify({
           aud_id: auditId,
           form_id: formId,
-          form_status_id: 1,
-          form_description: 1,
           riskData,
         }),
       });
@@ -342,6 +340,10 @@ export default function Form301({ auditId, formListId }: Props) {
     []
   );
 
+  const handleSave = async () => {
+    toast("success", "Амжилттай хадгаллаа");
+  };
+
   return (
     <>
       {loading ? (
@@ -389,23 +391,6 @@ export default function Form301({ auditId, formListId }: Props) {
                 className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
               >
                 + Нэмэх
-              </button>
-              <button
-                type="button"
-                onClick={() => openHelp({ audId: auditId, formId: formListId })}
-                className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-                title="Тусламж"
-              >
-                <MessageCircle className="w-4 h-4" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handlePrint("portrait")}
-                className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
-                title="Хэвлэх"
-              >
-                <Printer className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -1777,7 +1762,7 @@ export default function Form301({ auditId, formListId }: Props) {
               </div>
             </div>
           )}
-          <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
+          <FormActionSection formId={formId} formSave={handleSave} />
         </>
       )}
     </>

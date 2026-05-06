@@ -22,8 +22,6 @@ type FormData = {
 };
 
 type Props = {
-  auditId: number;
-  formListId: number;
   formSave: () => void;
   helpOpen?: () => void;
   formData: FormData;

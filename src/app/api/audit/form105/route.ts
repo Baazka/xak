@@ -84,10 +84,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const body = await req.json();
   const userId = user.id;
-  // Check Insert or Update
-  const audId = body.aud_id;
   const formId = body.form_id;
-  const statusId = body.status_id;
 
   const crData: {
     cr_id: number;
@@ -97,27 +94,13 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     cr_description: string;
   }[] = body.cr_data; // expect array of {cr_id, cr_form_id, cr_ind_id, cr_rate_value, cr_description}
 
-  if (!statusId || !audId || !formId || !crData || !Array.isArray(crData)) {
+  if (!formId || !crData || !Array.isArray(crData)) {
     return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
   }
 
   const client = await db.connect();
   try {
     await client.query("BEGIN");
-    // UPDATE audit_forms
-    await client.query(
-      `
-        UPDATE audit_forms
-        set form_status_id = $1
-        where form_id = $2
-      `,
-      [statusId, formId]
-    );
-    // INSERT audit_form_actions
-    await client.query(
-      `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, $2, current_timestamp, $3)`,
-      [formId, statusId, userId]
-    );
 
     // UPDATE AUDIT_CONCEPT_RATE
     for (const cr of crData) {
@@ -126,9 +109,9 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         `
           UPDATE audit_concept_rate
           set cr_rate_value = $1, cr_description = $2
-          where cr_id = $3 and cr_ind_id = $4
-        `,
-        [cr_rate_value, cr_description, cr.cr_id, cr_ind_id]
+          where cr_id = $3 and cr_ind_id = $4 and cr_form_id = $5
+      `,
+        [cr_rate_value, cr_description, cr.cr_id, cr_ind_id, formId]
       );
     }
 

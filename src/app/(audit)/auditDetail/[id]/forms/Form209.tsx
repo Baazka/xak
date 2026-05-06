@@ -7,10 +7,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { Edit, MessageCircle, Printer } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
-import { useHelpDesk } from "@/context/HelpDeskContext";
-import { usePrint } from "@/hooks/usePrint";
 import { useToast } from "@/context/ToastContext";
-import { set } from "date-fns";
 
 type Props = {
   auditId: number;
@@ -50,8 +47,6 @@ export default function Form209({ auditId, formListId }: Props) {
   const [dialogSaving, setDialogSaving] = useState(false);
 
   const [openDialog, setOpenDialog] = useState(false);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
   const { toast } = useToast();
 
   const resetDialog = () => {
@@ -224,6 +219,10 @@ export default function Form209({ auditId, formListId }: Props) {
     }
   };
 
+  const handleSave = async () => {
+    toast("success", "Амжилттай хадгаллаа");
+  };
+
   if (loading) {
     return <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>;
   }
@@ -250,23 +249,6 @@ export default function Form209({ auditId, formListId }: Props) {
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
         >
           + Нэмэх
-        </button>
-        <button
-          type="button"
-          onClick={() => openHelp({ audId: auditId, formId: formListId })}
-          className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-          title="Тусламж"
-        >
-          <MessageCircle className="w-4 h-4" />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handlePrint("portrait")}
-          className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
-          title="Хэвлэх"
-        >
-          <Printer className="w-4 h-4" />
         </button>
       </div>
 
@@ -509,7 +491,7 @@ export default function Form209({ auditId, formListId }: Props) {
         </div>
       )}
 
-      <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
+      <FormActionSection formId={formId} formSave={handleSave} />
     </>
   );
 }

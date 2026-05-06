@@ -14,7 +14,7 @@ type Props = {
 };
 
 type BagOption = {
-  team_id: number;
+  team_user_id: number;
   user_firstname: string;
 };
 
@@ -50,8 +50,6 @@ export default function Form104({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState<FormData>({
@@ -80,7 +78,7 @@ export default function Form104({ auditId, formListId }: Props) {
       setBags(result.data || []);
 
       if (result.data?.length > 0) {
-        setSelectedBag(String(result.data[0].team_id));
+        setSelectedBag(String(result.data[0].team_user_id));
       }
     }
 
@@ -95,13 +93,12 @@ export default function Form104({ auditId, formListId }: Props) {
         setLoading(true);
 
         const res = await fetchWithAuth(
-          `/api/audit/form104?aud_id=${auditId}&team_id=${selectedBag}`
+          `/api/audit/form104?aud_id=${auditId}&team_user_id=${selectedBag}`
         );
         const result = await res.json();
 
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
-        setFormData(result.formData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -170,7 +167,7 @@ export default function Form104({ auditId, formListId }: Props) {
           >
             <option value="">Сонгох</option>
             {bags.map((bag) => (
-              <option key={bag.team_id} value={bag.team_id}>
+              <option key={bag.team_user_id} value={bag.team_user_id}>
                 {bag.user_firstname}
               </option>
             ))}
@@ -249,12 +246,7 @@ export default function Form104({ auditId, formListId }: Props) {
             ))}
           </table>
 
-          <FormActionSection
-            auditId={auditId}
-            formId={formId}
-            formListId={formListId}
-            formSave={handleSave}
-          />
+          <FormActionSection formId={formId} formSave={handleSave} />
         </>
       )}
     </>

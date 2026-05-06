@@ -109,7 +109,6 @@ export default function Form308({ auditId, formListId }: Props) {
 
         const res = await fetchWithAuth(`/api/audit/form308?aud_id=${auditId}`);
         const result = await res.json();
-        console.log(result, "<====result308");
 
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
@@ -140,10 +139,7 @@ export default function Form308({ auditId, formListId }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          aud_id: auditId,
           form_id: formId,
-          form_status_id: 1,
-          form_description: formData?.form_description ?? "",
           solutionData,
         }),
       });
@@ -390,19 +386,6 @@ export default function Form308({ auditId, formListId }: Props) {
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
-          {/* <AuditFormSave
-            auditId={auditId}
-            formId={formId}
-            formListId={formListId}
-            formDataProps={formData}
-            saving={saving}
-            formSave={handleSave}
-            processing={sending}
-            reload={reload}
-            helpOpen={helpOpen}
-            printOpen={printOpen}
-          /> */}
-
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Эрсдэлтэй АГАДҮТ-н түвшинд хэрэгжүүлэх түүврийн сорилын алдааг үнэлэх
           </h2>
@@ -422,12 +405,7 @@ export default function Form308({ auditId, formListId }: Props) {
             getRowId={(row) => row.risk_id}
             renderExpanded={renderExpanded}
           />
-          <FormActionSection
-            auditId={auditId}
-            formId={formId}
-            formListId={formListId}
-            formSave={handleSave}
-          />
+          <FormActionSection formId={formId} formSave={handleSave} />
         </>
       )}
     </>

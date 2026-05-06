@@ -93,7 +93,6 @@ export default function Form401({ auditId, formListId }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          aud_id: auditId,
           form_id: formId,
           status_id: 1,
           con_id: data?.con_id ?? null,
@@ -262,7 +261,7 @@ export default function Form401({ auditId, formListId }: Props) {
             </div>
           </div>
 
-          <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
+          <FormActionSection formId={formId} formSave={handleSave} />
         </>
       )}
     </>

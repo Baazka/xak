@@ -125,16 +125,10 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const body = await req.json();
   const userId = user.id;
-  const audId = body.aud_id;
   const formId = body.form_id;
-  const formStatusId = body.form_status_id;
-  const formDescription = body.form_description;
 
-  if (!audId || !formId || !formStatusId) {
-    return NextResponse.json(
-      { error: "Audit ID, Form ID and Form Status ID are required" },
-      { status: 400 }
-    );
+  if (!formId) {
+    return NextResponse.json({ error: "Form ID is required" }, { status: 400 });
   }
 
   const resultData: {
@@ -147,15 +141,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const client = await db.connect();
 
   try {
-    const formRes = await client.query(
-      `UPDATE audit_forms SET form_status_id = $1, form_description = $2 WHERE form_id = $3 RETURNING form_id`,
-      [formStatusId, formDescription, formId]
-    );
-    await client.query(
-      `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, $2, current_timestamp, $3)`,
-      [formId, formStatusId, userId]
-    );
-
     for (const result of resultData) {
       const { risk_id, res_situation, res_result, res_fault_level } = result;
       await client.query(
