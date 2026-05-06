@@ -60,8 +60,6 @@ export default function Form302({ auditId, formListId }: Props) {
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
-  const [isChange, setIsChange] = useState(false);
-
   useEffect(() => {
     async function loadTableData() {
       try {
@@ -113,9 +111,7 @@ export default function Form302({ auditId, formListId }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          aud_id: auditId,
           form_id: formId,
-          form_status_id: 1,
           infoData,
           riskData: riskDt,
         }),
@@ -241,19 +237,6 @@ export default function Form302({ auditId, formListId }: Props) {
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
-          <div className="m-2 flex justify-end">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:disabled:border-gray-700 dark:disabled:from-gray-700 dark:disabled:to-gray-700"
-            >
-              {saving && (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent" />
-              )}
-              {saving ? "Хадгалж байна..." : "Хадгалах"}
-            </button>
-          </div>
           <div className="grid grid-cols-3 gap-2 mb-4 rounded border p-3 border-gray-200 dark:border-gray-800">
             <div className="grid direction-alternate items-start justify-baseline gap-3">
               <div>
@@ -763,7 +746,7 @@ export default function Form302({ auditId, formListId }: Props) {
             </table>
           </div>
 
-          <FormActionSection auditId={auditId} formId={formListId} />
+          <FormActionSection formId={formId} formSave={handleSave} />
         </>
       )}
     </>

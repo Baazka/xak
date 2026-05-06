@@ -126,38 +126,6 @@ export default function Form203({ auditId, formListId }: Props) {
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
-          <div className="sticky top-0 z-10 mb-2 flex items-center justify-end gap-2 bg-white py-2 dark:bg-gray-900">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
-            >
-              {saving && (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
-              )}
-              {saving ? "Хадгалж байна..." : "Хадгалах"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => openHelp({ audId: auditId, formId: formListId })}
-              className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-              title="Тусламж"
-            >
-              <MessageCircle className="h-4 w-4" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handlePrint("portrait")}
-              className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
-              title="Хэвлэх"
-            >
-              <Printer className="h-4 w-4" />
-            </button>
-          </div>
-
           <div className="mb-3 flex gap-2 overflow-x-auto border-b border-gray-200 dark:border-gray-700">
             {groupKeys.map((group) => (
               <button
@@ -275,7 +243,7 @@ export default function Form203({ auditId, formListId }: Props) {
           </div>
 
           <AuditRisk auditId={auditId} formListId={formListId} />
-          <FormActionSection auditId={auditId} formId={formId} formListId={formListId} />
+          <FormActionSection formId={formId} formSave={handleSave} />
         </>
       )}
     </>

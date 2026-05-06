@@ -8,56 +8,16 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
   //requirePermission(user.permissions, ["user.read"]);
 
   const sp = new URL(req.url).searchParams;
-  const audId = sp.get("aud_id");
-  const formListId = sp.get("formlist_id");
+  const formId = sp.get("form_id");
   const userId = user.id;
 
-  console.log("GET", audId, formListId);
-
-  if (!audId) {
-    return NextResponse.json({ error: "Audit ID is required" }, { status: 400 });
-  }
-  if (!formListId) {
+  if (!formId) {
     return NextResponse.json({ error: "Form ID is required" }, { status: 400 });
-  }
-
-  if (!audId || !formListId) {
-    return NextResponse.json({ error: "Audit ID and Form ID are required" }, { status: 400 });
   }
 
   const client = await db.connect();
 
   try {
-    let lastFormId: number;
-
-    const formRes = await client.query(
-      `SELECT form_id
-       FROM audit_forms
-       WHERE form_aud_id = $1 AND form_list_id = $2
-       LIMIT 1`,
-      [audId, formListId]
-    );
-
-    if (formRes.rows[0]) {
-      lastFormId = formRes.rows[0].form_id;
-    } else {
-      const newFormRes = await client.query(
-        `INSERT INTO audit_forms (form_aud_id, form_list_id, form_status_id)
-         VALUES ($1, $2, 1)
-         RETURNING form_id`,
-        [audId, formListId]
-      );
-
-      lastFormId = newFormRes.rows[0].form_id;
-
-      await client.query(
-        `INSERT INTO audit_form_actions
-          (action_form_id, action_status_id, action_date, action_by)
-         VALUES ($1, 1, current_timestamp, $2)`,
-        [lastFormId, userId]
-      );
-    }
-
     const formDataRes = await client.query(
       `
       SELECT 
@@ -78,7 +38,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
       JOIN ref_form_status s ON f.form_status_id = s.status_id
       WHERE f.form_id = $1
       `,
-      [lastFormId]
+      [formId]
     );
 
     if (!formDataRes.rows[0]) {

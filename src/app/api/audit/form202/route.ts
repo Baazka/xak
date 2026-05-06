@@ -90,35 +90,18 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const body = await req.json();
   const userId = user.id;
-  // Check Insert or Update
-  const audId = body.aud_id;
   const formId = body.form_id;
-  const statusId = body.status_id;
 
   const finStateData: { fs_id: number; fs_ind_id: number; fs_val1: string; fs_val2: string }[] =
     body.finstate_data; // expect array of {fs_id, fs_ind_id, fs_val1, fs_val2}
 
-  if (!statusId || !audId || !formId || !finStateData || !Array.isArray(finStateData)) {
+  if (!formId || !finStateData || !Array.isArray(finStateData)) {
     return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
   }
 
   const client = await db.connect();
   try {
     await client.query("BEGIN");
-    // UPDATE audit_forms
-    await client.query(
-      `
-        UPDATE audit_forms
-        set form_status_id = $1
-        where form_id = $2
-      `,
-      [statusId, formId]
-    );
-    // INSERT audit_form_actions
-    await client.query(
-      `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, $2, current_timestamp, $3)`,
-      [formId, statusId, userId]
-    );
 
     // UPDATE AUDIT_FINSTATES
     for (const fs of finStateData) {
@@ -128,9 +111,9 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         `
           UPDATE audit_finstates
           set fs_val1 = $1, fs_val2 = $2
-          where fs_id = $3 and fs_ind_id = $4
+          where fs_id = $3 and fs_ind_id = $4 and fs_form_id = $5
         `,
-        [fs_val1, fs_val2, fs_id, fs_ind_id]
+        [fs_val1, fs_val2, fs_id, fs_ind_id, formId]
       );
     }
 

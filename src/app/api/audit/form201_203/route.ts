@@ -86,34 +86,18 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const body = await req.json();
   const userId = user.id;
-  const audId = body.aud_id;
   const formId = body.form_id;
-  const statusId = body.status_id;
 
   const coreInfoData: { info_id: number; info_ind_id: number; info_ind_value: boolean }[] =
     body.info_data; // expect array of {info_id, ind_id, info_value}
 
-  if (!statusId || !audId || !formId || !coreInfoData || !Array.isArray(coreInfoData)) {
+  if (!formId || !coreInfoData || !Array.isArray(coreInfoData)) {
     return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
   }
 
   const client = await db.connect();
   try {
     await client.query("BEGIN");
-    // UPDATE audit_forms
-    await client.query(
-      `
-        UPDATE audit_forms
-        set form_status_id = $1
-        where form_id = $2
-      `,
-      [statusId, formId]
-    );
-    // INSERT audit_form_actions
-    await client.query(
-      `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, $2, current_timestamp, $3)`,
-      [formId, statusId, userId]
-    );
 
     // UPDATE AUDIT_CORE_INFO
     for (const info of coreInfoData) {
@@ -123,9 +107,9 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
         `
           UPDATE audit_core_info
           set info_ind_value = $1
-          where info_id = $2 and info_ind_id = $3
+          where info_id = $2 and info_ind_id = $3 and info_form_id = $4
         `,
-        [info_ind_value, info_id, info_ind_id]
+        [info_ind_value, info_id, info_ind_id, formId]
       );
     }
 

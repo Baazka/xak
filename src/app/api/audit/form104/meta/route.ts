@@ -18,12 +18,9 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
     const dataRes = await client.query(
       `
       select 
-        aud_id,
+        distinct aud_id,
         aud_code,
         aud_name,
-        t.team_id,
-        t.team_role_id,
-        ur.role_text team_role_name,
         t.team_user_id,
         u.user_firstname,
         u.user_phone
@@ -31,7 +28,7 @@ export const GET = withAuth(async (req: NextRequest, user: JwtPayload) => {
         join audit_team t on ad.aud_id = t.team_aud_id
         join reg_users_new u on t.team_user_id = u.user_id
         join ref_user_role ur on t.team_role_id = ur.role_id
-        where aud_id = $1
+        where t.is_active=  1 and aud_id = $1
     `,
       [audId]
     );

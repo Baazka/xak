@@ -23,22 +23,13 @@ type FormData = {
 };
 
 type Props = {
-  auditId: number;
   formId: number;
-  formListId: number;
   formSave: () => void;
   formSupValue?: string | null;
   formFileId?: number | null;
 };
 
-export default function FormActionSection({
-  auditId,
-  formId,
-  formListId,
-  formSave,
-  formSupValue,
-  formFileId,
-}: Props) {
+export default function FormActionSection({ formId, formSave, formSupValue, formFileId }: Props) {
   const [formData, setFormData] = useState<FormData>({
     form_id: 0,
     form_aud_id: 0,
@@ -59,9 +50,7 @@ export default function FormActionSection({
       try {
         setLoading(true);
 
-        const res = await fetchWithAuth(
-          `/api/audit/audit_forms?aud_id=${auditId}&formlist_id=${formListId}`
-        );
+        const res = await fetchWithAuth(`/api/audit/audit_forms?form_id=${formId}`);
 
         if (!res.ok) {
           throw new Error(`formData татахад алдаа гарлаа (${res.status})`);
@@ -76,13 +65,13 @@ export default function FormActionSection({
       }
     }
 
-    if (!auditId || !formId) {
+    if (!formId) {
       setLoading(false);
       return;
     }
 
     loadFormData();
-  }, [auditId, formId, refresher]);
+  }, [formId, refresher]);
 
   const formProcess = async (form_id: number, form_status_id: number) => {
     try {
@@ -123,13 +112,7 @@ export default function FormActionSection({
       ) : (
         <div className="mt-4 space-y-4">
           <div>
-            <AuditFormSave
-              auditId={auditId}
-              formListId={formListId}
-              formSave={formDataSave}
-              formData={formData}
-              formProcess={formProcess}
-            />
+            <AuditFormSave formSave={formDataSave} formData={formData} formProcess={formProcess} />
             <div className="mb-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
               Тэмдэглэл
             </div>

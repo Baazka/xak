@@ -85,10 +85,7 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
 
   const body = await req.json();
   const userId = user.id;
-  const audId = body.aud_id;
   const formId = body.form_id;
-  const formStatusId = body.form_status_id;
-  const formDescription = body.form_description;
 
   const fpData: {
     fp_id: number;
@@ -97,27 +94,13 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     fp_ind_value: string;
   }[] = body.fp_data; // expect array of {fp_id, fp_form_id, fp_ind_id, fp_type_id, fp_ind_value}
 
-  if (!formStatusId || !audId || !formId || !fpData || !Array.isArray(fpData)) {
+  if (!formId || !fpData || !Array.isArray(fpData)) {
     return NextResponse.json({ error: "Мэдээлэл бүрэн оруулна уу" }, { status: 400 });
   }
 
   const client = await db.connect();
   try {
     await client.query("BEGIN");
-    // UPDATE audit_forms
-    await client.query(
-      `
-        UPDATE audit_forms
-        set form_status_id = $1, form_description = $2
-        where form_id = $3
-      `,
-      [formStatusId, formDescription, formId]
-    );
-    // INSERT audit_form_actions
-    await client.query(
-      `INSERT INTO audit_form_actions (action_form_id, action_status_id, action_date, action_by) VALUES ($1, $2, current_timestamp, $3)`,
-      [formId, formStatusId, userId]
-    );
 
     // UPDATE AUDIT_FINISH_PROCEDURE
     for (const fp of fpData) {
