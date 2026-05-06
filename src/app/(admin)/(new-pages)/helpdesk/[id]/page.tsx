@@ -258,8 +258,10 @@ export default function TaskDetailPage() {
         </div>
 
         {!data ? (
-          <div className="rounded-xl border border-gray-200 bg-white text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100">
-            <div className="text-sm text-red-500">Мэдээлэл олдсонгүй.</div>
+          <div className="rounded-xl border border-gray-200 bg-white p-6 text-center dark:border-gray-800 dark:bg-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              Мэдээлэл олдсонгүй
+            </p>
           </div>
         ) : (
           <>
@@ -286,13 +288,12 @@ export default function TaskDetailPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <Button
-                    onClick={() =>
-                      router.push(`/auditDetail/${data.task_audit_id}?formId=${data.task_form_id}`)
-                    }
+                  <Link
+                    href={`/auditDetail/${data.task_audit_id}?formId=${data.task_form_id}`}
+                    target="_blank"
                   >
-                    Маягт
-                  </Button>
+                    <Button>Маягт</Button>
+                  </Link>
                   {data.task_status_id === 1 && (
                     <Button
                       onClick={() => handleProcess(2)}

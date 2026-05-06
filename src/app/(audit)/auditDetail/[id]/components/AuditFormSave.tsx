@@ -13,6 +13,7 @@ import {
 
 import { ShootingStarIcon, BoltIcon, CheckCircleIcon, ErrorIcon } from "@/icons";
 import { MessageCircle, Printer } from "lucide-react";
+import { StatusBadge } from "./AuditStatusBadge";
 
 type FormData = {
   form_id: number;
@@ -70,10 +71,8 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
   return (
     <>
       <div className="fixed top-48 z-1 right-15 flex items-center justify-end gap-2 mb-2">
-        <div>
-          <button className="mr-4 rounded border p-2 bg-gray-200 border-gray-200">
-            Маягтын төлөв: {formData?.form_status_name}
-          </button>
+        <div className="no-print">
+          Маягтын төлөв: <StatusBadge status={formData?.form_status_name} />
         </div>
         {formData.form_status_id === 5 && (
           <button
@@ -226,7 +225,6 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
         >
           <MessageCircle className="w-4 h-4" />
         </button>
-
         <button
           type="button"
           onClick={() => handlePrint("portrait")}
