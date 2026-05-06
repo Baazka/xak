@@ -181,9 +181,9 @@ export default function AuditSidebar({ groupedForms, activeForm, onChange }: Aud
                                 <div className="group/icon relative flex items-center text-blue-600">
                                   <MessageCircle className="h-5 w-5" />
 
-                                  {item.form_code > 0 && (
+                                  {Number(item.form_code) > 0 && (
                                     <span className="absolute -top-1 -right-1 flex min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white">
-                                      {item.form_code > 9 ? "9+" : (item.form_code ?? 0)}
+                                      {Number(item.form_code) > 9 ? "9+" : (item.form_code ?? 0)}
                                     </span>
                                   )}
 
