@@ -93,93 +93,80 @@ export default function StepThree({ values, errors = {}, onChange, userOptions }
   const renderError = (field: keyof StepThreeData) =>
     errors[field] ? <p className="mt-1 text-xs text-red-500">{errors[field]}</p> : null;
 
+  const InfoRow = ({ label, value }: { label: string; value?: React.ReactNode }) => (
+    <div className="grid grid-cols-[140px_1fr] gap-3 border-b border-gray-100 py-2 last:border-b-0 dark:border-gray-800">
+      <div className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</div>
+      <div className="text-sm font-semibold text-gray-800 dark:text-gray-100">{value || "-"}</div>
+    </div>
+  );
+
+  const InfoCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div className="mb-3 border-b border-gray-200 pb-3 dark:border-gray-800">
+        <h2 className="text-sm font-bold text-gray-900 dark:text-white">{title}</h2>
+      </div>
+      <div>{children}</div>
+    </div>
+  );
+
+  const Card = ({
+    title,
+    desc,
+    children,
+  }: {
+    title: string;
+    desc?: string;
+    children: React.ReactNode;
+  }) => (
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div className="mb-4 border-b border-gray-100 pb-3 dark:border-gray-800">
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white">{title}</h3>
+        {desc && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{desc}</p>}
+      </div>
+
+      {children}
+    </div>
+  );
+
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-3">
-        <div className="flex flex-col gap-2 rounded-lg shadow-md border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
-          <div>
-            <h2 className=" font-medium border-b">Аудитын үндсэн мэдээлэл</h2>
-          </div>
-          <div>
-            <h2 className="font-semibold text-gray-800 dark:text-white/90">Аудитын нэр:</h2>
-            <h2 className="text-gray-800 dark:text-white/90">{values.aud_name}</h2>
-          </div>
-          <div>
-            <h2 className="font-semibold text-gray-800 dark:text-white/90">Аудитын жил:</h2>
-            <h2 className="text-gray-800 dark:text-white/90">{values.aud_year}</h2>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Эхлэх хугацаа:</h3>
-            <h3 className="text-gray-800 dark:text-white/90">
-              {values.aud_begin_date.toLocaleDateString("en-CA").replace(/-/g, ".")}
-            </h3>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Дуусах хугацаа:</h3>
-            <h3 className="text-gray-800 dark:text-white/90">
-              {values.aud_end_date.toLocaleDateString("en-CA").replace(/-/g, ".")}
-            </h3>
-          </div>
-        </div>
-        <div className="flex flex-col rounded-lg shadow-md border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
-          <div>
-            <h2 className=" font-medium border-b">Үйлчлүүлэгчийн мэдээлэл</h2>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Регистрийн дугаар:</h3>
-            <h3 className="text-gray-800 dark:text-white/90">{values.org_regno}</h3>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">
-              Хуулийн этгээдийн нэр:
-            </h3>
-            <h3 className="text-gray-800 dark:text-white/90">{values.org_legal_name}</h3>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Удирдлагын нэр:</h3>
-            <h3 className="text-gray-800 dark:text-white/90">{values.org_head_name}</h3>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Удирдлагын утас:</h3>
-            <h3 className="text-gray-800 dark:text-white/90">{values.org_head_phone}</h3>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Мэйл хаяг:</h3>
-            <h3 className="text-gray-800 dark:text-white/90">{values.org_email}</h3>
-          </div>
-        </div>
-        <div className="flex flex-col rounded-lg shadow-md border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
-          <div>
-            <h2 className="text-lg font-semibold border-b-2">Аудитын багийн мэдээлэл</h2>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Батлах хэрэглэгч:</h3>
-            <h3 className="text-gray-800 dark:text-white/90">{getUsername(values.usertype3)}</h3>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Чанарын хяналт:</h3>
-            <h3 className="text-gray-800 dark:text-white/90">{getUsername(values.usertype4)}</h3>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Ахлах аудитор:</h3>
-            <h3 className="text-gray-800 dark:text-white/90">{getUsername(values.usertype5)}</h3>
-          </div>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <InfoCard title="Аудитын үндсэн мэдээлэл">
+          <InfoRow label="Аудитын нэр" value={values.aud_name} />
+          <InfoRow label="Аудитын жил" value={values.aud_year} />
+          <InfoRow label="Эхлэх хугацаа" value={values.aud_begin_date.toDateString()} />
+          <InfoRow label="Дуусах хугацаа" value={values.aud_end_date.toDateString()} />
+        </InfoCard>
 
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-white/90">Аудитор:</h3>
-            {values.usertype6.map((r) => (
-              <h3 className="text-gray-800 dark:text-white/90">{getUsername(r)}</h3>
-            ))}
-          </div>
-        </div>
+        <InfoCard title="Үйлчлүүлэгчийн мэдээлэл">
+          <InfoRow label="Регистрийн дугаар" value={values.org_regno} />
+          <InfoRow label="Хуулийн этгээдийн нэр" value={values.org_legal_name} />
+          <InfoRow label="Удирдлагын нэр" value={values.org_head_name} />
+          <InfoRow label="Удирдлагын утас" value={values.org_head_phone} />
+          <InfoRow label="Мэйл хаяг" value={values.org_email} />
+        </InfoCard>
+
+        <InfoCard title="Аудитын багийн мэдээлэл">
+          <InfoRow label="Батлах хэрэглэгч" value={getUsername(values.usertype3)} />
+          <InfoRow label="Чанарын хяналт" value={getUsername(values.usertype4)} />
+          <InfoRow label="Ахлах аудитор" value={getUsername(values.usertype5)} />
+          <InfoRow
+            label="Аудитор"
+            value={
+              values.usertype6?.length
+                ? values.usertype6.map((r) => getUsername(r)).join(", ")
+                : "-"
+            }
+          />
+        </InfoCard>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-lg shadow-md border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
-          <div className="text-center">
-            <label className="block text-sm font-medium mb-3">Аудитын гэрээ хавсаргах</label>
-          </div>
-
-          <div className={errors.aud_file_id ? "rounded-lg border border-red-500 p-2" : ""}>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card title="Аудитын гэрээ хавсаргах" desc="PDF, DOC, DOCX файл хавсаргана уу">
+          <div
+            className={`rounded-xl transition ${
+              errors.aud_file_id ? "border border-red-500 bg-red-50/40 p-3 dark:bg-red-950/20" : ""
+            }`}
+          >
             <FileUpload
               accept=".pdf,.doc,.docx"
               multiple={false}
@@ -199,57 +186,55 @@ export default function StepThree({ values, errors = {}, onChange, userOptions }
           </div>
 
           {renderError("aud_file_id")}
-        </div>
-        <div className="flex flex-col gap-2 rounded-lg shadow-md border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
-          <div className="text-center">
-            <label className="block text-sm font-medium">Төлбөр төлөлт</label>
-          </div>
-          <div className="text-center">
-            <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              Төлөх дүн: {Number(aud_price).toLocaleString("en-US")} ₮
-            </span>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div
-              className={`flex flex-col gap-4 rounded-lg ${
-                errors.payment_method ? "border border-red-500 p-3" : ""
-              }`}
-            >
-              {ticket > 0 && (
-                <Radio
-                  id="Ticket"
-                  name="methodSelect"
-                  value="Ticket"
-                  label={"Төлбөрийн эрх ашиглах" + " ( Боломжит эрх: " + ticket + " )"}
-                  checked={values.payment_method === "Ticket"}
-                  onChange={(value) => onChange("payment_method", value)}
-                />
-              )}
-              <Radio
-                id="Wallet"
-                name="methodSelect"
-                value="Wallet"
-                label={
-                  "Данснаас төлөх" +
-                  " ( Үлдэгдэл: " +
-                  Number(balance).toLocaleString("en-US") +
-                  "₮ )"
-                }
-                checked={values.payment_method === "Wallet"}
-                onChange={(value) => onChange("payment_method", value)}
-              />
+        </Card>
 
+        <Card title="Төлбөр төлөлт" desc="Төлбөрийн боломжит хэлбэрээс сонгоно уу">
+          <div className="mb-4 rounded-xl bg-gray-50 px-4 py-3 dark:bg-gray-800/60">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Төлөх дүн</p>
+            <p className="mt-1 text-xl font-bold text-gray-900 dark:text-white">
+              {Number(aud_price).toLocaleString("en-US")} ₮
+            </p>
+          </div>
+
+          <div
+            className={`space-y-3 rounded-xl transition ${
+              errors.payment_method
+                ? "border border-red-500 bg-red-50/40 p-3 dark:bg-red-950/20"
+                : ""
+            }`}
+          >
+            {ticket > 0 && (
               <Radio
-                id="Qpay"
+                id="Ticket"
                 name="methodSelect"
-                value="QPay"
-                label="QPay төлөх"
-                checked={values.payment_method === "QPay"}
+                value="Ticket"
+                label={`Төлбөрийн эрх ашиглах (Боломжит эрх: ${ticket})`}
+                checked={values.payment_method === "Ticket"}
                 onChange={(value) => onChange("payment_method", value)}
               />
-            </div>
+            )}
+
+            <Radio
+              id="Wallet"
+              name="methodSelect"
+              value="Wallet"
+              label={`Данснаас төлөх (Үлдэгдэл: ${Number(balance).toLocaleString("en-US")} ₮)`}
+              checked={values.payment_method === "Wallet"}
+              onChange={(value) => onChange("payment_method", value)}
+            />
+
+            <Radio
+              id="Qpay"
+              name="methodSelect"
+              value="QPay"
+              label="QPay төлөх"
+              checked={values.payment_method === "QPay"}
+              onChange={(value) => onChange("payment_method", value)}
+            />
           </div>
-        </div>
+
+          {renderError("payment_method")}
+        </Card>
       </div>
     </div>
   );

@@ -156,26 +156,29 @@ export default function AuditSidebar({ groupedForms, activeForm, onChange }: Aud
                                 : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800"
                             }`}
                           >
-                            <FileText
-                              className={`mt-0.5 h-4 w-4 shrink-0 ${
-                                isActive
-                                  ? "text-green-600 dark:text-green-400"
-                                  : "text-gray-500 dark:text-gray-400"
-                              }`}
-                            />
-
-                            <span className="shrink-0 text-xs font-medium group-hover/sidebar:hidden">
+                            <span className="shrink-0 text-xs font-medium group-hover/sidebar:hidden flex items-center gap-1">
+                              <FileText
+                                className={`mt-0.5 h-4 w-4 shrink-0 ${
+                                  isActive
+                                    ? "text-green-600 dark:text-green-400"
+                                    : "text-gray-500 dark:text-gray-400"
+                                }`}
+                              />
                               {item.form_code}
                             </span>
 
                             <div className="hidden w-full items-start justify-between gap-2 group-hover/sidebar:flex">
+                              <span
+                                className={`mr-1 text-xs  font-semibold ${
+                                  isActive
+                                    ? "text-green-600 dark:text-green-400"
+                                    : "text-gray-500 dark:text-gray-400"
+                                }`}
+                              >
+                                {item.form_code}
+                              </span>
                               <div className="flex-1 text-sm leading-tight">
-                                <span className="break-words">
-                                  <span className="mr-1 rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                                    {item.form_code}
-                                  </span>
-                                  {item.form_name}
-                                </span>
+                                <span className="break-words">{item.form_name}</span>
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 <div className="group/icon relative flex items-center text-blue-600">

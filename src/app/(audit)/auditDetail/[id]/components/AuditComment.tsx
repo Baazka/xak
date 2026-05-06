@@ -122,7 +122,7 @@ export default function AuditComment({ formId }: Props) {
             <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
           </div>
 
-          <div className="mb-3 flex items-center gap-2">
+          <div className="mb-3 flex items-center gap-2 no-print">
             <textarea
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
