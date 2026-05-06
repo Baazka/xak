@@ -1,8 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import { usePrint } from "@/hooks/usePrint";
+import {
+  CheckCircle,
+  ZapIcon,
+  FileArchiveIcon,
+  OctagonAlertIcon,
+  FileCheck,
+  SendIcon,
+  EyeIcon,
+} from "lucide-react";
 
-import { ShootingStarIcon, EyeIcon, BoltIcon, CheckCircleIcon, ErrorIcon } from "@/icons";
+import { ShootingStarIcon, BoltIcon, CheckCircleIcon, ErrorIcon } from "@/icons";
 import { MessageCircle, Printer } from "lucide-react";
 
 type FormData = {
@@ -73,6 +82,7 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
             disabled={saving}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-linear-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
           >
+            <FileCheck className="w-4 h-4" />
             {saving && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
             )}
@@ -87,7 +97,7 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
               disabled={processing}
               className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-amber-500 bg-linear-to-b from-amber-600 to-amber-700 px-5 text-sm font-semibold text-white shadow transition hover:from-amber-700 hover:to-amber-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
             >
-              <ShootingStarIcon className="w-4 h-4" />
+              <SendIcon className="w-4 h-4" />
               {processing && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
               )}
@@ -100,6 +110,7 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
               disabled={saving}
               className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-linear-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
             >
+              <FileCheck className="w-4 h-4" />
               {saving && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
               )}
@@ -128,7 +139,7 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
               disabled={processing}
               className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-b-error-500 bg-linear-to-b from-error-600 to-error-700 px-5 text-sm font-semibold text-white shadow transition hover:from-error-700 hover:to-error-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
             >
-              <ErrorIcon className="w-4 h-4" />
+              <OctagonAlertIcon className="w-4 h-4" />
               {processing && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
               )}
@@ -144,7 +155,7 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
               disabled={processing}
               className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-b-emerald-600 bg-linear-to-b from-emerald-600 to-emerald-700 px-5 text-sm font-semibold text-white shadow transition hover:from-emerald-700 hover:to-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
             >
-              <BoltIcon className="w-4 h-4" />
+              <CheckCircle className="w-4 h-4" />
               {processing && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
               )}
@@ -157,7 +168,7 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
               disabled={processing}
               className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-b-error-500 bg-linear-to-b from-error-600 to-error-700 px-5 text-sm font-semibold text-white shadow transition hover:from-error-700 hover:to-error-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
             >
-              <ErrorIcon className="w-4 h-4" />
+              <OctagonAlertIcon className="w-4 h-4" />
               {processing && (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
               )}
@@ -170,9 +181,9 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
             type="button"
             onClick={() => handleStatus(6)}
             disabled={processing}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-b-emerald-600 bg-linear-to-b from-emerald-600 to-emerald-700 px-5 text-sm font-semibold text-white shadow transition hover:from-emerald-700 hover:to-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-b-mist-600 bg-linear-to-b from-mist-600 to-mist-700 px-5 text-sm font-semibold text-white shadow transition hover:from-mist-700 hover:to-mist-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
           >
-            <BoltIcon className="w-4 h-4" />
+            <ZapIcon className="w-4 h-4" />
             {processing && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
             )}
@@ -184,9 +195,9 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
             type="button"
             onClick={() => handleStatus(7)}
             disabled={processing}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-b-emerald-600 bg-linear-to-b from-emerald-600 to-emerald-700 px-5 text-sm font-semibold text-white shadow transition hover:from-emerald-700 hover:to-emerald-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-b-yellow-600 bg-linear-to-b from-yellow-600 to-yellow-700 px-5 text-sm font-semibold text-white shadow transition hover:from-yellow-700 hover:to-yellow-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
           >
-            <BoltIcon className="w-4 h-4" />
+            <FileArchiveIcon className="w-4 h-4" />
             {processing && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
             )}
@@ -200,7 +211,7 @@ export default function AuditFormSave({ formSave, helpOpen, formData, formProces
             disabled={processing}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-b-error-500 bg-linear-to-b from-error-600 to-error-700 px-5 text-sm font-semibold text-white shadow transition hover:from-error-700 hover:to-error-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
           >
-            <ErrorIcon className="w-4 h-4" />
+            <OctagonAlertIcon className="w-4 h-4" />
             {processing && (
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
             )}

@@ -10,6 +10,12 @@ import {
   ListTodo,
   MessageCircle,
   NotebookPen,
+  FileCheck,
+  SendIcon,
+  EyeIcon,
+  ZapIcon,
+  FileArchiveIcon,
+  OctagonAlertIcon,
 } from "lucide-react";
 import type { FormItem, GroupedForms } from "../AuditClient";
 import { useEffect, useRef, useState } from "react";
@@ -181,9 +187,9 @@ export default function AuditSidebar({ groupedForms, activeForm, onChange }: Aud
                                 <div className="group/icon relative flex items-center text-blue-600">
                                   <MessageCircle className="h-5 w-5" />
 
-                                  {Number(item.form_code) > 0 && (
+                                  {item.cmt_count > 0 && (
                                     <span className="absolute -top-1 -right-1 flex min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white">
-                                      {Number(item.form_code) > 9 ? "9+" : (item.form_code ?? 0)}
+                                      {item.cmt_count > 9 ? "9+" : (item.cmt_count ?? 0)}
                                     </span>
                                   )}
 
@@ -193,11 +199,62 @@ export default function AuditSidebar({ groupedForms, activeForm, onChange }: Aud
                                 </div>
 
                                 <div className="group/icon relative">
-                                  <CheckCircle className="h-5 w-5 text-green-600" />
-
-                                  <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
-                                    Баталгаажсан
-                                  </div>
+                                  {item.form_status_id === 1 && (
+                                    <>
+                                      <FileCheck className="h-5 w-5 text-blue-600" />
+                                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
+                                        Хадгалсан
+                                      </div>
+                                    </>
+                                  )}
+                                  {item.form_status_id === 2 && (
+                                    <>
+                                      <SendIcon className="h-5 w-5 text-amber-600" />
+                                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
+                                        Илгээсэн
+                                      </div>
+                                    </>
+                                  )}
+                                  {item.form_status_id === 3 && (
+                                    <>
+                                      <EyeIcon className="h-5 w-5 text-cyan-600" />
+                                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
+                                        Хянасан
+                                      </div>
+                                    </>
+                                  )}
+                                  {item.form_status_id === 4 && (
+                                    <>
+                                      <CheckCircle className="h-5 w-5 text-emerald-600" />
+                                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
+                                        Баталгаажсан
+                                      </div>
+                                    </>
+                                  )}
+                                  {item.form_status_id === 5 && (
+                                    <>
+                                      <OctagonAlertIcon className="h-5 w-5 text-error-600" />
+                                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
+                                        Буцаасан
+                                      </div>
+                                    </>
+                                  )}
+                                  {item.form_status_id === 6 && (
+                                    <>
+                                      <ZapIcon className="h-5 w-5 text-mist-600" />
+                                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
+                                        Чанарын хяналт
+                                      </div>
+                                    </>
+                                  )}
+                                  {item.form_status_id === 7 && (
+                                    <>
+                                      <FileArchiveIcon className="h-5 w-5 text-yellow-600" />
+                                      <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 hidden whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white group-hover/icon:block">
+                                        Архивласан
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             </div>

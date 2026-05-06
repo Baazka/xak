@@ -11,6 +11,11 @@ export type FormItem = {
   form_name: string;
   form_stage: string;
   form_code: string;
+  form_aud_id: number;
+  form_status_id: number;
+  from_status_code: string;
+  form_status_name: string;
+  cmt_count: number;
 };
 
 export type GroupedForms = {
@@ -32,14 +37,20 @@ export default function AuditDetailClient({
   const [defaultForm, setDefaultForm] = useState<string | null>(null);
   const loadForms = async () => {
     try {
-      const res = await fetchWithAuth("/api/refs/audit_form");
+      const res = await fetchWithAuth("/api/audit/audit_forms/sidebar?aud_id=" + auditId);
       const data = await res.json();
-      const rows: FormItem[] = Array.isArray(data?.data) ? data.data : [];
+
+      console.log("data ", data);
+      const rows: FormItem[] = Array.isArray(data?.sidebarData) ? data.sidebarData : [];
 
       if (formListId) {
-        const resForm = await fetchWithAuth(
-          "/api/audit/audit_forms?aud_id=" + auditId + "&formlist_id=" + formListId
+        const formIdres = await fetchWithAuth(
+          "/api/audit/audit_forms/formId?aud_id=" + auditId + "&formlist_id=" + formListId
         );
+        const formIdData = await formIdres.json();
+        const formId = formIdData?.formData?.form_id;
+
+        const resForm = await fetchWithAuth("/api/audit/audit_forms?form_id=" + formId);
         const dataForm = await resForm.json();
         setDefaultForm(dataForm?.formData?.form_code);
       }
