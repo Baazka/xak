@@ -2,6 +2,8 @@
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
+import { StatusBadge } from "./AuditStatusBadge";
+import SkeletonCard from "./SkeletonCard";
 
 type Props = {
   formId: number;
@@ -82,7 +84,7 @@ export default function AuditConfirm({ formId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <div className="mt-6">
           <div className="mb-4 flex items-center gap-3">
@@ -140,74 +142,87 @@ export default function AuditConfirm({ formId }: Props) {
       )}
       {dialogOpen && (
         <div
-          className="fixed w-full inset-0 z-1000 flex items-center justify-center bg-black/40"
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
           onMouseDown={() => setDialogOpen(false)}
         >
           <div
-            className="w-full max-w-3xl rounded-xl bg-white p-5 shadow-lg max-h-10/12 overflow-y-auto"
+            className="flex max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Маягтын үйлдлийн түүх</h2>
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Маягтын үйлдлийн түүх
+                </h2>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Маягт дээр хийгдсэн үйлдлүүдийн жагсаалт
+                </p>
+              </div>
 
               <button
-                className="rounded px-2 py-1 hover:bg-gray-100"
-                onClick={() => setDialogOpen(false)}
                 type="button"
+                onClick={() => setDialogOpen(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-white"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-4">
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="bg-gray-50 dark:bg-gray-800">
-                    <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      №
-                    </th>
-                    <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Төлөв
-                    </th>
-                    <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Хэрэглэгчийн нэр
-                    </th>
-                    <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Огноо
-                    </th>
-                    <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Утас
-                    </th>
-                    <th className=" border border-gray-200 p-2 text-center text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                      Имэйл
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {formLog.map((item, index) => (
-                    <tr key={item.action_id} className="hover:bg-gray-50 dark:hover:bg-gray-800/60">
-                      <td className=" border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                        {index + 1}
-                      </td>
-                      <td className=" border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                        {item.action_status_name}
-                      </td>
-                      <td className=" border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                        {item.user_firstname}
-                      </td>
-                      <td className=" border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                        {item.action_date}
-                      </td>
-                      <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                        {item.user_phone}
-                      </td>
-                      <td className="border border-gray-200 p-2 text-center text-gray-700 dark:border-gray-700 dark:text-gray-200">
-                        {item.user_email}
-                      </td>
+            {/* Body */}
+            <div className="overflow-auto p-5">
+              <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+                <table className="w-full min-w-[760px] border-collapse text-sm">
+                  <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      {["№", "Төлөв", "Хэрэглэгчийн нэр", "Огноо", "Утас", "Имэйл"].map((head) => (
+                        <th
+                          key={head}
+                          className="border-b border-gray-200 px-3 py-3 text-center text-xs font-semibold uppercase tracking-wide text-gray-600 dark:border-gray-700 dark:text-gray-300"
+                        >
+                          {head}
+                        </th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    {formLog.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">
+                          Үйлдлийн түүх олдсонгүй.
+                        </td>
+                      </tr>
+                    ) : (
+                      formLog.map((item, index) => (
+                        <tr
+                          key={item.action_id}
+                          className="transition hover:bg-gray-50 dark:hover:bg-gray-800/60"
+                        >
+                          <td className="px-3 py-3 text-center text-gray-500 dark:text-gray-400">
+                            {index + 1}
+                          </td>
+                          <td className="px-3 py-3 text-center">
+                            <StatusBadge status={item.action_status_name} />
+                          </td>
+                          <td className="px-3 py-3 text-center font-medium text-gray-800 dark:text-gray-100">
+                            {item.user_firstname}
+                          </td>
+                          <td className="px-3 py-3 text-center text-gray-600 dark:text-gray-300">
+                            {item.action_date}
+                          </td>
+                          <td className="px-3 py-3 text-center text-gray-600 dark:text-gray-300">
+                            {item.user_phone}
+                          </td>
+                          <td className="px-3 py-3 text-center text-gray-600 dark:text-gray-300">
+                            {item.user_email}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

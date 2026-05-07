@@ -4,12 +4,10 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { useToast } from "@/context/ToastContext";
-import { MessageCircle, Printer } from "lucide-react";
-import { useHelpDesk } from "@/context/HelpDeskContext";
-import { usePrint } from "@/hooks/usePrint";
 import { F303_DATA_MAP1, F303_DATA_MAP2 } from "@/utils/constSelect";
 import { formatCurrency } from "@/lib/formatCurrency";
 import ExpandableDataTable, { Column } from "@/components/tables/ExpandableTable";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -54,8 +52,6 @@ export default function Form303({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
   const { toast } = useToast();
 
   const updateRow = <K extends keyof TableRow>(riskId: number, field: K, value: TableRow[K]) => {
@@ -231,7 +227,7 @@ export default function Form303({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <>
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">

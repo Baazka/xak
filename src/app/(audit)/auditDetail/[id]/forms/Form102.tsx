@@ -3,6 +3,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
 import { useToast } from "@/context/ToastContext";
 import FormActionSection from "../components/FormActionSection";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -374,437 +375,449 @@ export default function Form102({ auditId, formListId }: Props) {
     }
   };
 
-  if (loading) return <div className="p-4">Уншиж байна...</div>;
-
   return (
     <>
-      <div>
-        {/* Үндсэн мэдээлэл */}
-        <section>
-          <div className="flex items-center justify-between ">
-            <div>
-              <h2 className="text-base font-semibold py-3">Үндсэн мэдээлэл</h2>
-            </div>
-          </div>
+      {loading ? (
+        <SkeletonCard />
+      ) : (
+        <>
+          <div>
+            {/* Үндсэн мэдээлэл */}
+            <section>
+              <div className="flex items-center justify-between ">
+                <div>
+                  <h2 className="text-base font-semibold py-3">Үндсэн мэдээлэл</h2>
+                </div>
+              </div>
 
-          <div className="overflow-x-auto rounded-md">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100  top-0">
-                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
-                  {[
-                    "Регистрийн дугаар",
-                    "Оноосон нэр",
-                    "Бүртгэсэн огноо",
-                    "Хэлбэр",
-                    "Төрөл",
-                    "Хувьцаа эзэмшигчийн тоо",
-                    "Хуулийн этгээдийн хаяг",
-                  ].map((item) => (
-                    <th key={item} className="border px-2 py-3 text-center font-medium">
-                      {item}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border px-2 py-3">{orgData.info_reg_no || "-"}</td>
-                  <td className="border px-2 py-3">{orgData.info_legal_name || "-"}</td>
-                  <td className="border px-2 py-3">{orgData.info_founded_date}</td>
-                  <td className="border px-2 py-3">-</td>
-                  <td className="border px-2 py-3">{orgData.info_type || "-"}</td>
-                  <td className="border px-2 py-3">{orgData.info_main_operation || "-"}</td>
-                  <td className="border px-2 py-3">{orgData.info_address || "-"}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-        {/* Хувьцаа эзэмшигч мэдээлэл */}
-        <section>
-          <h2 className="text-base font-semibold py-3">Хувьцаа эзэмшигч мэдээлэл</h2>
-          <div className="overflow-x-auto rounded-md border border-gray-200">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100  top-0">
-                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
-                  <th className="px-3 py-2 w-10">№</th>
-                  <th className="px-3 py-2">Ангилал</th>
-                  <th className="px-3 py-2">Улсын нэр</th>
-                  <th className="px-3 py-2">Эцэг/эхийн нэр</th>
-                  <th className="px-3 py-2">Нэр</th>
-                  <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
-                  <th className="px-3 py-2 w-10">
-                    <button
-                      type="button"
-                      onClick={() => addRow(1)}
-                      className="flex items-center justify-center w-7 h-7 rounded bg-blue-500 px-3 py-1 text-white text-sm"
-                    >
-                      +
-                    </button>
-                  </th>
-                </tr>
-              </thead>
+              <div className="overflow-x-auto rounded-md">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100  top-0">
+                    <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
+                      {[
+                        "Регистрийн дугаар",
+                        "Оноосон нэр",
+                        "Бүртгэсэн огноо",
+                        "Хэлбэр",
+                        "Төрөл",
+                        "Хувьцаа эзэмшигчийн тоо",
+                        "Хуулийн этгээдийн хаяг",
+                      ].map((item) => (
+                        <th key={item} className="border px-2 py-3 text-center font-medium">
+                          {item}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="border px-2 py-3">{orgData.info_reg_no || "-"}</td>
+                      <td className="border px-2 py-3">{orgData.info_legal_name || "-"}</td>
+                      <td className="border px-2 py-3">{orgData.info_founded_date}</td>
+                      <td className="border px-2 py-3">-</td>
+                      <td className="border px-2 py-3">{orgData.info_type || "-"}</td>
+                      <td className="border px-2 py-3">{orgData.info_main_operation || "-"}</td>
+                      <td className="border px-2 py-3">{orgData.info_address || "-"}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+            {/* Хувьцаа эзэмшигч мэдээлэл */}
+            <section>
+              <h2 className="text-base font-semibold py-3">Хувьцаа эзэмшигч мэдээлэл</h2>
+              <div className="overflow-x-auto rounded-md border border-gray-200">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100  top-0">
+                    <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
+                      <th className="px-3 py-2 w-10">№</th>
+                      <th className="px-3 py-2">Ангилал</th>
+                      <th className="px-3 py-2">Улсын нэр</th>
+                      <th className="px-3 py-2">Эцэг/эхийн нэр</th>
+                      <th className="px-3 py-2">Нэр</th>
+                      <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
+                      <th className="px-3 py-2 w-10">
+                        <button
+                          type="button"
+                          onClick={() => addRow(1)}
+                          className="flex items-center justify-center w-7 h-7 rounded bg-blue-500 px-3 py-1 text-white text-sm"
+                        >
+                          +
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
 
-              <tbody>
-                {detailRows[1]?.map((row, index) => (
-                  <tr
-                    key={index}
-                    className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
-                  >
-                    <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
-                      {index + 1}
-                    </td>
-
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_category}
-                        onChange={(e) => updateRow(1, index, "det_category", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
-
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_country}
-                        onChange={(e) => updateRow(1, index, "det_country", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
-
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_lastname}
-                        onChange={(e) => updateRow(1, index, "det_lastname", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
-
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_firstname}
-                        onChange={(e) => updateRow(1, index, "det_firstname", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
-
-                    <td className="border-b px-2 py-1">
-                      <DatePicker
-                        id={`det_date_1_${index}`}
-                        placeholder="Огноо сонгох"
-                        value={row.det_date || ""}
-                        onChange={(selectedDates) => {
-                          updateRow(
-                            1,
-                            index,
-                            "det_date",
-                            selectedDates?.[0] ? selectedDates[0].toISOString().slice(0, 10) : ""
-                          );
-                        }}
-                        size="sm"
-                      />
-                    </td>
-                    <td className="border-b px-2 py-1 text-center">
-                      <button
-                        type="button"
-                        onClick={() => removeRow(1, index)}
-                        disabled={detailRows[1].length === 1}
-                        className="flex items-center justify-center w-7 h-7 rounded hover:bg-red-100 text-red-500 disabled:opacity-30"
+                  <tbody>
+                    {detailRows[1]?.map((row, index) => (
+                      <tr
+                        key={index}
+                        className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
                       >
-                        ✕
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                        <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
+                          {index + 1}
+                        </td>
 
-        {/* Албан тушаалтан */}
-        <section>
-          <h2 className="text-base font-semibold py-3">
-            Итгэмжлэлгүйгээр төлөөлөх эрх бүхий албан тушаалтан, эрх барих этгээдийн мэдээлэл
-          </h2>
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_category}
+                            onChange={(e) => updateRow(1, index, "det_category", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
 
-          <div className="overflow-x-auto rounded-md border border-gray-200">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100  top-0">
-                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
-                  <th className="px-3 py-2 w-10">№</th>
-                  <th className="px-3 py-2">Албан тушаал</th>
-                  <th className="px-3 py-2">Улсын нэр</th>
-                  <th className="px-3 py-2">Эцэг/эхийн нэр</th>
-                  <th className="px-3 py-2">Нэр</th>
-                  <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
-                  <th className="px-3 py-2 w-10">
-                    <button
-                      type="button"
-                      onClick={() => addRow(2)}
-                      className="flex items-center justify-center w-7 h-7 rounded bg-blue-500 px-3 py-1 text-white text-sm"
-                    >
-                      +
-                    </button>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {detailRows[2]?.map((row, index) => (
-                  <tr
-                    key={index}
-                    className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
-                  >
-                    <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
-                      {index + 1}
-                    </td>
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_country}
+                            onChange={(e) => updateRow(1, index, "det_country", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
 
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_category}
-                        onChange={(e) => updateRow(2, index, "det_category", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_lastname}
+                            onChange={(e) => updateRow(1, index, "det_lastname", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
 
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_country}
-                        onChange={(e) => updateRow(2, index, "det_country", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_firstname}
+                            onChange={(e) => updateRow(1, index, "det_firstname", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
 
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_lastname}
-                        onChange={(e) => updateRow(2, index, "det_lastname", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
+                        <td className="border-b px-2 py-1">
+                          <DatePicker
+                            id={`det_date_1_${index}`}
+                            placeholder="Огноо сонгох"
+                            value={row.det_date || ""}
+                            onChange={(selectedDates) => {
+                              updateRow(
+                                1,
+                                index,
+                                "det_date",
+                                selectedDates?.[0]
+                                  ? selectedDates[0].toISOString().slice(0, 10)
+                                  : ""
+                              );
+                            }}
+                            size="sm"
+                          />
+                        </td>
+                        <td className="border-b px-2 py-1 text-center">
+                          <button
+                            type="button"
+                            onClick={() => removeRow(1, index)}
+                            disabled={detailRows[1].length === 1}
+                            className="flex items-center justify-center w-7 h-7 rounded hover:bg-red-100 text-red-500 disabled:opacity-30"
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_firstname}
-                        onChange={(e) => updateRow(2, index, "det_firstname", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
+            {/* Албан тушаалтан */}
+            <section>
+              <h2 className="text-base font-semibold py-3">
+                Итгэмжлэлгүйгээр төлөөлөх эрх бүхий албан тушаалтан, эрх барих этгээдийн мэдээлэл
+              </h2>
 
-                    <td className="border-b px-2 py-1">
-                      <DatePicker
-                        id={`det_date_2_${index}`}
-                        placeholder="Огноо сонгох"
-                        value={row.det_date || ""}
-                        onChange={(selectedDates) => {
-                          updateRow(
-                            2,
-                            index,
-                            "det_date",
-                            selectedDates?.[0] ? selectedDates[0].toISOString().slice(0, 10) : ""
-                          );
-                        }}
-                        size="sm"
-                      />
-                    </td>
-                    <td className="border-b px-2 py-1 text-center">
-                      <button
-                        type="button"
-                        onClick={() => removeRow(2, index)}
-                        disabled={detailRows[2].length === 1}
-                        className="flex items-center justify-center w-7 h-7 rounded hover:bg-red-100 text-red-500 disabled:opacity-30"
+              <div className="overflow-x-auto rounded-md border border-gray-200">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100  top-0">
+                    <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
+                      <th className="px-3 py-2 w-10">№</th>
+                      <th className="px-3 py-2">Албан тушаал</th>
+                      <th className="px-3 py-2">Улсын нэр</th>
+                      <th className="px-3 py-2">Эцэг/эхийн нэр</th>
+                      <th className="px-3 py-2">Нэр</th>
+                      <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
+                      <th className="px-3 py-2 w-10">
+                        <button
+                          type="button"
+                          onClick={() => addRow(2)}
+                          className="flex items-center justify-center w-7 h-7 rounded bg-blue-500 px-3 py-1 text-white text-sm"
+                        >
+                          +
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {detailRows[2]?.map((row, index) => (
+                      <tr
+                        key={index}
+                        className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
                       >
-                        ✕
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                        <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
+                          {index + 1}
+                        </td>
 
-        {/* Эцсийн өмчлөгч */}
-        <section>
-          <h2 className="text-base font-semibold py-3">Эцсийн өмчлөгч</h2>
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_category}
+                            onChange={(e) => updateRow(2, index, "det_category", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
 
-          <div className="overflow-x-auto rounded-md border border-gray-200">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100  top-0">
-                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
-                  <th className="px-3 py-2 w-10">№</th>
-                  <th>Ангилал</th>
-                  <th>Улсын нэр</th>
-                  <th>Эцэг/эхийн нэр</th>
-                  <th>Нэр</th>
-                  <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
-                  <th className="px-3 py-2 w-10">
-                    <button
-                      type="button"
-                      onClick={() => addRow(3)}
-                      className="flex items-center justify-center w-7 h-7 rounded bg-blue-500 px-3 py-1 text-white text-sm"
-                    >
-                      +
-                    </button>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {detailRows[3]?.map((row, index) => (
-                  <tr
-                    key={index}
-                    className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
-                  >
-                    <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
-                      {index + 1}
-                    </td>
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_country}
+                            onChange={(e) => updateRow(2, index, "det_country", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
 
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_category}
-                        onChange={(e) => updateRow(3, index, "det_category", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_lastname}
+                            onChange={(e) => updateRow(2, index, "det_lastname", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
 
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_country}
-                        onChange={(e) => updateRow(3, index, "det_country", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_firstname}
+                            onChange={(e) => updateRow(2, index, "det_firstname", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
 
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_lastname}
-                        onChange={(e) => updateRow(3, index, "det_lastname", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
+                        <td className="border-b px-2 py-1">
+                          <DatePicker
+                            id={`det_date_2_${index}`}
+                            placeholder="Огноо сонгох"
+                            value={row.det_date || ""}
+                            onChange={(selectedDates) => {
+                              updateRow(
+                                2,
+                                index,
+                                "det_date",
+                                selectedDates?.[0]
+                                  ? selectedDates[0].toISOString().slice(0, 10)
+                                  : ""
+                              );
+                            }}
+                            size="sm"
+                          />
+                        </td>
+                        <td className="border-b px-2 py-1 text-center">
+                          <button
+                            type="button"
+                            onClick={() => removeRow(2, index)}
+                            disabled={detailRows[2].length === 1}
+                            className="flex items-center justify-center w-7 h-7 rounded hover:bg-red-100 text-red-500 disabled:opacity-30"
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.det_firstname}
-                        onChange={(e) => updateRow(3, index, "det_firstname", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
+            {/* Эцсийн өмчлөгч */}
+            <section>
+              <h2 className="text-base font-semibold py-3">Эцсийн өмчлөгч</h2>
 
-                    <td className="border-b px-2 py-1">
-                      <DatePicker
-                        id={`det_date_3_${index}`}
-                        placeholder="Огноо сонгох"
-                        value={row.det_date || ""}
-                        onChange={(selectedDates) => {
-                          updateRow(
-                            3,
-                            index,
-                            "det_date",
-                            selectedDates?.[0] ? selectedDates[0].toISOString().slice(0, 10) : ""
-                          );
-                        }}
-                        size="sm"
-                      />
-                    </td>
-                    <td className="border-b px-2 py-1 text-center">
-                      <button
-                        type="button"
-                        onClick={() => removeRow(3, index)}
-                        disabled={detailRows[3].length === 1}
-                        className="flex items-center justify-center w-7 h-7 rounded hover:bg-red-100 text-red-500 disabled:opacity-30"
+              <div className="overflow-x-auto rounded-md border border-gray-200">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100  top-0">
+                    <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
+                      <th className="px-3 py-2 w-10">№</th>
+                      <th>Ангилал</th>
+                      <th>Улсын нэр</th>
+                      <th>Эцэг/эхийн нэр</th>
+                      <th>Нэр</th>
+                      <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
+                      <th className="px-3 py-2 w-10">
+                        <button
+                          type="button"
+                          onClick={() => addRow(3)}
+                          className="flex items-center justify-center w-7 h-7 rounded bg-blue-500 px-3 py-1 text-white text-sm"
+                        >
+                          +
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {detailRows[3]?.map((row, index) => (
+                      <tr
+                        key={index}
+                        className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
                       >
-                        ✕
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
+                          {index + 1}
+                        </td>
+
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_category}
+                            onChange={(e) => updateRow(3, index, "det_category", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
+
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_country}
+                            onChange={(e) => updateRow(3, index, "det_country", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
+
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_lastname}
+                            onChange={(e) => updateRow(3, index, "det_lastname", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
+
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.det_firstname}
+                            onChange={(e) => updateRow(3, index, "det_firstname", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
+
+                        <td className="border-b px-2 py-1">
+                          <DatePicker
+                            id={`det_date_3_${index}`}
+                            placeholder="Огноо сонгох"
+                            value={row.det_date || ""}
+                            onChange={(selectedDates) => {
+                              updateRow(
+                                3,
+                                index,
+                                "det_date",
+                                selectedDates?.[0]
+                                  ? selectedDates[0].toISOString().slice(0, 10)
+                                  : ""
+                              );
+                            }}
+                            size="sm"
+                          />
+                        </td>
+                        <td className="border-b px-2 py-1 text-center">
+                          <button
+                            type="button"
+                            onClick={() => removeRow(3, index)}
+                            disabled={detailRows[3].length === 1}
+                            className="flex items-center justify-center w-7 h-7 rounded hover:bg-red-100 text-red-500 disabled:opacity-30"
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
           </div>
-        </section>
-      </div>
-      <div>
-        {/* Үйл ажиллагааны чиглэл */}
-        <section>
-          <h2 className="text-base font-semibold py-3">Үйл ажиллагааны чиглэлийн мэдээлэл</h2>
+          <div>
+            {/* Үйл ажиллагааны чиглэл */}
+            <section>
+              <h2 className="text-base font-semibold py-3">Үйл ажиллагааны чиглэлийн мэдээлэл</h2>
 
-          <div className="overflow-x-auto rounded-md border border-gray-200">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100  top-0">
-                <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
-                  <th className="px-3 py-2 w-10">№</th>
-                  <th>Үйл ажиллагааны код</th>
-                  <th>Үйл ажиллагааны чиглэл</th>
-                  <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
-                  <th className="px-3 py-2 w-10">
-                    <button
-                      type="button"
-                      onClick={addOPRow}
-                      className="flex items-center justify-center w-7 h-7 rounded bg-blue-500 px-3 py-1 text-white text-sm"
-                    >
-                      +
-                    </button>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {opRows.map((row, index) => (
-                  <tr
-                    key={index}
-                    className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
-                  >
-                    <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
-                      {index + 1}
-                    </td>
-
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.op_code}
-                        onChange={(e) => updateOPRow(index, "op_code", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
-
-                    <td className="border-b px-2 py-1">
-                      <input
-                        value={row.op_name}
-                        onChange={(e) => updateOPRow(index, "op_name", e.target.value)}
-                        className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </td>
-
-                    <td className="border-b px-2 py-1">
-                      <DatePicker
-                        id={`op_date_${index}`}
-                        placeholder="Огноо сонгох"
-                        value={row.op_date || ""}
-                        onChange={(selectedDates) => {
-                          updateOPRow(
-                            index,
-                            "op_date",
-                            selectedDates?.[0] ? selectedDates[0].toISOString().slice(0, 10) : ""
-                          );
-                        }}
-                        size="sm"
-                      />
-                    </td>
-                    <td className="border-b px-2 py-1 text-center">
-                      <button
-                        type="button"
-                        onClick={() => removeOPRow(index)}
-                        disabled={opRows.length === 1}
-                        className="flex items-center justify-center w-7 h-7 rounded hover:bg-red-100 text-red-500 disabled:opacity-30"
+              <div className="overflow-x-auto rounded-md border border-gray-200">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100  top-0">
+                    <tr className=" dark:bg-[#0b1220] dark:border-white/[0.05]">
+                      <th className="px-3 py-2 w-10">№</th>
+                      <th>Үйл ажиллагааны код</th>
+                      <th>Үйл ажиллагааны чиглэл</th>
+                      <th className="px-3 py-2 w-1/10">Бүртгэсэн огноо</th>
+                      <th className="px-3 py-2 w-10">
+                        <button
+                          type="button"
+                          onClick={addOPRow}
+                          className="flex items-center justify-center w-7 h-7 rounded bg-blue-500 px-3 py-1 text-white text-sm"
+                        >
+                          +
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {opRows.map((row, index) => (
+                      <tr
+                        key={index}
+                        className="odd:bg-white even:bg-gray-100 dark:odd:bg-[#0b1220] dark:even:bg-[#0f172a]"
                       >
-                        ✕
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                        <td className="border-b px-3 py-2 text-center font-medium text-gray-600">
+                          {index + 1}
+                        </td>
+
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.op_code}
+                            onChange={(e) => updateOPRow(index, "op_code", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
+
+                        <td className="border-b px-2 py-1">
+                          <input
+                            value={row.op_name}
+                            onChange={(e) => updateOPRow(index, "op_name", e.target.value)}
+                            className="w-full rounded-md border px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
+
+                        <td className="border-b px-2 py-1">
+                          <DatePicker
+                            id={`op_date_${index}`}
+                            placeholder="Огноо сонгох"
+                            value={row.op_date || ""}
+                            onChange={(selectedDates) => {
+                              updateOPRow(
+                                index,
+                                "op_date",
+                                selectedDates?.[0]
+                                  ? selectedDates[0].toISOString().slice(0, 10)
+                                  : ""
+                              );
+                            }}
+                            size="sm"
+                          />
+                        </td>
+                        <td className="border-b px-2 py-1 text-center">
+                          <button
+                            type="button"
+                            onClick={() => removeOPRow(index)}
+                            disabled={opRows.length === 1}
+                            className="flex items-center justify-center w-7 h-7 rounded hover:bg-red-100 text-red-500 disabled:opacity-30"
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
           </div>
-        </section>
-      </div>
-      <FormActionSection formId={formId} formSave={handleSaveAll} />
+          <FormActionSection formId={formId} formSave={handleSaveAll} />
+        </>
+      )}
     </>
   );
 }

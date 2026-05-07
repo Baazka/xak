@@ -6,6 +6,7 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Delete, Edit } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/context/ToastContext";
+import SkeletonCard from "./SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -184,7 +185,7 @@ export default function AuditRisk({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <div className="mt-3 space-y-3">
           <div className="overflow-hidden rounded border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">

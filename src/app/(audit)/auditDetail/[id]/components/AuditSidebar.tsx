@@ -97,7 +97,7 @@ export default function AuditSidebar({ groupedForms, activeForm, onChange }: Aud
   }, [groupedForms]);
 
   return (
-    <div className="relative h-full w-24 shrink-0">
+    <div className="relative h-full w-24 shrink-0 z-50">
       <div className="group/sidebar h-full">
         <div className="absolute left-0 top-0 flex h-full min-h-0 w-24 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 group-hover/sidebar:w-84 dark:border-gray-800 dark:bg-gray-900">
           <div className="flex shrink-0 items-center justify-between gap-2 border-b border-gray-100 px-3 py-4 dark:border-gray-800">

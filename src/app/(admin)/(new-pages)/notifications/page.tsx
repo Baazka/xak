@@ -6,6 +6,7 @@ import NotificationItem from "@/components/notification/NotificationItem";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Button } from "@/components/ui/button";
 import { useNotifications } from "@/context/NotificationContext";
+import NotificationSkeleton from "@/components/notification/NotificationSkeleton";
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function NotificationsPage() {
   const [page, setPage] = useState(1); // UI-д үлдээнэ
   const [unreadOnly, setUnreadOnly] = useState(false);
 
-  const { notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllRead, loading } = useNotifications();
 
   // 👉 filter (backend биш frontend түр)
   const filtered = unreadOnly ? notifications.filter((n) => n.is_read === 0) : notifications;
@@ -58,7 +59,9 @@ export default function NotificationsPage() {
 
         {/* LIST */}
         <>
-          {filtered.length === 0 ? (
+          {loading ? (
+            <NotificationSkeleton />
+          ) : filtered.length === 0 ? (
             <div className="rounded-xl border border-dashed p-10 text-center text-gray-400 dark:border-gray-800">
               Мэдэгдэл алга.
             </div>

@@ -32,8 +32,7 @@ export default function NotificationsAdminPage() {
   const [data, setData] = useState<NotificationAdminRow[]>([]);
   const [total, setTotal] = useState(0);
 
-  const [listLoading, setListLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [deleteLoadingId, setDeleteLoadingId] = useState<number | null>(null);
 
   const [page, setPage] = useState(1);
@@ -61,7 +60,7 @@ export default function NotificationsAdminPage() {
   }, [searchInput]);
 
   const fetchList = async (signal?: AbortSignal) => {
-    setListLoading(true);
+    setLoading(true);
 
     try {
       const res = await fetchWithAuth(
@@ -83,8 +82,7 @@ export default function NotificationsAdminPage() {
       if (err?.name === "AbortError") return;
       toast("error", err?.message || "Мэдэгдлийн жагсаалт ачааллах үед алдаа гарлаа");
     } finally {
-      setListLoading(false);
-      setInitialLoading(false);
+      setLoading(false);
     }
   };
 
@@ -144,7 +142,7 @@ export default function NotificationsAdminPage() {
         </div>
 
         <div className="rounded-b-xl overflow-visible">
-          {initialLoading ? (
+          {loading ? (
             <SkeletonTable />
           ) : (
             <DataTable
@@ -163,7 +161,7 @@ export default function NotificationsAdminPage() {
               search={searchInput}
               onSearchChange={setSearchInput}
               sorting={sorting}
-              loading={listLoading}
+              loading={loading}
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}

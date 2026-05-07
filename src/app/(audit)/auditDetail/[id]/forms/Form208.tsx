@@ -1,12 +1,11 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { useToast } from "@/context/ToastContext";
-import { useHelpDesk } from "@/context/HelpDeskContext";
-import { usePrint } from "@/hooks/usePrint";
-import { MessageCircle, Printer } from "lucide-react";
+import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -26,8 +25,9 @@ export default function Form208({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
+  const [files, setFiles] = useState<UploadedFileItem[]>([]);
+  const [fileId, setFileId] = useState<number | null>(null);
+  const [originalFileId, setOriginalFileId] = useState<number | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -40,6 +40,22 @@ export default function Form208({ auditId, formListId }: Props) {
 
         setData(Array.isArray(result.data) ? result.data : []);
         setFormId(result.form_id ?? 0);
+        setOriginalFileId(result.file_id ?? null);
+        setFileId(result.file_id ?? null);
+
+        if (result.file_id) {
+          const fakeFile = new File([""], `Файл-${result.file_id}`);
+
+          setFiles([
+            {
+              file: fakeFile,
+              file_id: result.file_id,
+              original_name: `Файл-${result.file_id}`,
+            },
+          ]);
+        } else {
+          setFiles([]);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -66,12 +82,20 @@ export default function Form208({ auditId, formListId }: Props) {
         body: JSON.stringify({
           form_id: formId,
           strData,
+          file_id: fileId,
         }),
       });
 
       if (!res.ok) {
         throw new Error("Хадгалахад алдаа гарлаа");
       }
+      if (originalFileId && originalFileId !== fileId) {
+        await fetchWithAuth(`/api/files/delete/${originalFileId}`, {
+          method: "DELETE",
+        });
+      }
+
+      setOriginalFileId(fileId);
 
       toast("success", "Амжилттай хадгаллаа");
     } catch (error) {
@@ -85,7 +109,7 @@ export default function Form208({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <>
           <table className="w-full border-collapse text-sm">
@@ -128,6 +152,40 @@ export default function Form208({ auditId, formListId }: Props) {
               ))}
             </tbody>
           </table>
+          <div>
+            <label className="mb-1.5 block font-medium text-gray-600 dark:text-gray-400">
+              Хавсралт
+            </label>
+
+            <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-950">
+              <FileUpload
+                accept=".pdf,.doc,.docx"
+                multiple={false}
+                auditId={auditId}
+                value={files}
+                onChange={(nextFiles) => {
+                  setFiles(nextFiles);
+
+                  if (!nextFiles.length) {
+                    setFileId(null);
+                  }
+                }}
+                onUploaded={(fileIds) => {
+                  setFileId(fileIds[0] ?? null);
+                }}
+                onRemove={async (file) => {
+                  setFiles([]);
+                  setFileId(null);
+
+                  if (file.file_id && file.file_id !== originalFileId) {
+                    await fetchWithAuth(`/api/files/delete/${file.file_id}`, {
+                      method: "DELETE",
+                    });
+                  }
+                }}
+              />
+            </div>
+          </div>
 
           <FormActionSection formId={formId} formSave={handleSave} />
         </>

@@ -4,9 +4,6 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { Fragment, useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import AuditRisk from "../components/AuditRisk";
-import { MessageCircle, Printer } from "lucide-react";
-import { useHelpDesk } from "@/context/HelpDeskContext";
-import { usePrint } from "@/hooks/usePrint";
 import {
   CR105_RATE_MAP1,
   CR105_RATE_MAP2,
@@ -15,6 +12,7 @@ import {
   CR105_RATE_MAP5,
 } from "@/utils/constSelect";
 import { useToast } from "@/context/ToastContext";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -36,8 +34,6 @@ export default function Form105({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
   const { toast } = useToast();
 
   const onRadioChange = (cr_id: number, value: string) => {
@@ -127,7 +123,7 @@ export default function Form105({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <>
           <table className="w-full border-collapse text-sm">

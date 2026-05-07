@@ -37,9 +37,8 @@ export default function XakorgListPage() {
   const [total, setTotal] = useState(0);
   const [isadmin, setIsadmin] = useState(false);
 
-  const [listLoading, setListLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [deleteLoadingId, setDeleteLoadingId] = useState<number | null>(null);
-  const [initialLoading, setInitialLoading] = useState(true);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -58,8 +57,6 @@ export default function XakorgListPage() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     // default hide
   });
-
-  const [loading, setLoading] = useState(false);
 
   const [cardBalance, setCardBalance] = useState<number | 0>(0);
   const [cardInvTotal, setCardInvTotal] = useState<number | 0>(0);
@@ -108,7 +105,7 @@ export default function XakorgListPage() {
     const controller = new AbortController();
 
     const run = async () => {
-      setListLoading(true);
+      setLoading(true);
 
       try {
         const res = await fetchWithAuth(
@@ -130,8 +127,7 @@ export default function XakorgListPage() {
         if (err?.name === "AbortError") return;
         toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
       } finally {
-        setListLoading(false);
-        setInitialLoading(false);
+        setLoading(false);
       }
     };
 
@@ -281,7 +277,7 @@ export default function XakorgListPage() {
         </div>
 
         <div className="rounded-b-xl overflow-visible">
-          {initialLoading ? (
+          {loading ? (
             <SkeletonTable />
           ) : isadmin ? (
             <DataTable
@@ -305,7 +301,7 @@ export default function XakorgListPage() {
               search={searchInput}
               onSearchChange={setSearchInput}
               sorting={sorting}
-              loading={listLoading}
+              loading={loading}
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
@@ -334,7 +330,7 @@ export default function XakorgListPage() {
               search={searchInput}
               onSearchChange={setSearchInput}
               sorting={sorting}
-              loading={listLoading}
+              loading={loading}
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}

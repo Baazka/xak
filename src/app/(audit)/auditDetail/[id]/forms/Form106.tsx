@@ -3,14 +3,13 @@
 import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
 import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
-import { Delete, DeleteIcon, Edit, MessageCircle, Printer } from "lucide-react";
+import { Edit } from "lucide-react";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import TimePicker from "@/components/form/TimePicker";
-import { usePrint } from "@/hooks/usePrint";
-import { useHelpDesk } from "@/context/HelpDeskContext";
 import { useToast } from "@/context/ToastContext";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -42,8 +41,6 @@ export default function Form106({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [meetingFiles, setMeetingFiles] = useState<UploadedFileItem[]>([]);
   const [originalMeetingFileId, setOriginalMeetingFileId] = useState<number | null>(null);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
   const { toast } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -228,7 +225,7 @@ export default function Form106({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <>
           <div className="flex items-center justify-end gap-2 mb-2">

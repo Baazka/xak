@@ -6,6 +6,7 @@ import AuditConfirm from "../components/AuditConfirm";
 import AuditComment from "../components/AuditComment";
 import AuditFormSave from "./AuditFormSave";
 import { useToast } from "@/context/ToastContext";
+import SkeletonCard from "./SkeletonCard";
 
 type FormData = {
   form_id: number;
@@ -108,7 +109,7 @@ export default function FormActionSection({ formId, formSave, formSupValue, form
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <div className="mt-4 space-y-4">
           <div>

@@ -1,16 +1,14 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { useToast } from "@/context/ToastContext";
-import { Delete, Edit, MessageCircle, Printer } from "lucide-react";
+import { Edit } from "lucide-react";
 import { RiskCDtype, RiskGroup, RiskSubGroup, RiskType } from "../components/AuditRisk";
 import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
 import DatePicker from "@/components/form/date-picker";
 import { RMainType } from "./Form207";
-import { useHelpDesk } from "@/context/HelpDeskContext";
-import { usePrint } from "@/hooks/usePrint";
 import {
   F205_DATA_MAP1,
   F205_DATA_MAP2,
@@ -18,6 +16,7 @@ import {
   F207_DATA_MAP2,
   YES_OR_NO_MAP,
 } from "@/utils/constSelect";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -79,8 +78,6 @@ export default function Form301({ auditId, formListId }: Props) {
   const [riskSubGroupList, setRiskSubGroupList] = useState<RiskSubGroup[]>([]);
   const [riskCDTypeList, setRiskCDTypeList] = useState<RiskCDtype[]>([]);
   const [rMainType, setRMainType] = useState<RMainType[]>([]);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
 
   const [loading, setLoading] = useState(true);
   const [dialogSaving, setDialogSaving] = useState(false);
@@ -347,7 +344,7 @@ export default function Form301({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <>
           <div className="m-2 flex items-center justify-between gap-3">

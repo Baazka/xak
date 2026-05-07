@@ -2,6 +2,7 @@
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
+import SkeletonCard from "./SkeletonCard";
 
 type Props = {
   formId: number;
@@ -112,7 +113,7 @@ export default function AuditComment({ formId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <div className="mt-6">
           <div className="mb-4 flex items-center gap-3">
