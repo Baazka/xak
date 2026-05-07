@@ -43,10 +43,17 @@ type Info = {
 };
 
 export default function Form401({ auditId, formListId }: Props) {
-  const [data, setData] = useState<Data>();
+  const [data, setData] = useState<Data>({
+    con_id: null,
+    con_form_id: null,
+    con_type_id: null,
+    con_type_name: "",
+    con_base: "",
+    con_file_id: null,
+  });
   const [info, setInfo] = useState<Info>();
   const [conclusionType, setConclusionType] = useState<ConclusionType[]>([]);
-  const [conclusionTypeId, setConclusionTypeId] = useState<number | "">("");
+  const [conclusionTypeId, setConclusionTypeId] = useState<number | null>(null);
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -94,10 +101,10 @@ export default function Form401({ auditId, formListId }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           form_id: formId,
-          status_id: 1,
           con_id: data?.con_id ?? null,
           con_type_id: conclusionTypeId,
           con_file_id: data?.con_file_id ?? null,
+          con_base: data.con_base,
         }),
       });
 
@@ -134,37 +141,6 @@ export default function Form401({ auditId, formListId }: Props) {
         <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
       ) : (
         <>
-          <div className="flex items-center justify-end gap-2 mb-2">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-700 bg-gradient-to-b from-blue-600 to-blue-700 px-5 text-sm font-semibold text-white shadow transition hover:from-blue-700 hover:to-blue-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:border-gray-300 disabled:from-gray-400 disabled:to-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:bg-none dark:text-gray-100 dark:hover:bg-gray-700 dark:disabled:border-gray-700 dark:disabled:bg-gray-700"
-            >
-              {saving && (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/80 border-t-transparent dark:border-gray-300 dark:border-t-transparent" />
-              )}
-              {saving ? "Хадгалж байна..." : "Хадгалах"}
-            </button>
-            <button
-              type="button"
-              onClick={() => openHelp({ audId: auditId, formId: formListId })}
-              className="inline-flex h-10 items-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-              title="Тусламж"
-            >
-              <MessageCircle className="w-4 h-4" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handlePrint("portrait")}
-              className="inline-flex h-10 items-center rounded-lg bg-slate-700 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98]"
-              title="Хэвлэх"
-            >
-              <Printer className="w-4 h-4" />
-            </button>
-          </div>
-
           <div className="p-4 text-sm text-gray-900 space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               <StatItem
@@ -220,7 +196,7 @@ export default function Form401({ auditId, formListId }: Props) {
                 </label>
 
                 <select
-                  value={conclusionTypeId}
+                  value={conclusionTypeId ?? ""}
                   onChange={(e) => setConclusionTypeId(Number(e.target.value))}
                   className="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
                 >
@@ -274,6 +250,19 @@ export default function Form401({ auditId, formListId }: Props) {
                   />
                 </div>
               </div>
+            </div>
+            <div>
+              <label className="mb-1.5 block font-medium text-gray-600 dark:text-gray-400">
+                Дүгнэлтийн үндэслэл
+              </label>
+              <textarea
+                value={data?.con_base ?? ""}
+                onChange={(e) => {
+                  setData({ ...data, con_base: e.target.value });
+                }}
+                className="min-h-24 field-sizing-content w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-900/30"
+                placeholder="Дүгнэлтийн үндэслэлээ энд бичнэ үү..."
+              />
             </div>
           </div>
 

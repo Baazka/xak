@@ -156,42 +156,39 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
   const body = await req.json();
   const userId = user.id;
   const formId = body.form_id;
+  const conclusionTypeId = body.con_type_id;
+  const conBase = body.con_base;
+  const conFileId = body.con_file_id;
+  const conId = body.con_id;
 
   if (!formId) {
     return NextResponse.json({ error: "Form ID is required" }, { status: 400 });
   }
 
-  const solutionData: {
-    risk_id: number;
-    fs_subject: string;
-    fs_solution_id: number;
-    fs_solution_clause: string;
-    fs_type_id: number;
-  }[] = body.solutionData;
+  console.log("conType ", conclusionTypeId);
 
   const client = await db.connect();
 
   try {
-    for (const solution of solutionData) {
-      const { risk_id, fs_subject, fs_solution_id, fs_solution_clause, fs_type_id } = solution;
+    await client.query("BEGIN");
+
+    if (conId) {
       await client.query(
-        `UPDATE audit_fault_solution SET 
-            fs_subject = $1, 
-            fs_solution_id = $2, 
-            fs_solution_clause = $3, 
-            fs_type_id = $4 
-            WHERE risk_id = $5 AND fs_form_id = $6`,
-        [fs_subject, fs_solution_id, fs_solution_clause, fs_type_id, risk_id, formId]
+        `UPDATE audit_conclusion SET 
+          con_type_id = $1, 
+          con_base = $2, 
+          con_file_id = $3 
+          WHERE con_id = $4 and con_form_id = $5`,
+        [conclusionTypeId, conBase, conFileId, conId, formId]
       );
+
+      await client.query("COMMIT");
     }
 
-    return NextResponse.json(
-      { message: "Audit Fault Solution updated successfully" },
-      { status: 201 }
-    );
+    return NextResponse.json({ message: "Audit Conclusion updated successfully" }, { status: 201 });
   } catch (err: any) {
     await client.query("ROLLBACK").catch(() => {});
-    console.error("Audit Fault Solution update error:", err);
+    console.error("Audit Conclusion update error:", err);
 
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   } finally {
