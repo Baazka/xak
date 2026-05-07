@@ -88,14 +88,34 @@ export default function AuditConfirm({ formId }: Props) {
       ) : (
         <div className="mt-6">
           <div className="mb-4 flex items-center gap-3">
-            <h3 className="shrink-0 text-gray-800 dark:text-gray-100 text-sm font-semibold">
-              Баталгаажуулалт
-            </h3>
-            <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
-            <button onClick={() => setDialogOpen(true)}>
-              <h3 className="underline shrink-0 text-gray-600 dark:text-gray-100 text-sm hover:text-brand-700 dark:hover:text-brand-600 ">
-                Үйлдлийн түүх
+            <div className="flex items-center gap-2 shrink-0">
+              <h3 className="text-sm font-semibold tracking-wide text-gray-800 dark:text-gray-100">
+                Баталгаажуулалт
               </h3>
+            </div>
+
+            <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent dark:from-gray-700" />
+
+            <button
+              type="button"
+              onClick={() => setDialogOpen(true)}
+              className="group inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-brand-800 dark:hover:bg-brand-500/10 dark:hover:text-brand-400"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 transition group-hover:rotate-12"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Үйлдлийн түүх
             </button>
           </div>
 

@@ -89,6 +89,15 @@ export const MENU_CONFIG: MenuItem[] = [
     roles: ["ADMIN", "HELPDESK"],
   },
   {
+    key: "xakorgcontract",
+    icon: React.createElement(ListIcon),
+    name: "ХАК-н гэрээ",
+    section: "main",
+    path: "/xakorg_contract",
+    //permissions: ["dashboard.read"],
+    roles: ["ADMIN", "HELPDESK"],
+  },
+  {
     key: "user",
     icon: React.createElement(GroupIcon),
     name: "Хэрэглэгч бүртгэл",
