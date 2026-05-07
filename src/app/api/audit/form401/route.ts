@@ -165,8 +165,6 @@ export const POST = withAuth(async (req: NextRequest, user: JwtPayload) => {
     return NextResponse.json({ error: "Form ID is required" }, { status: 400 });
   }
 
-  console.log("conType ", conclusionTypeId);
-
   const client = await db.connect();
 
   try {
