@@ -1,6 +1,6 @@
 export default function NotificationSkeleton() {
   return (
-    <div className="divide-y divide-gray-100 dark:divide-gray-800">
+    <div className="divide-y divide-gray-100 dark:divide-gray-800 no-print">
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="flex gap-4 p-5">
           <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-gray-200 dark:bg-gray-800" />

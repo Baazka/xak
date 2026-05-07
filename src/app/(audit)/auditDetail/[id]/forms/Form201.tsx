@@ -1,13 +1,11 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import AuditRisk from "../components/AuditRisk";
-import { MessageCircle, Printer } from "lucide-react";
-import { useHelpDesk } from "@/context/HelpDeskContext";
-import { usePrint } from "@/hooks/usePrint";
 import { useToast } from "@/context/ToastContext";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -28,8 +26,6 @@ export default function Form201({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<string>("");
 
@@ -114,7 +110,7 @@ export default function Form201({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <>
           <div className="mb-3 flex gap-2 overflow-x-auto border-b border-gray-200 dark:border-gray-700">

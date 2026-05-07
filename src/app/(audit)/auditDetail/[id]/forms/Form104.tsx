@@ -3,10 +3,8 @@
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
-import { usePrint } from "@/hooks/usePrint";
-import { useHelpDesk } from "@/context/HelpDeskContext";
-import { MessageCircle, Printer } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -27,21 +25,6 @@ type TableRow = {
   noti_value: boolean | null;
 };
 
-type FormData = {
-  form_id: number;
-  form_aud_id: number;
-  form_list_id: number;
-  form_stage: string;
-  form_name: string;
-  form_code: string;
-  form_status_id: number;
-  form_status_name: string;
-  form_status_code: string;
-  form_description?: string | null;
-  form_sup_value?: string | null;
-  form_file_id?: number | null;
-};
-
 export default function Form104({ auditId, formListId }: Props) {
   const [bags, setBags] = useState<BagOption[]>([]);
   const [selectedBag, setSelectedBag] = useState("");
@@ -51,20 +34,6 @@ export default function Form104({ auditId, formListId }: Props) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
-
-  const [formData, setFormData] = useState<FormData>({
-    form_id: 0,
-    form_aud_id: 0,
-    form_list_id: 0,
-    form_stage: "",
-    form_name: "",
-    form_code: "",
-    form_status_id: 0,
-    form_status_name: "",
-    form_status_code: "",
-    form_description: null,
-    form_sup_value: null,
-  });
 
   const onChange = (id: number, value: boolean) => {
     setData((prev) => prev.map((row) => (row.ind_id === id ? { ...row, noti_value: value } : row)));
@@ -176,7 +145,7 @@ export default function Form104({ auditId, formListId }: Props) {
       </div>
 
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <>
           <table className="w-full border-collapse text-sm">

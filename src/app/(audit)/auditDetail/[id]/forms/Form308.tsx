@@ -1,13 +1,9 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
-import AuditFormSave from "../components/AuditFormSave";
 import { useToast } from "@/context/ToastContext";
-import { MessageCircle, Printer } from "lucide-react";
-import { useHelpDesk } from "@/context/HelpDeskContext";
-import { usePrint } from "@/hooks/usePrint";
 import ExpandableDataTable, { Column } from "@/components/tables/ExpandableTable";
 import {
   F304_DATA_MAP1,
@@ -16,15 +12,7 @@ import {
   F308_DATA_MAP2,
 } from "@/utils/constSelect";
 import { formatCurrency } from "@/lib/formatCurrency";
-import {
-  ShootingStarIcon,
-  EyeIcon,
-  BoltIcon,
-  CheckCircleIcon,
-  CloseLineIcon,
-  ErrorIcon,
-} from "@/icons";
-import { set } from "date-fns";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -83,8 +71,6 @@ export default function Form308({ auditId, formListId }: Props) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
   const { toast } = useToast();
   const [formData, setFormData] = useState<FormData>({
     form_id: 0,
@@ -173,25 +159,6 @@ export default function Form308({ auditId, formListId }: Props) {
     () => data.filter((row) => !(row.risk_type_id === 2 && row.risk_is_important === 1)),
     [data]
   );
-
-  const changeDesc = async (value: string) => {
-    setFormData({
-      ...formData,
-      form_description: value,
-    });
-  };
-
-  const reload = async () => {
-    setRefresher((prev) => prev + 1);
-  };
-
-  const helpOpen = async () => {
-    openHelp({ audId: auditId, formId: formListId });
-  };
-
-  const printOpen = async () => {
-    handlePrint("portrait");
-  };
 
   const columns308A: Column<TableRow>[] = [
     {
@@ -383,7 +350,7 @@ export default function Form308({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <>
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">

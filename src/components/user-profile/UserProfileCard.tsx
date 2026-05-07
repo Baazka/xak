@@ -9,6 +9,7 @@ import Label from "../form/Label";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
+import SkeletonForm from "../form/SkeletonForm";
 
 type User = {
   user_id: number;
@@ -30,7 +31,7 @@ export default function UserProfileCard() {
   const edit = useModal();
   const pwd = useModal();
 
-  const { user, loading, refreshUser } = useAuth() as any;
+  const { user, refreshUser } = useAuth() as any;
   const { toast } = useToast();
   const [data, setData] = useState<User[]>([]);
   const [reloadKey, setReloadKey] = useState(0);
@@ -43,6 +44,7 @@ export default function UserProfileCard() {
     const controller = new AbortController();
 
     const run = async () => {
+      setLoading(true);
       try {
         const res = await fetchWithAuth(`/api/profile`, { signal: controller.signal });
 
@@ -61,6 +63,7 @@ export default function UserProfileCard() {
         if (err?.name === "AbortError") return;
         toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
       } finally {
+        setLoading(false);
       }
     };
 
@@ -80,6 +83,7 @@ export default function UserProfileCard() {
     email: "",
     phone: "",
   });
+  const [loading, setLoading] = useState(true);
   const [saveLoading, setSaveLoading] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -210,120 +214,93 @@ export default function UserProfileCard() {
 
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
-      <div>
-        <div className="flex w-full flex-col gap-5 lg:w-auto lg:flex-row justify-between">
-          <div>
-            <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-              Хэрэглэгчийн мэдээлэл
-            </h4>
-          </div>
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              onClick={pwd.openModal}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 lg:inline-flex lg:w-auto"
-            >
-              Нууц үг солих
-            </button>
-            <button
-              onClick={edit.openModal}
-              className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
-            >
-              <svg
-                className="fill-current"
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+      {loading ? (
+        <SkeletonForm />
+      ) : (
+        <div>
+          <div className="flex w-full flex-col gap-5 lg:w-auto lg:flex-row justify-between">
+            <div>
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
+                Хэрэглэгчийн мэдээлэл
+              </h4>
+            </div>
+            {/* Actions */}
+            <div className="flex gap-3">
+              <button
+                onClick={pwd.openModal}
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-500 px-4 py-3 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 lg:inline-flex lg:w-auto"
               >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
-                  fill=""
-                />
-              </svg>
-              Засах
-            </button>
+                Нууц үг солих
+              </button>
+              <button
+                onClick={edit.openModal}
+                className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+              >
+                <svg
+                  className="fill-current"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M15.0911 2.78206C14.2125 1.90338 12.7878 1.90338 11.9092 2.78206L4.57524 10.116C4.26682 10.4244 4.0547 10.8158 3.96468 11.2426L3.31231 14.3352C3.25997 14.5833 3.33653 14.841 3.51583 15.0203C3.69512 15.1996 3.95286 15.2761 4.20096 15.2238L7.29355 14.5714C7.72031 14.4814 8.11172 14.2693 8.42013 13.9609L15.7541 6.62695C16.6327 5.74827 16.6327 4.32365 15.7541 3.44497L15.0911 2.78206ZM12.9698 3.84272C13.2627 3.54982 13.7376 3.54982 14.0305 3.84272L14.6934 4.50563C14.9863 4.79852 14.9863 5.2734 14.6934 5.56629L14.044 6.21573L12.3204 4.49215L12.9698 3.84272ZM11.2597 5.55281L5.6359 11.1766C5.53309 11.2794 5.46238 11.4099 5.43238 11.5522L5.01758 13.5185L6.98394 13.1037C7.1262 13.0737 7.25666 13.003 7.35947 12.9002L12.9833 7.27639L11.2597 5.55281Z"
+                    fill=""
+                  />
+                </svg>
+                Засах
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Овог нэр
+              </p>
+              <input
+                className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
+                value={username}
+                readOnly
+              />
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Регистрын дугаар
+              </p>
+              <input
+                className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
+                value={reg_no}
+                readOnly
+              />
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Утас</p>
+              <input
+                className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
+                value={phone}
+                readOnly
+              />
+            </div>
+
+            <div>
+              <p className="rounded-2xl mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Мэйл хаяг
+              </p>
+              <input
+                className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
+                value={email}
+                readOnly
+              />
+            </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-7 2xl:gap-x-32">
-          <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Овог нэр</p>
-            <input
-              className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
-              value={username}
-              readOnly
-            />
-          </div>
-
-          <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-              Регистрын дугаар
-            </p>
-            <input
-              className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
-              value={reg_no}
-              readOnly
-            />
-          </div>
-
-          <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Утас</p>
-            <input
-              className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
-              value={phone}
-              readOnly
-            />
-          </div>
-
-          <div>
-            <p className="rounded-2xl mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-              Мэйл хаяг
-            </p>
-            <input
-              className={inputClass + "text-sm font-medium text-gray-800 dark:text-white/90"}
-              value={email}
-              readOnly
-            />
-          </div>
-        </div>
-
-        {/* <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
-          <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-              First Name
-            </p>
-            <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-              {firstname || "-"}
-            </p>
-          </div>
-
-          <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-              Last Name
-            </p>
-            <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-              {lastname || "-"}
-            </p>
-          </div>
-
-          <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-              Email address
-            </p>
-            <p className="text-sm font-medium text-gray-800 dark:text-white/90">{email || "-"}</p>
-          </div>
-
-          <div>
-            <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">Phone</p>
-            <p className="text-sm font-medium text-gray-800 dark:text-white/90">{phone || "-"}</p>
-          </div>
-        </div> */}
-      </div>
-
+      )}
       {/* Edit profile modal */}
       <Modal isOpen={edit.isOpen} onClose={edit.closeModal} className="max-w-[800px] m-1">
         <div className="no-scrollbar relative w-full max-w-[800px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">

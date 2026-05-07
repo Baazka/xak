@@ -1,13 +1,11 @@
 "use client";
 
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FormActionSection from "../components/FormActionSection";
 import { useToast } from "@/context/ToastContext";
-import { useHelpDesk } from "@/context/HelpDeskContext";
-import { usePrint } from "@/hooks/usePrint";
-import { MessageCircle, Printer } from "lucide-react";
 import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
+import SkeletonCard from "../components/SkeletonCard";
 
 type Props = {
   auditId: number;
@@ -27,8 +25,6 @@ export default function Form208({ auditId, formListId }: Props) {
   const [formId, setFormId] = useState(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const { openHelp } = useHelpDesk();
-  const { handlePrint } = usePrint();
   const [files, setFiles] = useState<UploadedFileItem[]>([]);
   const [fileId, setFileId] = useState<number | null>(null);
   const [originalFileId, setOriginalFileId] = useState<number | null>(null);
@@ -113,7 +109,7 @@ export default function Form208({ auditId, formListId }: Props) {
   return (
     <>
       {loading ? (
-        <div className="text-gray-700 dark:text-gray-300">Уншиж байна...</div>
+        <SkeletonCard />
       ) : (
         <>
           <table className="w-full border-collapse text-sm">
