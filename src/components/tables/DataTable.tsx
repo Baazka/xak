@@ -198,7 +198,20 @@ export function DataTable<TData>({
           </TableHeader>
 
           <TableBody>
-            {table.getRowModel().rows.length ? (
+            {loading ? (
+              Array.from({ length: 8 }).map((_, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {table.getVisibleLeafColumns().map((column) => (
+                    <TableCell
+                      key={column.id}
+                      className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
+                    >
+                      <div className="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -235,7 +248,10 @@ ${cell.column.columnDef.meta?.className ?? ""}`}
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={table.getVisibleLeafColumns().length}
+                  className="h-24 text-center"
+                >
                   Өгөгдөл байхгүй.
                 </TableCell>
               </TableRow>

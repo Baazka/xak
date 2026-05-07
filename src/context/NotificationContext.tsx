@@ -20,6 +20,7 @@ type NotificationCtx = {
   markAsRead: (id: number) => Promise<void>;
   markAllRead: () => Promise<void>;
   refresh: () => Promise<void>;
+  loading: boolean;
 };
 
 const NotificationContext = createContext<NotificationCtx | null>(null);
@@ -27,6 +28,7 @@ const NotificationContext = createContext<NotificationCtx | null>(null);
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const unreadCount = useMemo(() => {
     return notifications.reduce((acc, n) => acc + (n.is_read === 0 ? 1 : 0), 0);
@@ -34,6 +36,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   const refresh = async () => {
     try {
+      setLoading(true);
       const res = await fetchWithAuth("/api/notifications", { method: "GET" });
       if (!res.ok) return;
 
@@ -41,6 +44,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       setNotifications(Array.isArray(json?.data) ? json.data : []);
     } catch (error) {
       console.error("notifications refresh error", error);
+      setNotifications([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,6 +99,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         markAsRead,
         markAllRead,
         refresh,
+        loading,
       }}
     >
       {children}

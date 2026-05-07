@@ -32,9 +32,8 @@ export default function Audit() {
   const [data, setData] = useState<TaskForAdmin[]>([]);
   const [total, setTotal] = useState(0);
 
-  const [listLoading, setListLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [deleteLoadingId, setDeleteLoadingId] = useState<number | null>(null);
-  const [initialLoading, setInitialLoading] = useState(true);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -67,7 +66,7 @@ export default function Audit() {
     const controller = new AbortController();
 
     const run = async () => {
-      setListLoading(true);
+      setLoading(true);
 
       try {
         const res = await fetchWithAuth(
@@ -89,8 +88,7 @@ export default function Audit() {
         if (err?.name === "AbortError") return;
         toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
       } finally {
-        setListLoading(false);
-        setInitialLoading(false);
+        setLoading(false);
       }
     };
 
@@ -156,7 +154,7 @@ export default function Audit() {
         </div>
 
         <div className="rounded-b-xl overflow-visible">
-          {initialLoading ? (
+          {loading ? (
             <SkeletonTable />
           ) : isadmin ? (
             <DataTable
@@ -174,7 +172,7 @@ export default function Audit() {
               search={searchInput}
               onSearchChange={setSearchInput}
               sorting={sorting}
-              loading={listLoading}
+              loading={loading}
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
@@ -197,7 +195,7 @@ export default function Audit() {
               search={searchInput}
               onSearchChange={setSearchInput}
               sorting={sorting}
-              loading={listLoading}
+              loading={loading}
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}

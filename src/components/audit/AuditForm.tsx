@@ -233,40 +233,6 @@ export default function AuditForm() {
     },
   ]);
 
-  // const updateField = <K extends keyof FormDataType>(field: K, value: FormDataType[K]) => {
-  //   setFormData((prev) => ({ ...prev, [field]: value }));
-  // };
-
-  // const updateAuditCompanyField = <
-  //   K extends keyof Pick<
-  //     FormDataType,
-  //     | "org_regno"
-  //     | "org_legal_name"
-  //     | "org_founded_date"
-  //     | "org_certno"
-  //     | "org_type"
-  //     | "org_main_operation"
-  //     | "org_is_special"
-  //     | "org_shareholder"
-  //     | "org_founder"
-  //     | "org_asset"
-  //     | "org_address"
-  //     | "org_phone"
-  //     | "org_email"
-  //     | "org_head_name"
-  //     | "org_head_phone"
-  //     | "org_head_email"
-  //     | "org_acc_name"
-  //     | "org_acc_phone"
-  //     | "org_acc_email"
-  //   >,
-  // >(
-  //   field: K,
-  //   value: any
-  // ) => {
-  //   updateField(field, value);
-  // };
-
   const updateStepOneField = <K extends keyof StepOneData>(field: K, value: StepOneData[K]) => {
     setFormData((prev) => ({
       ...prev,

@@ -28,9 +28,7 @@ export default function WalletPage() {
   const [total, setTotal] = useState(0);
   const [balance, setBalance] = useState(Number || 0.0);
 
-  const [loading, setLoading] = useState(false);
-  const [listLoading, setListLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("");
 
   const [page, setPage] = useState(1);
@@ -76,7 +74,6 @@ export default function WalletPage() {
       toast("error", err?.message || "Мэдээлэл ачааллах үед алдаа гарлаа");
     } finally {
       setLoading(false);
-      if (initialLoading) setInitialLoading(false);
     }
   };
   useEffect(() => {
@@ -106,7 +103,7 @@ export default function WalletPage() {
         </div>
 
         <div className="rounded-b-xl overflow-visible">
-          {initialLoading ? (
+          {loading ? (
             <SkeletonTable />
           ) : (
             <DataTable
@@ -121,7 +118,7 @@ export default function WalletPage() {
               search={searchInput}
               onSearchChange={setSearchInput}
               sorting={sorting}
-              loading={listLoading}
+              loading={loading}
               onPageChange={setPage}
               onSortingChange={setSorting}
               onLimitChange={setLimit}
