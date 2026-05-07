@@ -37,26 +37,24 @@ export default function AuditDetailClient({
   const [defaultForm, setDefaultForm] = useState<string | null>(null);
   const loadForms = async () => {
     try {
+      var formCode: string | null = null;
+
       const res = await fetchWithAuth("/api/audit/audit_forms/sidebar?aud_id=" + auditId);
       const data = await res.json();
 
-      console.log("data ", data);
       const rows: FormItem[] = Array.isArray(data?.sidebarData) ? data.sidebarData : [];
+
+      setForms(rows);
 
       if (formListId) {
         const formIdres = await fetchWithAuth(
           "/api/audit/audit_forms/formId?aud_id=" + auditId + "&formlist_id=" + formListId
         );
         const formIdData = await formIdres.json();
-        const formId = formIdData?.formData?.form_id;
-
-        const resForm = await fetchWithAuth("/api/audit/audit_forms?form_id=" + formId);
-        const dataForm = await resForm.json();
-        setDefaultForm(dataForm?.formData?.form_code);
+        formCode = formIdData?.formData?.form_code;
       }
-      setForms(rows);
 
-      const defaultFormItem = rows.find((f) => f.form_code === defaultForm);
+      const defaultFormItem = rows.find((f) => f.form_code === formCode);
       if (defaultFormItem) {
         setActiveForm(defaultFormItem);
       } else if (rows.length > 0) {
