@@ -1,0 +1,94 @@
+"use client";
+
+import { useState } from "react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
+
+export default function InviteOtpModal({
+  org,
+  onClose,
+  onSuccess,
+}: {
+  org: {
+    org_id: number;
+    org_register_no: string;
+    org_legal_name: string;
+    org_phone: string;
+    org_email: string;
+    org_head_email?: string;
+  };
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [email, setEmail] = useState(org.org_email ?? "");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const submit = async () => {
+    setError(null);
+    if (!email || !email.includes("@")) return setError("Имэйл буруу байна");
+
+    setLoading(true);
+
+    try {
+      const res = await fetchWithAuth("/api/users/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          username: org.org_legal_name,
+          org_id: org.org_id,
+          user_phone: org.org_phone,
+        }),
+      });
+
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        throw new Error(e.message || "Invite failed");
+      }
+
+      onSuccess();
+    } catch (e: any) {
+      setError(e?.message || "Invite failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-1000">
+      <div className="bg-white w-full max-w-md rounded shadow p-6">
+        <h2 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-700">
+          Invite / OTP
+        </h2>
+
+        {error && <div className="text-red-600 text-sm mb-3">{error}</div>}
+
+        <div className="mb-3 text-gray-700 dark:text-gray-700">
+          <label className="text-sm">Имэйл</label>
+          <input
+            className="w-full rounded border border-gray-700 bg-white px-3 py-2 text-gray-700 outline-none focus:border-blue-500 dark:border-gray-700 dark:bg-white dark:text-gray-700 dark:focus:border-blue-400"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <button
+            className="px-4 py-2 border rounded bg-blue-600 text-white"
+            onClick={onClose}
+            disabled={loading}
+          >
+            Болих
+          </button>
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+            onClick={submit}
+            disabled={loading}
+          >
+            {loading ? "Илгээж байна..." : "Invite / OTP явуулах"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
