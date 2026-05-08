@@ -44,7 +44,7 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
 	    JOIN reg_xakorg o ON c.xakorg_id = o.id
       ${whereClause}
     `;
-    console.log(dataSql, countSql);
+
     const client = await db.connect();
     try {
       const [dataRes, countRes] = await Promise.all([
