@@ -289,7 +289,6 @@ export default function XakorgContractListPage() {
               )}
             </tbody>
           </table>
-          {JSON.stringify(user)}
           {openDialog && (
             <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
               <div className="w-full max-w-lg rounded-xl bg-white shadow-xl dark:bg-gray-900">
