@@ -4,7 +4,7 @@ export default function DashboardXakAdmin_header() {
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-            ХАК-ын хяналтын самбар
+            Байгууллагын-ын хяналтын самбар
           </h3>
         </div>
       </div>

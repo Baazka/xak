@@ -39,16 +39,16 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
     const res = await client.query(sql, params);
 
     const wb = new ExcelJS.Workbook();
-    const ws = wb.addWorksheet("ХАК жагсаалт");
+    const ws = wb.addWorksheet("Байгууллагын жагсаалт");
 
     ws.columns = [
       { header: "№", key: "no", width: 8 },
       { header: "ID", key: "org_id", width: 10 },
       { header: "Регистрын дугаар", key: "org_register_no", width: 22 },
-      { header: "ХАК нэр", key: "org_legal_name", width: 30 },
-      { header: "ХАК утас", key: "org_phone", width: 15 },
-      { header: "ХАК мэйл", key: "org_email", width: 15 },
-      { header: "ХАК хаяг", key: "org_address", width: 35 },
+      { header: "Байгууллагын нэр", key: "org_legal_name", width: 30 },
+      { header: "Байгууллагын утас", key: "org_phone", width: 15 },
+      { header: "Байгууллагын мэйл", key: "org_email", width: 15 },
+      { header: "Байгууллагын хаяг", key: "org_address", width: 35 },
       { header: "Удирдлага нэр", key: "org_head_name", width: 30 },
       { header: "Удирдлага утас", key: "org_head_phone", width: 15 },
       { header: "Удирдлага мэйл", key: "org_head_email", width: 15 },

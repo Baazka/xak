@@ -19,6 +19,7 @@ import {
   GroupIcon,
   BoxIcon,
   InfoIcon,
+  DocsIcon,
 } from "../../icons";
 import { RoleCode } from "./roleHome";
 
@@ -82,7 +83,7 @@ export const MENU_CONFIG: MenuItem[] = [
   {
     key: "xakorg",
     icon: React.createElement(ListIcon),
-    name: "ХАК-н бүртгэл",
+    name: "Байгууллагын бүртгэл",
     section: "main",
     path: "/xakorg",
     //permissions: ["dashboard.read"],
@@ -90,8 +91,8 @@ export const MENU_CONFIG: MenuItem[] = [
   },
   {
     key: "xakorgcontract",
-    icon: React.createElement(ListIcon),
-    name: "ХАК-н гэрээ",
+    icon: React.createElement(DocsIcon),
+    name: "Байгууллагын гэрээ бүртгэл",
     section: "main",
     path: "/xakorg_contract",
     //permissions: ["dashboard.read"],

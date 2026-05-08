@@ -25,8 +25,8 @@ export const columnsAdmin = (actions: ColumnActions): ColumnDef<TaskForAdmin>[] 
     enableSorting: false,
     enableHiding: false,
   },
-  { accessorKey: "org_register_no", header: "ХАК регистр", enableHiding: false },
-  { accessorKey: "org_legal_name", header: "ХАК нэр", enableHiding: false },
+  { accessorKey: "org_register_no", header: "Регистр", enableHiding: false },
+  { accessorKey: "org_legal_name", header: "Байгууллагын нэр", enableHiding: false },
   {
     id: "view",
     header: "Тусламжийн код",

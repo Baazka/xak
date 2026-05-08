@@ -89,8 +89,8 @@ export const GET = withAuth(async function GET(req: NextRequest, user: JwtPayloa
     } else {
       ws.columns = [
         { header: "№", key: "no", width: 5 },
-        { key: "org_register_no", header: "ХАК регистр", width: 18 },
-        { key: "org_legal_name", header: "ХАК нэр", width: 18 },
+        { key: "org_register_no", header: "Байгууллагын регистр", width: 18 },
+        { key: "org_legal_name", header: "Байгууллагын нэр", width: 18 },
         { key: "task_code", header: "Тусламжийн код", width: 18 },
         { key: "task_date", header: "Огноо", width: 18 },
         { key: "task_status_label", header: "Төлөв", width: 15 },

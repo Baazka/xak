@@ -14,6 +14,7 @@ export default function UserDropdown() {
   const displayName = user.username || user.email.split("@")[0];
   const displayOrgName = user.org_legal_name;
   const displayUserRole = user.role_text;
+  const roleLabel = user.role_label;
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -71,6 +72,34 @@ export default function UserDropdown() {
         </div>
 
         <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+          {roleLabel === "SUPERUSER" && (
+            <li>
+              <DropdownItem
+                onItemClick={closeDropdown}
+                tag="a"
+                href="/xakorg_contract"
+                className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+              >
+                <svg
+                  className="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M6.75 2.5C5.50736 2.5 4.5 3.50736 4.5 4.75V19.25C4.5 20.4926 5.50736 21.5 6.75 21.5H17.25C18.4926 21.5 19.5 20.4926 19.5 19.25V8.56066C19.5 7.96493 19.2632 7.39359 18.8419 6.97227L15.0277 3.15812C14.6064 2.7368 14.0351 2.5 13.4393 2.5H6.75ZM6 4.75C6 4.33579 6.33579 4 6.75 4H13V7.25C13 8.49264 14.0074 9.5 15.25 9.5H18V19.25C18 19.6642 17.6642 20 17.25 20H6.75C6.33579 20 6 19.6642 6 19.25V4.75ZM14.5 4.56066L17.4393 7.5H15.25C14.8358 7.5 14.5 7.16421 14.5 6.75V4.56066ZM8.75 12C8.33579 12 8 12.3358 8 12.75C8 13.1642 8.33579 13.5 8.75 13.5H15.25C15.6642 13.5 16 13.1642 16 12.75C16 12.3358 15.6642 12 15.25 12H8.75ZM8 16.25C8 15.8358 8.33579 15.5 8.75 15.5H13.25C13.6642 15.5 14 15.8358 14 16.25C14 16.6642 13.6642 17 13.25 17H8.75C8.33579 17 8 16.6642 8 16.25Z"
+                    fill=""
+                  />
+                </svg>
+                Байгууллагын гэрээ
+              </DropdownItem>
+            </li>
+          )}
+
           <li>
             <DropdownItem
               onItemClick={closeDropdown}

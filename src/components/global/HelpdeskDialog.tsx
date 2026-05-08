@@ -129,7 +129,7 @@ export default function HelpdeskDialog({
           title: data?.task_code + " дугаартай тусламжийн хүсэлт үүслээ",
           content:
             user.org_legal_name +
-            " ХАК-аас " +
+            " Байгууллагаас " +
             data?.task_code +
             " дугаартай хүсэлт үүсгэсэн байна.",
           target_type_code: "ROLE",

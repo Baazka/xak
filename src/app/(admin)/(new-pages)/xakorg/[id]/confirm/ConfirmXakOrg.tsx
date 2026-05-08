@@ -47,7 +47,7 @@ export default function ConfirmXakOrg({ id, initialData }: any) {
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="flex justify-between border-b px-5 py-4">
-        <h3 className="text-lg font-semibold">ХАК бүртгэл засах</h3>
+        <h3 className="text-lg font-semibold">Байгууллагын бүртгэл засах</h3>
         <Link href="/xakorg">
           <Button variant="outline" disabled={loading}>
             Буцах

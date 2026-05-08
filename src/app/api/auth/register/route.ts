@@ -28,7 +28,7 @@ export const POST = async function POST(req: NextRequest) {
   );
 
   if (exists.rows.length > 0) {
-    return NextResponse.json({ message: "ХАК бүртгэлтэй байна." }, { status: 409 });
+    return NextResponse.json({ message: "Байгууллага бүртгэлтэй байна." }, { status: 409 });
   }
 
   // ---------- insert ----------

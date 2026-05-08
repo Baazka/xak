@@ -42,7 +42,7 @@ export default async function EditXakOrgPage({ params }: Props) {
 
   return (
     <>
-      <PageBreadcrumb pageTitle="ХАК бүртгэл засах" />
+      <PageBreadcrumb pageTitle="Байгууллагын бүртгэл засах" />
       <EditXakOrgClient id={id} initialData={data} />
     </>
   );

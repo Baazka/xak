@@ -221,7 +221,7 @@ export const DELETE = withAuth<{ id: string }>(
     );
 
     if (result.rowCount === 0) {
-      return NextResponse.json({ error: "ХАК олдсонгүй" }, { status: 404 });
+      return NextResponse.json({ error: "Байгууллага олдсонгүй" }, { status: 404 });
     }
 
     return NextResponse.json({ success: true });

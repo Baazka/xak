@@ -37,7 +37,7 @@ const emptyForm: XakOrgFormData = {
 const validationSchema: ValidationSchema<XakOrgFormData> = {
   org_register_no: {
     required: true,
-    label: "ХАК регистрын дугаар",
+    label: "Байгууллагын регистрын дугаар",
   },
   org_legal_name: {
     required: true,
@@ -139,7 +139,7 @@ export default function XakOrgForm({ initialData, onSubmit, loading = false, met
     <form className="space-y-6" onSubmit={handleSubmit}>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm font-medium">ХАК регистрын дугаар</label>
+          <label className="mb-1 block text-sm font-medium">Байгууллагын регистрын дугаар</label>
           <input
             name="org_register_no"
             value={form.org_register_no}
@@ -150,7 +150,7 @@ export default function XakOrgForm({ initialData, onSubmit, loading = false, met
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">ХАК нэр</label>
+          <label className="mb-1 block text-sm font-medium">Байгууллагын нэр</label>
           <input
             name="org_legal_name"
             value={form.org_legal_name}
@@ -161,7 +161,7 @@ export default function XakOrgForm({ initialData, onSubmit, loading = false, met
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">ХАК утас</label>
+          <label className="mb-1 block text-sm font-medium">Байгууллагын утас</label>
           <input
             name="org_phone"
             value={form.org_phone}
@@ -172,7 +172,7 @@ export default function XakOrgForm({ initialData, onSubmit, loading = false, met
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">ХАК мэйл</label>
+          <label className="mb-1 block text-sm font-medium">Байгууллагын мэйл</label>
           <input
             name="org_email"
             value={form.org_email}
@@ -183,7 +183,7 @@ export default function XakOrgForm({ initialData, onSubmit, loading = false, met
         </div>
 
         <div className="md:col-span-2">
-          <label className="mb-1 block text-sm font-medium">ХАК хаяг</label>
+          <label className="mb-1 block text-sm font-medium">Байгууллагын хаяг</label>
           <textarea
             name="org_address"
             value={form.org_address}

@@ -74,10 +74,10 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
 
     ws.columns = [
       { header: "№", key: "no", width: 5 },
-      { key: "org_register_no", header: "ХАК регистр", width: 15 },
-      { key: "org_legal_name", header: "ХАК нэр", width: 25 },
-      { key: "org_phone", header: "ХАК утас", width: 15 },
-      { key: "org_email", header: "ХАК мэйл", width: 25 },
+      { key: "org_register_no", header: "Байгууллагын регистр", width: 15 },
+      { key: "org_legal_name", header: "Байгууллагын нэр", width: 25 },
+      { key: "org_phone", header: "Байгууллагын утас", width: 15 },
+      { key: "org_email", header: "Байгууллагын мэйл", width: 25 },
       { key: "role_text", header: "Эрхийн түвшин", width: 18 },
       { key: "user_register_no", header: "Регистр", width: 18 },
       { key: "user_firstname", header: "Нэр", width: 25 },

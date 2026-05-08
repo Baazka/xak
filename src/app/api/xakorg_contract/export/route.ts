@@ -5,18 +5,16 @@ import { withAuth } from "@/lib/withAuth";
 import { requirePermission } from "@/lib/requirePermission";
 import { buildWhereClause, safeParseFilters } from "../_where";
 
-const SORTABLE_COLUMNS = new Set(["id", "name", "reg_no", "email"]);
+const SORTABLE_COLUMNS = new Set(["contract_name"]);
 
 export const GET = withAuth(async function GET(req: NextRequest, user) {
-  requirePermission(user.permissions, ["user.read"]);
-
   const sp = new URL(req.url).searchParams;
 
   const search = sp.get("search") || "";
   const filters = safeParseFilters(sp.get("filters"));
 
-  const sortByRaw = sp.get("sortBy") || "id";
-  const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "id";
+  const sortByRaw = sp.get("sortBy") || "contract_id";
+  const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "contract_id";
   const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
 
   const { whereClause, params } = buildWhereClause(search, filters);
