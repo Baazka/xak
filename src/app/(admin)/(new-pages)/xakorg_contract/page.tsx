@@ -5,25 +5,18 @@ import DatePicker from "@/components/form/date-picker";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { useCallback, useEffect, useState } from "react";
 import { Edit } from "lucide-react";
-import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
-import TimePicker from "@/components/form/TimePicker";
 import { useToast } from "@/context/ToastContext";
 import SkeletonTable from "@/components/tables/SkeletonTable";
+import { FormErrors } from "@/utils/validation";
 import { useAuth } from "@/context/AuthContext";
-
-type TableRow = {
-  contract_id: number;
-  contract_name: string;
-  contract_begin_date: Date;
-  contract_end_date: Date;
-  contract_file_id: number | null;
-  status: string;
-};
+import { XakorgContractRow } from "./types";
+import { DataTable } from "@/components/tables/DataTable";
+import { columns } from "./columns";
 
 export default function XakorgContractListPage() {
   const { user } = useAuth();
-  const [data, setData] = useState<TableRow[]>([]);
-  const [draftRow, setDraftRow] = useState<Partial<TableRow> | null>(null);
+  const [data, setData] = useState<XakorgContractRow[]>([]);
+  const [draftRow, setDraftRow] = useState<Partial<XakorgContractRow> | null>(null);
   const [files, setFiles] = useState<UploadedFileItem[]>([]);
   const [originalFileId, setOriginalFileId] = useState<number | null>(null);
   const { toast } = useToast();
@@ -33,8 +26,24 @@ export default function XakorgContractListPage() {
 
   const [openDialog, setOpenDialog] = useState(false);
 
+  const [errors, setErrors] = useState<FormErrors<XakorgContractRow>>({});
+
+  const inputClass =
+    "w-full rounded-lg border px-3 py-2 text-sm outline-none transition focus:ring-1 dark:bg-gray-900 dark:text-white";
+
+  const normalClass =
+    "border-gray-300 focus:border-brand-500 focus:ring-brand-500 dark:border-gray-700";
+
+  const errorClass = "border-red-500 focus:border-red-500 focus:ring-red-500";
+
+  const getInputClass = (field: keyof XakorgContractRow) =>
+    `${inputClass} ${errors[field] ? errorClass : normalClass}`;
+
   const resetDialog = () => {
     setDraftRow(null);
+    setFiles([]);
+    setOriginalFileId(null);
+    setErrors({});
   };
 
   const loadTableData = useCallback(async () => {
@@ -71,7 +80,15 @@ export default function XakorgContractListPage() {
       const res = await fetchWithAuth(`/api/xakorg_contract`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({
+          contract_id: draftRow?.contract_id,
+          contract_name: draftRow?.contract_name,
+          contract_begin_date: draftRow?.contract_begin_date,
+          contract_end_date: draftRow?.contract_end_date,
+          contract_file_id: draftRow?.contract_file_id,
+          status: "PENDING",
+          xakorg_id: user?.org_id,
+        }),
       });
 
       const result = await res.json().catch(() => ({}));
@@ -108,34 +125,26 @@ export default function XakorgContractListPage() {
     }
   };
 
-  const handleSave = async () => {
-    toast("success", "Амжилттай хадгаллаа");
-  };
-
-  const handleEdit = (row: TableRow) => {
+  const handleEdit = (row: XakorgContractRow) => {
     setDraftRow({
-      // meeting_id: row.meeting_id,
-      // meeting_aud_id: row.meeting_aud_id,
-      // meeting_form_id: row.meeting_form_id,
-      // meeting_type_id: row.meeting_type_id,
-      // meeting_type_name: row.meeting_type_name,
-      // meeting_date: row.meeting_date ?? "",
-      // meeting_time: row.meeting_time ?? "",
-      // meeting_place: row.meeting_place ?? "",
-      // meeting_scope: row.meeting_scope ?? "",
-      // meeting_file_id: row.meeting_file_id ?? null,
+      contract_id: row.contract_id,
+      contract_name: row.contract_name,
+      contract_begin_date: row.contract_begin_date,
+      contract_end_date: row.contract_end_date,
+      contract_file_id: row.contract_file_id,
+      status: row.status,
     });
 
-    setOriginalFileId(row.contract_id ?? null);
+    setOriginalFileId(row.contract_file_id ?? null);
 
-    if (row.contract_id) {
-      const fakeFile = new File([""], `Хавсралт-${row.contract_id}`);
+    if (row.contract_file_id) {
+      const fakeFile = new File([""], `Хавсралт-${row.contract_file_id}`);
 
       setFiles([
         {
           file: fakeFile,
-          file_id: row.contract_id,
-          original_name: `Хавсралт-${row.contract_id}`,
+          file_id: row.contract_file_id,
+          original_name: `Хавсралт-${row.contract_file_id}`,
         },
       ]);
     } else {
@@ -143,45 +152,6 @@ export default function XakorgContractListPage() {
     }
 
     setOpenDialog(true);
-  };
-
-  const handleDelete = async (meetId: number) => {
-    const targetRow = data.find((row) => row.contract_id === meetId);
-    const fileId = targetRow?.contract_file_id ?? null;
-
-    try {
-      const res = await fetchWithAuth(`/api/audit/form106`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contract_id: meetId }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Мөр устгахад алдаа гарлаа");
-      }
-
-      let fileDeleteFailed = false;
-
-      if (fileId) {
-        try {
-          await fetchWithAuth(`/api/files/delete/${fileId}`, {
-            method: "DELETE",
-          });
-        } catch (fileError) {
-          fileDeleteFailed = true;
-          console.error("Холбоотой файл устгахад алдаа гарлаа", fileError);
-        }
-      }
-
-      await loadTableData();
-
-      if (fileDeleteFailed) {
-        toast("error", "Мөр устсан, гэхдээ хавсаргасан файл устгаж чадсангүй");
-      }
-    } catch (error) {
-      console.error(error);
-      toast("error", "Мөр устгахад алдаа гарлаа");
-    }
   };
 
   return (
@@ -214,19 +184,16 @@ export default function XakorgContractListPage() {
                   №
                 </th>
                 <th className="w-60 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Хурлын төрөл
+                  Гэрээний нэр
                 </th>
                 <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Огноо
+                  Эхлэх хугацаа
                 </th>
                 <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Цаг
+                  Дуусах хугацаа
                 </th>
                 <th className="border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Байршил
-                </th>
-                <th className="border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100">
-                  Цар хүрээ
+                  Төлөв
                 </th>
                 <th className="w-30 border border-gray-200 px-3 py-2 text-left text-gray-800 dark:border-gray-700 dark:text-gray-100 no-print">
                   Хавсралт
@@ -259,6 +226,15 @@ export default function XakorgContractListPage() {
                     <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
                       {row.contract_name}
                     </td>
+                    <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {row.contract_begin_date}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {row.contract_end_date}
+                    </td>
+                    <td className="border border-gray-200 px-3 py-2 text-gray-700 dark:border-gray-700 dark:text-gray-200">
+                      {row.status}
+                    </td>
 
                     <td className="border border-gray-200 px-3 py-2 dark:border-gray-700 no-print">
                       {row.contract_file_id ? (
@@ -281,7 +257,6 @@ export default function XakorgContractListPage() {
                         >
                           <Edit className="h-4 w-4" />
                         </a>
-                        <DeleteConfirmDialog onConfirm={() => handleDelete(row.contract_id)} />
                       </div>
                     </td>
                   </tr>
@@ -313,27 +288,21 @@ export default function XakorgContractListPage() {
                 <div className="space-y-4 px-4 py-4">
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
-                      Уулзалтын төрөл
+                      Гэрээнийн нэр
                     </label>
-                    <select
-                      value={draftRow?.contract_id ?? ""}
+                    <input
+                      type="text"
+                      id="contract_name"
+                      value={draftRow?.contract_name ?? ""}
                       onChange={(e) =>
                         setDraftRow((prev) => ({
                           ...prev!,
-                          meeting_type_id: Number(e.target.value),
+                          contract_name: e.target.value,
                         }))
                       }
-                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
-                    >
-                      <option value="">Сонгох</option>
-                      {meetingTypeList.map((item) => (
-                        <option key={item.type_id} value={item.type_id}>
-                          {item.type_label}
-                        </option>
-                      ))}
-                    </select>
+                      className={getInputClass("contract_name")}
+                    />
                   </div>
-
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
                       Эхлэх хугацаа
@@ -354,17 +323,15 @@ export default function XakorgContractListPage() {
                     <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
                       Дуусах хугацаа
                     </label>
-                    <TimePicker
+                    <DatePicker
                       id="contract_end_date"
-                      value={draftRow?.contract_end_date ?? ""}
-                      onChange={(val) =>
+                      defaultDate={draftRow?.contract_end_date ?? ""}
+                      onChange={(value: Date[]) =>
                         setDraftRow((prev) => ({
                           ...prev!,
-                          contract_end_date: val,
+                          contract_end_date: value?.[0]?.toISOString().slice(0, 10) ?? "",
                         }))
                       }
-                      size="md"
-                      minuteStep={5}
                     />
                   </div>
 
@@ -377,7 +344,7 @@ export default function XakorgContractListPage() {
                       accept=".pdf,.doc,.docx"
                       multiple={false}
                       auditId={8888888}
-                      value={Files}
+                      value={files}
                       onChange={(files) => {
                         setFiles(files);
 

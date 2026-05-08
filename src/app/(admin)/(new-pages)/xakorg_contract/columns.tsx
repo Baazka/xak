@@ -1,52 +1,99 @@
-// columns.tsx
+"use client";
+
 import { ColumnDef } from "@tanstack/react-table";
-import { XakOrg, XakOrgNew } from "./types";
-import RowActionsMenu from "@/components/tables/RowActionsMenu";
-import { Pencil, Mail, CheckCheck } from "lucide-react";
-import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
+import { Pencil } from "lucide-react";
+
 import Badge from "@/components/ui/badge/Badge";
-import { stat } from "fs";
+import DeleteConfirmDialog from "@/components/common/DeleteConfirmDialog";
+import RowActionsMenu from "@/components/tables/RowActionsMenu";
+
+import { XakorgContractRow } from "./types";
 
 type ColumnActions = {
-  onEdit: (id: number) => void;
-  onRemove: (id: number) => void;
-  onInvite: (org: XakOrgNew) => void;
-  onConfirm: (id: number) => void;
-
-  canUpdate: boolean;
-  canDelete: boolean;
   page: number;
   limit: number;
-  deleteLoadingId?: number | null;
 
   openMenuId: number | null;
-  setOpenMenuId: React.Dispatch<React.SetStateAction<number | null>>;
+  setOpenMenuId: (id: number | null) => void;
+
+  deleteLoadingId: number | null;
+
+  onEdit: (row: XakorgContractRow) => void;
+  onRemove: (id: number) => void;
 };
 
-export const columns = (actions: ColumnActions): ColumnDef<XakOrgNew>[] => [
+export const columns = ({
+  page,
+  limit,
+  openMenuId,
+  setOpenMenuId,
+  deleteLoadingId,
+  onEdit,
+  onRemove,
+}: ColumnActions): ColumnDef<XakorgContractRow>[] => [
   {
     id: "rowNumber",
     header: "№",
-    cell: ({ row }) => (actions.page - 1) * actions.limit + row.index + 1,
-    meta: { className: "w-[30px] text-center", noTruncate: true },
-    enableSorting: false,
+    cell: ({ row }) => (page - 1) * limit + row.index + 1,
   },
-  { accessorKey: "org_legal_name", header: "Байгууллагын нэр" },
+
   {
-    id: "org_status",
-    header: "Төлөв код",
+    accessorKey: "contract_name",
+    header: "Гэрээний нэр",
+  },
+
+  {
+    accessorKey: "contract_begin_date",
+    header: "Эхлэх огноо",
+  },
+
+  {
+    accessorKey: "contract_end_date",
+    header: "Дуусах огноо",
+  },
+
+  {
+    id: "status",
+    header: "Төлөв",
+    cell: ({ row }) => (
+      <Badge size="sm" color={row.original.status === "ACTIVE" ? "success" : "warning"}>
+        {row.original.status ?? "-"}
+      </Badge>
+    ),
+  },
+
+  {
+    id: "actions",
+    header: "",
+
     cell: ({ row }) => {
-      const status = row.original.status;
+      const item = row.original;
 
       return (
-        <div>
-          <Badge
-            size="sm"
-            color={status === "ACTIVE" ? "success" : status === "PENDING" ? "warning" : "error"}
-          >
-            {row.original.status}
-          </Badge>
-        </div>
+        <RowActionsMenu
+          open={openMenuId === item.contract_id}
+          onOpenChange={(open) => setOpenMenuId(open ? item.contract_id : null)}
+          actions={[
+            {
+              key: "edit",
+              label: "Засах",
+              icon: <Pencil className="h-4 w-4" />,
+              onClick: () => onEdit(item),
+            },
+
+            {
+              key: "delete",
+
+              custom: (
+                <DeleteConfirmDialog
+                  loading={deleteLoadingId === item.contract_id}
+                  showText
+                  onConfirm={() => onRemove(item.contract_id)}
+                />
+              ),
+            },
+          ]}
+        />
       );
     },
   },

@@ -70,7 +70,14 @@ export const POST = withAuth(async function POST(req: NextRequest, user) {
   //requirePermission(user.permissions, ["xakorg.create"]);
 
   const body = await req.json();
-  const { contract_name, contract_begin_date, contract_end_date, contract_file_id, status } = body;
+  const {
+    contract_name,
+    contract_begin_date,
+    contract_end_date,
+    contract_file_id,
+    status,
+    xakorg_id,
+  } = body;
 
   // ---------- validation ----------
   if (!contract_name || !contract_file_id) {
@@ -86,7 +93,7 @@ export const POST = withAuth(async function POST(req: NextRequest, user) {
         ($1, $2, $3, $4, $5, $6)
       RETURNING *
       `,
-    [contract_name, contract_begin_date, contract_end_date, contract_file_id, status, user.id]
+    [contract_name, contract_begin_date, contract_end_date, contract_file_id, status, xakorg_id]
   );
 
   return NextResponse.json(result.rows[0], { status: 201 });
