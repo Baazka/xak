@@ -10,19 +10,17 @@ import DatePicker from "@/components/form/date-picker";
 import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
 import { useState } from "react";
 
+export type ContractFormValue = Pick<
+  XakorgContractRow,
+  "contract_id" | "contract_name" | "contract_begin_date" | "contract_end_date" | "contract_file_id"
+>;
+
 type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
 
   mode: "create" | "edit";
-  initialData?: Pick<
-    XakorgContractRow,
-    | "contract_id"
-    | "contract_name"
-    | "contract_begin_date"
-    | "contract_end_date"
-    | "contract_file_id"
-  > | null;
+  initialData?: ContractFormValue | null;
 
   onSaved?: () => void;
 };

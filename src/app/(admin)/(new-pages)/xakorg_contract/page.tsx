@@ -11,6 +11,7 @@ import { useToast } from "@/context/ToastContext";
 import SkeletonTable from "@/components/tables/SkeletonTable";
 import { downloadExcel } from "@/lib/downloadExcel";
 import ContractDialog from "./components/contractDialog";
+import type { ContractFormValue } from "./components/contractDialog";
 
 export default function XakorgContract() {
   const { toast } = useToast();
@@ -90,7 +91,7 @@ export default function XakorgContract() {
   }, [page, limit, search, sortBy, sortOrder, reloadKey, toast]);
 
   const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
-  const [draftRow, setDraftRow] = useState<Partial<XakorgContractRow> | null>(null);
+  const [draftRow, setDraftRow] = useState<ContractFormValue | null>(null);
 
   //  New create
   const handleCreate = () => {
@@ -105,7 +106,13 @@ export default function XakorgContract() {
     if (!row) return;
 
     setDialogMode("edit");
-    setDraftRow(row);
+    setDraftRow({
+      contract_id: row.contract_id,
+      contract_name: row.contract_name,
+      contract_begin_date: row.contract_begin_date,
+      contract_end_date: row.contract_end_date,
+      contract_file_id: row.contract_file_id,
+    });
     setOpen(true);
   };
 
