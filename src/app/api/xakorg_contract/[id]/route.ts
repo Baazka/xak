@@ -29,7 +29,7 @@ export const PUT = withAuth<{ id: string }>(async (req: NextRequest, user: JwtPa
   //requirePermission(user.permissions, ["xakorg.update"]);
 
   const { id } = await context.params;
-  const { contract_name, contract_begin_date, contract_end_date, contract_file_id } =
+  const { contract_name, contract_begin_date, contract_end_date, contract_file_id, status } =
     await req.json();
 
   const result = await db.query(
@@ -38,11 +38,12 @@ export const PUT = withAuth<{ id: string }>(async (req: NextRequest, user: JwtPa
       SET contract_name = $1,
           contract_begin_date = $2,
           contract_end_date = $3,
-          contract_file_id = $4
-      WHERE contract_id = $5
+          contract_file_id = $4,
+          status = $5
+      WHERE contract_id = $6
       RETURNING contract_id
       `,
-    [contract_name, contract_begin_date, contract_end_date, contract_file_id, id]
+    [contract_name, contract_begin_date, contract_end_date, contract_file_id, status, id]
   );
 
   if (result.rowCount === 0) {

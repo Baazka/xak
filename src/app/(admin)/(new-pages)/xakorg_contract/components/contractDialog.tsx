@@ -5,7 +5,6 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import type { XakorgContractRow } from "../types";
 import { FormErrors, ValidationSchema, validateForm } from "@/utils/validation";
 import { useToast } from "@/context/ToastContext";
-import { useAuth } from "@/context/AuthContext";
 import DatePicker from "@/components/form/date-picker";
 import FileUpload, { UploadedFileItem } from "@/components/ui/FileUpload";
 import { useState } from "react";
@@ -19,7 +18,7 @@ type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
 
-  mode: "create" | "edit";
+  mode: "create" | "edit" | "confirm";
   initialData?: ContractFormValue | null;
 
   onSaved?: () => void;
@@ -29,7 +28,7 @@ type ContractFormData = {
   contract_id: number;
   contract_name: string;
   contract_begin_date: string;
-  contract_end_date: string;
+  contract_end_date: string | null;
   contract_file_id: number | null;
 };
 
@@ -40,7 +39,7 @@ const contractSchema: ValidationSchema<ContractFormData> = {
 
 export default function ContractDialog({ open, onOpenChange, mode, initialData, onSaved }: Props) {
   const isEdit = mode === "edit";
-  const { user } = useAuth();
+  const isConfirm = mode === "confirm";
   const { toast } = useToast();
   const [files, setFiles] = useState<UploadedFileItem[]>([]);
   const [originalFileId, setOriginalFileId] = useState<number | null>(null);
@@ -141,10 +140,10 @@ export default function ContractDialog({ open, onOpenChange, mode, initialData, 
         contract_begin_date: form.contract_begin_date,
         contract_end_date: form.contract_end_date,
         contract_file_id: form.contract_file_id,
-        status: "PENDING",
+        status: isConfirm ? "CONFIRMED" : isEdit ? "PENDING" : "CONFIRMED",
       };
 
-      if (isEdit) {
+      if (isEdit || isConfirm) {
         res = await fetchWithAuth(`/api/xakorg_contract/${initialData?.contract_id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -167,7 +166,10 @@ export default function ContractDialog({ open, onOpenChange, mode, initialData, 
       onOpenChange(false);
       onSaved?.();
 
-      toast("success", isEdit ? "Амжилттай засагдлаа" : "Амжилттай нэмэгдлээ");
+      toast(
+        "success",
+        isConfirm ? "Амжилттай батлагдлаа" : isEdit ? "Амжилттай засагдлаа" : "Амжилттай нэмэгдлээ"
+      );
     } catch (err: any) {
       setError(err?.message || "Сүлжээний алдаа");
 
@@ -197,7 +199,7 @@ export default function ContractDialog({ open, onOpenChange, mode, initialData, 
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{isEdit ? "Мэдээлэл засах" : "Шинэ гэрээ"}</h2>
+          {isConfirm ? "Гэрээ батлах" : isEdit ? "Мэдээлэл засах" : "Шинэ гэрээ"}
 
           <button
             className="rounded px-2 py-1 hover:bg-gray-100"
@@ -218,6 +220,7 @@ export default function ContractDialog({ open, onOpenChange, mode, initialData, 
                 type="text"
                 id="contract_name"
                 value={form.contract_name}
+                readOnly={isConfirm}
                 onChange={(e) =>
                   setForm((prev) => ({
                     ...prev,
@@ -235,6 +238,7 @@ export default function ContractDialog({ open, onOpenChange, mode, initialData, 
               <DatePicker
                 id="contract_begin_date"
                 defaultDate={form?.contract_begin_date ?? ""}
+                disabled={isConfirm}
                 onChange={(value: Date[]) =>
                   setForm((prev) => ({
                     ...prev,
@@ -243,60 +247,64 @@ export default function ContractDialog({ open, onOpenChange, mode, initialData, 
                 }
               />
             </div>
+            {isConfirm && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
+                  Дуусах хугацаа
+                </label>
 
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
-                Дуусах хугацаа
-              </label>
-              <DatePicker
-                id="contract_end_date"
-                defaultDate={form?.contract_end_date ?? ""}
-                onChange={(value: Date[]) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    contract_end_date: value?.[0]?.toISOString().slice(0, 10) ?? "",
-                  }))
-                }
-              />
-            </div>
+                <DatePicker
+                  id="contract_end_date"
+                  defaultDate={form?.contract_end_date ?? ""}
+                  disabled={isEdit}
+                  onChange={(value: Date[]) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      contract_end_date: value?.[0]?.toISOString().slice(0, 10) ?? "",
+                    }))
+                  }
+                />
+              </div>
+            )}
+            {isEdit && (
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
+                  Хавсралт
+                </label>
+                <FileUpload
+                  key={`${form?.contract_id ?? 0}-${form?.contract_id ?? 0}`}
+                  accept=".pdf,.doc,.docx"
+                  multiple={false}
+                  auditId={8888888}
+                  value={files}
+                  onChange={(files) => {
+                    setFiles(files);
 
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-800 dark:text-gray-200">
-                Хавсралт
-              </label>
-              <FileUpload
-                key={`${form?.contract_id ?? 0}-${form?.contract_id ?? 0}`}
-                accept=".pdf,.doc,.docx"
-                multiple={false}
-                auditId={8888888}
-                value={files}
-                onChange={(files) => {
-                  setFiles(files);
+                    if (!files.length) {
+                      setForm((prev) => ({
+                        ...prev,
+                        contract_file_id: null,
+                      }));
+                    }
+                  }}
+                  onUploaded={(fileIds) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      contract_file_id: fileIds[0] ?? null,
+                    }))
+                  }
+                  onRemove={async () => {
+                    setFiles([]);
 
-                  if (!files.length) {
                     setForm((prev) => ({
                       ...prev,
                       contract_file_id: null,
                     }));
-                  }
-                }}
-                onUploaded={(fileIds) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    contract_file_id: fileIds[0] ?? null,
-                  }))
-                }
-                onRemove={async () => {
-                  setFiles([]);
-
-                  setForm((prev) => ({
-                    ...prev,
-                    contract_file_id: null,
-                  }));
-                }}
-              />
-              {renderError("contract_file_id")}
-            </div>
+                  }}
+                />
+                {renderError("contract_file_id")}
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

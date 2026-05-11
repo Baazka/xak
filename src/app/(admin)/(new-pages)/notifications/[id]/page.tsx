@@ -69,7 +69,7 @@ export default async function NotificationDetailPage({ params }: Props) {
 
             {noti.noti_date && (
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                {formatDate(noti.noti_date)}
+                {formatDate(noti.noti_date, "datetime")}
               </p>
             )}
           </div>

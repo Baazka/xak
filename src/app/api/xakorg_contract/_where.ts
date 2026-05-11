@@ -2,6 +2,7 @@ type Filters = {
   contract_name?: string;
   contract_begin_date?: string;
   contract_end_date?: string;
+  xakorg_id?: number | string;
 };
 
 export function safeParseFilters(raw: string | null): Filters {
@@ -14,9 +15,14 @@ export function safeParseFilters(raw: string | null): Filters {
   }
 }
 
-export function buildWhereClause(search: string, filters: Filters) {
-  let whereClause = "";
+export function buildWhereClause(search: string, filters: Filters, xakorg_id?: number | null) {
+  let whereClause = "WHERE 1=1";
   const params: any[] = [];
+
+  if (xakorg_id) {
+    params.push(xakorg_id);
+    whereClause += ` AND c.xakorg_id = $${params.length}`;
+  }
 
   // global search (чинийх шиг)
   if (search) {
@@ -43,6 +49,7 @@ export function buildWhereClause(search: string, filters: Filters) {
     params.push(`%${filters.contract_end_date}%`);
     whereClause += ` AND contract_end_date ILIKE $${params.length}`;
   }
+  console.log(whereClause, "whereClause");
 
   return { whereClause, params };
 }

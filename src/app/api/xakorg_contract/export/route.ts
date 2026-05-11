@@ -12,16 +12,22 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
 
   const search = sp.get("search") || "";
   const filters = safeParseFilters(sp.get("filters"));
+  const org_id = user.org_id;
 
   const sortByRaw = sp.get("sortBy") || "contract_id";
   const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "contract_id";
   const sortOrder = (sp.get("sortOrder") || "asc").toLowerCase() === "desc" ? "DESC" : "ASC";
 
-  const { whereClause, params } = buildWhereClause(search, filters);
+  const { whereClause, params } = buildWhereClause(
+    search,
+    filters,
+    user.role_label === "ADMIN" ? null : org_id
+  );
 
   const sql = `
-    SELECT contract_id, contract_name, contract_begin_date, contract_end_date, contract_file_id, status
-    FROM reg_xakorg_contract
+    SELECT contract_id, contract_name, contract_begin_date, contract_end_date, contract_file_id, c.status, c.xakorg_id, o.name as xakorg_name
+    FROM reg_xakorg_contract c
+    JOIN reg_xakorg o ON c.xakorg_id = o.id
     ${whereClause}
     ORDER BY ${sortBy} ${sortOrder}
   `;
@@ -35,10 +41,11 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
 
     ws.columns = [
       { header: "№", key: "no", width: 8 },
+      { header: "Байгууллагын нэр", key: "xakorg_name", width: 30 },
       { header: "Гэрээний нэр", key: "contract_name", width: 30 },
       { header: "Эхлэх огноо", key: "contract_begin_date", width: 18 },
       { header: "Дуусах огноо", key: "contract_end_date", width: 18 },
-      { header: "Файл ID", key: "contract_file_id", width: 15 },
+
       { header: "Төлөв", key: "status", width: 15 },
     ];
     ws.getRow(1).font = { bold: true };

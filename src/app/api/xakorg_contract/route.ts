@@ -15,9 +15,14 @@ export const GET = withAuth(async function GET(req: NextRequest, user) {
     const limit = Math.max(parseInt(sp.get("limit") || "10"), 1);
     const search = sp.get("search") || "";
     const filters = safeParseFilters(sp.get("filters"));
+    const org_id = user.org_id;
 
     // whereClause + params бэлэн болсон (search/filter бүгд эндээс гарна)
-    const { whereClause, params } = buildWhereClause(search, filters);
+    const { whereClause, params } = buildWhereClause(
+      search,
+      filters,
+      user.role_label === "ADMIN" ? null : org_id
+    );
 
     const sortByRaw = sp.get("sortBy") || "id";
     const sortBy = SORTABLE_COLUMNS.has(sortByRaw) ? sortByRaw : "id";
@@ -70,14 +75,7 @@ export const POST = withAuth(async function POST(req: NextRequest, user) {
   //requirePermission(user.permissions, ["xakorg.create"]);
 
   const body = await req.json();
-  const {
-    contract_name,
-    contract_begin_date,
-    contract_end_date,
-    contract_file_id,
-    status,
-    xakorg_id,
-  } = body;
+  const { contract_name, contract_begin_date, contract_file_id, status } = body;
 
   // ---------- validation ----------
   if (!contract_name || !contract_file_id) {
@@ -88,12 +86,12 @@ export const POST = withAuth(async function POST(req: NextRequest, user) {
   const result = await db.query(
     `
       INSERT INTO reg_xakorg_contract
-        (contract_name, contract_begin_date, contract_end_date, contract_file_id, status, xakorg_id)
+        (contract_name, contract_begin_date, contract_file_id, status, xakorg_id)
       VALUES
-        ($1, $2, $3, $4, $5, $6)
+        ($1, $2, $3, $4, $5)
       RETURNING *
       `,
-    [contract_name, contract_begin_date, contract_end_date, contract_file_id, status, xakorg_id]
+    [contract_name, contract_begin_date, contract_file_id, status, user.org_id]
   );
 
   return NextResponse.json(result.rows[0], { status: 201 });

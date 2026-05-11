@@ -21,6 +21,8 @@ type PropsType = {
   name?: string;
   size?: "sm" | "md" | "lg";
   isStatic?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
 };
 
 export default function DatePicker({
@@ -36,6 +38,8 @@ export default function DatePicker({
   name,
   size = "md",
   isStatic = false,
+  disabled = false,
+  readOnly = true,
 }: PropsType) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const fpRef = useRef<Instance | null>(null);
@@ -68,6 +72,7 @@ export default function DatePicker({
       appendTo: document.body,
       position: "below",
       static: isStatic,
+      clickOpens: !disabled,
       onReady: function (_, __, instance) {
         Object.values(sizeClassMap).forEach((cls) =>
           instance.calendarContainer.classList.remove(cls)
@@ -100,7 +105,8 @@ export default function DatePicker({
           name={name}
           placeholder={placeholder}
           className={`w-full rounded-lg border bg-transparent px-2 py-1 pr-10 ${inputSizeMap[size]} text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30`}
-          readOnly
+          disabled={disabled}
+          readOnly={readOnly}
         />
 
         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
